@@ -1,90 +1,72 @@
-document.addEventListener("DOMContentLoaded", function(){
+/* =====================================
+   NightCast v1.0
+   Main JavaScript
+===================================== */
 
 
-const box = document.querySelector(".social-grid");
+document.addEventListener("DOMContentLoaded", () => {
 
 
-if(!box) return;
+    // سال خودکار فوتر
+
+    const footerYear = document.querySelector("#year");
 
 
+    if (footerYear) {
 
-fetch("../data/social-feed.json")
+        footerYear.textContent = new Date().getFullYear();
 
-.then(res => res.json())
-
-.then(data => {
-
-
-box.innerHTML = "";
-
-
-data.forEach(item => {
-
-
-box.innerHTML += `
-
-
-<a href="${item.url}" target="_blank" class="social-card">
-
-
-<img class="social-image" src="${item.image}" alt="${item.platform}">
-
-
-<div class="social-content">
-
-
-<div class="platform">
-
-<i class="fa-solid fa-radio"></i>
-
-${item.platform}
-
-</div>
+    }
 
 
 
-<h4>
-${item.title}
-</h4>
+    // انیمیشن ورود عناصر
+
+    const elements = document.querySelectorAll(
+        ".category, .episode-card, .about"
+    );
+
+
+    const observer = new IntersectionObserver(
+        (entries)=>{
+
+
+            entries.forEach(entry=>{
+
+
+                if(entry.isIntersecting){
+
+
+                    entry.target.classList.add("show");
+
+
+                    observer.unobserve(entry.target);
+
+
+                }
+
+
+            });
+
+
+        },
+        {
+            threshold:.15
+        }
+    );
 
 
 
-<p>
-${item.description}
-</p>
+    elements.forEach(el=>{
 
 
+        el.classList.add("hidden");
 
-<span class="watch-btn">
-
-مشاهده
-
-<i class="fa-solid fa-arrow-left"></i>
-
-</span>
+        observer.observe(el);
 
 
+    });
 
-</div>
-
-
-</a>
-
-
-`;
-
-
-});
-
-
-})
-
-
-.catch(error=>{
-
-console.log("Feed Error:",error);
-
-});
 
 
 });

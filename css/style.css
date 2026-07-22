@@ -512,6 +512,21 @@ nav {
     grid-template-columns:1fr;
 
 }
+   .hidden{
+
+    opacity:0;
+    transform:translateY(30px);
+    transition:.8s ease;
+
+}
+
+
+.show{
+
+    opacity:1;
+    transform:translateY(0);
+
+}
 
 
 .logo {

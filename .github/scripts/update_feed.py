@@ -3,8 +3,10 @@ import urllib.request
 import xml.etree.ElementTree as ET
 
 
-# YouTube Channel ID
-# بعداً مقدار UC واقعی اینجا قرار می‌گیرد
+# ==============================
+# NightCast YouTube Channel ID
+# ==============================
+
 CHANNEL_ID = "UCNv-iKOizOhOIWCdujWQGYA"
 
 
@@ -25,15 +27,12 @@ try:
 
 
     namespace = {
-        "atom": "http://www.w3.org/2005/Atom"
+        "atom": "http://www.w3.org/2005/Atom",
+        "yt": "http://www.youtube.com/xml/schemas/2015"
     }
 
 
-    for entry in root.findall(
-        "atom:entry",
-        namespace
-    )[:5]:
-
+    for entry in root.findall("atom:entry", namespace)[:5]:
 
         title = entry.find(
             "atom:title",
@@ -48,10 +47,15 @@ try:
 
 
         video_id = entry.find(
-            "atom:videoId",
+            "yt:videoId",
             namespace
         ).text
 
+
+        published = entry.find(
+            "atom:published",
+            namespace
+        ).text
 
 
         items.append({
@@ -62,28 +66,23 @@ try:
 
             "description": "آخرین ویدئوی منتشر شده NightCast",
 
-            "image":
-            f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg",
+            "image": f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg",
 
-            "url": link
+            "url": link,
+
+            "published": published
 
         })
 
 
-
 except Exception as error:
 
-
-    print(
-        "YouTube Feed Error:",
-        error
-    )
+    print("YouTube Feed Error:", error)
 
 
 
-
+# فقط اگر اطلاعات دریافت شد فایل را بروزرسانی کن
 if items:
-
 
     with open(
         "data/social-feed.json",
@@ -91,28 +90,15 @@ if items:
         encoding="utf-8"
     ) as file:
 
-
         json.dump(
-
             items,
-
             file,
-
             ensure_ascii=False,
-
             indent=2
-
         )
 
-
-    print(
-        "NightCast YouTube feed updated"
-    )
-
+    print("NightCast feed updated successfully")
 
 else:
 
-
-    print(
-        "No YouTube data received"
-    )
+    print("No new data received. Keeping previous social-feed.json")

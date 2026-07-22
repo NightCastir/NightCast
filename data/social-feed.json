@@ -1,1 +1,34 @@
+[
+{
+"platform":"YouTube",
+"title":"آخرین ویدئوی NightCast",
+"description":"قسمت جدید خلاصه کتاب",
+"image":"../images/default.jpg",
+"url":"https://www.youtube.com/@NightCast-r5e"
+},
 
+{
+"platform":"Telegram",
+"title":"آخرین پست NightCast",
+"description":"جدیدترین اخبار و قسمت‌های منتشر شده",
+"image":"../images/default.jpg",
+"url":"https://t.me/NightCast_ir"
+},
+
+{
+"platform":"Bale",
+"title":"آخرین مطلب بله",
+"description":"کانال رسمی NightCast",
+"image":"../images/default.jpg",
+"url":"https://ble.ir/NightCast_ir"
+},
+
+{
+"platform":"Rubika",
+"title":"آخرین محتوا روبیکا",
+"description":"صفحه رسمی NightCast",
+"image":"../images/default.jpg",
+"url":"https://rubika.ir/NightCast_ir"
+}
+
+]

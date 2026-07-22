@@ -1,28 +1,27 @@
-// NightCast v2
-
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function(){
 
 
-fetch("../data/social.json")
-
-.then(response => response.json())
-
-.then(data => {
+const box = document.querySelector(".social-grid");
 
 
-const socialBox = document.querySelector(".social-grid");
+if(!box) return;
 
 
-if(!socialBox) return;
+
+fetch("../data/social-feed.json")
+
+.then(res=>res.json())
+
+.then(data=>{
 
 
-socialBox.innerHTML = "";
+box.innerHTML="";
 
 
-data.forEach(item => {
+data.forEach(item=>{
 
 
-socialBox.innerHTML += `
+box.innerHTML += `
 
 <a href="${item.url}" target="_blank" class="social-card">
 
@@ -31,13 +30,18 @@ socialBox.innerHTML += `
 
 <i class="fa-solid fa-radio"></i>
 
-${item.name}
+${item.platform}
 
 </div>
 
 
+<h4>
+${item.title}
+</h4>
+
+
 <p>
-ورود به صفحه رسمی NightCast در ${item.name}
+${item.description}
 </p>
 
 
@@ -52,9 +56,9 @@ ${item.name}
 })
 
 
-.catch(error => {
+.catch(err=>{
 
-console.log("Social Load Error:", error);
+console.log(err);
 
 });
 

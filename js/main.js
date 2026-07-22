@@ -10,20 +10,27 @@ if(!box) return;
 
 fetch("../data/social-feed.json")
 
-.then(res=>res.json())
+.then(res => res.json())
 
-.then(data=>{
-
-
-box.innerHTML="";
+.then(data => {
 
 
-data.forEach(item=>{
+box.innerHTML = "";
+
+
+data.forEach(item => {
 
 
 box.innerHTML += `
 
+
 <a href="${item.url}" target="_blank" class="social-card">
+
+
+<img class="social-image" src="${item.image}" alt="${item.platform}">
+
+
+<div class="social-content">
 
 
 <div class="platform">
@@ -35,9 +42,11 @@ ${item.platform}
 </div>
 
 
+
 <h4>
 ${item.title}
 </h4>
+
 
 
 <p>
@@ -45,7 +54,22 @@ ${item.description}
 </p>
 
 
+
+<span class="watch-btn">
+
+مشاهده
+
+<i class="fa-solid fa-arrow-left"></i>
+
+</span>
+
+
+
+</div>
+
+
 </a>
+
 
 `;
 
@@ -56,9 +80,9 @@ ${item.description}
 })
 
 
-.catch(err=>{
+.catch(error=>{
 
-console.log(err);
+console.log("Feed Error:",error);
 
 });
 

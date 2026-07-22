@@ -1,1 +1,32 @@
-
+[
+{
+"platform":"YouTube",
+"title":"آخرین ویدئوی NightCast",
+"link":""
+},
+{
+"platform":"Aparat",
+"title":"آخرین ویدئوی آپارات",
+"link":""
+},
+{
+"platform":"Telegram",
+"title":"آخرین پست تلگرام",
+"link":""
+},
+{
+"platform":"Bale",
+"title":"آخرین پست بله",
+"link":""
+},
+{
+"platform":"Rubika",
+"title":"آخرین پست روبیکا",
+"link":""
+},
+{
+"platform":"Facebook",
+"title":"آخرین پست فیسبوک",
+"link":""
+}
+]

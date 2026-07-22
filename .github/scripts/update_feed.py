@@ -3,69 +3,116 @@ import urllib.request
 import xml.etree.ElementTree as ET
 
 
-CHANNEL_ID = "UCxxxxxxxx"
+# YouTube Channel ID
+# بعداً مقدار UC واقعی اینجا قرار می‌گیرد
+CHANNEL_ID = "PASTE_YOUR_CHANNEL_ID_HERE"
 
 
 RSS_URL = f"https://www.youtube.com/feeds/videos.xml?channel_id={CHANNEL_ID}"
 
 
-response = urllib.request.urlopen(RSS_URL)
-
-xml_data = response.read()
-
-
-root = ET.fromstring(xml_data)
-
-
-namespace = {
-    "atom": "http://www.w3.org/2005/Atom"
-}
-
-
 items = []
 
 
-for entry in root.findall("atom:entry", namespace)[:5]:
+try:
 
-    title = entry.find(
-        "atom:title",
+    response = urllib.request.urlopen(RSS_URL)
+
+    xml_data = response.read()
+
+
+    root = ET.fromstring(xml_data)
+
+
+    namespace = {
+        "atom": "http://www.w3.org/2005/Atom"
+    }
+
+
+    for entry in root.findall(
+        "atom:entry",
         namespace
-    ).text
+    )[:5]:
 
 
-    link = entry.find(
-        "atom:link",
-        namespace
-    ).attrib["href"]
+        title = entry.find(
+            "atom:title",
+            namespace
+        ).text
 
 
-    items.append({
-
-        "platform":"YouTube",
-
-        "title":title,
-
-        "description":"آخرین ویدئوی NightCast",
-
-        "image":"../images/default.jpg",
-
-        "url":link
-
-    })
+        link = entry.find(
+            "atom:link",
+            namespace
+        ).attrib["href"]
 
 
-with open(
-    "data/social-feed.json",
-    "w",
-    encoding="utf-8"
-) as f:
+        video_id = entry.find(
+            "atom:videoId",
+            namespace
+        ).text
 
-    json.dump(
-        items,
-        f,
-        ensure_ascii=False,
-        indent=2
+
+
+        items.append({
+
+            "platform": "YouTube",
+
+            "title": title,
+
+            "description": "آخرین ویدئوی منتشر شده NightCast",
+
+            "image":
+            f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg",
+
+            "url": link
+
+        })
+
+
+
+except Exception as error:
+
+
+    print(
+        "YouTube Feed Error:",
+        error
     )
 
 
-print("YouTube feed updated")
+
+
+if items:
+
+
+    with open(
+        "data/social-feed.json",
+        "w",
+        encoding="utf-8"
+    ) as file:
+
+
+        json.dump(
+
+            items,
+
+            file,
+
+            ensure_ascii=False,
+
+            indent=2
+
+        )
+
+
+    print(
+        "NightCast YouTube feed updated"
+    )
+
+
+else:
+
+
+    print(
+        "No YouTube data received"
+    )

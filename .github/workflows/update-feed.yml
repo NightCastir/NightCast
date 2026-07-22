@@ -1,6 +1,7 @@
 name: Update NightCast Feed
 
 on:
+
   schedule:
     - cron: "0 */6 * * *"
 
@@ -16,18 +17,32 @@ jobs:
 
     steps:
 
-    - name: Checkout
+
+    - name: Checkout repository
+
       uses: actions/checkout@v4
 
 
-    - name: Update Feed
+
+    - name: Setup Python
+
+      uses: actions/setup-python@v5
+
+      with:
+
+        python-version: "3.x"
+
+
+
+    - name: Update Social Feed
+
       run: |
 
-        echo "Feed updater ready"
+        python .github/scripts/update_feed.py
 
 
 
-    - name: Commit changes
+    - name: Commit and Push Changes
 
       run: |
 
@@ -35,8 +50,11 @@ jobs:
 
         git config --global user.email "bot@nightcast.ir"
 
-        git add .
 
-        git commit -m "Update social feed" || exit 0
+        git add data/social-feed.json
+
+
+        git commit -m "Auto update NightCast feed" || exit 0
+
 
         git push

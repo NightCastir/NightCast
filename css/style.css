@@ -1,125 +1,258 @@
-/* ===================================
+/* =========================
    NightCast v2
-   Main Stylesheet
-=================================== */
+   Main Style
+========================= */
 
-/* Reset */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+:root {
+    --bg:#08080d;
+    --card:#13131b;
+    --gold:#f5b942;
+    --text:#ffffff;
+    --muted:#a8a8b3;
 }
 
-html {
-    scroll-behavior: smooth;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
-body {
-    font-family: "Tahoma", sans-serif;
-    background: #0b0b0f;
-    color: #ffffff;
-    line-height: 1.8;
+body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:tahoma, sans-serif;
+    direction:rtl;
 }
 
-/* Links */
-a {
-    text-decoration: none;
-    color: inherit;
+a{
+    text-decoration:none;
+    color:white;
 }
 
-/* Container */
-.container {
-    width: 90%;
-    max-width: 1200px;
-    margin: auto;
+.container{
+    width:90%;
+    max-width:1200px;
+    margin:auto;
 }
 
-/* Header */
-.header {
-    width: 100%;
-    padding: 20px 0;
-    background: rgba(0,0,0,0.4);
+
+/* HEADER */
+
+.header{
+    padding:20px 0;
+    background:#090910;
 }
 
-/* Logo */
-.logo img {
-    width: 120px;
-    height: auto;
+.header-box{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 }
 
-/* Hero */
-.hero {
-    min-height: 80vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    background:
-    linear-gradient(
-        rgba(0,0,0,.6),
-        rgba(0,0,0,.8)
-    );
+
+.logo img{
+    width:120px;
 }
 
-.hero h1 {
-    font-size: 48px;
-    margin-bottom: 20px;
+
+.menu{
+    display:flex;
+    gap:25px;
 }
 
-.hero p {
-    font-size: 20px;
-    opacity: .85;
+.menu a{
+    color:#ddd;
+    transition:.3s;
 }
 
-/* Buttons */
-.btn {
-    display: inline-block;
-    margin-top: 25px;
-    padding: 12px 30px;
-    border-radius: 30px;
-    background: #ff3b3b;
-    color: white;
-    transition: .3s;
+.menu a:hover{
+    color:var(--gold);
 }
 
-.btn:hover {
-    transform: translateY(-3px);
-    opacity: .85;
+
+
+/* HERO */
+
+.hero{
+
+    min-height:70vh;
+    display:flex;
+    align-items:center;
+    text-align:center;
+
 }
 
-/* Cards */
-.cards {
-    padding: 60px 0;
+
+.hero h1{
+
+    font-size:48px;
+    margin-bottom:20px;
+
 }
 
-.card {
-    background: #15151d;
-    border-radius: 15px;
-    padding: 25px;
-    transition: .3s;
+
+.hero p{
+
+    color:var(--muted);
+    font-size:20px;
+
 }
 
-.card:hover {
-    transform: translateY(-8px);
+
+
+.btn{
+
+    display:inline-block;
+    margin-top:30px;
+    padding:14px 35px;
+    background:var(--gold);
+    color:#000;
+    border-radius:30px;
+
 }
 
-/* Footer */
-.footer {
-    padding: 30px 0;
-    text-align: center;
-    background: #050507;
-    opacity: .8;
+
+
+/* SOCIAL WALL */
+
+.social-section{
+
+    padding:70px 0;
+
 }
 
-/* Mobile */
+
+.section-title{
+
+    text-align:center;
+    font-size:32px;
+    margin-bottom:40px;
+
+}
+
+
+
+.social-grid{
+
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:25px;
+
+}
+
+
+
+.social-card{
+
+    background:var(--card);
+    border-radius:20px;
+    padding:25px;
+    transition:.3s;
+
+}
+
+
+.social-card:hover{
+
+    transform:translateY(-8px);
+
+}
+
+
+
+.platform{
+
+    color:var(--gold);
+    font-size:22px;
+    margin-bottom:15px;
+
+}
+
+
+.social-card p{
+
+    color:var(--muted);
+
+}
+
+
+
+/* BOOK CARDS */
+
+.cards{
+
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+
+}
+
+
+.card{
+
+    background:var(--card);
+    border-radius:15px;
+    overflow:hidden;
+
+}
+
+
+.card img{
+
+    width:100%;
+
+}
+
+
+.card-body{
+
+    padding:20px;
+
+}
+
+
+
+/* FOOTER */
+
+
+.footer{
+
+    padding:40px 0;
+    background:#050507;
+    text-align:center;
+    color:#aaa;
+
+}
+
+
+
+
+/* MOBILE */
+
+
 @media(max-width:768px){
 
-    .hero h1 {
-        font-size: 32px;
-    }
 
-    .hero p {
-        font-size: 16px;
-    }
+.menu{
+
+    display:none;
+
+}
+
+
+.social-grid,
+.cards{
+
+    grid-template-columns:1fr;
+
+}
+
+
+.hero h1{
+
+    font-size:32px;
+
+}
+
 
 }

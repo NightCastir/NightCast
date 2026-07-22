@@ -144,17 +144,70 @@ a{
 
 .social-card{
 
-    background:var(--card);
-    border-radius:20px;
-    padding:25px;
-    transition:.3s;
+    background:linear-gradient(
+        145deg,
+        #171722,
+        #0f0f15
+    );
+
+    border-radius:22px;
+
+    padding:30px;
+
+    min-height:170px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    transition:.35s;
+
+    cursor:pointer;
 
 }
 
 
+
 .social-card:hover{
 
-    transform:translateY(-8px);
+    transform:translateY(-10px);
+
+    border-color:var(--gold);
+
+    box-shadow:
+    0 15px 40px rgba(0,0,0,.4);
+
+}
+
+
+
+.platform{
+
+    color:var(--gold);
+
+    font-size:26px;
+
+    margin-bottom:20px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+}
+
+
+
+.social-card p{
+
+    color:#bbb;
+
+    font-size:15px;
 
 }
 
@@ -165,13 +218,6 @@ a{
     color:var(--gold);
     font-size:22px;
     margin-bottom:15px;
-
-}
-
-
-.social-card p{
-
-    color:var(--muted);
 
 }
 

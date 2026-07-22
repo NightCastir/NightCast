@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 
 # YouTube Channel ID
 # بعداً مقدار UC واقعی اینجا قرار می‌گیرد
-CHANNEL_ID = "PASTE_YOUR_CHANNEL_ID_HERE"
+CHANNEL_ID = "UCNv-iKOizOhOIWCdujWQGYA"
 
 
 RSS_URL = f"https://www.youtube.com/feeds/videos.xml?channel_id={CHANNEL_ID}"

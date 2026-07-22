@@ -1,1 +1,125 @@
+/* ===================================
+   NightCast v2
+   Main Stylesheet
+=================================== */
 
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: "Tahoma", sans-serif;
+    background: #0b0b0f;
+    color: #ffffff;
+    line-height: 1.8;
+}
+
+/* Links */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Container */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+}
+
+/* Header */
+.header {
+    width: 100%;
+    padding: 20px 0;
+    background: rgba(0,0,0,0.4);
+}
+
+/* Logo */
+.logo img {
+    width: 120px;
+    height: auto;
+}
+
+/* Hero */
+.hero {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background:
+    linear-gradient(
+        rgba(0,0,0,.6),
+        rgba(0,0,0,.8)
+    );
+}
+
+.hero h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.hero p {
+    font-size: 20px;
+    opacity: .85;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    margin-top: 25px;
+    padding: 12px 30px;
+    border-radius: 30px;
+    background: #ff3b3b;
+    color: white;
+    transition: .3s;
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    opacity: .85;
+}
+
+/* Cards */
+.cards {
+    padding: 60px 0;
+}
+
+.card {
+    background: #15151d;
+    border-radius: 15px;
+    padding: 25px;
+    transition: .3s;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+}
+
+/* Footer */
+.footer {
+    padding: 30px 0;
+    text-align: center;
+    background: #050507;
+    opacity: .8;
+}
+
+/* Mobile */
+@media(max-width:768px){
+
+    .hero h1 {
+        font-size: 32px;
+    }
+
+    .hero p {
+        font-size: 16px;
+    }
+
+}

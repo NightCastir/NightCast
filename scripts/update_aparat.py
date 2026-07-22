@@ -1,10 +1,11 @@
 # =====================================
 # NightCast v1.0
-# Aparat RSS Updater
+# Aparat RSS + Thumbnail Updater
 # =====================================
 
 import json
 import os
+import re
 import requests
 import xml.etree.ElementTree as ET
 
@@ -15,10 +16,10 @@ OUTPUT_FILE = "data/aparat.json"
 
 
 
-def get_aparat_feed():
+def get_page(url):
 
     response = requests.get(
-        RSS_URL,
+        url,
         timeout=20,
         headers={
             "User-Agent": "Mozilla/5.0"
@@ -31,13 +32,85 @@ def get_aparat_feed():
 
 
 
-def parse_feed(xml_data):
+def get_thumbnail(video_url):
 
-    root = ET.fromstring(xml_data)
+    try:
 
-    channel = root.find("channel")
+        html = get_page(video_url)
 
-    item = channel.find("item")
+
+        patterns = [
+
+            r'<meta property="og:image" content="(.*?)"',
+
+            r'"poster":"(.*?)"',
+
+            r'"thumbnail":"(.*?)"'
+
+        ]
+
+
+        for pattern in patterns:
+
+
+            result = re.search(
+                pattern,
+                html
+            )
+
+
+            if result:
+
+                return result.group(1)
+
+
+    except Exception:
+
+        pass
+
+
+
+    return ""
+
+
+
+
+
+def get_rss():
+
+
+    response = requests.get(
+
+        RSS_URL,
+
+        timeout=20,
+
+        headers={
+            "User-Agent":"Mozilla/5.0"
+        }
+
+    )
+
+
+    response.raise_for_status()
+
+
+    return response.text
+
+
+
+
+
+
+def parse():
+
+    xml = get_rss()
+
+
+    root = ET.fromstring(xml)
+
+
+    item = root.find("./channel/item")
 
 
     if item is None:
@@ -46,94 +119,100 @@ def parse_feed(xml_data):
 
 
 
-    title = item.findtext("title", "")
+    title = item.findtext("title","")
 
-    link = item.findtext("link", "")
+    link = item.findtext("link","")
 
-    description = item.findtext("description", "")
+    description = item.findtext(
+        "description",
+        ""
+    )
 
-    pub_date = item.findtext("pubDate", "")
+
+    date = item.findtext(
+        "pubDate",
+        ""
+    )
+
+
+    thumbnail = get_thumbnail(link)
 
 
 
-    data = {
+    return {
 
-        "platform": "aparat",
 
-        "title": title.strip(),
+        "platform":"aparat",
 
-        "url": link.strip(),
+        "title":title,
 
-        "date": pub_date.strip(),
+        "url":link,
 
-        "description": description.strip()
+        "thumbnail":thumbnail,
+
+        "date":date,
+
+        "description":description
 
     }
 
 
-    return data
 
 
 
+def save(data):
 
-def save_json(data):
 
     os.makedirs(
-        os.path.dirname(OUTPUT_FILE),
+        "data",
         exist_ok=True
     )
 
 
     with open(
+
         OUTPUT_FILE,
+
         "w",
+
         encoding="utf-8"
-    ) as file:
+
+    ) as f:
 
 
         json.dump(
+
             data,
-            file,
+
+            f,
+
             ensure_ascii=False,
+
             indent=4
+
         )
 
 
 
 
 
-def main():
+
+if __name__=="__main__":
 
 
-    print("Reading Aparat RSS...")
+    result = parse()
 
 
-    xml_data = get_aparat_feed()
+    if result:
 
-
-    video = parse_feed(xml_data)
-
-
-
-    if video:
-
-
-        save_json(video)
+        save(result)
 
         print(
-            "Aparat feed updated successfully."
+            "NightCast Aparat updated"
         )
-
 
     else:
 
         print(
-            "No video found."
+            "No data found"
         )
-
-
-
-
-if __name__ == "__main__":
-
-    main()

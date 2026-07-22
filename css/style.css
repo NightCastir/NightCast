@@ -537,3 +537,88 @@ nav {
 
 
 }
+
+.aparat-card{
+
+    display:grid;
+
+    grid-template-columns:300px 1fr;
+
+    gap:35px;
+
+    align-items:center;
+
+}
+
+
+
+.aparat-image{
+
+    width:100%;
+
+    height:220px;
+
+    object-fit:cover;
+
+    border-radius:20px;
+
+}
+
+
+
+.placeholder{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:#172033;
+
+    font-size:80px;
+
+}
+
+
+
+.aparat-info h3{
+
+    font-size:28px;
+
+    margin-bottom:15px;
+
+}
+
+
+
+.aparat-info p{
+
+    color:var(--muted);
+
+}
+
+
+
+.date{
+
+    color:var(--gold);
+
+    font-size:14px;
+
+}
+
+
+
+
+@media(max-width:700px){
+
+
+.aparat-card{
+
+    grid-template-columns:1fr;
+
+}
+
+
+   }

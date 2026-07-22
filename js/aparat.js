@@ -1,128 +1,156 @@
 /* =====================================
    NightCast v1.0
-   Aparat Dynamic Episode
+   Aparat Episode Card
 ===================================== */
 
 
-document.addEventListener("DOMContentLoaded", ()=>{
+document.addEventListener(
+"DOMContentLoaded",
+()=>{
 
 
-    const container = document.getElementById("aparat-video");
+const box = document.getElementById(
+"aparat-video"
+);
 
 
-    if(!container) return;
 
+if(!box) return;
 
 
-    fetch("data/aparat.json")
 
+fetch("data/aparat.json")
 
-    .then(response=>response.json())
 
+.then(res=>res.json())
 
-    .then(data=>{
 
+.then(video=>{
 
-        if(!data || !data.title){
 
-            container.innerHTML =
-            `
-            <div class="loading">
-            هنوز اپیزودی ثبت نشده است.
-            </div>
-            `;
+if(!video.title){
 
-            return;
+box.innerHTML =
 
-        }
+`
+<div class="loading">
+اپیزودی پیدا نشد
+</div>
+`;
 
+return;
 
+}
 
-        container.innerHTML =
 
-        `
 
-        <div class="aparat-content">
+box.innerHTML =
 
 
-            <div class="aparat-icon">
+`
 
-                🎙️
+<div class="episode-wrapper">
 
-            </div>
 
+<div class="episode-image">
 
-            <div>
 
+<img
 
-                <h3>
-                    ${data.title}
-                </h3>
+src="${video.thumbnail || 'assets/logo.png'}"
 
+alt="${video.title}"
 
-                <p>
+loading="lazy"
 
-                ${data.description || "آخرین خلاصه کتاب منتشر شده در NightCast"}
+/>
 
-                </p>
 
+</div>
 
-                <small>
 
-                ${data.date || ""}
 
-                </small>
 
+<div class="episode-info">
 
-                <br>
 
+<h3>
 
-                <a 
-                class="btn"
-                href="${data.url}"
-                target="_blank">
+${video.title}
 
-                مشاهده در آپارات
+</h3>
 
-                </a>
 
 
-            </div>
+<p>
 
+${video.description || ""}
 
+</p>
 
-        </div>
 
-        `;
 
+<div class="episode-date">
 
+${video.date || ""}
 
-    })
+</div>
 
 
-    .catch(error=>{
 
+<a
 
-        console.error(
-            "Aparat feed error:",
-            error
-        );
+href="${video.url}"
 
+target="_blank"
 
-        container.innerHTML=
+class="btn"
 
-        `
+>
 
-        <div class="loading">
+▶ مشاهده ویدئو
 
-        خطا در دریافت اپیزود جدید
+</a>
 
-        </div>
 
-        `;
+</div>
 
 
-    });
+
+</div>
+
+`;
+
+
+
+
+})
+
+
+.catch(err=>{
+
+
+console.error(
+"NightCast Aparat Error",
+err
+);
+
+
+box.innerHTML =
+
+`
+
+<div class="loading">
+
+خطا در دریافت اطلاعات
+
+</div>
+
+`;
+
+
+
+});
 
 
 

@@ -1,18 +1,14 @@
 {
-  "name": "NightCast",
-  "short_name": "NightCast",
-  "description": "رادیوی خلاصه کتاب NightCast",
-  "lang": "fa",
-  "dir": "rtl",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#070B14",
-  "theme_color": "#D4AF37",
   "icons": [
     {
-      "src": "assets/logo.svg",
-      "sizes": "260x80",
-      "type": "image/svg+xml"
+      "src": "/assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
     }
   ]
 }

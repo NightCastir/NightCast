@@ -1,1 +1,42 @@
+name: Update NightCast Feed
 
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+
+  workflow_dispatch:
+
+
+jobs:
+
+  update-feed:
+
+    runs-on: ubuntu-latest
+
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v4
+
+
+    - name: Update Feed
+      run: |
+
+        echo "Feed updater ready"
+
+
+
+    - name: Commit changes
+
+      run: |
+
+        git config --global user.name "NightCast Bot"
+
+        git config --global user.email "bot@nightcast.ir"
+
+        git add .
+
+        git commit -m "Update social feed" || exit 0
+
+        git push

@@ -1,365 +1,424 @@
-/* =========================
-   NightCast v2
-   Main Style
-========================= */
-
 :root {
-    --bg:#08080d;
-    --card:#13131b;
-    --gold:#f5b942;
-    --text:#ffffff;
-    --muted:#a8a8b3;
-}
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-body{
-    background:var(--bg);
-    color:var(--text);
-    font-family:tahoma, sans-serif;
-    direction:rtl;
-}
-
-a{
-    text-decoration:none;
-    color:white;
-}
-
-.container{
-    width:90%;
-    max-width:1200px;
-    margin:auto;
+    --bg: #070B14;
+    --card: #111827;
+    --gold: #D4AF37;
+    --blue: #4F9DFF;
+    --text: #F8FAFC;
+    --muted: #94A3B8;
 }
 
 
-/* HEADER */
-
-.header{
-    padding:20px 0;
-    background:#090910;
-}
-
-.header-box{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 
-.logo img{
-    width:120px;
-}
+body {
 
+    font-family: "Vazirmatn", sans-serif;
 
-.menu{
-    display:flex;
-    gap:25px;
-}
+    background:
+    radial-gradient(circle at top right, rgba(79,157,255,.15), transparent 35%),
+    radial-gradient(circle at bottom left, rgba(212,175,55,.12), transparent 30%),
 
-.menu a{
-    color:#ddd;
-    transition:.3s;
-}
+    var(--bg);
 
-.menu a:hover{
-    color:var(--gold);
-}
+    color: var(--text);
 
-
-
-/* HERO */
-
-.hero{
-
-    min-height:70vh;
-    display:flex;
-    align-items:center;
-    text-align:center;
+    line-height: 1.8;
 
 }
 
 
-.hero h1{
-
-    font-size:48px;
-    margin-bottom:20px;
-
+a {
+    text-decoration: none;
+    color: inherit;
 }
 
 
-.hero p{
 
-    color:var(--muted);
-    font-size:20px;
+.container {
+
+    width: min(1200px, 90%);
+
+    margin: auto;
 
 }
 
 
 
-.btn{
+/* Header */
 
-    display:inline-block;
-    margin-top:30px;
-    padding:14px 35px;
-    background:var(--gold);
-    color:#000;
-    border-radius:30px;
 
-}
+.header {
 
+    position: fixed;
 
-
-/* SOCIAL WALL */
-
-.social-section{
-
-    padding:70px 0;
-
-}
-
-
-.section-title{
-
-    text-align:center;
-    font-size:32px;
-    margin-bottom:40px;
-
-}
-
-
-
-.social-grid{
-
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:25px;
-
-}
-
-
-
-.social-card{
-
-    background:linear-gradient(
-        145deg,
-        #171722,
-        #0f0f15
-    );
-
-    border-radius:22px;
-
-    padding:30px;
-
-    min-height:170px;
-
-    display:flex;
-
-    flex-direction:column;
-
-    justify-content:center;
-
-    border:1px solid rgba(255,255,255,.08);
-
-    transition:.35s;
-
-    cursor:pointer;
-
-}
-
-
-
-.social-card:hover{
-
-    transform:translateY(-10px);
-
-    border-color:var(--gold);
-
-    box-shadow:
-    0 15px 40px rgba(0,0,0,.4);
-
-}
-
-
-
-.platform{
-
-    color:var(--gold);
-
-    font-size:26px;
-
-    margin-bottom:20px;
-
-    display:flex;
-
-    align-items:center;
-
-    gap:12px;
-
-}
-
-
-
-.social-card p{
-
-    color:#bbb;
-
-    font-size:15px;
-
-}
-
-
-
-.platform{
-
-    color:var(--gold);
-    font-size:22px;
-    margin-bottom:15px;
-
-}
-
-
-
-/* BOOK CARDS */
-
-.cards{
-
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:20px;
-
-}
-
-
-.card{
-
-    background:var(--card);
-    border-radius:15px;
-    overflow:hidden;
-
-}
-
-
-.card img{
+    top:0;
 
     width:100%;
 
+    z-index:100;
+
+    backdrop-filter: blur(15px);
+
+    background: rgba(7,11,20,.65);
+
 }
 
 
-.card-body{
 
-    padding:20px;
+.nav {
+
+    height:80px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
 
 }
 
 
 
-/* FOOTER */
+.logo {
+
+    font-size:32px;
+
+    font-weight:900;
+
+    letter-spacing:-1px;
+
+}
 
 
-.footer{
+.logo span {
+
+    color:var(--gold);
+
+}
+
+
+
+nav {
+
+    display:flex;
+
+    gap:30px;
+
+}
+
+
+
+nav a {
+
+    color:var(--muted);
+
+    transition:.3s;
+
+}
+
+
+
+nav a:hover {
+
+    color:var(--gold);
+
+}
+
+
+
+
+/* Hero */
+
+
+.hero {
+
+    min-height:100vh;
+
+    display:flex;
+
+    align-items:center;
+
+    padding-top:80px;
+
+}
+
+
+
+.hero-content {
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:50px;
+
+    align-items:center;
+
+}
+
+
+
+.hero-text h1 {
+
+    font-size:clamp(40px,6vw,75px);
+
+    line-height:1.2;
+
+    font-weight:900;
+
+}
+
+
+
+.hero-text h1::first-line {
+
+    color:var(--gold);
+
+}
+
+
+
+.hero-text p {
+
+    margin:30px 0;
+
+    color:var(--muted);
+
+    font-size:18px;
+
+}
+
+
+
+
+.btn {
+
+    display:inline-block;
+
+    background:linear-gradient(
+    135deg,
+    var(--gold),
+    #f5d77a
+    );
+
+    color:#111;
+
+    padding:12px 35px;
+
+    border-radius:50px;
+
+    font-weight:700;
+
+}
+
+
+
+/* Glass Card */
+
+
+.hero-card {
+
+    display:flex;
+
+    justify-content:center;
+
+}
+
+
+
+.glass {
+
+
+    width:100%;
+
+    padding:40px;
+
+    border-radius:30px;
+
+
+    background:
+
+    linear-gradient(
+    145deg,
+    rgba(255,255,255,.12),
+    rgba(255,255,255,.03)
+    );
+
+
+    border:1px solid rgba(255,255,255,.15);
+
+
+    backdrop-filter:blur(20px);
+
+
+    box-shadow:
+    0 30px 80px rgba(0,0,0,.4);
+
+}
+
+
+
+.glass span {
+
+    color:var(--gold);
+
+}
+
+
+
+.glass h3 {
+
+    font-size:26px;
+
+    margin:20px 0;
+
+}
+
+
+
+.glass a {
+
+    display:inline-block;
+
+    margin-top:20px;
+
+    color:var(--blue);
+
+}
+
+
+
+
+/* Sections */
+
+
+section.about,
+section.social {
+
+
+    padding:100px 0;
+
+}
+
+
+
+h2 {
+
+    font-size:40px;
+
+    margin-bottom:20px;
+
+}
+
+
+
+.about p {
+
+    color:var(--muted);
+
+    max-width:700px;
+
+}
+
+
+
+/* Social */
+
+
+.social-box {
+
+    margin-top:30px;
+
+    display:inline-block;
+
+    padding:20px 50px;
+
+    border-radius:20px;
+
+    background:var(--card);
+
+    transition:.3s;
+
+}
+
+
+.social-box:hover {
+
+    transform:translateY(-8px);
+
+    border:1px solid var(--gold);
+
+}
+
+
+
+/* Footer */
+
+
+footer {
 
     padding:40px 0;
-    background:#050507;
+
     text-align:center;
-    color:#aaa;
+
+    color:var(--muted);
 
 }
 
 
 
-
-/* MOBILE */
+/* Mobile */
 
 
 @media(max-width:768px){
 
 
-.menu{
+.nav {
 
-    display:none;
+    flex-direction:column;
+
+    height:auto;
+
+    padding:20px 0;
 
 }
 
 
-.social-grid,
-.cards{
+nav {
+
+    gap:15px;
+
+    flex-wrap:wrap;
+
+}
+
+
+.hero-content {
 
     grid-template-columns:1fr;
 
-}
-
-
-.hero h1{
-
-    font-size:32px;
+    text-align:center;
 
 }
 
 
-}
+.hero {
 
-/* Social Media Cards */
-
-
-.social-image{
-
-width:100%;
-
-height:160px;
-
-object-fit:cover;
-
-border-radius:15px;
-
-margin-bottom:20px;
+    padding-top:150px;
 
 }
 
 
+.hero-text h1 {
 
-.social-content h4{
-
-font-size:18px;
-
-margin-bottom:10px;
+    font-size:45px;
 
 }
 
 
-
-.watch-btn{
-
-display:inline-block;
-
-margin-top:15px;
-
-color:var(--gold);
-
-font-size:14px;
-
-}
-
-
-
-.social-card{
-
-text-decoration:none;
-
-color:white;
-
-overflow:hidden;
-
-}
-
-
-
-.social-card:hover h4{
-
-color:var(--gold);
-
-}
+   }

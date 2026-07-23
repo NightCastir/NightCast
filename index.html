@@ -1,15 +1,278 @@
-<!DOCTYPE html><html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NightCast</title><style>
-body{background:#111;color:#fff;font-family:tahoma,sans-serif;display:flex;justify-content:center;padding:20px}.card{max-width:430px;width:100%;background:#1b1b1b;border:2px solid #d4af37;border-radius:18px;padding:24px}.logo{width:120px;height:120px;border-radius:50%;display:block;margin:0 auto 15px;border:3px solid #d4af37}.item{background:#262626;padding:12px;border-radius:10px;margin:10px 0}.t{color:#d4af37;font-weight:bold;margin-bottom:8px}.b{display:flex;gap:8px}a,button{flex:1;padding:10px;border-radius:8px;border:0;text-decoration:none;cursor:pointer}.go{background:#d4af37;color:#000}.cp{background:#444;color:#fff}
-</style></head><body><div class="card"><img class="logo" src="logo.png"><h2>NightCast</h2><p>همه شبکه‌های اجتماعی</p>
-<script>
-function add(n,u){document.write(`<div class=item><div class=t>${n}</div><div class=b><a class=go target=_blank href="${u}">ورود</a><button class=cp onclick="navigator.clipboard.writeText('${u}');alert('لینک کپی شد')">کپی لینک</button></div></div>`)}
-</script>
-<script>
-add("Instagram","https://www.instagram.com/NightCast.ir");
-add("Eitaa","https://eitaa.com/NightCast");
-add("Bale","https://ble.ir/NightCast_ir");
-add("Rubika","https://rubika.ir/NightCast_ir");
-add("SPlus","https://splus.ir/NightCast");
-add("Telegram","https://t.me/NightCast_ir");
-add("YouTube","https://www.youtube.com/@NightCast-r5e");
-</script></div></body></html>
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>NightCast | پلی به سوی آینده</title>
+
+<meta name="theme-color" content="#07111f">
+
+<meta name="description"
+content="NightCast | خلاصه کتاب‌های صوتی، توسعه فردی، کسب و کار">
+
+<link rel="manifest" href="manifest.json">
+
+<link rel="icon" href="assets/icons/icon-192.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="stylesheet" href="assets/css/style.css">
+
+</head>
+
+<body>
+
+<div id="loader"></div>
+
+<header class="header">
+
+<div class="container">
+
+<a href="#" class="logo">
+
+<img src="assets/icons/logo.png" alt="NightCast">
+
+<div>
+
+<h2>NightCast.ir</h2>
+
+<span>پلی به سوی آینده</span>
+
+</div>
+
+</a>
+
+<nav>
+
+<ul>
+
+<li><a href="#">درباره ما</a></li>
+
+<li><a href="#">تماس با ما</a></li>
+
+<li><a href="#">شبکه‌های اجتماعی</a></li>
+
+</ul>
+
+</nav>
+
+</div>
+
+</header>
+
+<section class="hero">
+
+<div class="overlay"></div>
+
+<div class="container hero-content">
+
+<div class="hero-text">
+
+<h1>NightCast.ir</h1>
+
+<h2>پلی به سوی آینده</h2>
+
+<p>
+
+در تاریکی شب،
+کتاب‌ها روشن‌ترین همراهان هستند.
+
+</p>
+
+<a class="btn" href="#socialCards">
+
+شروع شنیدن
+
+</a>
+
+</div>
+
+<div class="hero-image">
+
+<img src="assets/images/hero.png">
+
+</div>
+
+</div>
+
+</section>
+
+<section class="features">
+
+<div class="container">
+
+<div class="feature">
+
+🎧
+
+<h3>کتاب شنیدنی</h3>
+
+<p>بهترین کتاب‌ها به صورت پادکست</p>
+
+</div>
+
+<div class="feature">
+
+🕒
+
+<h3>هر زمان</h3>
+
+<p>گوش دادن در هر مکان</p>
+
+</div>
+
+<div class="feature">
+
+❤
+
+<h3>انتخاب با شما</h3>
+
+<p>موضوعات متنوع</p>
+
+</div>
+
+<div class="feature">
+
+🚀
+
+<h3>پلی به آینده</h3>
+
+<p>دانش امروز، فردای بهتر</p>
+
+</div>
+
+</div>
+
+</section>
+
+<section id="socialCards" class="cards">
+
+<div class="container">
+
+<div class="card youtube">
+
+<h2>YouTube</h2>
+
+<div class="posts" id="youtubePosts">
+
+در حال دریافت...
+
+</div>
+
+<a href="https://www.youtube.com/@NightCast-r5e"
+target="_blank">
+
+مشاهده کانال
+
+</a>
+
+</div>
+
+<div class="card telegram">
+
+<h2>Telegram</h2>
+
+<div id="telegramPosts">
+
+در حال دریافت...
+
+</div>
+
+<a href="https://t.me/NightCast_ir">
+
+ورود به کانال
+
+</a>
+
+</div>
+
+<div class="card aparat">
+
+<h2>Aparat</h2>
+
+<div id="aparatPosts">
+
+در حال دریافت...
+
+</div>
+
+<a href="https://www.aparat.com/nightcast">
+
+مشاهده همه
+
+</a>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="newsletter">
+
+<div class="container">
+
+<h2>
+
+به خانواده NightCast بپیوندید
+
+</h2>
+
+<form>
+
+<input
+type="email"
+placeholder="ایمیل خود را وارد کنید">
+
+<button>
+
+عضویت
+
+</button>
+
+</form>
+
+</div>
+
+</section>
+
+<footer>
+
+<div class="container">
+
+<div class="social">
+
+<a href="https://instagram.com/NightCast.ir">Instagram</a>
+
+<a href="https://t.me/NightCast_ir">Telegram</a>
+
+<a href="https://youtube.com/@NightCast-r5e">YouTube</a>
+
+<a href="https://rubika.ir/NightCast_ir">Rubika</a>
+
+<a href="https://ble.ir/NightCast_ir">Bale</a>
+
+<a href="https://eitaa.com/NightCast">Eitaa</a>
+
+<a href="https://splus.ir/NightCast">SPlus</a>
+
+</div>
+
+<p>
+
+© 2026 NightCast
+
+</p>
+
+</div>
+
+</footer>
+
+<script src="assets/js/app.js"></script>
+
+</body>
+
+  </html>

@@ -89,5 +89,3 @@ return response || fetch(event.request);
 );
 
 });
-
-

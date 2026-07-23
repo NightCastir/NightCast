@@ -1,1 +1,73 @@
+{
+  "version": "1.0",
 
+  "episodes": [
+
+    {
+      "id": 1,
+
+      "title": "SPIN Selling",
+
+      "author": "Neil Rackham",
+
+      "category": "Business",
+
+      "duration": "24:38",
+
+      "cover": "assets/images/spin.jpg",
+
+      "audio": "assets/audio/spin.mp3",
+
+      "description": "خلاصه کتاب فروش به روش اسپین",
+
+      "published": "2026-07-15",
+
+      "featured": true
+    },
+
+    {
+      "id": 2,
+
+      "title": "مهارت های ازدواج",
+
+      "author": "Matthew McKay",
+
+      "category": "Relationship",
+
+      "duration": "31:12",
+
+      "cover": "assets/images/marriage.jpg",
+
+      "audio": "assets/audio/marriage.mp3",
+
+      "description": "خلاصه کتاب مهارت های ازدواج",
+
+      "published": "2026-07-20",
+
+      "featured": true
+    },
+
+    {
+      "id": 3,
+
+      "title": "اثر مرکب",
+
+      "author": "Darren Hardy",
+
+      "category": "Success",
+
+      "duration": "28:15",
+
+      "cover": "assets/images/compound.jpg",
+
+      "audio": "assets/audio/compound.mp3",
+
+      "description": "خلاصه کتاب اثر مرکب",
+
+      "published": "2026-07-25",
+
+      "featured": false
+    }
+
+  ]
+}

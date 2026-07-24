@@ -8,8 +8,16 @@
      stroke-linecap="round"
      stroke-linejoin="round">
 
+  <!-- Outer Shape -->
   <rect x="5" y="5" width="14" height="14" rx="3"/>
-  <path d="M8 8l8 8"/>
-  <path d="M16 8l-4 4"/>
+
+  <!-- Inner Cube -->
+  <path d="M9 9h6v6H9z"/>
+
+  <!-- Corner Links -->
+  <path d="M9 5v4"/>
+  <path d="M15 5v4"/>
+  <path d="M9 15v4"/>
+  <path d="M15 15v4"/>
 
 </svg>

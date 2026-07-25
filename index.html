@@ -2,655 +2,361 @@
 <html lang="fa" dir="rtl">
 
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>NightCast | پلی به سوی آینده</title>
 
-<meta name="description"
-content="رادیو NightCast | خلاصه کتاب‌های برتر دنیا به صورت پادکست صوتی">
+<style>
 
-<meta name="theme-color" content="#D9A441">
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800&display=swap');
 
-<meta name="color-scheme" content="dark">
 
-<link rel="manifest" href="manifest.json">
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
 
-<link rel="icon" type="image/svg+xml" href="assets/icons/logo.svg">
 
-<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+body{
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
+    font-family:'Vazirmatn',sans-serif;
 
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    min-height:100vh;
 
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    background:
+    radial-gradient(circle at top,#243b55,#141e30 60%);
 
-<link rel="stylesheet" href="assets/css/style.css">
+    color:white;
 
-</head>
+    display:flex;
 
-<body>
+    justify-content:center;
 
-<main>
+    align-items:center;
 
-<!-- ==========================================
-HEADER
-========================================== -->
-
-<header class="header">
-
-<div class="logo-area">
-
-<a href="index.html">
-
-<img
-class="logo"
-src="assets/icons/logo.svg"
-alt="NightCast Logo">
-
-</a>
-
-<div class="brand">
-
-<h1>NightCast.ir</h1>
-
-<p>پلی به سوی آینده</p>
-
-</div>
-
-</div>
-
-<nav class="desktop-menu">
-
-<a href="#">خانه</a>
-
-<a href="#latest">اپیزودها</a>
-
-<a href="#categories">دسته‌بندی‌ها</a>
-
-<a href="#social">شبکه‌های اجتماعی</a>
-
-<a href="#">درباره ما</a>
-
-<a href="#">تماس با ما</a>
-
-</nav>
-
-<button class="menu-button">
-
-<img
-src="assets/icons/menu.svg"
-alt="Menu">
-
-</button>
-
-</header>
-
- <!-- ==========================================
-HERO
-========================================== -->
-
-<section class="hero">
-
-    <img
-        src="assets/images/hero.webp"
-        class="hero-bg"
-        alt="NightCast">
-
-    <div class="hero-overlay">
-
-        <div class="hero-content">
-
-            <img
-                src="assets/icons/logo.svg"
-                class="hero-logo"
-                alt="NightCast">
-
-            <h2>
-                NightCast.ir
-            </h2>
-
-            <h3>
-                پلی به سوی آینده
-            </h3>
-
-            <p>
-                در تاریکی شب، کتاب‌ها روشن‌ترین همراهان ما هستند.
-                <br>
-                به دنیای پادکست‌های کتاب‌خوانی خوش آمدید.
-            </p>
-
-            <a href="#latest" class="hero-button">
-                شروع شنیدن
-            </a>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- ==========================================
-FEATURES
-========================================== -->
-
-<section class="features">
-
-    <div class="feature-card">
-
-        <img
-            src="assets/icons/headphone.svg"
-            alt="کتاب شنیدنی">
-
-        <h3>
-            کتاب شنیدنی
-        </h3>
-
-        <p>
-            بهترین کتاب‌ها به صورت پادکست
-        </p>
-
-    </div>
-
-    <div class="feature-card">
-
-        <img
-            src="assets/icons/clock.svg"
-            alt="هر زمان">
-
-        <h3>
-            هر زمان، هر جا
-        </h3>
-
-        <p>
-            گوش دادن در هر زمان و مکان
-        </p>
-
-    </div>
-
-    <div class="feature-card">
-
-        <img
-            src="assets/icons/heart.svg"
-            alt="انتخاب">
-
-        <h3>
-            انتخاب با شما
-        </h3>
-
-        <p>
-            موضوعات متنوع برای همه سلیقه‌ها
-        </p>
-
-    </div>
-
-    <div class="feature-card">
-
-        <img
-            src="assets/icons/rocket.svg"
-            alt="آینده">
-
-        <h3>
-            پلی به سوی آینده
-        </h3>
-
-        <p>
-            دانش امروز، موفقیت فردا
-        </p>
-
-    </div>
-
-</section>
-
-
-  <!-- ==========================================
-LATEST CONTENT
-========================================== -->
-
-<section id="latest" class="latest-section">
-
-    <div class="section-header">
-
-        <h2>جدیدترین اپیزودها</h2>
-
-        <a href="#">مشاهده همه</a>
-
-    </div>
-
-    <div id="feed-container" class="feed-grid">
-
-        <div class="loading-card">
-
-            <div class="loading-image"></div>
-
-            <div class="loading-line"></div>
-
-            <div class="loading-line short"></div>
-
-        </div>
-
-        <div class="loading-card">
-
-            <div class="loading-image"></div>
-
-            <div class="loading-line"></div>
-
-            <div class="loading-line short"></div>
-
-        </div>
-
-        <div class="loading-card">
-
-            <div class="loading-image"></div>
-
-            <div class="loading-line"></div>
-
-            <div class="loading-line short"></div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- ==========================================
-CATEGORIES
-========================================== -->
-
-<section id="categories" class="categories">
-
-    <div class="section-header">
-
-        <h2>دسته‌بندی‌ها</h2>
-
-    </div>
-
-    <div class="category-list">
-
-        <button class="category-item">
-
-            <img src="assets/icons/book.svg" alt="کتاب">
-
-            <span>کتاب‌ها</span>
-
-        </button>
-
-        <button class="category-item">
-
-            <img src="assets/icons/headphone.svg" alt="پادکست">
-
-            <span>پادکست</span>
-
-        </button>
-
-        <button class="category-item">
-
-            <img src="assets/icons/rocket.svg" alt="موفقیت">
-
-            <span>موفقیت</span>
-
-        </button>
-
-        <button class="category-item">
-
-            <img src="assets/icons/heart.svg" alt="روابط">
-
-            <span>روابط</span>
-
-        </button>
-
-        <button class="category-item">
-
-            <img src="assets/icons/calendar.svg" alt="جدیدترین">
-
-            <span>جدیدترین</span>
-
-        </button>
-
-    </div>
-
-</section>
-
-
-<!-- ==========================================
-FEATURED EPISODE
-========================================== -->
-
-<section class="featured">
-
-    <div class="featured-card">
-
-        <img
-            id="featured-image"
-            class="featured-image"
-            src="assets/images/placeholder.webp"
-            alt="Featured Episode">
-
-        <div class="featured-info">
-
-            <span class="featured-badge">
-                منتخب امروز
-            </span>
-
-            <h3 id="featured-title">
-
-                در حال دریافت اطلاعات...
-
-            </h3>
-
-            <p id="featured-description">
-
-                آخرین اپیزودهای NightCast به صورت خودکار
-                در این قسمت نمایش داده خواهند شد.
-
-            </p>
-
-            <div class="featured-meta">
-
-                <div>
-
-                    <img
-                        src="assets/icons/clock.svg"
-                        alt="زمان">
-
-                    <span id="featured-date">
-
-                        ...
-
-                    </span>
-
-                </div>
-
-                <div>
-
-                    <img
-                        src="assets/icons/eye.svg"
-                        alt="پلتفرم">
-
-                    <span id="featured-platform">
-
-                        NightCast
-
-                    </span>
-
-                </div>
-
-            </div>
-
-            <a
-                id="featured-link"
-                href="#"
-                class="listen-button">
-
-                🎧 شنیدن اپیزود
-
-            </a>
-
-        </div>
-
-    </div>
-
-</section>   
-
-<!-- ==========================================
-SOCIAL NETWORKS
-========================================== -->
-
-<section id="social" class="social-section">
-
-    <div class="section-header">
-
-        <h2>شبکه‌های اجتماعی NightCast</h2>
-
-        <a href="#">دنبال کنید</a>
-
-    </div>
-
-    <div class="social-grid">
-
-        <a href="https://www.youtube.com/@NightCast-r5e"
-           target="_blank"
-           class="social-card">
-
-            <img src="assets/icons/youtube.svg" alt="YouTube">
-
-            <span>YouTube</span>
-
-        </a>
-
-        <a href="https://t.me/NightCast_ir"
-           target="_blank"
-           class="social-card">
-
-            <img src="assets/icons/telegram.svg" alt="Telegram">
-
-            <span>Telegram</span>
-
-        </a>
-
-        <a href="https://www.instagram.com/NightCast.ir"
-           target="_blank"
-           class="social-card">
-
-            <img src="assets/icons/instagram.svg" alt="Instagram">
-
-            <span>Instagram</span>
-
-        </a>
-
-        <a href="https://www.aparat.com/nightcast"
-           target="_blank"
-           class="social-card">
-
-            <img src="assets/icons/aparat.svg" alt="Aparat">
-
-            <span>Aparat</span>
-
-        </a>
-
-        <a href="https://rubika.ir/NightCast_ir"
-           target="_blank"
-           class="social-card">
-
-            <img src="assets/icons/rubika.svg" alt="Rubika">
-
-            <span>Rubika</span>
-
-        </a>
-
-        <a href="https://ble.ir/NightCast_ir"
-           target="_blank"
-           class="social-card">
-
-            <img src="assets/icons/bale.svg" alt="Bale">
-
-            <span>Bale</span>
-
-        </a>
-
-        <a href="https://eitaa.com/NightCast"
-           target="_blank"
-           class="social-card">
-
-            <img src="assets/icons/eitaa.svg" alt="Eitaa">
-
-            <span>Eitaa</span>
-
-        </a>
-
-        <a href="https://splus.ir/NightCast"
-           target="_blank"
-           class="social-card">
-
-            <img src="assets/icons/splus.svg" alt="SPlus">
-
-            <span>SPlus</span>
-
-        </a>
-
-    </div>
-
-</section>
-
-
-<!-- ==========================================
-FOOTER
-========================================== -->
-
-<footer class="footer">
-
-    <div class="footer-logo">
-
-        <img
-            src="assets/icons/logo.svg"
-            alt="NightCast">
-
-        <h3>NightCast.ir</h3>
-
-    </div>
-
-    <p>
-
-        پلی به سوی آینده
-
-    </p>
-
-    <p class="copyright">
-
-        © 2026 تمامی حقوق برای NightCast محفوظ است.
-
-    </p>
-
-</footer>
-
-
-<!-- ==========================================
-MINI PLAYER
-========================================== -->
-
-<div id="mini-player" class="mini-player">
-
-    <img
-        id="player-cover"
-        src="assets/images/placeholder.webp"
-        alt="Cover">
-
-    <div class="player-info">
-
-        <h4 id="player-title">
-
-            NightCast
-
-        </h4>
-
-        <small id="player-subtitle">
-
-            آماده پخش...
-
-        </small>
-
-    </div>
-
-    <button id="player-play">
-
-        <img
-            src="assets/icons/play.svg"
-            alt="Play">
-
-    </button>
-
-</div>
-
-
-<!-- ==========================================
-BOTTOM NAVIGATION
-========================================== -->
-
-<nav class="bottom-nav">
-
-    <a href="#" class="active">
-
-        <img
-            src="assets/icons/headphone.svg"
-            alt="خانه">
-
-        <span>خانه</span>
-
-    </a>
-
-    <a href="#latest">
-
-        <img
-            src="assets/icons/book.svg"
-            alt="اپیزودها">
-
-        <span>اپیزودها</span>
-
-    </a>
-
-    <a href="#categories">
-
-        <img
-            src="assets/icons/search.svg"
-            alt="جستجو">
-
-        <span>جستجو</span>
-
-    </a>
-
-    <a href="#social">
-
-        <img
-            src="assets/icons/heart.svg"
-            alt="شبکه‌ها">
-
-        <span>شبکه‌ها</span>
-
-    </a>
-
-    <a href="#">
-
-        <img
-            src="assets/icons/user.svg"
-            alt="حساب">
-
-        <span>حساب</span>
-
-    </a>
-
-</nav>
-
-
-<script src="assets/js/feed.js"></script>
-
-<script src="assets/js/app.js"></script>
-
-<script>
-
-if ("serviceWorker" in navigator) {
-
-    window.addEventListener("load", () => {
-
-        navigator.serviceWorker.register("service-worker.js");
-
-    });
+    padding:30px;
 
 }
 
-</script>
 
-</main>
+.container{
+
+    width:100%;
+    max-width:900px;
+
+    text-align:center;
+
+}
+
+
+.logo{
+
+    width:120px;
+    height:120px;
+
+    margin:auto;
+
+    border-radius:50%;
+
+    background:
+    linear-gradient(135deg,#00c6ff,#0072ff);
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    font-size:45px;
+
+    font-weight:800;
+
+    box-shadow:
+    0 0 40px rgba(0,198,255,.5);
+
+}
+
+
+h1{
+
+    margin-top:25px;
+
+    font-size:38px;
+
+    font-weight:800;
+
+}
+
+
+.subtitle{
+
+    margin-top:10px;
+
+    font-size:18px;
+
+    color:#ddd;
+
+}
+
+
+.social-grid{
+
+    margin-top:45px;
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(180px,1fr));
+
+    gap:22px;
+
+}
+
+
+
+.social-card{
+
+    text-decoration:none;
+
+    color:white;
+
+    background:
+
+    rgba(255,255,255,.08);
+
+    backdrop-filter:blur(15px);
+
+    border:1px solid rgba(255,255,255,.15);
+
+    border-radius:25px;
+
+    padding:25px 15px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:15px;
+
+    transition:.35s;
+
+
+}
+
+
+
+.social-card:hover{
+
+    transform:translateY(-10px) scale(1.03);
+
+    background:
+    rgba(255,255,255,.18);
+
+    box-shadow:
+    0 20px 40px rgba(0,0,0,.3);
+
+}
+
+
+
+.social-card img{
+
+    width:55px;
+
+    height:55px;
+
+}
+
+
+
+.social-card span{
+
+    font-size:18px;
+
+    font-weight:600;
+
+}
+
+
+
+.footer{
+
+    margin-top:45px;
+
+    color:#aaa;
+
+    font-size:14px;
+
+}
+
+
+
+@media(max-width:500px){
+
+h1{
+font-size:30px;
+}
+
+.social-grid{
+
+grid-template-columns:
+repeat(2,1fr);
+
+}
+
+.social-card{
+
+padding:18px 8px;
+
+}
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+<div class="logo">
+NC
+</div>
+
+
+<h1>
+رادیو NightCast
+</h1>
+
+
+<p class="subtitle">
+پلی به سوی آینده 🎧
+</p>
+
+
+
+<div class="social-grid">
+
+
+<a href="https://www.youtube.com/@NightCast-r5e"
+target="_blank"
+class="social-card">
+
+<img src="assets/icons/youtube.svg">
+
+<span>YouTube</span>
+
+</a>
+
+
+
+<a href="https://t.me/NightCast_ir"
+target="_blank"
+class="social-card">
+
+<img src="assets/icons/telegram.svg">
+
+<span>Telegram</span>
+
+</a>
+
+
+
+<a href="https://www.instagram.com/NightCast.ir"
+target="_blank"
+class="social-card">
+
+<img src="assets/icons/instagram.svg">
+
+<span>Instagram</span>
+
+</a>
+
+
+
+<a href="https://www.aparat.com/nightcast"
+target="_blank"
+class="social-card">
+
+<img src="assets/icons/aparat.svg">
+
+<span>Aparat</span>
+
+</a>
+
+
+
+<a href="https://rubika.ir/NightCast_ir"
+target="_blank"
+class="social-card">
+
+<img src="assets/icons/rubika.svg">
+
+<span>Rubika</span>
+
+</a>
+
+
+
+<a href="https://ble.ir/NightCast_ir"
+target="_blank"
+class="social-card">
+
+<img src="assets/icons/bale.svg">
+
+<span>Bale</span>
+
+</a>
+
+
+
+<a href="https://eitaa.com/NightCast"
+target="_blank"
+class="social-card">
+
+<img src="assets/icons/eitaa.svg">
+
+<span>Eitaa</span>
+
+</a>
+
+
+
+<a href="https://splus.ir/NightCast"
+target="_blank"
+class="social-card">
+
+<img src="assets/icons/splus.svg">
+
+<span>SPlus</span>
+
+</a>
+
+
+</div>
+
+
+
+<div class="footer">
+
+© 2026 NightCast Radio
+
+</div>
+
+
+</div>
+
 
 </body>
 
 </html>
-
-
-
-
-     

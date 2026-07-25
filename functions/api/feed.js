@@ -1,6 +1,11 @@
 export async function onRequest(context) {
 
   const API_KEY = context.env.YOUTUBE_API_KEY;
+  if (!API_KEY) {
+  return Response.json({
+    error: "API KEY NOT FOUND"
+  });
+  }
   const CHANNEL_ID = "UCNv-iKOizOhOIWCdujWQGYA";
 
   const youtubeUrl =

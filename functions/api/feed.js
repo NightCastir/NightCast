@@ -1,23 +1,30 @@
-export async function onRequest(context) {
 
-  const API_KEY = context.env.YOUTUBE_API_KEY;
-  const CHANNEL_ID = "UCNv-iKOizOhOIWCdujWQGYA";
+export async function onRequest() {
 
-  const youtubeUrl =
-    `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&maxResults=8&order=date&type=video&key=${API_KEY}`;
+  const RSS_URL = "https://www.aparat.com/rss/nightcast";
 
-  const response = await fetch(youtubeUrl);
-  const json = await response.json();
+  try {
 
-  const items = (json.items || []).map(item => ({
-    id: item.id.videoId,
-    platform: "youtube",
-    title: item.snippet.title,
-    description: item.snippet.description,
-    image: item.snippet.thumbnails.high.url,
-    date: item.snippet.publishedAt,
-    url: `https://www.youtube.com/watch?v=${item.id.videoId}`
-  }));
+    const response = await fetch(RSS_URL);
 
-  return Response.json(items);
+    if (!response.ok) {
+      return Response.json({
+        error: "Cannot load Aparat RSS"
+      }, { status: 500 });
+    }
+
+    const xml = await response.text();
+
+    return new Response(xml, {
+      headers: {
+        "Content-Type": "application/xml; charset=utf-8"
+      }
+    });
+
+  } catch (err) {
+
+    return Response.json({
+      error: err.message
+    }, { status: 500 });
+  }
 }

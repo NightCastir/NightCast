@@ -3,130 +3,842 @@
 
 <head>
 
+    <!-- ========================================= -->
+    <!-- Basic -->
+    <!-- ========================================= -->
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>NightCast | رادیو خلاصه کتاب</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <meta name="description"
-        content="رادیو NightCast مجموعه‌ای از خلاصه کتاب‌های صوتی فارسی با طراحی مدرن، سریع و مینیمال.">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
-    <meta name="theme-color" content="#D9A441">
+    <title>
+        NightCast | رادیو خلاصه کتاب
+    </title>
 
-    <meta name="robots" content="index,follow">
+    <meta
+        name="description"
+        content="NightCast | رادیو خلاصه کتاب، خلاصه کتاب‌های صوتی فارسی با طراحی مدرن، سریع و مینیمال">
 
-    <link rel="canonical" href="https://nightcast.ir">
+    <meta
+        name="keywords"
+        content="NightCast, نایت کست, خلاصه کتاب, کتاب صوتی, پادکست فارسی">
 
+    <meta
+        name="author"
+        content="NightCast">
+
+    <meta
+        name="robots"
+        content="index,follow">
+
+    <meta
+        name="theme-color"
+        content="#D9A441">
+
+    <meta
+        name="color-scheme"
+        content="light">
+
+    <meta
+        name="format-detection"
+        content="telephone=no">
+
+    <link
+        rel="canonical"
+        href="https://nightcast.ir">
+
+    <!-- ========================================= -->
     <!-- Open Graph -->
+    <!-- ========================================= -->
 
-    <meta property="og:title" content="NightCast">
-    <meta property="og:description" content="رادیو خلاصه کتاب">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://nightcast.ir">
 
+    <meta property="og:site_name" content="NightCast">
+
+    <meta property="og:title" content="NightCast | رادیو خلاصه کتاب">
+
+    <meta property="og:description"
+        content="خلاصه کتاب‌های صوتی فارسی با طراحی مدرن، سریع و مینیمال">
+
+    <meta property="og:url"
+        content="https://nightcast.ir">
+
+    <meta property="og:image"
+        content="assets/images/cover.jpg">
+
+    <meta property="og:locale"
+        content="fa_IR">
+
+    <!-- ========================================= -->
+    <!-- Twitter -->
+    <!-- ========================================= -->
+
+    <meta
+        name="twitter:card"
+        content="summary_large_image">
+
+    <meta
+        name="twitter:title"
+        content="NightCast">
+
+    <meta
+        name="twitter:description"
+        content="رادیو خلاصه کتاب">
+
+    <meta
+        name="twitter:image"
+        content="assets/images/cover.jpg">
+
+    <!-- ========================================= -->
+    <!-- Icons -->
+    <!-- ========================================= -->
+
+    <link
+        rel="icon"
+        href="favicon.ico">
+
+    <link
+        rel="apple-touch-icon"
+        href="assets/icons/icon-192.png">
+
+    <!-- ========================================= -->
+    <!-- Manifest -->
+    <!-- ========================================= -->
+
+    <link
+        rel="manifest"
+        href="manifest.json">
+
+    <!-- ========================================= -->
     <!-- Fonts -->
+    <!-- ========================================= -->
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
 
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap"
+        rel="stylesheet">
 
+    <!-- ========================================= -->
     <!-- CSS -->
+    <!-- ========================================= -->
 
-    <link rel="stylesheet" href="css/style.css">
+    <link
+        rel="stylesheet"
+        href="css/base.css">
+
+    <link
+        rel="stylesheet"
+        href="css/style.css">
+
+    <link
+        rel="stylesheet"
+        href="css/layout.css">
+
+    <link
+        rel="stylesheet"
+        href="css/hero.css">
+
+    <link
+        rel="stylesheet"
+        href="css/card.css">
+
+    <link
+        rel="stylesheet"
+        href="css/player.css">
+
+    <link
+        rel="stylesheet"
+        href="css/responsive.css">
 
 </head>
 
 <body>
 
-<header class="header">
+<!-- ========================================= -->
+<!-- Skip Link -->
+<!-- ========================================= -->
 
-<div class="container">
+<a
+    class="skip-link"
+    href="#main-content">
 
-<a href="/" class="logo" aria-label="NightCast">
-
-NightCast
+    رفتن به محتوای اصلی
 
 </a>
 
-<button
-class="menu-button"
-type="button"
-aria-label="باز کردن منو">
+<!-- ========================================= -->
+<!-- App -->
+<!-- ========================================= -->
 
-☰
+<div id="app">
+        <!-- ========================================= -->
+    <!-- Header -->
+    <!-- ========================================= -->
 
-</button>
+    <header class="site-header" role="banner">
+
+        <div class="container header-container">
+
+            <!-- Logo -->
+
+            <a
+                href="/"
+                class="site-logo"
+                aria-label="NightCast">
+
+                <img
+                    src="assets/logo/logo.svg"
+                    alt="NightCast Logo"
+                    width="42"
+                    height="42">
+
+                <div class="logo-text">
+
+                    <span class="logo-title">
+                        NightCast
+                    </span>
+
+                    <span class="logo-subtitle">
+                        رادیو خلاصه کتاب
+                    </span>
+
+                </div>
+
+            </a>
+
+            <!-- Desktop Navigation -->
+
+            <nav
+                class="desktop-nav"
+                aria-label="منوی اصلی">
+
+                <ul>
+
+                    <li>
+
+                        <a href="/" class="active">
+
+                            صفحه اصلی
+
+                        </a>
+
+                    </li>
+
+                    <li>
+
+                        <a href="#episodes">
+
+                            اپیزودها
+
+                        </a>
+
+                    </li>
+
+                    <li>
+
+                        <a href="#about">
+
+                            درباره ما
+
+                        </a>
+
+                    </li>
+
+                    <li>
+
+                        <a href="#social">
+
+                            شبکه‌های اجتماعی
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </nav>
+
+            <!-- Mobile Menu Button -->
+
+            <button
+
+                id="menuButton"
+
+                class="menu-button"
+
+                type="button"
+
+                aria-label="باز کردن منو"
+
+                aria-expanded="false"
+
+                aria-controls="mobileMenu">
+
+                <svg
+                    width="28"
+                    height="28"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2">
+
+                    <path
+                        d="M3 6h18M3 12h18M3 18h18" />
+
+                </svg>
+
+            </button>
+
+        </div>
+
+    </header>
+
+    <!-- ========================================= -->
+    <!-- Mobile Menu -->
+    <!-- ========================================= -->
+
+    <aside
+
+        id="mobileMenu"
+
+        class="mobile-menu"
+
+        aria-hidden="true">
+
+        <nav aria-label="منوی موبایل">
+
+            <ul>
+
+                <li>
+
+                    <a href="/">
+
+                        صفحه اصلی
+
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a href="#episodes">
+
+                        اپیزودها
+
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a href="#about">
+
+                        درباره NightCast
+
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a href="#social">
+
+                        شبکه‌های اجتماعی
+
+                    </a>
+
+                </li>
+
+            </ul>
+
+        </nav>
+
+    </aside>
+
+    <!-- ========================================= -->
+    <!-- Main -->
+    <!-- ========================================= -->
+
+    <main
+        id="main-content">
+
+        <!-- ========================================= -->
+        <!-- Hero -->
+        <!-- ========================================= -->
+
+        <section
+
+            id="hero"
+
+            class="hero"
+
+            aria-labelledby="hero-title">
+
+            <div class="container">
+
+                <div id="heroCard">
+
+                    <!--
+
+                        این قسمت توسط JavaScript
+                        از feed.json ساخته می‌شود.
+
+                    -->
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+                <!-- ========================================= -->
+        <!-- Latest Episodes -->
+        <!-- ========================================= -->
+
+        <section
+
+            id="episodes"
+
+            class="episodes"
+
+            aria-labelledby="episodes-title">
+
+            <div class="container">
+
+                <div class="section-header">
+
+                    <h2 id="episodes-title">
+
+                        آخرین اپیزودها
+
+                    </h2>
+
+                    <p>
+
+                        جدیدترین خلاصه کتاب‌های صوتی NightCast
+
+                    </p>
+
+                </div>
+
+                <!-- Episodes Grid -->
+
+                <div
+
+                    id="episodeList"
+
+                    class="episode-grid">
+
+                    <!--
+
+                    تمام Card ها
+
+                    توسط ui.js
+
+                    ساخته خواهند شد.
+
+                    -->
+
+                </div>
+
+                <!-- Skeleton Loader -->
+
+                <div
+
+                    id="skeletonLoader"
+
+                    class="skeleton-container"
+
+                    aria-hidden="true">
+
+                    <div class="skeleton-card"></div>
+
+                    <div class="skeleton-card"></div>
+
+                    <div class="skeleton-card"></div>
+
+                    <div class="skeleton-card"></div>
+
+                    <div class="skeleton-card"></div>
+
+                    <div class="skeleton-card"></div>
+
+                </div>
+
+                <!-- Empty State -->
+
+                <div
+
+                    id="emptyState"
+
+                    class="empty-state"
+
+                    hidden>
+
+                    <img
+
+                        src="assets/images/empty.svg"
+
+                        alt="هیچ اپیزودی پیدا نشد"
+
+                        loading="lazy"
+
+                        width="240"
+
+                        height="180">
+
+                    <h3>
+
+                        هنوز اپیزودی منتشر نشده است.
+
+                    </h3>
+
+                    <p>
+
+                        به‌زودی اولین اپیزود NightCast
+                        منتشر خواهد شد.
+
+                    </p>
+
+                </div>
+
+                <!-- Loading -->
+
+                <div
+
+                    id="loading"
+
+                    class="loading"
+
+                    hidden>
+
+                    <span class="loader"></span>
+
+                    <span>
+
+                        در حال دریافت اپیزودها...
+
+                    </span>
+
+                </div>
+
+                <!-- Infinite Scroll -->
+
+                <div
+
+                    id="scrollSentinel"
+
+                    aria-hidden="true">
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ========================================= -->
+        <!-- About -->
+        <!-- ========================================= -->
+
+        <section
+
+            id="about"
+
+            class="about">
+
+            <div class="container">
+
+                <div class="about-box">
+
+                    <h2>
+
+                        درباره NightCast
+
+                    </h2>
+
+                    <p>
+
+                        NightCast مجموعه‌ای از خلاصه
+                        کتاب‌های صوتی فارسی است که با هدف
+                        صرفه‌جویی در زمان، افزایش آگاهی و
+                        توسعه فردی تولید می‌شود.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- ========================================= -->
+    <!-- Global Audio Player -->
+    <!-- ========================================= -->
+
+    <section
+
+        id="globalPlayer"
+
+        class="global-player"
+
+        hidden
+
+        aria-label="پخش کننده صوت">
+
+        <div class="player-container">
+
+            <div
+
+                id="playerCover"
+
+                class="player-cover">
+
+                <img
+
+                    src="assets/images/placeholder-cover.jpg"
+
+                    alt="کاور اپیزود"
+
+                    width="72"
+
+                    height="72">
+
+            </div>
+
+            <div class="player-info">
+
+                <h3 id="playerTitle">
+
+                    NightCast
+
+                </h3>
+
+                <p id="playerDescription">
+
+                    در حال آماده سازی...
+
+                </p>
+
+            </div>
+
+            <!-- Audio -->
+
+            <audio
+
+                id="audioPlayer"
+
+                preload="none">
+
+            </audio>
+
+            <!-- Controls توسط JavaScript ساخته می‌شود -->
+
+            <div
+
+                id="playerControls">
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ========================================= -->
+    <!-- Footer -->
+    <!-- ========================================= -->
+
+    <footer
+
+        class="site-footer"
+
+        role="contentinfo">
+
+        <div class="container">
+
+            <div class="footer-content">
+
+                <div class="footer-brand">
+
+                    <img
+
+                        src="assets/logo/logo.svg"
+
+                        alt="NightCast"
+
+                        width="44"
+
+                        height="44">
+
+                    <div>
+
+                        <h3>
+
+                            NightCast
+
+                        </h3>
+
+                        <p>
+
+                            خلاصه کتاب برای زندگی بهتر
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <nav
+
+                    id="social"
+
+                    class="footer-social"
+
+                    aria-label="شبکه های اجتماعی">
+
+                    <!--
+                        لینک شبکه‌های اجتماعی
+                        بعداً از فایل JSON
+                        ساخته خواهد شد.
+                    -->
+
+                </nav>
+
+            </div>
+
+            <div class="footer-bottom">
+
+                <small>
+
+                    © 2026 NightCast
+
+                </small>
+
+                <small>
+
+                    Version 1.0.0
+
+                </small>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+    <!-- ========================================= -->
+    <!-- Back To Top -->
+    <!-- ========================================= -->
+
+    <button
+
+        id="backToTop"
+
+        class="back-to-top"
+
+        type="button"
+
+        aria-label="بازگشت به بالای صفحه"
+
+        hidden>
+
+        ↑
+
+    </button>
 
 </div>
 
-</header>
+<!-- ========================================= -->
+<!-- Templates -->
+<!-- ========================================= -->
 
-<main>
+<template id="episode-card-template">
 
-<section id="hero">
+    <article class="episode-card">
 
-</section>
+        <!--
 
-<section class="episodes">
+            تمام اطلاعات
 
-<div class="container">
+            توسط JavaScript
 
-<h2 class="section-title">
+            جایگزین خواهد شد.
 
-آخرین اپیزودها
+        -->
 
-</h2>
+    </article>
 
-<div
-id="episode-list"
-class="episode-list">
+</template>
 
-</div>
+<template id="hero-template">
 
-<div
-id="loading"
-class="loading">
+    <article class="hero-card">
 
-در حال بارگذاری...
+        <!--
 
-</div>
+            Hero Episode
 
-</div>
+            توسط JavaScript
 
-</section>
+            ساخته می‌شود.
 
-</main>
+        -->
 
-<footer>
+    </article>
 
-<div class="container">
+</template>
 
-<p>
+<!-- ========================================= -->
+<!-- JavaScript -->
+<!-- ========================================= -->
 
-© 2026 NightCast
+<script
+    type="module"
+    src="js/app.js">
+</script>
 
-</p>
+<script
+    type="module"
+    src="js/feed.js">
+</script>
 
-</div>
+<script
+    type="module"
+    src="js/ui.js">
+</script>
 
-</footer>
+<script
+    type="module"
+    src="js/player.js">
+</script>
 
-<section
-id="global-player"
-class="player hidden">
+<script
+    type="module"
+    src="js/infinite-scroll.js">
+</script>
 
-<audio
-id="audio-player"
-preload="none">
-
-</audio>
-
-</section>
-
-<script type="module" src="js/app.js"></script>
+<script
+    type="module"
+    src="js/utils.js">
+</script>
 
 </body>
 
 </html>
+
+
+    

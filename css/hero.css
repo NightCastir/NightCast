@@ -1,1 +1,645 @@
 
+/* ==========================================================
+   NightCast
+   Hero Component
+   File : hero.css
+   Version : 1.0.0
+   ========================================================== */
+
+/* ==========================================================
+   Hero Section
+   ========================================================== */
+
+.hero{
+
+    position:relative;
+
+    padding:40px 0 56px;
+
+}
+
+.hero-card{
+
+    display:grid;
+
+    grid-template-columns:1.15fr 1fr;
+
+    align-items:center;
+
+    gap:40px;
+
+    background:var(--color-card);
+
+    border-radius:28px;
+
+    overflow:hidden;
+
+    box-shadow:var(--shadow-soft);
+
+    transition:var(--transition);
+
+}
+
+.hero-card:hover{
+
+    transform:translateY(-3px);
+
+}
+
+/* ==========================================================
+   Hero Content
+   ========================================================== */
+
+.hero-content{
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    padding:48px;
+
+}
+
+.hero-badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    width:max-content;
+
+    padding:8px 16px;
+
+    margin-bottom:24px;
+
+    border-radius:999px;
+
+    background:rgba(217,164,65,.12);
+
+    color:var(--color-primary);
+
+    font-size:.9rem;
+
+    font-weight:600;
+
+}
+
+.hero-title{
+
+    margin-bottom:20px;
+
+    font-size:2.5rem;
+
+    line-height:1.5;
+
+    color:var(--color-text);
+
+}
+
+.hero-description{
+
+    max-width:620px;
+
+    margin-bottom:28px;
+
+    color:var(--color-text-light);
+
+    line-height:2;
+
+    font-size:1rem;
+
+}
+
+/* ==========================================================
+   Hero Meta
+   ========================================================== */
+
+.hero-meta{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:20px;
+
+    margin-bottom:32px;
+
+}
+
+.hero-meta-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    color:var(--color-text-light);
+
+    font-size:.92rem;
+
+}
+
+.hero-meta-item svg{
+
+    width:18px;
+
+    height:18px;
+
+    color:var(--color-primary);
+
+}
+
+
+
+/* ==========================================================
+   Hero Image
+   ========================================================== */
+
+.hero-media{
+
+    position:relative;
+
+    width:100%;
+
+    height:100%;
+
+    min-height:460px;
+
+    overflow:hidden;
+
+    background:#f5f5f5;
+
+}
+
+.hero-media img{
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:cover;
+
+    object-position:center;
+
+    transition:transform .8s ease;
+
+}
+
+.hero-card:hover .hero-media img{
+
+    transform:scale(1.05);
+
+}
+
+/* ==========================================================
+   Image Overlay
+   ========================================================== */
+
+.hero-media::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+
+        linear-gradient(
+
+            to top,
+
+            rgba(0,0,0,.18),
+
+            rgba(0,0,0,.02)
+
+        );
+
+    z-index:1;
+
+}
+
+/* ==========================================================
+   Play Button
+   ========================================================== */
+
+.hero-actions{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:16px;
+
+    flex-wrap:wrap;
+
+}
+
+.hero-play{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:12px;
+
+    min-width:170px;
+
+    height:56px;
+
+    padding:0 28px;
+
+    border:none;
+
+    border-radius:999px;
+
+    background:var(--color-primary);
+
+    color:#ffffff;
+
+    font-size:1rem;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    box-shadow:0 12px 30px rgba(217,164,65,.25);
+
+    transition:var(--transition);
+
+}
+
+.hero-play:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:0 16px 36px rgba(217,164,65,.32);
+
+}
+
+.hero-play svg{
+
+    width:22px;
+
+    height:22px;
+
+}
+
+/* ==========================================================
+   Secondary Button
+   ========================================================== */
+
+.hero-more{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:140px;
+
+    height:56px;
+
+    padding:0 24px;
+
+    border:1px solid var(--color-border);
+
+    border-radius:999px;
+
+    background:#ffffff;
+
+    color:var(--color-text);
+
+    transition:var(--transition);
+
+}
+
+.hero-more:hover{
+
+    border-color:var(--color-primary);
+
+    color:var(--color-primary);
+
+}
+
+/* ==========================================================
+   Hero Statistics
+   ========================================================== */
+
+.hero-stats{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:28px;
+
+    margin-top:36px;
+
+    flex-wrap:wrap;
+
+}
+
+.hero-stat{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:4px;
+
+}
+
+.hero-stat strong{
+
+    font-size:1.3rem;
+
+    color:var(--color-text);
+
+}
+
+.hero-stat span{
+
+    font-size:.85rem;
+
+    color:var(--color-text-light);
+
+}
+
+/* ==========================================================
+   Entrance Animation
+   ========================================================== */
+
+.hero-card{
+
+    animation:heroFade .6s ease;
+
+}
+
+@keyframes heroFade{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(20px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+
+
+/* ==========================================================
+   Tablet
+   ========================================================== */
+
+@media (max-width:1024px){
+
+    .hero{
+
+        padding:32px 0 48px;
+
+    }
+
+    .hero-card{
+
+        grid-template-columns:1fr;
+
+        gap:0;
+
+    }
+
+    .hero-media{
+
+        order:-1;
+
+        min-height:360px;
+
+    }
+
+    .hero-content{
+
+        padding:36px;
+
+    }
+
+    .hero-title{
+
+        font-size:2rem;
+
+    }
+
+}
+
+/* ==========================================================
+   Mobile
+   ========================================================== */
+
+@media (max-width:768px){
+
+    .hero{
+
+        padding:24px 0 36px;
+
+    }
+
+    .hero-card{
+
+        border-radius:22px;
+
+    }
+
+    .hero-media{
+
+        min-height:260px;
+
+    }
+
+    .hero-content{
+
+        padding:24px;
+
+    }
+
+    .hero-badge{
+
+        font-size:.8rem;
+
+        padding:6px 12px;
+
+        margin-bottom:18px;
+
+    }
+
+    .hero-title{
+
+        font-size:1.55rem;
+
+        line-height:1.7;
+
+        margin-bottom:14px;
+
+    }
+
+    .hero-description{
+
+        font-size:.95rem;
+
+        line-height:1.9;
+
+        margin-bottom:20px;
+
+    }
+
+    .hero-meta{
+
+        gap:12px;
+
+        margin-bottom:22px;
+
+    }
+
+    .hero-actions{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+    }
+
+    .hero-play,
+
+    .hero-more{
+
+        width:100%;
+
+    }
+
+    .hero-stats{
+
+        justify-content:space-between;
+
+        gap:18px;
+
+        margin-top:28px;
+
+    }
+
+}
+
+/* ==========================================================
+   Small Mobile
+   ========================================================== */
+
+@media (max-width:480px){
+
+    .hero-media{
+
+        min-height:220px;
+
+    }
+
+    .hero-content{
+
+        padding:18px;
+
+    }
+
+    .hero-title{
+
+        font-size:1.35rem;
+
+    }
+
+    .hero-description{
+
+        font-size:.9rem;
+
+    }
+
+    .hero-meta{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+    }
+
+    .hero-stat strong{
+
+        font-size:1.1rem;
+
+    }
+
+}
+
+/* ==========================================================
+   Large Desktop
+   ========================================================== */
+
+@media (min-width:1440px){
+
+    .hero-card{
+
+        min-height:540px;
+
+    }
+
+    .hero-title{
+
+        font-size:3rem;
+
+    }
+
+    .hero-description{
+
+        font-size:1.1rem;
+
+        max-width:720px;
+
+    }
+
+}
+
+/* ==========================================================
+   Reduced Motion
+   ========================================================== */
+
+@media (prefers-reduced-motion:reduce){
+
+    .hero-card,
+
+    .hero-media img,
+
+    .hero-play{
+
+        animation:none;
+
+        transition:none;
+
+        transform:none;
+
+    }
+
+}
+
+/* ==========================================================
+   End Of File
+   ========================================================== */

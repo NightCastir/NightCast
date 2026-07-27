@@ -1,24 +1,25 @@
 /* ==========================================================
    NightCast
-   Player v2
+   Player Manager
    File : player.js
+   Version : 4.0.0
    ========================================================== */
 
 "use strict";
 
 /* ==========================================================
-   Player Object
+   Player
    ========================================================== */
 
 const Player = {
 
-    initialized: false,
-
-    playing: false,
+    audio: new Audio(),
 
     currentEpisode: null,
 
-    media: new Audio()
+    playing: false,
+
+    initialized: false
 
 };
 
@@ -28,39 +29,54 @@ const Player = {
 
 Player.ui = {
 
-    root: document.getElementById("global-player"),
+    root:
+        document.getElementById("global-player"),
 
-    cover: document.getElementById("player-cover"),
+    cover:
+        document.getElementById("player-cover"),
 
-    title: document.getElementById("player-title"),
+    title:
+        document.getElementById("player-title"),
 
-    subtitle: document.getElementById("player-subtitle"),
+    subtitle:
+        document.getElementById("player-subtitle"),
 
-    play: document.getElementById("player-play"),
+    play:
+        document.getElementById("player-play"),
 
-    close: document.getElementById("player-close"),
+    progress:
+        document.getElementById("player-progress"),
 
-    progress: document.getElementById("player-progress"),
+    progressFill:
+        document.getElementById("progress-fill"),
 
-    progressFill: document.getElementById("progress-fill"),
+    progressThumb:
+        document.getElementById("progress-thumb"),
 
-    current: document.getElementById("current-time"),
+    current:
+        document.getElementById("current-time"),
 
-    duration: document.getElementById("duration-time"),
+    duration:
+        document.getElementById("duration-time"),
 
-    volume: document.getElementById("player-volume"),
+    volume:
+        document.getElementById("player-volume"),
 
-    speed: document.getElementById("player-speed")
+    speed:
+        document.getElementById("player-speed"),
+
+    close:
+        document.getElementById("player-close")
 
 };
 
 /* ==========================================================
-   Initialize
+   Init
    ========================================================== */
 
-Player.init = function () {
+Player.init = function(){
 
-    if (this.initialized) {
+    if(this.initialized){
 
         return;
 
@@ -75,210 +91,27 @@ Player.init = function () {
 };
 
 /* ==========================================================
-   Start
-   ========================================================== */
-
-Player.start = function () {
-
-    this.init();
-
-};
-
-/* ==========================================================
-   Show Player
-   ========================================================== */
-
-Player.show = function () {
-
-    if (!this.ui.root) {
-
-        return;
-
-    }
-
-    this.ui.root.classList.add("active");
-
-};
-
-/* ==========================================================
-   Hide Player
-   ========================================================== */
-
-Player.hide = function () {
-
-    if (!this.ui.root) {
-
-        return;
-
-    }
-
-    this.ui.root.classList.remove("active");
-
-};
-
-/* ==========================================================
-   Reset Player
-   ========================================================== */
-
-Player.reset = function () {
-
-    this.media.pause();
-
-    this.media.currentTime = 0;
-
-    this.currentEpisode = null;
-
-    this.playing = false;
-
-
-
-
-   
-};
-
-
-
-/* ==========================================================
    Load Episode
    ========================================================== */
 
-Player.load = function (episode) {
+Player.load = function(episode){
 
-    if (!episode) {
+    if(!episode){
 
-        console.warn("Episode is null.");
-
-        return false;
+        return;
 
     }
 
     this.currentEpisode = episode;
 
-    /* ---------- Cover ---------- */
+    this.audio.src = episode.audio || "";
 
-    if (this.ui.cover) {
+    this.audio.preload = "metadata";
 
-        this.ui.cover.src =
-            episode.cover || "assets/images/placeholder-cover.jpg";
-
-        this.ui.cover.alt =
-            episode.title || "NightCast";
-
-    }
-
-    /* ---------- Title ---------- */
-
-    if (this.ui.title) {
-
-        this.ui.title.textContent =
-            episode.title || "";
-
-    }
-
-    /* ---------- Subtitle ---------- */
-
-    if (this.ui.subtitle) {
-
-        this.ui.subtitle.textContent =
-            episode.description || "";
-
-    }
-
-    /* ---------- Audio ---------- */
-
-    if (episode.audio && episode.audio !== "") {
-
-        this.media.src = episode.audio;
-
-        this.media.load();
-
-    }
-
-    this.updateMediaSession();
-
-    this.show();
-
-    return true;
+    this.updateUI();
 
 };
 
-/* ==========================================================
-   Current Episode
-   ========================================================== */
-
-Player.getCurrent = function () {
-
-    return this.currentEpisode;
-
-};
-
-/* ==========================================================
-   Has Audio
-   ========================================================== */
-
-Player.hasAudio = function () {
-
-    return (
-
-        this.currentEpisode &&
-
-        this.currentEpisode.audio &&
-
-        this.currentEpisode.audio !== ""
-
-    );
-
-};
-
-/* ==========================================================
-   Has Video
-   ========================================================== */
-
-Player.hasVideo = function () {
-
-    return (
-
-        this.currentEpisode &&
-
-        this.currentEpisode.video &&
-
-        this.currentEpisode.video !== ""
-
-    );
-
-};
-
-/* ==========================================================
-   Open Video
-   ========================================================== */
-
-Player.openVideo = function () {
-
-    if (!this.hasVideo()) {
-
-        UI.toast(
-
-            "لینک ویدئو موجود نیست.",
-
-            "warning"
-
-        );
-
-        return;
-
-    }
-
-    window.open(
-
-        this.currentEpisode.video,
-
-        "_blank",
-
-        "noopener"
-
-    );
-
-};
 
 
 
@@ -287,73 +120,39 @@ Player.openVideo = function () {
    Play
    ========================================================== */
 
-Player.play = async function () {
+Player.play = async function(){
 
-    if (!this.currentEpisode) {
+    if(!this.audio.src){
+
+        return;
+
+    }
+
+    try{
+
+        await this.audio.play();
+
+        this.playing = true;
+
+        this.updatePlayButton();
+
+        this.show();
+
+    }
+
+    catch(error){
+
+        console.error(error);
 
         UI.toast(
 
-            "اپیزودی انتخاب نشده است.",
+            "پخش فایل امکان‌پذیر نیست.",
 
-            "warning"
+            "error"
 
         );
 
-        return;
-
     }
-
-    /* ---------- Audio ---------- */
-
-    if (this.hasAudio()) {
-
-        try {
-
-            await this.media.play();
-
-            this.playing = true;
-
-            this.updatePlayButton();
-
-            this.show();
-
-        }
-
-        catch (error) {
-
-            console.error(error);
-
-            UI.toast(
-
-                "پخش فایل صوتی امکان‌پذیر نیست.",
-
-                "error"
-
-            );
-
-        }
-
-        return;
-
-    }
-
-    /* ---------- Video ---------- */
-
-    if (this.hasVideo()) {
-
-        this.openVideo();
-
-        return;
-
-    }
-
-    UI.toast(
-
-        "هیچ فایل قابل پخشی برای این اپیزود وجود ندارد.",
-
-        "warning"
-
-    );
 
 };
 
@@ -361,13 +160,9 @@ Player.play = async function () {
    Pause
    ========================================================== */
 
-Player.pause = function () {
+Player.pause = function(){
 
-    if (this.hasAudio()) {
-
-        this.media.pause();
-
-    }
+    this.audio.pause();
 
     this.playing = false;
 
@@ -379,23 +174,17 @@ Player.pause = function () {
    Toggle
    ========================================================== */
 
-Player.toggle = function () {
+Player.toggle = function(){
 
-    if (!this.currentEpisode) {
-
-        return;
-
-    }
-
-    if (this.playing) {
-
-        this.pause();
-
-    }
-
-    else {
+    if(this.audio.paused){
 
         this.play();
+
+    }
+
+    else{
+
+        this.pause();
 
     }
 
@@ -405,15 +194,11 @@ Player.toggle = function () {
    Stop
    ========================================================== */
 
-Player.stop = function () {
+Player.stop = function(){
 
-    if (this.hasAudio()) {
+    this.audio.pause();
 
-        this.media.pause();
-
-        this.media.currentTime = 0;
-
-    }
+    this.audio.currentTime = 0;
 
     this.playing = false;
 
@@ -422,70 +207,72 @@ Player.stop = function () {
 };
 
 /* ==========================================================
-   Update Play Button
+   Update Player UI
    ========================================================== */
 
-Player.updatePlayButton = function () {
+Player.updateUI = function(){
 
-    if (!this.ui.play) {
+    if(!this.currentEpisode){
 
         return;
 
     }
 
-    this.ui.play.innerHTML = this.playing
+    if(this.ui.cover){
 
-        ? '<i class="fa-solid fa-pause"></i>'
+        this.ui.cover.src =
 
-        : '<i class="fa-solid fa-play"></i>';
+            this.currentEpisode.cover || "";
+
+    }
+
+    if(this.ui.title){
+
+        this.ui.title.textContent =
+
+            this.currentEpisode.title || "";
+
+    }
+
+    if(this.ui.subtitle){
+
+        this.ui.subtitle.textContent =
+
+            this.currentEpisode.book?.title ||
+
+            "";
+
+    }
 
 };
 
 /* ==========================================================
-   Audio Events
+   Update Play Button
    ========================================================== */
 
-Player.media.addEventListener(
+Player.updatePlayButton = function(){
 
-    "play",
+    if(!this.ui.play){
 
-    () => {
-
-        Player.playing = true;
-
-        Player.updatePlayButton();
+        return;
 
     }
 
-);
+    this.ui.play.innerHTML =
 
-Player.media.addEventListener(
+        this.playing
 
-    "pause",
+        ?
 
-    () => {
+        `<i class="fa-solid fa-pause"></i>`
 
-        Player.playing = false;
+        :
 
-        Player.updatePlayButton();
+        `<i class="fa-solid fa-play"></i>`;
 
-    }
+};
 
-);
 
-Player.media.addEventListener(
-
-    "ended",
-
-    () => {
-
-        Player.playing = false;
-
-        Player.updatePlayButton();
-
-    }
-
-);
 
 
 
@@ -496,15 +283,9 @@ Player.media.addEventListener(
    Progress
    ========================================================== */
 
-Player.updateProgress = function () {
+Player.updateProgress = function(){
 
-    if (!this.hasAudio()) {
-
-        return;
-
-    }
-
-    if (!this.media.duration) {
+    if(!this.audio.duration){
 
         return;
 
@@ -512,11 +293,21 @@ Player.updateProgress = function () {
 
     const percent =
 
-        (this.media.currentTime / this.media.duration) * 100;
+        (this.audio.currentTime /
 
-    if (this.ui.progressFill) {
+        this.audio.duration) * 100;
+
+    if(this.ui.progressFill){
 
         this.ui.progressFill.style.width =
+
+            percent + "%";
+
+    }
+
+    if(this.ui.progressThumb){
+
+        this.ui.progressThumb.style.left =
 
             percent + "%";
 
@@ -527,42 +318,44 @@ Player.updateProgress = function () {
 };
 
 /* ==========================================================
-   Update Time
+   Time
    ========================================================== */
 
-Player.updateTime = function () {
+Player.updateTime = function(){
 
-    if (!this.hasAudio()) {
-
-        return;
-
-    }
-
-    if (this.ui.current) {
+    if(this.ui.current){
 
         this.ui.current.textContent =
 
             Feed.formatDuration(
 
-                Math.floor(this.media.currentTime)
+                Math.floor(
+
+                    this.audio.currentTime
+
+                )
 
             );
 
     }
 
-    if (
+    if(
 
         this.ui.duration &&
 
-        this.media.duration
+        this.audio.duration
 
-    ) {
+    ){
 
         this.ui.duration.textContent =
 
             Feed.formatDuration(
 
-                Math.floor(this.media.duration)
+                Math.floor(
+
+                    this.audio.duration
+
+                )
 
             );
 
@@ -574,15 +367,15 @@ Player.updateTime = function () {
    Seek
    ========================================================== */
 
-Player.seek = function (event) {
+Player.seek = function(event){
 
-    if (!this.hasAudio()) {
+    if(
 
-        return;
+        !this.audio.duration ||
 
-    }
+        !this.ui.progress
 
-    if (!this.media.duration) {
+    ){
 
         return;
 
@@ -598,9 +391,39 @@ Player.seek = function (event) {
 
         rect.width;
 
-    this.media.currentTime =
+    this.audio.currentTime =
 
-        percent * this.media.duration;
+        percent *
+
+        this.audio.duration;
+
+};
+
+/* ==========================================================
+   Skip
+   ========================================================== */
+
+Player.forward = function(seconds = 15){
+
+    this.audio.currentTime = Math.min(
+
+        this.audio.currentTime + seconds,
+
+        this.audio.duration || 0
+
+    );
+
+};
+
+Player.backward = function(seconds = 15){
+
+    this.audio.currentTime = Math.max(
+
+        this.audio.currentTime - seconds,
+
+        0
+
+    );
 
 };
 
@@ -608,7 +431,7 @@ Player.seek = function (event) {
    Volume
    ========================================================== */
 
-Player.setVolume = function (value) {
+Player.setVolume = function(value){
 
     value = Number(value);
 
@@ -620,73 +443,570 @@ Player.setVolume = function (value) {
 
     );
 
-    this.media.volume = value;
+    this.audio.volume = value;
 
     this.saveSettings();
 
 };
 
 /* ==========================================================
-   Playback Speed
+   Speed
    ========================================================== */
 
-Player.setSpeed = function (speed) {
+Player.setSpeed = function(speed){
 
-    speed = Number(speed);
+    this.audio.playbackRate =
 
-    if (
-
-        Number.isNaN(speed)
-
-    ) {
-
-        speed = 1;
-
-    }
-
-    this.media.playbackRate = speed;
+        Number(speed);
 
     this.saveSettings();
 
 };
+
+
+
+/* ==========================================================
+   Save Settings
+   ========================================================== */
+
+Player.saveSettings = function(){
+
+    try{
+
+        localStorage.setItem(
+
+            "nightcast-player",
+
+            JSON.stringify({
+
+                volume:
+
+                    this.audio.volume,
+
+                speed:
+
+                    this.audio.playbackRate
+
+            })
+
+        );
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+    }
+
+};
+
+/* ==========================================================
+   Restore Settings
+   ========================================================== */
+
+Player.restoreSettings = function(){
+
+    try{
+
+        const settings =
+
+            localStorage.getItem(
+
+                "nightcast-player"
+
+            );
+
+        if(!settings){
+
+            return;
+
+        }
+
+        const data =
+
+            JSON.parse(settings);
+
+        if(typeof data.volume==="number"){
+
+            this.audio.volume =
+
+                data.volume;
+
+        }
+
+        if(typeof data.speed==="number"){
+
+            this.audio.playbackRate =
+
+                data.speed;
+
+        }
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+    }
+
+};
+
+/* ==========================================================
+   Save Playback
+   ========================================================== */
+
+Player.savePlayback = function(){
+
+    if(!this.currentEpisode){
+
+        return;
+
+    }
+
+    try{
+
+        localStorage.setItem(
+
+            "nightcast-playback",
+
+            JSON.stringify({
+
+                id:
+
+                    this.currentEpisode.id,
+
+                time:
+
+                    Math.floor(
+
+                        this.audio.currentTime
+
+                    )
+
+            })
+
+        );
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+    }
+
+};
+
+/* ==========================================================
+   Restore Playback
+   ========================================================== */
+
+Player.restorePlayback = function(){
+
+    try{
+
+        const playback =
+
+            localStorage.getItem(
+
+                "nightcast-playback"
+
+            );
+
+        if(!playback){
+
+            return;
+
+        }
+
+        const data =
+
+            JSON.parse(playback);
+
+        const episode =
+
+            Feed.getEpisode(
+
+                data.id
+
+            );
+
+        if(!episode){
+
+            return;
+
+        }
+
+        this.load(episode);
+
+        this.audio.addEventListener(
+
+            "loadedmetadata",
+
+            ()=>{
+
+                this.audio.currentTime =
+
+                    data.time || 0;
+
+            },
+
+            {
+
+                once:true
+
+            }
+
+        );
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+    }
+
+};
+
+
+
+/* ==========================================================
+   Media Session
+   ========================================================== */
+
+Player.updateMediaSession = function(){
+
+    if(
+
+        !("mediaSession" in navigator) ||
+
+        !this.currentEpisode
+
+    ){
+
+        return;
+
+    }
+
+    navigator.mediaSession.metadata =
+
+        new MediaMetadata({
+
+            title:
+
+                this.currentEpisode.title,
+
+            artist:
+
+                "NightCast",
+
+            album:
+
+                this.currentEpisode.category ||
+
+                "Podcast",
+
+            artwork:[
+
+                {
+
+                    src:
+
+                        this.currentEpisode.cover ||
+
+                        "",
+
+                    sizes:"512x512",
+
+                    type:"image/jpeg"
+
+                }
+
+            ]
+
+        });
+
+    navigator.mediaSession.setActionHandler(
+
+        "play",
+
+        ()=>this.play()
+
+    );
+
+    navigator.mediaSession.setActionHandler(
+
+        "pause",
+
+        ()=>this.pause()
+
+    );
+
+    navigator.mediaSession.setActionHandler(
+
+        "seekforward",
+
+        ()=>this.forward()
+
+    );
+
+    navigator.mediaSession.setActionHandler(
+
+        "seekbackward",
+
+        ()=>this.backward()
+
+    );
+
+};
+
+/* ==========================================================
+   Loading
+   ========================================================== */
+
+Player.setLoading=function(state){
+
+    if(!this.ui.root){
+
+        return;
+
+    }
+
+    this.ui.root.classList.toggle(
+
+        "loading",
+
+        state
+
+    );
+
+};
+
+/* ==========================================================
+   Show
+   ========================================================== */
+
+Player.show=function(){
+
+    if(!this.ui.root){
+
+        return;
+
+    }
+
+    this.ui.root.classList.add(
+
+        "active"
+
+    );
+
+};
+
+/* ==========================================================
+   Hide
+   ========================================================== */
+
+Player.hide=function(){
+
+    if(!this.ui.root){
+
+        return;
+
+    }
+
+    this.ui.root.classList.remove(
+
+        "active"
+
+    );
+
+};
+
+/* ==========================================================
+   Close
+   ========================================================== */
+
+Player.close=function(){
+
+    this.stop();
+
+    this.currentEpisode=null;
+
+    this.hide();
+
+};
+
+/* ==========================================================
+   Audio Events
+   ========================================================== */
+
+Player.audio.addEventListener(
+
+    "play",
+
+    ()=>{
+
+        Player.playing=true;
+
+        Player.updatePlayButton();
+
+    }
+
+);
+
+Player.audio.addEventListener(
+
+    "pause",
+
+    ()=>{
+
+        Player.playing=false;
+
+        Player.updatePlayButton();
+
+    }
+
+);
+
+Player.audio.addEventListener(
+
+    "timeupdate",
+
+    ()=>{
+
+        Player.updateProgress();
+
+        Player.savePlayback();
+
+    }
+
+);
+
+Player.audio.addEventListener(
+
+    "waiting",
+
+    ()=>{
+
+        Player.setLoading(true);
+
+    }
+
+);
+
+Player.audio.addEventListener(
+
+    "playing",
+
+    ()=>{
+
+        Player.setLoading(false);
+
+        Player.updateMediaSession();
+
+    }
+
+);
+
+Player.audio.addEventListener(
+
+    "canplay",
+
+    ()=>{
+
+        Player.setLoading(false);
+
+    }
+
+);
+
+Player.audio.addEventListener(
+
+    "error",
+
+    ()=>{
+
+        Player.setLoading(false);
+
+        UI.toast(
+
+            "خطا در بارگذاری فایل.",
+
+            "error"
+
+        );
+
+    }
+
+);
+
+Player.audio.addEventListener(
+
+    "ended",
+
+    ()=>{
+
+        Player.playing=false;
+
+        Player.updatePlayButton();
+
+        Player.playNext();
+
+    }
+
+);
+
+
+
+
+
+
+
+
+
+
+
 
 /* ==========================================================
    Bind Events
    ========================================================== */
 
-Player.bindEvents = function () {
+Player.bindEvents = function(){
 
-    if (this.ui.play) {
+    if(this.ui.play){
 
         this.ui.play.addEventListener(
 
             "click",
 
-            () => this.toggle()
+            ()=>this.toggle()
 
         );
 
     }
 
-    if (this.ui.progress) {
+    if(this.ui.progress){
 
         this.ui.progress.addEventListener(
 
             "click",
 
-            event => this.seek(event)
+            event=>this.seek(event)
 
         );
 
     }
 
-    if (this.ui.volume) {
+    if(this.ui.volume){
 
         this.ui.volume.addEventListener(
 
             "input",
 
-            event => {
+            event=>{
 
                 this.setVolume(
 
@@ -700,13 +1020,13 @@ Player.bindEvents = function () {
 
     }
 
-    if (this.ui.speed) {
+    if(this.ui.speed){
 
         this.ui.speed.addEventListener(
 
             "change",
 
-            event => {
+            event=>{
 
                 this.setSpeed(
 
@@ -720,19 +1040,13 @@ Player.bindEvents = function () {
 
     }
 
-    if (this.ui.close) {
+    if(this.ui.close){
 
         this.ui.close.addEventListener(
 
             "click",
 
-            () => {
-
-                this.stop();
-
-                this.hide();
-
-            }
+            ()=>this.close()
 
         );
 
@@ -741,382 +1055,104 @@ Player.bindEvents = function () {
 };
 
 /* ==========================================================
-   Media Events
+   Next Episode
    ========================================================== */
 
-Player.media.addEventListener(
+Player.playNext=function(){
 
-    "timeupdate",
-
-    () => {
-
-        Player.updateProgress();
-
-    }
-
-);
-
-Player.media.addEventListener(
-
-    "loadedmetadata",
-
-    () => {
-
-        Player.updateTime();
-
-    }
-
-);
-
-Player.media.addEventListener(
-
-    "waiting",
-
-    () => {
-
-        UI.toast(
-
-            "در حال بارگذاری...",
-
-            "info"
-
-        );
-
-    }
-
-);
-
-Player.media.addEventListener(
-
-    "error",
-
-    () => {
-
-        UI.toast(
-
-            "خطا در پخش فایل.",
-
-            "error"
-
-        );
-
-    }
-
-);
-
-
-
-
-
-
-
-/* ==========================================================
-   Save Settings
-   ========================================================== */
-
-Player.saveSettings = function () {
-
-    try {
-
-        localStorage.setItem(
-
-            "nightcast-player",
-
-            JSON.stringify({
-
-                volume: this.media.volume,
-
-                speed: this.media.playbackRate
-
-            })
-
-        );
-
-    }
-
-    catch (e) {
-
-        console.error(e);
-
-    }
-
-};
-
-/* ==========================================================
-   Restore Settings
-   ========================================================== */
-
-Player.restoreSettings = function () {
-
-    try {
-
-        const json = localStorage.getItem(
-
-            "nightcast-player"
-
-        );
-
-        if (!json) {
-
-            return;
-
-        }
-
-        const settings = JSON.parse(json);
-
-        if (
-
-            typeof settings.volume === "number"
-
-        ) {
-
-            this.media.volume = settings.volume;
-
-        }
-
-        if (
-
-            typeof settings.speed === "number"
-
-        ) {
-
-            this.media.playbackRate = settings.speed;
-
-        }
-
-    }
-
-    catch (e) {
-
-        console.error(e);
-
-    }
-
-};
-
-/* ==========================================================
-   Save Playback
-   ========================================================== */
-
-Player.savePlayback = function () {
-
-    if (!this.currentEpisode) {
+    if(!this.currentEpisode){
 
         return;
 
     }
 
-    if (!this.hasAudio()) {
+    const episodes=
+
+        Feed.getEpisodes();
+
+    const index=
+
+        episodes.findIndex(
+
+            item=>String(item.id)===String(this.currentEpisode.id)
+
+        );
+
+    if(
+
+        index===-1 ||
+
+        index>=episodes.length-1
+
+    ){
 
         return;
 
     }
 
-    try {
+    this.load(
 
-        localStorage.setItem(
-
-            "nightcast-playback",
-
-            JSON.stringify({
-
-                id: this.currentEpisode.id,
-
-                time: Math.floor(
-
-                    this.media.currentTime
-
-                )
-
-            })
-
-        );
-
-    }
-
-    catch (e) {
-
-        console.error(e);
-
-    }
-
-};
-
-/* ==========================================================
-   Restore Playback
-   ========================================================== */
-
-Player.restorePlayback = function () {
-
-    try {
-
-        const json = localStorage.getItem(
-
-            "nightcast-playback"
-
-        );
-
-        if (!json) {
-
-            return;
-
-        }
-
-        const playback = JSON.parse(json);
-
-        const episode = Feed.getEpisode(
-
-            playback.id
-
-        );
-
-        if (!episode) {
-
-            return;
-
-        }
-
-        this.load(episode);
-
-        if (this.hasAudio()) {
-
-            this.media.addEventListener(
-
-                "loadedmetadata",
-
-                () => {
-
-                    this.media.currentTime =
-
-                        playback.time || 0;
-
-                },
-
-                { once: true }
-
-            );
-
-        }
-
-    }
-
-    catch (e) {
-
-        console.error(e);
-
-    }
-
-};
-
-/* ==========================================================
-   Auto Save Position
-   ========================================================== */
-
-Player.media.addEventListener(
-
-    "pause",
-
-    () => {
-
-        Player.savePlayback();
-
-    }
-
-);
-
-Player.media.addEventListener(
-
-    "ended",
-
-    () => {
-
-        Player.savePlayback();
-
-    }
-
-);
-
-/* ==========================================================
-   Media Session
-   ========================================================== */
-
-Player.updateMediaSession = function () {
-
-    if (
-
-        !("mediaSession" in navigator)
-
-    ) {
-
-        return;
-
-    }
-
-    if (!this.currentEpisode) {
-
-        return;
-
-    }
-
-    navigator.mediaSession.metadata =
-
-        new MediaMetadata({
-
-            title:
-
-                this.currentEpisode.title ||
-
-                "NightCast",
-
-            artist:
-
-                "NightCast",
-
-            album:
-
-                "NightCast",
-
-            artwork: [
-
-                {
-
-                    src:
-
-                        this.currentEpisode.cover ||
-
-                        "assets/images/placeholder-cover.jpg",
-
-                    sizes: "512x512",
-
-                    type: "image/jpeg"
-
-                }
-
-            ]
-
-        });
-
-    navigator.mediaSession.setActionHandler(
-
-        "play",
-
-        () => this.play()
+        episodes[index+1]
 
     );
 
-    navigator.mediaSession.setActionHandler(
-
-        "pause",
-
-        () => this.pause()
-
-    );
+    this.play();
 
 };
 
+/* ==========================================================
+   Previous Episode
+   ========================================================== */
 
+Player.playPrevious=function(){
 
+    if(!this.currentEpisode){
 
+        return;
+
+    }
+
+    const episodes=
+
+        Feed.getEpisodes();
+
+    const index=
+
+        episodes.findIndex(
+
+            item=>String(item.id)===String(this.currentEpisode.id)
+
+        );
+
+    if(index<=0){
+
+        return;
+
+    }
+
+    this.load(
+
+        episodes[index-1]
+
+    );
+
+    this.play();
+
+};
+
+/* ==========================================================
+   Start
+   ========================================================== */
+
+Player.start=function(){
+
+    this.init();
+
+    this.updatePlayButton();
+
+    this.restorePlayback();
+
+};
 
 /* ==========================================================
    Feed Events
@@ -1126,79 +1162,39 @@ Feed.on(
 
     "feed:ready",
 
-    () => {
+    ()=>{
 
-        try {
-
-            Player.restorePlayback();
-
-        }
-
-        catch (e) {
-
-            console.error(e);
-
-        }
-
-    }
-
-);
-
-Feed.on(
-
-    "feed:updated",
-
-    () => {
-
-        if (
-
-            Player.currentEpisode
-
-        ) {
-
-            const updated = Feed.getEpisode(
-
-                Player.currentEpisode.id
-
-            );
-
-            if (updated) {
-
-                Player.currentEpisode = updated;
-
-            }
-
-        }
+        Player.restorePlayback();
 
     }
 
 );
 
 /* ==========================================================
-   Keyboard Shortcuts
+   Keyboard
    ========================================================== */
 
 document.addEventListener(
 
     "keydown",
 
-    event => {
+    function(event){
 
-        if (
+        if(
 
             event.target.matches(
 
-                "input, textarea, select"
+                "input,textarea,select"
 
             )
 
-        ) {
+        ){
 
             return;
 
         }
 
-        switch (event.code) {
+        switch(event.code){
 
             case "Space":
 
@@ -1210,21 +1206,13 @@ document.addEventListener(
 
             case "ArrowRight":
 
-                if (Player.hasAudio()) {
-
-                    Player.media.currentTime += 10;
-
-                }
+                Player.forward();
 
                 break;
 
             case "ArrowLeft":
 
-                if (Player.hasAudio()) {
-
-                    Player.media.currentTime -= 10;
-
-                }
+                Player.backward();
 
                 break;
 
@@ -1235,68 +1223,18 @@ document.addEventListener(
 );
 
 /* ==========================================================
-   Close Player
+   Public API
    ========================================================== */
 
-Player.close = function () {
-
-    this.stop();
-
-    this.hide();
-
-    this.currentEpisode = null;
-
-    document
-
-        .querySelectorAll(
-
-            ".episode-card"
-
-        )
-
-        .forEach(card => {
-
-            card.classList.remove(
-
-                "playing"
-
-            );
-
-        });
-
-};
-
-/* ==========================================================
-   Destroy
-   ========================================================== */
-
-Player.destroy = function () {
-
-    this.stop();
-
-    this.hide();
-
-    this.currentEpisode = null;
-
-};
-
-/* ==========================================================
-   Start Player
-   ========================================================== */
-
-Player.start = function () {
-
-    this.init();
-
-};
-
-/* ==========================================================
-   Export
-   ========================================================== */
-
-window.Player = Player;
+window.Player=Player;
 
 /* ==========================================================
    End Of File
    ========================================================== */
+
+
+
+
+
+
 

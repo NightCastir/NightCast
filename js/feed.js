@@ -1,30 +1,105 @@
 /* ==========================================================
    NightCast
    Feed Manager
-   Version 2.0.0
+   File : feed.js
+   Version : 4.0.0
    ========================================================== */
 
 "use strict";
 
+/* ==========================================================
+   Feed Object
+   ========================================================== */
+
 const Feed = {
+
+    version: "4.0.0",
 
     url: "data/feed.json",
 
-    cache: null,
+    data: null,
 
-    loading: false,
+    episodes: [],
 
-    initialized: false,
+    hero: null,
 
     page: 1,
 
     perPage: 10,
 
-    events: {}
+    loading: false,
+
+    initialized: false,
+
+    cacheKey: "nightcast-feed-cache",
+
+    listeners: {}
 
 };
 
+/* ==========================================================
+   Event System
+   ========================================================== */
 
+Feed.on = function(event, callback){
+
+    if(!this.listeners[event]){
+
+        this.listeners[event]=[];
+
+    }
+
+    this.listeners[event].push(callback);
+
+};
+
+Feed.emit = function(event, payload){
+
+    if(!this.listeners[event]){
+
+        return;
+
+    }
+
+    this.listeners[event].forEach(callback=>{
+
+        try{
+
+            callback(payload);
+
+        }
+
+        catch(error){
+
+            console.error(error);
+
+        }
+
+    });
+
+};
+
+/* ==========================================================
+   Helpers
+   ========================================================== */
+
+Feed.count=function(){
+
+    return this.episodes.length;
+
+};
+
+Feed.isReady=function(){
+
+    return this.initialized;
+
+};
+
+Feed.isLoading=function(){
+
+    return this.loading;
+
+};
 
 
 
@@ -35,23 +110,21 @@ const Feed = {
 
 Feed.load = async function () {
 
-    if (this.loading) {
-
-        return this.cache;
-
-    }
-
     this.loading = true;
 
     try {
 
         const response = await fetch(
 
-            this.url,
+            this.url +
+
+            "?t=" +
+
+            Date.now(),
 
             {
 
-                cache: "no-cache"
+                cache: "no-store"
 
             }
 
@@ -61,7 +134,7 @@ Feed.load = async function () {
 
             throw new Error(
 
-                "Unable to load feed.json"
+                "Feed not found."
 
             );
 
@@ -71,45 +144,89 @@ Feed.load = async function () {
 
             await response.json();
 
-        this.validate(json);
+        this.data = json;
 
-        this.cache = json;
+        this.episodes =
+
+            Array.isArray(
+
+                json.episodes
+
+            )
+
+                ? json.episodes
+
+                : [];
+
+        this.hero =
+
+            this.getHero();
+
+        this.page = 1;
+
+        this.saveCache();
 
         this.initialized = true;
 
-        return json;
+        this.loading = false;
+
+        this.emit(
+
+            "feed:ready",
+
+            this.data
+
+        );
+
+        return this.data;
 
     }
 
     catch (err) {
 
+        this.loading = false;
+
         console.error(err);
 
-        this.showError(err);
+        this.restoreCache();
 
-        return null;
+        if (
 
-    }
+            this.episodes.length > 0
 
-    finally {
+        ) {
 
-        this.loading = false;
+            this.emit(
+
+                "feed:ready",
+
+                this.data
+
+            );
+
+            return this.data;
+
+        }
+
+        this.emit(
+
+            "feed:error",
+
+            err
+
+        );
+
+        throw err;
 
     }
 
 };
 
-
-
-
-
 /* ==========================================================
-   Reload
+   Init
    ========================================================== */
 
-Feed.reload = async function () {
-
-    this.cache = null;
+Feed.init = async function () {
 
     return await this.load();
 
@@ -119,135 +236,121 @@ Feed.reload = async function () {
 
 
 
+
+
+
 /* ==========================================================
-   Validate Feed
+   Save Cache
    ========================================================== */
 
-Feed.validate = function (data) {
+Feed.saveCache = function () {
 
-    if (
+    try {
 
-        !data ||
+        localStorage.setItem(
 
-        typeof data !== "object"
+            this.cacheKey,
 
-    ) {
-
-        throw new Error(
-
-            "Feed is invalid."
+            JSON.stringify(this.data)
 
         );
 
     }
 
-    if (
+    catch (error) {
 
-        !Array.isArray(
+        console.warn(
 
-            data.episodes
+            "Feed cache failed.",
 
-        )
-
-    ) {
-
-        throw new Error(
-
-            "Episodes not found."
+            error
 
         );
 
     }
-
-    if (!data.site) {
-
-        throw new Error(
-
-            "Site section missing."
-
-        );
-
-    }
-
-    if (!data.source) {
-
-        throw new Error(
-
-            "Source section missing."
-
-        );
-
-    }
-
-    this.validateEpisodes(
-
-        data.episodes
-
-    );
 
 };
 
-
-
-
-
-
 /* ==========================================================
-   Validate Episodes
+   Restore Cache
    ========================================================== */
 
-Feed.validateEpisodes = function (
+Feed.restoreCache = function () {
 
-    episodes
+    try {
 
-) {
+        const cache = localStorage.getItem(
 
-    episodes.forEach(
+            this.cacheKey
 
-        (episode, index) => {
+        );
 
-            if (!episode.id) {
+        if (!cache) {
 
-                console.warn(
-
-                    `Episode ${index} has no id.`
-
-                );
-
-            }
-
-            if (!episode.title) {
-
-                console.warn(
-
-                    `Episode ${index} has no title.`
-
-                );
-
-            }
-
-            if (!episode.video) {
-
-                console.warn(
-
-                    `Episode ${index} has no video.`
-
-                );
-
-            }
-
-            if (!episode.cover) {
-
-                console.warn(
-
-                    `Episode ${index} has no cover.`
-
-                );
-
-            }
+            return false;
 
         }
 
+        this.data = JSON.parse(cache);
+
+        this.episodes =
+
+            this.data.episodes || [];
+
+        this.hero =
+
+            this.getHero();
+
+        return true;
+
+    }
+
+    catch (error) {
+
+        console.warn(
+
+            "Invalid feed cache.",
+
+            error
+
+        );
+
+        return false;
+
+    }
+
+};
+
+/* ==========================================================
+   Reload Feed
+   ========================================================== */
+
+Feed.reload = async function () {
+
+    this.initialized = false;
+
+    await this.load();
+
+    this.emit(
+
+        "feed:updated",
+
+        this.data
+
+    );
+
+};
+
+/* ==========================================================
+   Clear Cache
+   ========================================================== */
+
+Feed.clearCache = function () {
+
+    localStorage.removeItem(
+
+        this.cacheKey
+
     );
 
 };
@@ -257,48 +360,44 @@ Feed.validateEpisodes = function (
 
 
 /* ==========================================================
-   Hero Episode
+   Hero
    ========================================================== */
 
 Feed.getHero = function () {
 
-    if (!this.cache) {
+    if (!this.episodes.length) {
 
         return null;
 
     }
 
-    const heroId =
+    if (
 
-        this.cache.hero?.episode_id;
+        !this.data ||
 
-    if (heroId) {
+        !this.data.hero ||
 
-        const hero =
+        !this.data.hero.episode_id
 
-            this.cache.episodes.find(
+    ) {
 
-                episode =>
-
-                    episode.id === heroId
-
-            );
-
-        if (hero) {
-
-            return hero;
-
-        }
+        return this.episodes[0];
 
     }
 
-    return this.cache.episodes[0] || null;
+    const hero = this.episodes.find(
+
+        episode =>
+
+            episode.id ===
+
+            this.data.hero.episode_id
+
+    );
+
+    return hero || this.episodes[0];
 
 };
-
-
-
-
 
 /* ==========================================================
    Episodes
@@ -306,84 +405,100 @@ Feed.getHero = function () {
 
 Feed.getEpisodes = function () {
 
-    if (!this.cache) {
-
-        return [];
-
-    }
-
-    return this.cache.episodes;
+    return this.episodes;
 
 };
 
 Feed.getEpisode = function (id) {
 
-    if (!this.cache) {
+    id = Number(id);
 
-        return null;
-
-    }
-
-    return this.cache.episodes.find(
+    return this.episodes.find(
 
         episode =>
 
-            episode.id === id
+            Number(episode.id) === id
 
     ) || null;
 
 };
 
-Feed.getLatest = function () {
+/* ==========================================================
+   Pagination
+   ========================================================== */
 
-    if (!this.cache) {
+Feed.getPage = function () {
 
-        return null;
+    const end =
 
-    }
+        this.page *
 
-    return this.cache.episodes[0] || null;
+        this.perPage;
+
+    return this.episodes.slice(
+
+        0,
+
+        end
+
+    );
 
 };
 
+Feed.hasMore = function () {
 
+    return (
 
+        this.page *
 
-/* ==========================================================
-   Sort Episodes
-   ========================================================== */
+        this.perPage
 
-Feed.sortByDate = function () {
+    ) < this.episodes.length;
 
-    if (!this.cache) {
+};
+
+Feed.nextPage = function () {
+
+    if (!this.hasMore()) {
 
         return [];
 
     }
 
-    return [
+    this.page++;
 
-        ...this.cache.episodes
-
-    ].sort(
-
-        (a, b) =>
-
-            new Date(
-
-                b.published
-
-            ) -
-
-            new Date(
-
-                a.published
-
-            )
-
-    );
+    return this.getPage();
 
 };
+
+/* ==========================================================
+   First / Last
+   ========================================================== */
+
+Feed.first = function () {
+
+    return this.episodes.length
+
+        ? this.episodes[0]
+
+        : null;
+
+};
+
+Feed.last = function () {
+
+    return this.episodes.length
+
+        ? this.episodes[
+
+            this.episodes.length - 1
+
+        ]
+
+        : null;
+
+};
+
 
 
 
@@ -392,79 +507,250 @@ Feed.sortByDate = function () {
    Search
    ========================================================== */
 
-Feed.search = function (keyword) {
+Feed.search = function (keyword = "") {
 
-    if (!this.cache) {
-
-        return [];
-
-    }
-
-    keyword =
-
-        keyword
-
+    keyword = String(keyword)
         .trim()
-
         .toLowerCase();
 
-    return this.cache.episodes.filter(
+    if (!keyword) {
+
+        return this.episodes;
+
+    }
+
+    return this.episodes.filter(episode => {
+
+        return [
+
+            episode.title,
+
+            episode.description,
+
+            episode.author,
+
+            episode.category,
+
+            ...(episode.tags || [])
+
+        ]
+
+        .join(" ")
+
+        .toLowerCase()
+
+        .includes(keyword);
+
+    });
+
+};
+
+/* ==========================================================
+   Filter By Category
+   ========================================================== */
+
+Feed.filterByCategory = function (category = "") {
+
+    if (!category) {
+
+        return this.episodes;
+
+    }
+
+    return this.episodes.filter(
 
         episode =>
 
-            (
+            episode.category === category
 
-                episode.title ||
+    );
 
-                ""
+};
 
-            )
+/* ==========================================================
+   Latest Episodes
+   ========================================================== */
 
-            .toLowerCase()
+Feed.latest = function (count = 5) {
 
-            .includes(keyword)
+    return [...this.episodes]
 
-            ||
+        .sort((a, b) => {
 
-            (
+            return new Date(b.published) -
 
-                episode.description ||
+                   new Date(a.published);
 
-                ""
+        })
 
-            )
+        .slice(0, count);
 
-            .toLowerCase()
+};
 
-            .includes(keyword)
+/* ==========================================================
+   Sort By Date
+   ========================================================== */
 
-            ||
+Feed.sortNewest = function () {
 
-            (
+    return [...this.episodes]
 
-                episode.author ||
+        .sort((a, b) =>
 
-                ""
+            new Date(b.published) -
 
-            )
+            new Date(a.published)
 
-            .toLowerCase()
+        );
 
-            .includes(keyword)
+};
 
-            ||
+Feed.sortOldest = function () {
 
-            (
+    return [...this.episodes]
 
-                episode.category ||
+        .sort((a, b) =>
 
-                ""
+            new Date(a.published) -
 
-            )
+            new Date(b.published)
 
-            .toLowerCase()
+        );
 
-            .includes(keyword)
+};
+
+
+
+
+
+
+
+
+/* ==========================================================
+   Format Duration
+   ========================================================== */
+
+Feed.formatDuration = function (seconds = 0) {
+
+    seconds = Number(seconds) || 0;
+
+    const h = Math.floor(seconds / 3600);
+
+    const m = Math.floor((seconds % 3600) / 60);
+
+    const s = Math.floor(seconds % 60);
+
+    if (h > 0) {
+
+        return [
+
+            h,
+
+            String(m).padStart(2, "0"),
+
+            String(s).padStart(2, "0")
+
+        ].join(":");
+
+    }
+
+    return [
+
+        m,
+
+        String(s).padStart(2, "0")
+
+    ].join(":");
+
+};
+
+/* ==========================================================
+   Format Date
+   ========================================================== */
+
+Feed.formatDate = function (date) {
+
+    if (!date) {
+
+        return "";
+
+    }
+
+    try {
+
+        return new Intl.DateTimeFormat(
+
+            "fa-IR",
+
+            {
+
+                year: "numeric",
+
+                month: "long",
+
+                day: "numeric"
+
+            }
+
+        ).format(new Date(date));
+
+    }
+
+    catch (error) {
+
+        return date;
+
+    }
+
+};
+
+/* ==========================================================
+   Relative Date
+   ========================================================== */
+
+Feed.relativeDate = function (date) {
+
+    if (!date) {
+
+        return "";
+
+    }
+
+    const now = new Date();
+
+    const then = new Date(date);
+
+    const diff = Math.floor(
+
+        (now - then) / 86400000
+
+    );
+
+    if (diff <= 0) return "امروز";
+
+    if (diff === 1) return "دیروز";
+
+    if (diff < 7) return `${diff} روز پیش`;
+
+    if (diff < 30) return `${Math.floor(diff / 7)} هفته پیش`;
+
+    if (diff < 365) return `${Math.floor(diff / 30)} ماه پیش`;
+
+    return `${Math.floor(diff / 365)} سال پیش`;
+
+};
+
+/* ==========================================================
+   Exists
+   ========================================================== */
+
+Feed.exists = function (id) {
+
+    return this.episodes.some(
+
+        episode =>
+
+            String(episode.id) === String(id)
 
     );
 
@@ -475,415 +761,90 @@ Feed.search = function (keyword) {
 
 
 /* ==========================================================
-   Filter By Tag
+   Refresh
    ========================================================== */
 
-Feed.filterByTag = function (tag) {
+Feed.refresh = async function () {
 
-    if (!this.cache) {
+    try {
 
-        return [];
+        await this.reload();
 
     }
 
-    return this.cache.episodes.filter(
+    catch (error) {
 
-        episode =>
+        console.error(error);
 
-            Array.isArray(
-
-                episode.tags
-
-            )
-
-            &&
-
-            episode.tags.includes(tag)
-
-    );
+    }
 
 };
-
-
-
-
-
-
 
 /* ==========================================================
-   Pagination
+   Destroy
    ========================================================== */
 
-Feed.getPage = function (page = 1) {
+Feed.destroy = function () {
 
-    if (!this.cache) {
+    this.data = null;
 
-        return [];
+    this.hero = null;
 
-    }
-
-    const start =
-
-        (page - 1) * this.perPage;
-
-    const end =
-
-        start + this.perPage;
-
-    return this.cache.episodes.slice(
-
-        start,
-
-        end
-
-    );
-
-};
-
-Feed.nextPage = function () {
-
-    this.page++;
-
-    return this.getPage(
-
-        this.page
-
-    );
-
-};
-
-Feed.reset = function () {
+    this.episodes = [];
 
     this.page = 1;
-
-};
-
-Feed.hasMore = function () {
-
-    if (!this.cache) {
-
-        return false;
-
-    }
-
-    return (
-
-        this.page * this.perPage
-
-    ) < this.cache.episodes.length;
-
-};
-
-Feed.count = function () {
-
-    if (!this.cache) {
-
-        return 0;
-
-    }
-
-    return this.cache.episodes.length;
-
-};
-
-
-
-
-
-
-
-
-
-/* ==========================================================
-   Cache Helpers
-   ========================================================== */
-
-Feed.clearCache = function () {
-
-    this.cache = null;
 
     this.initialized = false;
 
 };
 
-Feed.isLoaded = function () {
-
-    return this.initialized;
-
-};
-
-Feed.lastUpdated = function () {
-
-    if (!this.cache) {
-
-        return null;
-
-    }
-
-    return this.cache.generated_at;
-
-};
-
-
-
-
 /* ==========================================================
-   Event System
+   Debug
    ========================================================== */
 
-Feed.on = function (
+Feed.info = function () {
 
-    eventName,
+    console.group("NightCast Feed");
 
-    callback
+    console.log("Version :", this.version);
 
-) {
+    console.log("Episodes :", this.count());
 
-    if (
+    console.log("Hero :", this.hero);
 
-        !this.events[eventName]
+    console.log("Initialized :", this.initialized);
 
-    ) {
+    console.log("URL :", this.url);
 
-        this.events[eventName] = [];
-
-    }
-
-    this.events[eventName].push(
-
-        callback
-
-    );
+    console.groupEnd();
 
 };
-
-Feed.emit = function (
-
-    eventName,
-
-    payload = null
-
-) {
-
-    if (
-
-        !this.events[eventName]
-
-    ) {
-
-        return;
-
-    }
-
-    this.events[eventName].forEach(
-
-        callback =>
-
-            callback(payload)
-
-    );
-
-};
-
-
 
 /* ==========================================================
-   Auto Refresh
+   Feed Ready Event
    ========================================================== */
 
-Feed.autoRefresh = function (
+document.addEventListener(
 
-    minutes = 30
+    "DOMContentLoaded",
 
-) {
+    async () => {
 
-    setInterval(
+        try {
 
-        async () => {
+            await Feed.init();
 
-            await this.reload();
+        }
 
-            this.emit(
+        catch (error) {
 
-                "feed:updated",
+            console.error(error);
 
-                this.cache
+        }
 
-            );
-
-        },
-
-        minutes * 60 * 1000
-
-    );
-
-};
-
-
-
-/* ==========================================================
-   Network Status
-   ========================================================== */
-
-Feed.isOnline = function () {
-
-    return navigator.onLine;
-
-};
-
-window.addEventListener(
-
-    "online",
-
-    () =>
-
-        Feed.emit(
-
-            "network:online"
-
-        )
+    }
 
 );
-
-window.addEventListener(
-
-    "offline",
-
-    () =>
-
-        Feed.emit(
-
-            "network:offline"
-
-        )
-
-);
-
-
-
-/* ==========================================================
-   Error Screen
-   ========================================================== */
-
-Feed.showError = function (error) {
-
-    const container =
-
-        document.getElementById(
-
-            "episodeList"
-
-        );
-
-    if (!container) {
-
-        return;
-
-    }
-
-    container.innerHTML = `
-
-        <div class="feed-error">
-
-            <h2>
-
-                خطا در دریافت اطلاعات
-
-            </h2>
-
-            <p>
-
-                ${error.message}
-
-            </p>
-
-        </div>
-
-    `;
-
-};
-
-
-
-
-/* ==========================================================
-   Utilities
-   ========================================================== */
-
-Feed.formatDate = function (
-
-    dateString
-
-) {
-
-    if (!dateString) {
-
-        return "";
-
-    }
-
-    return new Date(
-
-        dateString
-
-    ).toLocaleDateString(
-
-        "fa-IR"
-
-    );
-
-};
-
-Feed.formatDuration = function (
-
-    duration
-
-) {
-
-    if (
-
-        !duration ||
-
-        duration === ""
-
-    ) {
-
-        return "";
-
-    }
-
-    return duration;
-
-};
-
-
-
-/* ==========================================================
-   Initialize
-   ========================================================== */
-
-Feed.init = async function () {
-
-    const data =
-
-        await this.load();
-
-    if (data) {
-
-        this.emit(
-
-            "feed:ready",
-
-            data
-
-        );
-
-    }
-
-};
-
-
-
 
 /* ==========================================================
    Global Export
@@ -891,33 +852,9 @@ Feed.init = async function () {
 
 window.Feed = Feed;
 
-
-
-/* ==========================================================
-   Auto Start
-   ========================================================== */
-
-Feed.init();
-
-
-
 /* ==========================================================
    End Of File
    ========================================================== */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

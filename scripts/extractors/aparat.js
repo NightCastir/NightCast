@@ -1,56 +1,89 @@
 /* ==========================================================
    NightCast
    Aparat RSS Extractor
-   Version 4.0.0
+   Version 5.0.0
    ========================================================== */
 
 import Parser from "rss-parser";
 
 import {
+
     createId,
+
     cleanText,
+
     formatDate,
+
     now,
+
     log
+
 } from "../utils.js";
 
 /* ==========================================================
-   RSS
+   Constants
    ========================================================== */
+
+export const VERSION = "5.0.0";
 
 export const RSS_URL =
     "https://www.aparat.com/rss/nightcast";
 
+const DEFAULT_COVER =
+    "assets/images/default-cover.jpg";
+
+/* ==========================================================
+   RSS Parser
+   ========================================================== */
+
 const parser = new Parser({
 
-    timeout: 30000,
+    timeout:30000,
 
-    headers: {
+    headers:{
+
         "User-Agent":
-            "NightCast Feed Generator"
+
+        "NightCast Feed Generator"
+
     }
 
 });
 
 /* ==========================================================
-   Download Feed
+   Download RSS
    ========================================================== */
 
-async function downloadFeed(){
+async function loadRSS(){
 
-    log("Downloading RSS...");
+    log(
 
-    const rss =
-        await parser.parseURL(RSS_URL);
+        "Downloading Aparat RSS..."
+
+    );
+
+    const rss=
+
+        await parser.parseURL(
+
+            RSS_URL
+
+        );
 
     if(
+
         !rss ||
+
         !rss.items ||
+
         rss.items.length===0
+
     ){
 
         throw new Error(
+
             "RSS Feed Empty."
+
         );
 
     }
@@ -68,154 +101,177 @@ function buildChannel(feed){
     return{
 
         title:
+
             feed.title || "",
 
         description:
+
             feed.description || "",
 
         link:
+
             feed.link || "",
 
         language:
+
             "fa",
 
         platform:
+
             "aparat"
 
     };
 
 }
 
+
 /* ==========================================================
-   Extract Cover
+   Cover
    ========================================================== */
 
-function getCover(item) {
+function extractCover(item){
 
     const html =
-        item.contentEncoded ||
-        item.description ||
+
         item.content ||
+
+        item["content:encoded"] ||
+
+        item.description ||
+
         "";
 
-    const image = html.match(
+    const match = html.match(
+
         /<img[^>]+src=["']([^"']+)["']/i
+
     );
 
-    if (image) {
+    if(match){
 
-        return image[1];
+        return match[1];
 
     }
 
-    return "assets/images/default-cover.jpg";
+    return DEFAULT_COVER;
 
 }
 
 /* ==========================================================
-   Guess Book
+   Book Information
    ========================================================== */
 
-function guessBook(title = "") {
+function extractBook(title=""){
 
-    title = cleanText(title);
+    let book = cleanText(title);
 
-    title = title
-        .replace(/^پادکست صوتی/i, "")
-        .replace(/^پادکست/i, "")
-        .replace(/^خلاصه کتاب/i, "")
+    book = book
+
+        .replace(/^پادکست صوتی/i,"")
+
+        .replace(/^پادکست/i,"")
+
+        .replace(/^خلاصه کتاب/i,"")
+
+        .replace(/^کتاب/i,"")
+
         .trim();
 
-    return {
+    return{
 
-        title,
+        title:book,
 
-        author: ""
+        author:""
 
     };
 
 }
 
 /* ==========================================================
-   Guess Duration
+   Episode
    ========================================================== */
 
-function guessDuration() {
+function buildEpisode(item,index=0){
 
-    return 0;
+    const book =
 
-}
+        extractBook(item.title);
 
-function guessDurationText() {
+    return{
 
-    return "";
+        id:
 
-}
+            createId(
 
+                item.guid ||
 
+                item.link ||
 
-/* ==========================================================
-   Normalize One Episode
-   ========================================================== */
+                item.title ||
 
-function normalizeEpisode(item, index = 0) {
+                index
 
-    const title = cleanText(item.title);
+            ),
 
-    const description = cleanText(item.contentSnippet);
+        title:
 
-    const published = formatDate(item.pubDate);
+            cleanText(
 
-    const id = createId(
-        item.guid ||
-        item.link ||
-        title
-    );
+                item.title || ""
 
-    return {
+            ),
 
-        id,
+        description:
 
-        title,
+            cleanText(
 
-        description,
+                item.description ||
+
+                ""
+
+            ),
 
         cover:
-            DEFAULT_COVER,
 
-        audio:
-            item.link,
+            extractCover(item),
 
-        source:{
+        video:
 
-            platform:"aparat",
+            item.link ||
 
-            url:item.link
+            "",
 
-        },
+        published:
 
-        published_at:
-            published,
+            formatDate(
+
+                item.pubDate
+
+            ),
 
         duration:
+
             0,
 
         duration_text:
-            "00:00",
 
-        book:{
+            "",
 
-            title:
-                extractBookTitle(title),
-
-            author:""
-
-        },
+        book,
 
         category:
+
             "book",
 
         tags:[],
+
+        author:
+
+            "",
+
+        platform:
+
+            "aparat",
 
         views:0,
 
@@ -225,77 +281,117 @@ function normalizeEpisode(item, index = 0) {
 
 }
 
+
+
+
+
 /* ==========================================================
-   Normalize Feed
+   Normalize Episodes
    ========================================================== */
 
 function normalize(feed){
 
-    return feed.items.map(
+    const episodes=[];
 
-        (item,index)=>
+    feed.items.forEach(
 
-            normalizeEpisode(
+        (item,index)=>{
 
-                item,
+            try{
 
-                index
+                episodes.push(
 
-            )
+                    buildEpisode(
+
+                        item,
+
+                        index
+
+                    )
+
+                );
+
+            }
+
+            catch(err){
+
+                log(
+
+                    "Skip Item : " +
+
+                    err.message
+
+                );
+
+            }
+
+        }
 
     );
 
+    return episodes;
+
 }
-
-
-
 
 /* ==========================================================
    Extract Feed
    ========================================================== */
 
-export async function extract() {
+export async function extract(){
 
-    log("Downloading RSS...");
+    const rss=
 
-    const rss = await loadRSS();
+        await loadRSS();
 
-    const episodes = normalize(rss);
+    const episodes=
 
-    return {
+        normalize(rss);
 
-        version: "3.0.0",
+    return{
 
-        generated_at: now(),
+        version:VERSION,
 
-        source: {
+        generated_at:
 
-            type: "aparat",
+            now(),
 
-            url: RSS_URL
+        source:{
+
+            type:"aparat",
+
+            url:RSS_URL
 
         },
 
-        channel: extractChannel(rss),
+        channel:
 
-        hero: {
+            buildChannel(
+
+                rss
+
+            ),
+
+        hero:{
 
             episode_id:
 
                 episodes.length
-                    ? episodes[0].id
-                    : null
+
+                ? episodes[0].id
+
+                : null
 
         },
 
-        pagination: {
+        pagination:{
 
-            page: 1,
+            page:1,
 
-            per_page: 10,
+            per_page:10,
 
             has_more:
-                episodes.length > 10
+
+                episodes.length>10
 
         },
 
@@ -305,35 +401,52 @@ export async function extract() {
 
 }
 
+
+
+
 /* ==========================================================
-   Health
+   Health Check
    ========================================================== */
 
-export async function health() {
+export async function health(){
 
-    try {
+    try{
 
-        const rss = await loadRSS();
+        const rss=
 
-        return {
+            await loadRSS();
 
-            status: "ok",
+        return{
 
-            title: rss.title,
+            status:"ok",
 
-            items: rss.items.length
+            title:
+
+                rss.title ||
+
+                "",
+
+            items:
+
+                rss.items
+
+                ? rss.items.length
+
+                : 0
 
         };
 
     }
 
-    catch (err) {
+    catch(err){
 
-        return {
+        return{
 
-            status: "error",
+            status:"error",
 
-            message: err.message
+            message:
+
+                err.message
 
         };
 
@@ -342,16 +455,52 @@ export async function health() {
 }
 
 /* ==========================================================
-   Module Version
+   Feed Summary
    ========================================================== */
 
-export const VERSION = "3.0.0";
+export async function summary(){
+
+    const rss=
+
+        await loadRSS();
+
+    return{
+
+        generated_at:
+
+            now(),
+
+        channel:
+
+            rss.title ||
+
+            "",
+
+        total:
+
+            rss.items
+
+            ? rss.items.length
+
+            : 0
+
+    };
+
+}
 
 /* ==========================================================
    Public API
    ========================================================== */
 
-export {
+export default{
+
+    extract,
+
+    health,
+
+    summary,
+
+    VERSION,
 
     RSS_URL
 
@@ -360,7 +509,6 @@ export {
 /* ==========================================================
    End Of File
    ========================================================== */
-
 
 
 

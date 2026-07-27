@@ -1,282 +1,26 @@
-import crypto from "crypto";
-
 /* ==========================================================
-   Create Hash ID
+   NightCast
+   Utilities
+   File : scripts/utils.js
+   Version : 2.0.0
    ========================================================== */
 
-export function createId(text) {
-
-    return crypto
-        .createHash("md5")
-        .update(text)
-        .digest("hex");
-
-}
-
-/* ==========================================================
-   Clean Text
-   ========================================================== */
-
-export function cleanText(text = "") {
-
-    return text
-        .replace(/<[^>]*>/g, "")
-        .replace(/\r/g, "")
-        .replace(/\n+/g, "\n")
-        .replace(/\t/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-
-}
-
-/* ==========================================================
-   Decode HTML
-   ========================================================== */
-
-export function decodeHtml(text = "") {
-
-    return text
-        .replace(/&amp;/g, "&")
-        .replace(/&quot;/g, "\"")
-        .replace(/&#39;/g, "'")
-        .replace(/&lt;/g, "<")
-        .replace(/&gt;/g, ">");
-
-}
-
-/* ==========================================================
-   Remove Emoji
-   ========================================================== */
-
-export function removeEmoji(text = "") {
-
-    return text.replace(
-
-        /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu,
-
-        ""
-
-    );
-
-}
-
-
-
-
-/* ==========================================================
-   Slug
-   ========================================================== */
-
-export function slugify(text = "") {
-
-    return cleanText(text)
-
-        .toLowerCase()
-
-        .replace(/[^\w\u0600-\u06FF]+/g, "-")
-
-        .replace(/^-+|-+$/g, "");
-
-}
-
-/* ==========================================================
-   Limit Text
-   ========================================================== */
-
-export function limit(text = "", length = 180) {
-
-    if (text.length <= length) {
-
-        return text;
-
-    }
-
-    return text.substring(0, length).trim() + "...";
-
-}
-
-
-
-
-/* ==========================================================
-   Format Date
-   ========================================================== */
-
-export function formatDate(date) {
-
-    if (!date) {
-
-        return "";
-
-    }
-
-    return new Date(date).toISOString();
-
-}
-
-/* ==========================================================
-   Validate URL
-   ========================================================== */
-
-export function isValidUrl(url = "") {
-
-    try {
-
-        new URL(url);
-
-        return true;
-
-    }
-
-    catch {
-
-        return false;
-
-    }
-
-}
-
-/* ==========================================================
-   Absolute URL
-   ========================================================== */
-
-export function absoluteUrl(base, path) {
-
-    try {
-
-        return new URL(path, base).href;
-
-    }
-
-    catch {
-
-        return "";
-
-    }
-
-}
-
-/* ==========================================================
-   File Extension
-   ========================================================== */
-
-export function extension(url = "") {
-
-    const index = url.lastIndexOf(".");
-
-    if (index === -1) {
-
-        return "";
-
-    }
-
-    return url.substring(index + 1).toLowerCase();
-
-}
-
-
-
-
-/* ==========================================================
-   Remove Duplicate Objects
-   ========================================================== */
-
-export function uniqueBy(array = [], key = "id") {
-
-    const map = new Map();
-
-    array.forEach(item => {
-
-        map.set(item[key], item);
-
-    });
-
-    return [...map.values()];
-
-}
-
-/* ==========================================================
-   Sort By Publish Date
-   ========================================================== */
-
-export function sortEpisodes(items = []) {
-
-    return items.sort(
-
-        (a, b) =>
-
-            new Date(b.published) -
-
-            new Date(a.published)
-
-    );
-
-                         }
-
-
-
-
-/* ==========================================================
-   Safe Number
-   ========================================================== */
-
-export function toNumber(value, fallback = 0) {
-
-    const number = Number(value);
-
-    return Number.isNaN(number)
-
-        ? fallback
-
-        : number;
-
-}
-
+import crypto from "node:crypto";
 
 import fs from "fs-extra";
 
 /* ==========================================================
-   Save JSON
+   Current Time
    ========================================================== */
 
-export async function saveJson(filePath, data) {
+export function now() {
 
-    await fs.ensureFile(filePath);
-
-    await fs.writeJson(
-
-        filePath,
-
-        data,
-
-        {
-
-            spaces: 2
-
-        }
-
-    );
+    return new Date().toISOString();
 
 }
 
 /* ==========================================================
-   Read JSON
-   ========================================================== */
-
-export async function readJson(filePath) {
-
-    if (!(await fs.pathExists(filePath))) {
-
-        return null;
-
-    }
-
-    return await fs.readJson(filePath);
-
-}
-
-/* ==========================================================
-   Logger
+   Log
    ========================================================== */
 
 export function log(...args) {
@@ -291,6 +35,10 @@ export function log(...args) {
 
 }
 
+/* ==========================================================
+   Error
+   ========================================================== */
+
 export function error(...args) {
 
     console.error(
@@ -303,13 +51,163 @@ export function error(...args) {
 
 }
 
+
+
 /* ==========================================================
-   Current Time
+   Create Unique ID
    ========================================================== */
 
-export function now() {
+export function createId(value = "") {
 
-    return new Date().toISOString();
+    return crypto
+
+        .createHash("md5")
+
+        .update(String(value))
+
+        .digest("hex")
+
+        .substring(0, 16);
+
+}
+
+/* ==========================================================
+   Clean Text
+   ========================================================== */
+
+export function cleanText(text = "") {
+
+    return String(text)
+
+        .replace(/<[^>]*>/g, "")
+
+        .replace(/&nbsp;/g, " ")
+
+        .replace(/&amp;/g, "&")
+
+        .replace(/&quot;/g, "\"")
+
+        .replace(/&#39;/g, "'")
+
+        .replace(/\s+/g, " ")
+
+        .trim();
+
+}
+
+/* ==========================================================
+   Format Date
+   ========================================================== */
+
+export function formatDate(date) {
+
+    if (!date) {
+
+        return "";
+
+    }
+
+    try {
+
+        return new Date(date)
+
+            .toISOString();
+
+    }
+
+    catch {
+
+        return "";
+
+    }
+
+       }
+
+
+
+/* ==========================================================
+   Save JSON
+   ========================================================== */
+
+export async function saveJson(
+
+    file,
+
+    data
+
+) {
+
+    await fs.outputJson(
+
+        file,
+
+        data,
+
+        {
+
+            spaces: 2,
+
+            encoding: "utf8"
+
+        }
+
+    );
+
+}
+
+/* ==========================================================
+   Read JSON
+   ========================================================== */
+
+export async function readJson(
+
+    file
+
+) {
+
+    return await fs.readJson(
+
+        file
+
+    );
+
+}
+
+/* ==========================================================
+   File Exists
+   ========================================================== */
+
+export async function fileExists(
+
+    file
+
+) {
+
+    return await fs.pathExists(
+
+        file
+
+    );
+
+}
+
+
+
+/* ==========================================================
+   Ensure Directory
+   ========================================================== */
+
+export async function ensureDir(
+
+    dir
+
+) {
+
+    await fs.ensureDir(
+
+        dir
+
+    );
 
 }
 
@@ -317,19 +215,79 @@ export function now() {
    Sleep
    ========================================================== */
 
-export function sleep(ms = 1000) {
+export function sleep(
+
+    ms = 1000
+
+) {
 
     return new Promise(
 
         resolve =>
 
-            setTimeout(resolve, ms)
+            setTimeout(
+
+                resolve,
+
+                ms
+
+            )
 
     );
 
 }
 
 /* ==========================================================
+   Version
+   ========================================================== */
+
+export const VERSION = "2.0.0";
+
+/* ==========================================================
+   Default Export
+   ========================================================== */
+
+export default {
+
+    now,
+
+    log,
+
+    error,
+
+    createId,
+
+    cleanText,
+
+    formatDate,
+
+    saveJson,
+
+    readJson,
+
+    fileExists,
+
+    ensureDir,
+
+    sleep,
+
+    VERSION
+
+};
+
+/* ==========================================================
    End Of File
    ========================================================== */
+
+
+
+
+
+
+
+
+
+
+
+
 

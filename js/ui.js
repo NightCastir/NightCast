@@ -1,8 +1,8 @@
+
 /* ==========================================================
    NightCast
    UI Manager
-   File : ui.js
-   Version : 1.0.0
+   Version : 2.0.0
    ========================================================== */
 
 "use strict";
@@ -15,21 +15,39 @@ const UI = {
 
     heroContainer:
 
-        document.getElementById("hero"),
+        document.getElementById(
+
+            "heroCard"
+
+        ),
 
     episodesContainer:
 
-        document.getElementById("episodes"),
+        document.getElementById(
+
+            "episodeList"
+
+        ),
 
     loader:
 
-        document.getElementById("loader"),
+        document.getElementById(
+
+            "loading"
+
+        ),
 
     empty:
 
-        document.getElementById("empty")
+        document.getElementById(
+
+            "emptyState"
+
+        )
 
 };
+
+
 
 /* ==========================================================
    Initialize
@@ -41,69 +59,78 @@ UI.init = function () {
 
 };
 
+
+
+
+
+
+
 /* ==========================================================
    Clear Screen
    ========================================================== */
 
 UI.clear = function () {
 
-    if(this.heroContainer){
+    if (this.heroContainer) {
 
-        this.heroContainer.innerHTML="";
+        this.heroContainer.innerHTML = "";
 
     }
 
-    if(this.episodesContainer){
+    if (this.episodesContainer) {
 
-        this.episodesContainer.innerHTML="";
+        this.episodesContainer.innerHTML = "";
 
     }
 
 };
+
+
 
 /* ==========================================================
-   Loading
+   Loader
    ========================================================== */
 
-UI.showLoader=function(){
+UI.showLoader = function () {
 
-    if(this.loader){
+    if (this.loader) {
 
-        this.loader.hidden=false;
+        this.loader.hidden = false;
+
+    }
+
+};
+
+UI.hideLoader = function () {
+
+    if (this.loader) {
+
+        this.loader.hidden = true;
 
     }
 
 };
 
-UI.hideLoader=function(){
-
-    if(this.loader){
-
-        this.loader.hidden=true;
-
-    }
-
-};
 
 /* ==========================================================
    Empty State
    ========================================================== */
 
-UI.showEmpty=function(){
+UI.showEmpty = function () {
 
-    if(this.empty){
+    if (this.empty) {
 
-        this.empty.hidden=false;
+        this.empty.hidden = false;
 
     }
 
 };
 
-UI.hideEmpty=function(){
+UI.hideEmpty = function () {
 
-    if(this.empty){
+    if (this.empty) {
 
-        this.empty.hidden=true;
+        this.empty.hidden = true;
 
     }
 
@@ -112,246 +139,10 @@ UI.hideEmpty=function(){
 
 
 /* ==========================================================
-   Render Hero
+   Remove Skeleton
    ========================================================== */
 
-UI.renderHero = function () {
-
-    if (!this.heroContainer) {
-
-        return;
-
-    }
-
-    const hero = Feed.getHero();
-
-    if (!hero) {
-
-        return;
-
-    }
-
-    this.heroContainer.innerHTML = `
-
-<section class="hero-card">
-
-    <div class="hero-content">
-
-        <span class="hero-badge">
-
-            جدیدترین اپیزود
-
-        </span>
-
-        <h1 class="hero-title">
-
-            ${hero.title}
-
-        </h1>
-
-        <p class="hero-description">
-
-            ${hero.description}
-
-        </p>
-
-        <div class="hero-meta">
-
-            <div class="hero-meta-item">
-
-                <i class="fa-regular fa-calendar"></i>
-
-                ${Feed.formatDate(hero.published_at)}
-
-            </div>
-
-            <div class="hero-meta-item">
-
-                <i class="fa-regular fa-clock"></i>
-
-                ${hero.duration_text}
-
-            </div>
-
-            <div class="hero-meta-item">
-
-                <i class="fa-solid fa-book"></i>
-
-                ${hero.book.title}
-
-            </div>
-
-        </div>
-
-        <div class="hero-actions">
-
-            <button
-
-                class="hero-play"
-
-                data-id="${hero.id}"
-
-            >
-
-                <i class="fa-solid fa-play"></i>
-
-                پخش
-
-            </button>
-
-        </div>
-
-    </div>
-
-    <div class="hero-media">
-
-        <img
-
-            src="${hero.cover}"
-
-            alt="${hero.title}"
-
-            loading="eager"
-
-        >
-
-    </div>
-
-</section>
-
-`;
-
-};
-
-
-
-
-/* ==========================================================
-   Create Episode Card
-   ========================================================== */
-
-UI.createEpisodeCard = function (episode) {
-
-    return `
-
-<article
-    class="episode-card"
-    data-id="${episode.id}"
->
-
-    <div class="episode-cover">
-
-        <img
-            src="${episode.cover}"
-            alt="${episode.title}"
-            loading="lazy"
-        >
-
-        <span class="episode-duration">
-
-            ${episode.duration_text}
-
-        </span>
-
-        <div class="cover-play">
-
-            <button
-                class="episode-cover-play"
-                data-id="${episode.id}"
-                aria-label="پخش ${episode.title}"
-            >
-
-                <i class="fa-solid fa-play"></i>
-
-            </button>
-
-        </div>
-
-    </div>
-
-    <div class="episode-body">
-
-        <h2 class="episode-title">
-
-            ${episode.title}
-
-        </h2>
-
-        <p class="episode-description">
-
-            ${episode.description}
-
-        </p>
-
-        <div class="episode-meta">
-
-            <span class="episode-meta-item">
-
-                <i class="fa-regular fa-calendar"></i>
-
-                ${Feed.formatDate(
-                    episode.published_at
-                )}
-
-            </span>
-
-            <span class="episode-meta-item">
-
-                <i class="fa-solid fa-book"></i>
-
-                ${episode.book.title}
-
-            </span>
-
-        </div>
-
-        <div class="episode-footer">
-
-            <button
-
-                class="episode-play"
-
-                data-id="${episode.id}"
-
-            >
-
-                <i class="fa-solid fa-play"></i>
-
-                پخش اپیزود
-
-            </button>
-
-            <a
-
-                class="episode-link"
-
-                href="${episode.source.url}"
-
-                target="_blank"
-
-                rel="noopener"
-
-            >
-
-                مشاهده در ایتا
-
-            </a>
-
-        </div>
-
-    </div>
-
-</article>
-
-`;
-
-};
-
-/* ==========================================================
-   Render Episodes
-   ========================================================== */
-
-UI.renderEpisodes = function (episodes) {
+UI.removeSkeleton = function () {
 
     if (!this.episodesContainer) {
 
@@ -359,189 +150,9 @@ UI.renderEpisodes = function (episodes) {
 
     }
 
-    if (!episodes.length) {
-
-        this.showEmpty();
-
-        return;
-
-    }
-
-    this.hideEmpty();
-
-    const html = episodes
-
-        .map(
-
-            episode =>
-
-                this.createEpisodeCard(episode)
-
-        )
-
-        .join("");
-
-    this.episodesContainer.insertAdjacentHTML(
-
-        "beforeend",
-
-        html
-
-    );
+    this.episodesContainer.innerHTML = "";
 
 };
-
-
-
-/* ==========================================================
-   Bind UI Events
-   ========================================================== */
-
-UI.bindEvents = function () {
-
-    document.addEventListener(
-
-        "click",
-
-        this.handleClick.bind(this)
-
-    );
-
-};
-
-/* ==========================================================
-   Handle Click
-   ========================================================== */
-
-UI.handleClick = function (event) {
-
-    const playButton = event.target.closest(
-
-        ".episode-play"
-
-    );
-
-    const coverButton = event.target.closest(
-
-        ".episode-cover-play"
-
-    );
-
-    const heroButton = event.target.closest(
-
-        ".hero-play"
-
-    );
-
-    if (playButton) {
-
-        event.preventDefault();
-
-        this.playEpisode(
-
-            playButton.dataset.id
-
-        );
-
-        return;
-
-    }
-
-    if (coverButton) {
-
-        event.preventDefault();
-
-        this.playEpisode(
-
-            coverButton.dataset.id
-
-        );
-
-        return;
-
-    }
-
-    if (heroButton) {
-
-        event.preventDefault();
-
-        this.playEpisode(
-
-            heroButton.dataset.id
-
-        );
-
-        return;
-
-    }
-
-};
-
-/* ==========================================================
-   Play Episode
-   ========================================================== */
-
-UI.playEpisode = function (id) {
-
-    const episode = Feed.getEpisode(
-
-        Number(id)
-
-    );
-
-    if (!episode) {
-
-        return;
-
-    }
-
-    this.highlightPlayingCard(id);
-
-    Player.load(episode);
-
-    Player.play();
-
-};
-
-/* ==========================================================
-   Highlight Playing Card
-   ========================================================== */
-
-UI.highlightPlayingCard = function (id) {
-
-    document
-
-        .querySelectorAll(".episode-card")
-
-        .forEach(card => {
-
-            card.classList.remove(
-
-                "playing"
-
-            );
-
-        });
-
-    const active = document.querySelector(
-
-        `.episode-card[data-id="${id}"]`
-
-    );
-
-    if (active) {
-
-        active.classList.add(
-
-            "playing"
-
-        );
-
-    }
-
-};
-
-
 
 
 
@@ -550,7 +161,11 @@ UI.highlightPlayingCard = function (id) {
    Render Skeleton
    ========================================================== */
 
-UI.renderSkeleton = function (count = 6) {
+UI.renderSkeleton = function (
+
+    count = 6
+
+) {
 
     if (!this.episodesContainer) {
 
@@ -560,7 +175,15 @@ UI.renderSkeleton = function (count = 6) {
 
     let html = "";
 
-    for (let i = 0; i < count; i++) {
+    for (
+
+        let i = 0;
+
+        i < count;
+
+        i++
+
+    ) {
 
         html += `
 
@@ -586,33 +209,31 @@ UI.renderSkeleton = function (count = 6) {
 
     }
 
-    this.episodesContainer.innerHTML = html;
+    this.episodesContainer.innerHTML =
+
+        html;
 
 };
 
+
+
+
+
+
+
 /* ==========================================================
-   Remove Skeleton
+   Render Hero
    ========================================================== */
 
-UI.removeSkeleton = function () {
+UI.renderHero = function () {
 
-    if (!this.episodesContainer) {
+    if (!this.heroContainer) {
 
         return;
 
     }
 
-    this.episodesContainer.innerHTML = "";
-
-};
-
-/* ==========================================================
-   Scroll To Hero
-   ========================================================== */
-
-UI.scrollToHero = function () {
-
-    const hero = document.getElementById("hero");
+    const hero = Feed.getHero();
 
     if (!hero) {
 
@@ -620,46 +241,448 @@ UI.scrollToHero = function () {
 
     }
 
-    hero.scrollIntoView({
+    this.heroContainer.innerHTML = `
 
-        behavior: "smooth",
+<article class="hero-card">
 
-        block: "start"
+    <div class="hero-content">
 
-    });
+        <span class="hero-badge">
+
+            جدیدترین اپیزود
+
+        </span>
+
+        <h1 class="hero-title">
+
+            ${hero.title}
+
+        </h1>
+
+        <p class="hero-description">
+
+            ${hero.description || ""}
+
+        </p>
+
+        <div class="hero-meta">
+
+            <div class="hero-meta-item">
+
+                <i class="fa-regular fa-calendar"></i>
+
+                ${Feed.formatDate(hero.published)}
+
+            </div>
+
+            <div class="hero-meta-item">
+
+                <i class="fa-regular fa-clock"></i>
+
+                ${hero.duration || ""}
+
+            </div>
+
+        </div>
+
+        <div class="hero-actions">
+
+            <a
+
+                class="hero-play"
+
+                href="${hero.video}"
+
+                target="_blank"
+
+                rel="noopener"
+
+            >
+
+                <i class="fa-solid fa-play"></i>
+
+                مشاهده در آپارات
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <div class="hero-media">
+
+        <img
+
+            src="${hero.cover}"
+
+            alt="${hero.title}"
+
+            loading="eager"
+
+        >
+
+    </div>
+
+</article>
+
+`;
 
 };
 
+
+
+
+
+
 /* ==========================================================
-   Scroll To Episode
+   Create Episode Card
    ========================================================== */
 
-UI.scrollToEpisode = function (id) {
+UI.createEpisodeCard = function (episode) {
 
-    const card = document.querySelector(
+    return `
 
-        `.episode-card[data-id="${id}"]`
+<article
 
-    );
+    class="episode-card"
 
-    if (!card) {
+    data-id="${episode.id}"
+
+>
+
+    <div class="episode-cover">
+
+        <img
+
+            src="${episode.cover}"
+
+            alt="${episode.title}"
+
+            loading="lazy"
+
+        >
+
+        <span class="episode-duration">
+
+            ${episode.duration || ""}
+
+        </span>
+
+    </div>
+
+    <div class="episode-body">
+
+        <h2 class="episode-title">
+
+            ${episode.title}
+
+        </h2>
+
+        <p class="episode-description">
+
+            ${episode.description || ""}
+
+        </p>
+
+        <div class="episode-meta">
+
+            <span class="episode-meta-item">
+
+                <i class="fa-regular fa-calendar"></i>
+
+                ${Feed.formatDate(
+
+                    episode.published
+
+                )}
+
+            </span>
+
+            <span class="episode-meta-item">
+
+                <i class="fa-brands fa-youtube"></i>
+
+                آپارات
+
+            </span>
+
+        </div>
+
+        <div class="episode-footer">
+
+            <a
+
+                class="episode-play"
+
+                href="${episode.video}"
+
+                target="_blank"
+
+                rel="noopener"
+
+            >
+
+                <i class="fa-solid fa-play"></i>
+
+                مشاهده در آپارات
+
+            </a>
+
+        </div>
+
+    </div>
+
+</article>
+
+`;
+
+};
+
+
+
+/* ==========================================================
+   Render Episodes
+   ========================================================== */
+
+UI.renderEpisodes = function (
+
+    episodes
+
+) {
+
+    if (
+
+        !this.episodesContainer
+
+    ) {
 
         return;
 
     }
 
-    card.scrollIntoView({
+    if (
 
-        behavior: "smooth",
+        !episodes ||
 
-        block: "center"
+        episodes.length === 0
 
-    });
+    ) {
+
+        this.showEmpty();
+
+        return;
+
+    }
+
+    this.hideEmpty();
+
+    this.episodesContainer.innerHTML =
+
+        episodes
+
+            .map(
+
+                episode =>
+
+                    this.createEpisodeCard(
+
+                        episode
+
+                    )
+
+            )
+
+            .join("");
 
 };
 
+
+
+
+
+
+
+
 /* ==========================================================
-   Toast Message
+   Bind Events
+   ========================================================== */
+
+UI.bindEvents = function () {
+
+    document.addEventListener(
+
+        "click",
+
+        this.handleClick.bind(this)
+
+    );
+
+};
+
+
+
+
+
+/* ==========================================================
+   Handle Click
+   ========================================================== */
+
+UI.handleClick = function (
+
+    event
+
+) {
+
+    const play =
+
+        event.target.closest(
+
+            ".episode-play"
+
+        );
+
+    if (
+
+        !play
+
+    ) {
+
+        return;
+
+    }
+
+    event.preventDefault();
+
+    window.open(
+
+        play.href,
+
+        "_blank"
+
+    );
+
+};
+
+
+
+
+
+/* ==========================================================
+   Scroll Hero
+   ========================================================== */
+
+UI.scrollToHero = function () {
+
+    document
+
+        .getElementById(
+
+            "hero"
+
+        )
+
+        ?.scrollIntoView({
+
+            behavior: "smooth",
+
+            block: "start"
+
+        });
+
+};
+
+
+
+
+
+/* ==========================================================
+   Scroll Episode
+   ========================================================== */
+
+UI.scrollToEpisode = function (
+
+    id
+
+) {
+
+    document
+
+        .querySelector(
+
+            `.episode-card[data-id="${id}"]`
+
+        )
+
+        ?.scrollIntoView({
+
+            behavior: "smooth",
+
+            block: "center"
+
+        });
+
+};
+
+
+
+
+
+/* ==========================================================
+   Highlight Card
+   ========================================================== */
+
+UI.highlightPlayingCard = function (
+
+    id
+
+) {
+
+    document
+
+        .querySelectorAll(
+
+            ".episode-card"
+
+        )
+
+        .forEach(
+
+            card =>
+
+                card.classList.remove(
+
+                    "playing"
+
+                )
+
+        );
+
+    document
+
+        .querySelector(
+
+            `.episode-card[data-id="${id}"]`
+
+        )
+
+        ?.classList.add(
+
+            "playing"
+
+        );
+
+};
+
+
+
+
+
+
+
+
+
+/* ==========================================================
+   Toast
    ========================================================== */
 
 UI.toast = function (
@@ -670,41 +693,88 @@ UI.toast = function (
 
 ) {
 
-    const toast = document.createElement("div");
+    const toast =
 
-    toast.className = `toast ${type}`;
+        document.createElement(
 
-    toast.textContent = message;
+            "div"
 
-    document.body.appendChild(toast);
+        );
 
-    requestAnimationFrame(() => {
+    toast.className =
 
-        toast.classList.add("show");
+        `toast ${type}`;
 
-    });
+    toast.textContent =
 
-    setTimeout(() => {
+        message;
 
-        toast.classList.remove("show");
+    document.body.appendChild(
 
-        setTimeout(() => {
+        toast
 
-            toast.remove();
+    );
 
-        }, 300);
+    requestAnimationFrame(
 
-    }, 2500);
+        () =>
+
+            toast.classList.add(
+
+                "show"
+
+            )
+
+    );
+
+    setTimeout(
+
+        () => {
+
+            toast.classList.remove(
+
+                "show"
+
+            );
+
+            setTimeout(
+
+                () =>
+
+                    toast.remove(),
+
+                300
+
+            );
+
+        },
+
+        2500
+
+    );
 
 };
 
+
+
+
+
+
 /* ==========================================================
-   Show Error
+   Error Screen
    ========================================================== */
 
-UI.showError = function (message) {
+UI.showError = function (
 
-    if (!this.episodesContainer) {
+    message
+
+) {
+
+    if (
+
+        !this.episodesContainer
+
+    ) {
 
         return;
 
@@ -714,15 +784,27 @@ UI.showError = function (message) {
 
 <div class="feed-error">
 
-    <h2>خطایی رخ داده است</h2>
+    <h2>
 
-    <p>${message}</p>
+        خطا در دریافت اطلاعات
+
+    </h2>
+
+    <p>
+
+        ${message}
+
+    </p>
 
 </div>
 
 `;
 
 };
+
+
+
+
 
 
 /* ==========================================================
@@ -733,7 +815,7 @@ Feed.on(
 
     "feed:ready",
 
-    function () {
+    () => {
 
         UI.removeSkeleton();
 
@@ -753,17 +835,9 @@ Feed.on(
 
     "feed:updated",
 
-    function () {
+    () => {
 
-        UI.clear();
-
-        UI.renderHero();
-
-        UI.renderEpisodes(
-
-            Feed.getPage()
-
-        );
+        UI.refresh();
 
     }
 
@@ -773,11 +847,11 @@ Feed.on(
 
     "network:offline",
 
-    function () {
+    () => {
 
         UI.toast(
 
-            "اتصال اینترنت قطع شده است.",
+            "اتصال اینترنت قطع شد.",
 
             "warning"
 
@@ -791,7 +865,7 @@ Feed.on(
 
     "network:online",
 
-    function () {
+    () => {
 
         UI.toast(
 
@@ -805,8 +879,12 @@ Feed.on(
 
 );
 
+
+
+
+
 /* ==========================================================
-   Refresh UI
+   Refresh
    ========================================================== */
 
 UI.refresh = function () {
@@ -823,8 +901,11 @@ UI.refresh = function () {
 
 };
 
+
+
+
 /* ==========================================================
-   Initialize UI
+   Start
    ========================================================== */
 
 UI.start = function () {
@@ -836,6 +917,19 @@ UI.start = function () {
     this.bindEvents();
 
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* ==========================================================
    Public Methods
@@ -853,15 +947,57 @@ UI.destroy = function () {
 
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* ==========================================================
    Global Export
    ========================================================== */
 
 window.UI = UI;
 
+
+
+
+
+/* ==========================================================
+   Auto Start
+   ========================================================== */
+
+UI.start();
+
+
+
+
+
+
 /* ==========================================================
    End Of File
    ========================================================== */
+
+
+
+
+
+
+
+
 
 
 

@@ -1,87 +1,47 @@
-import {
-    isValidUrl,
-    cleanText,
-    uniqueBy,
-    sortEpisodes
-} from "./utils.js";
-
 /* ==========================================================
-   Validate Feed
+   NightCast Validator
+   Version : 4.0.0
    ========================================================== */
 
-export function validateFeed(feed) {
+import { now } from "./utils.js";
 
-    feed.episodes =
+/* ==========================================================
+   Helpers
+   ========================================================== */
 
-        validateEpisodes(
+function string(value) {
 
-            feed.episodes
-
-        );
-
-    feed.episodes =
-
-        uniqueBy(
-
-            feed.episodes,
-
-            "id"
-
-        );
-
-    feed.episodes =
-
-        sortEpisodes(
-
-            feed.episodes
-
-        );
-
-    return feed;
+    return String(value || "").trim();
 
 }
 
+function array(value) {
 
+    return Array.isArray(value)
 
-/* ==========================================================
-   Validate Episodes
-   ========================================================== */
+        ? value
 
-function validateEpisodes(episodes = []) {
-
-    const valid = [];
-
-    for (const episode of episodes) {
-
-        const item =
-
-            validateEpisode(
-
-                episode
-
-            );
-
-        if (item) {
-
-            valid.push(item);
-
-        }
-
-    }
-
-    return valid;
+        : [];
 
 }
 
+function number(value) {
 
+    return Number(value || 0);
 
-
+}
 
 /* ==========================================================
-   Validate Episode
+   Episode Validation
    ========================================================== */
 
 function validateEpisode(item) {
+
+    if (!item) {
+
+        return null;
+
+    }
 
     if (!item.id) {
 
@@ -95,213 +55,299 @@ function validateEpisode(item) {
 
     }
 
-    item.title =
-
-        cleanText(
-
-            item.title
-
-        );
-
-    item.description =
-
-        cleanText(
-
-            item.description
-
-        );
-
-    return item;
-
-}
-
-
-
-/* ==========================================================
-   Validate URLs
-   ========================================================== */
-
-function validateUrls(item) {
-
-    if (
-
-        item.cover &&
-
-        !isValidUrl(item.cover)
-
-    ) {
-
-        item.cover = "";
-
-    }
-
-    if (
-
-        item.video &&
-
-        !isValidUrl(item.video)
-
-    ) {
+    if (!item.video) {
 
         return null;
 
     }
 
+    return {
+
+        id:
+
+            item.id,
+
+        title:
+
+            string(item.title),
+
+        subtitle:
+
+            string(item.subtitle),
+
+        description:
+
+            string(item.description),
+
+        cover:
+
+            string(item.cover),
+
+        audio:
+
+            string(item.audio),
+
+        video:
+
+            string(item.video),
+
+        duration:
+
+            number(item.duration),
+
+        duration_text:
+
+            string(item.duration_text),
+
+        published:
+
+            string(item.published),
+
+        published_at:
+
+            string(item.published),
+
+        author:
+
+            string(item.author),
+
+        category:
+
+            string(item.category),
+
+        tags:
+
+            array(item.tags),
+
+        source: {
+
+            platform:
+
+                "aparat",
+
+            url:
+
+                string(item.video)
+
+        },
+
+        book: {
+
+            title:
+
+                string(item.title),
+
+            author:
+
+                string(item.author)
+
+        }
+
+    };
+
+}
+
+
+/* ==========================================================
+   Normalize Episodes
+   ========================================================== */
+
+function normalizeEpisodes(list) {
+
+    if (!Array.isArray(list)) {
+
+        return [];
+
+    }
+
+    const episodes = [];
+
+    const ids = new Set();
+
+    for (const item of list) {
+
+        const episode = validateEpisode(item);
+
+        if (!episode) {
+
+            continue;
+
+        }
+
+        if (ids.has(episode.id)) {
+
+            continue;
+
+        }
+
+        ids.add(episode.id);
+
+        episodes.push(episode);
+
+    }
+
+    episodes.sort(
+
+        (a, b) =>
+
+            new Date(b.published_at) -
+
+            new Date(a.published_at)
+
+    );
+
+    return episodes;
+
+}
+
+/* ==========================================================
+   Normalize Hero
+   ========================================================== */
+
+function normalizeHero(feed, episodes) {
+
     if (
 
-        item.audio &&
+        feed.hero &&
 
-        !isValidUrl(item.audio)
+        feed.hero.episode_id
 
     ) {
 
-        item.audio = "";
+        return {
+
+            episode_id:
+
+                feed.hero.episode_id
+
+        };
 
     }
-
-    return item;
-
-}
-
-/* ==========================================================
-   Validate Date
-   ========================================================== */
-
-function validateDate(item) {
-
-    if (!item.published) {
-
-        item.published =
-
-            new Date().toISOString();
-
-    }
-
-    return item;
-
-}
-
-
-
-
-
-
-/* ==========================================================
-   Validate Strings
-   ========================================================== */
-
-function validateStrings(item) {
-
-    item.title =
-
-        (item.title || "").trim();
-
-    item.subtitle =
-
-        (item.subtitle || "").trim();
-
-    item.description =
-
-        (item.description || "").trim();
-
-    item.author =
-
-        (item.author || "").trim();
-
-    item.category =
-
-        (item.category || "").trim();
-
-    return item;
-
-}
-
-
-/* ==========================================================
-   Continue Validation
-   ========================================================== */
-
-function validateEpisode(item) {
-
-    if (!item.id) return null;
-
-    if (!item.title) return null;
-
-    item = validateStrings(item);
-
-    item = validateUrls(item);
-
-    if (!item) return null;
-
-    item = validateDate(item);
-
-    return item;
-
-}
-
-
-
-/* ==========================================================
-   Statistics
-   ========================================================== */
-
-export function statistics(feed) {
 
     return {
 
-        total: feed.episodes.length,
+        episode_id:
 
-        generated: feed.generated_at,
+            episodes.length
 
-        platform: feed.source.type
+                ? episodes[0].id
+
+                : null
+
+    };
+
+        }
+
+
+/* ==========================================================
+   Normalize Feed
+   ========================================================== */
+
+export function validate(feed) {
+
+    if (!feed) {
+
+        throw new Error("Feed is empty.");
+
+    }
+
+    const episodes = normalizeEpisodes(
+
+        feed.episodes || []
+
+    );
+
+    return {
+
+        version:
+
+            feed.version || "3.0.0",
+
+        generated_at:
+
+            new Date().toISOString(),
+
+        source: {
+
+            type:
+
+                feed.source?.type ||
+
+                "aparat",
+
+            url:
+
+                feed.source?.url ||
+
+                "https://www.aparat.com/rss/nightcast"
+
+        },
+
+        channel:
+
+            feed.channel || {
+
+                title: "NightCast",
+
+                description: "رادیو خلاصه کتاب",
+
+                platform: "aparat"
+
+            },
+
+        hero:
+
+            normalizeHero(
+
+                feed,
+
+                episodes
+
+            ),
+
+        pagination: {
+
+            page: 1,
+
+            per_page: 10,
+
+            has_more:
+
+                episodes.length > 10
+
+        },
+
+        episodes
 
     };
 
 }
 
 /* ==========================================================
-   Report
+   Count
    ========================================================== */
 
-export function report(feed) {
+export function count(feed) {
 
-    const stats = statistics(feed);
+    if (
 
-    console.log("");
+        !feed ||
 
-    console.log("===================================");
+        !Array.isArray(feed.episodes)
 
-    console.log(" NightCast Validator");
+    ) {
 
-    console.log("===================================");
+        return 0;
 
-    console.log("Platform :", stats.platform);
+    }
 
-    console.log("Episodes :", stats.total);
-
-    console.log("Generated:", stats.generated);
-
-    console.log("===================================");
-
-    console.log("");
+    return feed.episodes.length;
 
 }
 
-/* ==========================================================
-   Validate & Report
-   ========================================================== */
 
-export function validate(feed) {
 
-    const validated = validateFeed(feed);
 
-    report(validated);
 
-    return validated;
 
-}
-
-/* ==========================================================
-   End Of File
-   ========================================================== */
 

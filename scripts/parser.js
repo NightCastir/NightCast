@@ -1,6 +1,6 @@
 /* ==========================================================
    NightCast Parser
-   Main Entry
+   Production Version
    ========================================================== */
 
 import { extract } from "./extractors/aparat.js";
@@ -20,74 +20,50 @@ import {
 } from "./utils.js";
 
 /* ==========================================================
-   Parser Version
+   Constants
    ========================================================== */
 
-const VERSION = "2.0.0";
+const VERSION = "3.0.0";
+
+const APP_NAME =
+
+    "NightCast Feed Generator";
+
+
+
 
 /* ==========================================================
-   Start
+   Banner
    ========================================================== */
 
-async function start() {
+function banner() {
 
-    log("--------------------------------");
+    log("");
 
-    log("NightCast Feed Generator");
+    log("========================================");
 
-    log("Version :", VERSION);
+    log(APP_NAME);
 
-    log("Started :", now());
+    log(`Version : ${VERSION}`);
 
-    log("--------------------------------");
+    log(`Started : ${now()}`);
 
-    try {
+    log("========================================");
 
-        await Generator.clean();
-
-        const feed =
-
-            await extract();
-
-        const validated =
-
-            validate(feed);
-
-        await Generator.build(
-
-            validated
-
-        );
-
-        log("");
-
-        log("Feed Generated Successfully");
-
-        log("");
-
-    }
-
-    catch (err) {
-
-        error(err.message);
-
-        process.exit(1);
-
-    }
+    log("");
 
 }
 
 
-/* ==========================================================
-   Execute
-   ========================================================== */
 
-start();
+
+
+
 /* ==========================================================
    Health Check
    ========================================================== */
 
-async function health(feed) {
+function health(feed) {
 
     if (!feed) {
 
@@ -103,7 +79,7 @@ async function health(feed) {
 
         throw new Error(
 
-            "Channel not found."
+            "Channel information not found."
 
         );
 
@@ -113,7 +89,7 @@ async function health(feed) {
 
         throw new Error(
 
-            "Episodes not found."
+            "Episodes array not found."
 
         );
 
@@ -123,25 +99,21 @@ async function health(feed) {
 
         throw new Error(
 
-            "No episodes found."
+            "No episodes extracted."
 
         );
 
     }
 
-    log(
-
-        `Channel : ${feed.channel.title}`
-
-    );
-
-    log(
-
-        `Episodes : ${feed.episodes.length}`
-
-    );
-
 }
+
+
+
+
+
+
+
+
 
 
 /* ==========================================================
@@ -169,6 +141,10 @@ function statistics(feed) {
 }
 
 
+
+
+
+
 /* ==========================================================
    Print Statistics
    ========================================================== */
@@ -179,89 +155,126 @@ function printStatistics(feed) {
 
         statistics(feed);
 
-    log("--------------------------------");
+    log("");
 
-    log("Statistics");
+    log("========================================");
 
-    log("--------------------------------");
+    log("Build Statistics");
+
+    log("========================================");
 
     log(
 
-        "Channel :", stats.channel
+        `Channel   : ${stats.channel}`
 
     );
 
     log(
 
-        "Episodes :", stats.episodes
+        `Episodes  : ${stats.episodes}`
 
     );
 
     log(
 
-        "Generated :", stats.generated
+        `Generated : ${stats.generated}`
 
     );
 
-    log("--------------------------------");
+    log("========================================");
+
+    log("");
 
 }
 
 
-/* ==========================================================
-   Continue Start()
-   ========================================================== */
-
-// بعد از extract()
-
-await health(feed);
-
-// بعد از validate()
-
-printStatistics(validated);
 
 
 
 
 /* ==========================================================
-   Exit Success
+   Build Process
    ========================================================== */
 
-function success() {
+async function start() {
 
-    log("");
+    banner();
 
-    log("====================================");
+    try {
 
-    log(" NightCast Build Completed ");
+        log(
 
-    log("====================================");
+            "Cleaning old files..."
 
-    log("");
+        );
 
-    process.exit(0);
+        await Generator.clean();
 
-}
+        log(
 
-/* ==========================================================
-   Exit Error
-   ========================================================== */
+            "Downloading RSS..."
 
-function failure(err) {
+        );
 
-    error("");
+        const feed =
 
-    error("====================================");
+            await extract();
 
-    error(" Build Failed ");
+        health(feed);
 
-    error("====================================");
+        log(
 
-    error(err.message);
+            "Validating feed..."
 
-    error("");
+        );
 
-    process.exit(1);
+        const validated =
+
+            validate(feed);
+
+        log(
+
+            "Generating output files..."
+
+        );
+
+        await Generator.build(
+
+            validated
+
+        );
+
+        printStatistics(
+
+            validated
+
+        );
+
+        return validated;
+
+    }
+
+    catch (err) {
+
+        error("");
+
+        error(
+
+            "Parser Error"
+
+        );
+
+        error(
+
+            err.message
+
+        );
+
+        error("");
+
+        throw err;
+
+    }
 
 }
 
@@ -273,43 +286,65 @@ function failure(err) {
    Main
    ========================================================== */
 
-(async () => {
+async function main() {
 
     try {
 
         await start();
 
-        success();
+        log("");
+
+        log("========================================");
+
+        log(" NightCast Build Completed ");
+
+        log("========================================");
+
+        log("");
+
+        process.exit(0);
 
     }
 
     catch (err) {
 
-        failure(err);
+        error("");
+
+        error("========================================");
+
+        error(" Build Failed ");
+
+        error("========================================");
+
+        error(err.message);
+
+        error("");
+
+        process.exit(1);
 
     }
 
-})();
-
+}
 
 
 
 
 /* ==========================================================
-   Export
+   Execute
    ========================================================== */
 
-export {
+main();
 
-    start,
 
-    VERSION
 
-};
 
-/* ==========================================================
-   End Of File
-   ========================================================== */
+
+
+
+
+
+
+
 
 
 

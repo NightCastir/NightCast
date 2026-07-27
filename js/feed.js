@@ -1,15 +1,10 @@
 /* ==========================================================
    NightCast
    Feed Manager
-   File : feed.js
-   Version : 1.0.0
+   Version 2.0.0
    ========================================================== */
 
 "use strict";
-
-/* ==========================================================
-   Feed Manager
-   ========================================================== */
 
 const Feed = {
 
@@ -19,9 +14,20 @@ const Feed = {
 
     loading: false,
 
-    initialized: false
+    initialized: false,
+
+    page: 1,
+
+    perPage: 10,
+
+    events: {}
 
 };
+
+
+
+
+
 
 /* ==========================================================
    Load Feed
@@ -39,11 +45,17 @@ Feed.load = async function () {
 
     try {
 
-        const response = await fetch(this.url, {
+        const response = await fetch(
 
-            cache: "no-cache"
+            this.url,
 
-        });
+            {
+
+                cache: "no-cache"
+
+            }
+
+        );
 
         if (!response.ok) {
 
@@ -55,7 +67,9 @@ Feed.load = async function () {
 
         }
 
-        const json = await response.json();
+        const json =
+
+            await response.json();
 
         this.validate(json);
 
@@ -67,11 +81,11 @@ Feed.load = async function () {
 
     }
 
-    catch (error) {
+    catch (err) {
 
-        console.error(error);
+        console.error(err);
 
-        this.showError(error);
+        this.showError(err);
 
         return null;
 
@@ -85,8 +99,12 @@ Feed.load = async function () {
 
 };
 
+
+
+
+
 /* ==========================================================
-   Reload Feed
+   Reload
    ========================================================== */
 
 Feed.reload = async function () {
@@ -100,94 +118,146 @@ Feed.reload = async function () {
 
 
 
+
 /* ==========================================================
-   Validate Feed Structure
+   Validate Feed
    ========================================================== */
 
 Feed.validate = function (data) {
 
-    if (!data || typeof data !== "object") {
+    if (
 
-        throw new Error("Feed data is invalid.");
+        !data ||
+
+        typeof data !== "object"
+
+    ) {
+
+        throw new Error(
+
+            "Feed is invalid."
+
+        );
 
     }
 
-    if (!Array.isArray(data.episodes)) {
+    if (
 
-        throw new Error("Episodes array not found.");
+        !Array.isArray(
+
+            data.episodes
+
+        )
+
+    ) {
+
+        throw new Error(
+
+            "Episodes not found."
+
+        );
 
     }
 
     if (!data.site) {
 
-        throw new Error("Site information is missing.");
+        throw new Error(
+
+            "Site section missing."
+
+        );
 
     }
 
     if (!data.source) {
 
-        throw new Error("Source information is missing.");
+        throw new Error(
+
+            "Source section missing."
+
+        );
 
     }
 
-    this.validateEpisodes(data.episodes);
+    this.validateEpisodes(
+
+        data.episodes
+
+    );
 
 };
+
+
+
+
+
 
 /* ==========================================================
    Validate Episodes
    ========================================================== */
 
-Feed.validateEpisodes = function (episodes) {
+Feed.validateEpisodes = function (
 
-    episodes.forEach((episode, index) => {
+    episodes
 
-        if (!episode.id) {
+) {
 
-            console.warn(
+    episodes.forEach(
 
-                `Episode ${index} has no id.`
+        (episode, index) => {
 
-            );
+            if (!episode.id) {
+
+                console.warn(
+
+                    `Episode ${index} has no id.`
+
+                );
+
+            }
+
+            if (!episode.title) {
+
+                console.warn(
+
+                    `Episode ${index} has no title.`
+
+                );
+
+            }
+
+            if (!episode.video) {
+
+                console.warn(
+
+                    `Episode ${index} has no video.`
+
+                );
+
+            }
+
+            if (!episode.cover) {
+
+                console.warn(
+
+                    `Episode ${index} has no cover.`
+
+                );
+
+            }
 
         }
 
-        if (!episode.title) {
-
-            console.warn(
-
-                `Episode ${index} has no title.`
-
-            );
-
-        }
-
-        if (!episode.audio) {
-
-            console.warn(
-
-                `Episode ${index} has no audio.`
-
-            );
-
-        }
-
-        if (!episode.cover) {
-
-            console.warn(
-
-                `Episode ${index} has no cover image.`
-
-            );
-
-        }
-
-    });
+    );
 
 };
 
+
+
+
+
 /* ==========================================================
-   Get Hero Episode
+   Hero Episode
    ========================================================== */
 
 Feed.getHero = function () {
@@ -198,18 +268,40 @@ Feed.getHero = function () {
 
     }
 
-    const heroId = this.cache.hero.episode_id;
+    const heroId =
 
-    return this.cache.episodes.find(
+        this.cache.hero?.episode_id;
 
-        item => item.id === heroId
+    if (heroId) {
 
-    ) || this.cache.episodes[0];
+        const hero =
+
+            this.cache.episodes.find(
+
+                episode =>
+
+                    episode.id === heroId
+
+            );
+
+        if (hero) {
+
+            return hero;
+
+        }
+
+    }
+
+    return this.cache.episodes[0] || null;
 
 };
 
+
+
+
+
 /* ==========================================================
-   Get Episodes
+   Episodes
    ========================================================== */
 
 Feed.getEpisodes = function () {
@@ -224,12 +316,6 @@ Feed.getEpisodes = function () {
 
 };
 
-
-
-/* ==========================================================
-   Get Episode By ID
-   ========================================================== */
-
 Feed.getEpisode = function (id) {
 
     if (!this.cache) {
@@ -240,15 +326,13 @@ Feed.getEpisode = function (id) {
 
     return this.cache.episodes.find(
 
-        episode => episode.id === id
+        episode =>
+
+            episode.id === id
 
     ) || null;
 
 };
-
-/* ==========================================================
-   Get Latest Episode
-   ========================================================== */
 
 Feed.getLatest = function () {
 
@@ -262,6 +346,9 @@ Feed.getLatest = function () {
 
 };
 
+
+
+
 /* ==========================================================
    Sort Episodes
    ========================================================== */
@@ -274,20 +361,35 @@ Feed.sortByDate = function () {
 
     }
 
-    return this.cache.episodes.sort(
+    return [
+
+        ...this.cache.episodes
+
+    ].sort(
 
         (a, b) =>
 
-            new Date(b.published_at) -
+            new Date(
 
-            new Date(a.published_at)
+                b.published
+
+            ) -
+
+            new Date(
+
+                a.published
+
+            )
 
     );
 
 };
 
+
+
+
 /* ==========================================================
-   Search Episodes
+   Search
    ========================================================== */
 
 Feed.search = function (keyword) {
@@ -298,51 +400,79 @@ Feed.search = function (keyword) {
 
     }
 
-    keyword = keyword.trim().toLowerCase();
+    keyword =
+
+        keyword
+
+        .trim()
+
+        .toLowerCase();
 
     return this.cache.episodes.filter(
 
-        episode => {
+        episode =>
 
-            return (
+            (
 
-                episode.title
+                episode.title ||
 
-                    ?.toLowerCase()
+                ""
 
-                    .includes(keyword)
+            )
 
-                ||
+            .toLowerCase()
 
-                episode.description
+            .includes(keyword)
 
-                    ?.toLowerCase()
+            ||
 
-                    .includes(keyword)
+            (
 
-                ||
+                episode.description ||
 
-                episode.book?.title
+                ""
 
-                    ?.toLowerCase()
+            )
 
-                    .includes(keyword)
+            .toLowerCase()
 
-                ||
+            .includes(keyword)
 
-                episode.book?.author
+            ||
 
-                    ?.toLowerCase()
+            (
 
-                    .includes(keyword)
+                episode.author ||
 
-            );
+                ""
 
-        }
+            )
+
+            .toLowerCase()
+
+            .includes(keyword)
+
+            ||
+
+            (
+
+                episode.category ||
+
+                ""
+
+            )
+
+            .toLowerCase()
+
+            .includes(keyword)
 
     );
 
 };
+
+
+
+
 
 /* ==========================================================
    Filter By Tag
@@ -360,7 +490,11 @@ Feed.filterByTag = function (tag) {
 
         episode =>
 
-            Array.isArray(episode.tags)
+            Array.isArray(
+
+                episode.tags
+
+            )
 
             &&
 
@@ -374,16 +508,10 @@ Feed.filterByTag = function (tag) {
 
 
 
+
+
 /* ==========================================================
    Pagination
-   ========================================================== */
-
-Feed.page = 1;
-
-Feed.perPage = 10;
-
-/* ==========================================================
-   Get Page
    ========================================================== */
 
 Feed.getPage = function (page = 1) {
@@ -394,39 +522,41 @@ Feed.getPage = function (page = 1) {
 
     }
 
-    const start = (page - 1) * this.perPage;
+    const start =
 
-    const end = start + this.perPage;
+        (page - 1) * this.perPage;
 
-    return this.cache.episodes.slice(start, end);
+    const end =
+
+        start + this.perPage;
+
+    return this.cache.episodes.slice(
+
+        start,
+
+        end
+
+    );
 
 };
-
-/* ==========================================================
-   Load Next Page
-   ========================================================== */
 
 Feed.nextPage = function () {
 
     this.page++;
 
-    return this.getPage(this.page);
+    return this.getPage(
+
+        this.page
+
+    );
 
 };
-
-/* ==========================================================
-   Reset Pagination
-   ========================================================== */
 
 Feed.reset = function () {
 
     this.page = 1;
 
 };
-
-/* ==========================================================
-   Has More Episodes
-   ========================================================== */
 
 Feed.hasMore = function () {
 
@@ -444,10 +574,6 @@ Feed.hasMore = function () {
 
 };
 
-/* ==========================================================
-   Total Episodes
-   ========================================================== */
-
 Feed.count = function () {
 
     if (!this.cache) {
@@ -459,6 +585,14 @@ Feed.count = function () {
     return this.cache.episodes.length;
 
 };
+
+
+
+
+
+
+
+
 
 /* ==========================================================
    Cache Helpers
@@ -478,10 +612,6 @@ Feed.isLoaded = function () {
 
 };
 
-/* ==========================================================
-   Last Updated
-   ========================================================== */
-
 Feed.lastUpdated = function () {
 
     if (!this.cache) {
@@ -497,56 +627,99 @@ Feed.lastUpdated = function () {
 
 
 
-
 /* ==========================================================
    Event System
    ========================================================== */
 
-Feed.events = {};
+Feed.on = function (
 
-Feed.on = function (eventName, callback) {
+    eventName,
 
-    if (!this.events[eventName]) {
+    callback
+
+) {
+
+    if (
+
+        !this.events[eventName]
+
+    ) {
 
         this.events[eventName] = [];
 
     }
 
-    this.events[eventName].push(callback);
+    this.events[eventName].push(
+
+        callback
+
+    );
 
 };
 
-Feed.emit = function (eventName, payload = null) {
+Feed.emit = function (
 
-    if (!this.events[eventName]) {
+    eventName,
+
+    payload = null
+
+) {
+
+    if (
+
+        !this.events[eventName]
+
+    ) {
 
         return;
 
     }
 
-    this.events[eventName].forEach(function (callback) {
+    this.events[eventName].forEach(
 
-        callback(payload);
+        callback =>
 
-    });
+            callback(payload)
+
+    );
 
 };
+
+
 
 /* ==========================================================
    Auto Refresh
    ========================================================== */
 
-Feed.autoRefresh = function (minutes = 30) {
+Feed.autoRefresh = function (
 
-    setInterval(async () => {
+    minutes = 30
 
-        await this.reload();
+) {
 
-        this.emit("feed:updated", this.cache);
+    setInterval(
 
-    }, minutes * 60 * 1000);
+        async () => {
+
+            await this.reload();
+
+            this.emit(
+
+                "feed:updated",
+
+                this.cache
+
+            );
+
+        },
+
+        minutes * 60 * 1000
+
+    );
 
 };
+
+
 
 /* ==========================================================
    Network Status
@@ -558,17 +731,35 @@ Feed.isOnline = function () {
 
 };
 
-window.addEventListener("online", () => {
+window.addEventListener(
 
-    Feed.emit("network:online");
+    "online",
 
-});
+    () =>
 
-window.addEventListener("offline", () => {
+        Feed.emit(
 
-    Feed.emit("network:offline");
+            "network:online"
 
-});
+        )
+
+);
+
+window.addEventListener(
+
+    "offline",
+
+    () =>
+
+        Feed.emit(
+
+            "network:offline"
+
+        )
+
+);
+
+
 
 /* ==========================================================
    Error Screen
@@ -576,7 +767,13 @@ window.addEventListener("offline", () => {
 
 Feed.showError = function (error) {
 
-    const container = document.getElementById("episodes");
+    const container =
+
+        document.getElementById(
+
+            "episodeList"
+
+        );
 
     if (!container) {
 
@@ -588,9 +785,17 @@ Feed.showError = function (error) {
 
         <div class="feed-error">
 
-            <h2>خطا در دریافت اطلاعات</h2>
+            <h2>
 
-            <p>${error.message}</p>
+                خطا در دریافت اطلاعات
+
+            </h2>
+
+            <p>
+
+                ${error.message}
+
+            </p>
 
         </div>
 
@@ -598,31 +803,60 @@ Feed.showError = function (error) {
 
 };
 
+
+
+
 /* ==========================================================
    Utilities
    ========================================================== */
 
-Feed.formatDate = function (dateString) {
+Feed.formatDate = function (
 
-    return new Date(dateString)
+    dateString
 
-        .toLocaleDateString(
+) {
 
-            "fa-IR"
+    if (!dateString) {
 
-        );
+        return "";
+
+    }
+
+    return new Date(
+
+        dateString
+
+    ).toLocaleDateString(
+
+        "fa-IR"
+
+    );
 
 };
 
-Feed.formatDuration = function (seconds) {
+Feed.formatDuration = function (
 
-    const min = Math.floor(seconds / 60);
+    duration
 
-    const sec = seconds % 60;
+) {
 
-    return `${min}:${String(sec).padStart(2,"0")}`;
+    if (
+
+        !duration ||
+
+        duration === ""
+
+    ) {
+
+        return "";
+
+    }
+
+    return duration;
 
 };
+
+
 
 /* ==========================================================
    Initialize
@@ -630,11 +864,26 @@ Feed.formatDuration = function (seconds) {
 
 Feed.init = async function () {
 
-    await this.load();
+    const data =
 
-    this.emit("feed:ready", this.cache);
+        await this.load();
+
+    if (data) {
+
+        this.emit(
+
+            "feed:ready",
+
+            data
+
+        );
+
+    }
 
 };
+
+
+
 
 /* ==========================================================
    Global Export
@@ -642,7 +891,46 @@ Feed.init = async function () {
 
 window.Feed = Feed;
 
+
+
+/* ==========================================================
+   Auto Start
+   ========================================================== */
+
+Feed.init();
+
+
+
 /* ==========================================================
    End Of File
    ========================================================== */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

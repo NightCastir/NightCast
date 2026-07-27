@@ -1,37 +1,64 @@
 import Parser from "rss-parser";
 
 import {
+
     createId,
+
     cleanText,
+
     formatDate,
+
     log
+
 } from "../utils.js";
+
+/* ==========================================================
+   RSS Configuration
+   ========================================================== */
+
+const RSS_URL =
+
+    "https://www.aparat.com/rss/nightcast";
 
 const rss = new Parser({
 
-    timeout: 15000,
+    timeout: 20000,
+
+    headers: {
+
+        "User-Agent":
+
+            "NightCast RSS Reader"
+
+    },
 
     customFields: {
 
         item: [
 
+            ["guid", "guid"],
+
+            ["description", "description"],
+
+            ["content:encoded", "contentEncoded"],
+
             ["media:thumbnail", "thumbnail"],
 
             ["media:content", "media"],
 
-            ["enclosure", "enclosure"],
+            ["enclosure", "enclosure"]
 
-            ["guid", "guid"]
+        ],
+
+        feed: [
+
+            ["image", "image"]
 
         ]
 
     }
 
 });
-
-const RSS_URL =
-
-    "https://www.aparat.com/rss/nightcast";
 
 
 
@@ -43,7 +70,7 @@ export async function loadRSS() {
 
     log(
 
-        "Downloading RSS..."
+        "Connecting to Aparat RSS..."
 
     );
 
@@ -54,6 +81,30 @@ export async function loadRSS() {
             RSS_URL
 
         );
+
+    if (
+
+        !feed ||
+
+        !feed.items ||
+
+        feed.items.length === 0
+
+    ) {
+
+        throw new Error(
+
+            "RSS feed is empty."
+
+        );
+
+    }
+
+    log(
+
+        `RSS Loaded (${feed.items.length} items)`
+
+    );
 
     return feed;
 
@@ -85,7 +136,15 @@ export function extractChannel(feed) {
 
             feed.image?.url ||
 
-            ""
+            "",
+
+        language:
+
+            "fa",
+
+        platform:
+
+            "aparat"
 
     };
 
@@ -93,27 +152,134 @@ export function extractChannel(feed) {
 
 
 
+
 /* ==========================================================
-   Extract Episodes
+   Extract Image
    ========================================================== */
 
-export function extractEpisodes(feed) {
+function getImage(item) {
 
-    const episodes = [];
+    if (item.thumbnail?.url) {
 
-    for (const item of feed.items) {
-
-        episodes.push(
-
-            normalizeItem(item)
-
-        );
+        return item.thumbnail.url;
 
     }
 
-    return episodes;
+    if (item.thumbnail?.$?.url) {
 
-  }
+        return item.thumbnail.$.url;
+
+    }
+
+    if (item.media?.url) {
+
+        return item.media.url;
+
+    }
+
+    if (item.media?.$?.url) {
+
+        return item.media.$.url;
+
+    }
+
+    if (
+
+        item.enclosure?.url &&
+
+        item.enclosure.type?.startsWith("image")
+
+    ) {
+
+        return item.enclosure.url;
+
+    }
+
+    const html =
+
+        item.contentEncoded ||
+
+        item.description ||
+
+        item.content ||
+
+        "";
+
+    const match = html.match(
+
+        /<img[^>]+src=["']([^"']+)["']/i
+
+    );
+
+    if (match) {
+
+        return match[1];
+
+    }
+
+    return "";
+
+}
+
+
+
+/* ==========================================================
+   Extract Video
+   ========================================================== */
+
+function getVideoUrl(item) {
+
+    if (item.link) {
+
+        return item.link;
+
+    }
+
+    if (
+
+        item.enclosure?.url
+
+    ) {
+
+        return item.enclosure.url;
+
+    }
+
+    return "";
+
+}
+
+
+
+
+
+
+
+
+
+/* ==========================================================
+   Extract Description
+   ========================================================== */
+
+function getDescription(item) {
+
+    return cleanText(
+
+        item.contentSnippet ||
+
+        item.description ||
+
+        item.content ||
+
+        item.contentEncoded ||
+
+        ""
+
+    );
+
+}
+
+
 
 
 /* ==========================================================
@@ -148,31 +314,23 @@ function normalizeItem(item) {
 
         description:
 
-            cleanText(
-
-                item.content ||
-
-                item.contentSnippet ||
-
-                item.summary ||
-
-                ""
-
-            ),
+            getDescription(item),
 
         cover:
 
-            getThumbnail(item),
+            getImage(item),
 
-        audio: "",
+        audio:
+
+            "",
 
         video:
 
-            item.link || "",
+            getVideoUrl(item),
 
         duration:
 
-            getDuration(item),
+            "",
 
         published:
 
@@ -188,7 +346,7 @@ function normalizeItem(item) {
 
             item.author ||
 
-            "",
+            "NightCast",
 
         category:
 
@@ -204,7 +362,9 @@ function normalizeItem(item) {
 
         source:
 
-            item.link || "",
+            item.link ||
+
+            "",
 
         platform:
 
@@ -219,130 +379,7 @@ function normalizeItem(item) {
 }
 
 
-/* ==========================================================
-   Thumbnail
-   ========================================================== */
 
-function getThumbnail(item) {
-
-    if (
-
-        item.thumbnail &&
-
-        item.thumbnail.$ &&
-
-        item.thumbnail.$.url
-
-    ) {
-
-        return item.thumbnail.$.url;
-
-    }
-
-    if (
-
-        item.media &&
-
-        item.media.$ &&
-
-        item.media.$.url
-
-    ) {
-
-        return item.media.$.url;
-
-    }
-
-    return "";
-
-}
-
-
-
-/* ==========================================================
-   Duration
-   ========================================================== */
-
-function getDuration(item) {
-
-    if (item.itunes?.duration) {
-
-        return item.itunes.duration;
-
-    }
-
-    if (item.duration) {
-
-        return item.duration;
-
-    }
-
-    return "";
-
-}
-
-
-
-
-/* ==========================================================
-   Video URL
-   ========================================================== */
-
-function getVideoUrl(item) {
-
-    if (item.link) {
-
-        return item.link;
-
-    }
-
-    if (
-
-        item.enclosure &&
-
-        item.enclosure.url
-
-    ) {
-
-        return item.enclosure.url;
-
-    }
-
-    return "";
-
-}
-
-/* ==========================================================
-   Best Image
-   ========================================================== */
-
-function getBestImage(item) {
-
-    const thumbnail = getThumbnail(item);
-
-    if (thumbnail !== "") {
-
-        return thumbnail;
-
-    }
-
-    if (
-
-        item.enclosure &&
-
-        item.enclosure.type &&
-
-        item.enclosure.type.startsWith("image")
-
-    ) {
-
-        return item.enclosure.url;
-
-    }
-
-    return "";
-
-}
 
 
 
@@ -353,6 +390,12 @@ function getBestImage(item) {
    ========================================================== */
 
 function isValidEpisode(episode) {
+
+    if (!episode) {
+
+        return false;
+
+    }
 
     if (!episode.title) {
 
@@ -372,6 +415,7 @@ function isValidEpisode(episode) {
 
 
 
+
 /* ==========================================================
    Normalize Feed
    ========================================================== */
@@ -382,21 +426,33 @@ export function normalizeFeed(feed) {
 
     for (const item of feed.items) {
 
-        const episode = normalizeItem(item);
+        try {
 
-        episode.cover = getBestImage(item);
+            const episode =
 
-        episode.video = getVideoUrl(item);
+                normalizeItem(item);
 
-        if (
+            if (
 
-            isValidEpisode(episode)
+                isValidEpisode(episode)
 
-        ) {
+            ) {
 
-            episodes.push(
+                episodes.push(
 
-                episode
+                    episode
+
+                );
+
+            }
+
+        }
+
+        catch (err) {
+
+            log(
+
+                `Skip Item : ${err.message}`
 
             );
 
@@ -410,21 +466,111 @@ export function normalizeFeed(feed) {
 
 
 
+
+
+
+/* ==========================================================
+   Extract Episodes
+   ========================================================== */
+
+export function extractEpisodes(feed) {
+
+    return normalizeFeed(feed);
+
+}
+
+
+
+
+
+
+
+
+
+/* ==========================================================
+   Get Latest Episode
+   ========================================================== */
+
+export function latestEpisode(feed) {
+
+    const episodes =
+
+        normalizeFeed(feed);
+
+    if (
+
+        episodes.length === 0
+
+    ) {
+
+        return null;
+
+    }
+
+    return episodes[0];
+
+}
+
+
+
+
+
+
+
+
+/* ==========================================================
+   Feed Summary
+   ========================================================== */
+
+export function feedSummary(feed) {
+
+    const episodes =
+
+        normalizeFeed(feed);
+
+    return {
+
+        total:
+
+            episodes.length,
+
+        latest:
+
+            episodes[0]?.title ||
+
+            "",
+
+        generated:
+
+            new Date()
+
+                .toISOString()
+
+    };
+
+}
+
+
+
 /* ==========================================================
    Statistics
    ========================================================== */
 
 export function statistics(feed) {
 
+    const episodes = normalizeFeed(feed);
+
     return {
 
-        total:
+        total: feed.items.length,
 
-            feed.items.length,
+        extracted: episodes.length,
 
-        extracted:
+        skipped:
 
-            normalizeFeed(feed).length
+            feed.items.length -
+
+            episodes.length
 
     };
 
@@ -440,41 +586,87 @@ export async function extract() {
 
     try {
 
-        const feed = await loadRSS();
+        log(
 
-        const channel = extractChannel(feed);
+            "Starting Aparat Extract..."
 
-        const episodes = normalizeFeed(feed);
+        );
 
-        const stats = statistics(feed);
+        const feed =
+
+            await loadRSS();
+
+        const channel =
+
+            extractChannel(feed);
+
+        const episodes =
+
+            normalizeFeed(feed);
+
+        const stats =
+
+            statistics(feed);
 
         log(
 
-            `RSS Loaded : ${stats.total} items`
+            `Downloaded : ${stats.total}`
 
         );
 
         log(
 
-            `Episodes : ${stats.extracted}`
+            `Extracted : ${stats.extracted}`
+
+        );
+
+        log(
+
+            `Skipped : ${stats.skipped}`
 
         );
 
         return {
 
-            version: "2.0",
+            version: "2.1.0",
 
-            generated_at: new Date().toISOString(),
+            generated_at:
+
+                new Date().toISOString(),
 
             source: {
 
-                type: "aparat-rss",
+                type: "aparat",
 
                 url: RSS_URL
 
             },
 
             channel,
+
+            hero: {
+
+                episode_id:
+
+                    episodes.length > 0
+
+                        ? episodes[0].id
+
+                        : null
+
+            },
+
+            pagination: {
+
+                page: 1,
+
+                per_page: 10,
+
+                has_more:
+
+                    episodes.length > 10
+
+            },
 
             episodes
 
@@ -484,16 +676,17 @@ export async function extract() {
 
     catch (err) {
 
-        throw new Error(
+        log(
 
-            `RSS Extract Error : ${err.message}`
+            `Extractor Error : ${err.message}`
 
         );
+
+        throw err;
 
     }
 
 }
-
 
 
 /* ==========================================================
@@ -504,15 +697,29 @@ export async function health() {
 
     try {
 
-        const feed = await loadRSS();
+        const feed =
+
+            await loadRSS();
+
+        const stats =
+
+            statistics(feed);
 
         return {
 
             status: "ok",
 
-            title: feed.title,
+            title:
 
-            items: feed.items.length
+                feed.title,
+
+            items:
+
+                stats.total,
+
+            extracted:
+
+                stats.extracted
 
         };
 
@@ -524,7 +731,9 @@ export async function health() {
 
             status: "error",
 
-            message: err.message
+            message:
+
+                err.message
 
         };
 
@@ -534,8 +743,11 @@ export async function health() {
 
 
 
+
+
+
 /* ==========================================================
-   Constants
+   Public API
    ========================================================== */
 
 export {
@@ -545,7 +757,78 @@ export {
 };
 
 /* ==========================================================
+   Self Test
+   ========================================================== */
+
+export async function selfTest() {
+
+    log(
+
+        "Running Aparat Extractor Self Test..."
+
+    );
+
+    const result =
+
+        await extract();
+
+    log(
+
+        `Channel : ${result.channel.title}`
+
+    );
+
+    log(
+
+        `Episodes : ${result.episodes.length}`
+
+    );
+
+    if (
+
+        result.episodes.length > 0
+
+    ) {
+
+        log(
+
+            `Latest : ${result.episodes[0].title}`
+
+        );
+
+    }
+
+    return true;
+
+}
+
+/* ==========================================================
+   Module Version
+   ========================================================== */
+
+export const VERSION = "2.1.0";
+
+/* ==========================================================
    End Of File
    ========================================================== */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

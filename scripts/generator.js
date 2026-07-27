@@ -1,58 +1,180 @@
+
+/* ==========================================================
+   NightCast Generator
+   Production Version
+   ========================================================== */
+
 import fs from "fs-extra";
+
 import path from "path";
 
 import {
+
     saveJson,
+
     now,
+
     log
+
 } from "./utils.js";
 
 /* ==========================================================
-   Paths
+   Constants
    ========================================================== */
+
+const VERSION = "3.0.0";
 
 const DATA_DIR = "./data";
 
-const RAW_FILE =
-    path.join(DATA_DIR, "raw-feed.json");
-
-const FEED_FILE =
-    path.join(DATA_DIR, "feed.json");
-
-const LITE_FILE =
-    path.join(DATA_DIR, "feed-lite.json");
-
-const SEARCH_FILE =
-    path.join(DATA_DIR, "search.json");
-
-const RSS_FILE =
-    path.join(DATA_DIR, "rss.xml");
-
-const SITEMAP_FILE =
-    path.join(DATA_DIR, "sitemap-feed.xml");
 
 
 
 
 /* ==========================================================
-   Generate All
+   Output Files
    ========================================================== */
 
-export async function generate(feed) {
+const RAW_FILE =
 
-    await fs.ensureDir(DATA_DIR);
+    path.join(
 
-    await generateRaw(feed);
+        DATA_DIR,
 
-    await generateFeed(feed);
+        "raw-feed.json"
 
-    await generateLite(feed);
+    );
 
-    await generateSearch(feed);
+const FEED_FILE =
 
-    log("Generator Finished");
+    path.join(
+
+        DATA_DIR,
+
+        "feed.json"
+
+    );
+
+const LITE_FILE =
+
+    path.join(
+
+        DATA_DIR,
+
+        "feed-lite.json"
+
+    );
+
+const SEARCH_FILE =
+
+    path.join(
+
+        DATA_DIR,
+
+        "search.json"
+
+    );
+
+const RSS_FILE =
+
+    path.join(
+
+        DATA_DIR,
+
+        "rss.xml"
+
+    );
+
+const SITEMAP_FILE =
+
+    path.join(
+
+        DATA_DIR,
+
+        "sitemap-feed.xml"
+
+    );
+
+
+
+
+
+/* ==========================================================
+   Site Information
+   ========================================================== */
+
+const SITE = {
+
+    title:
+
+        "NightCast",
+
+    description:
+
+        "رادیو خلاصه کتاب",
+
+    language:
+
+        "fa",
+
+    direction:
+
+        "rtl"
+
+};
+
+
+
+
+
+/* ==========================================================
+   Ensure Folder
+   ========================================================== */
+
+async function ensureOutput() {
+
+    await fs.ensureDir(
+
+        DATA_DIR
+
+    );
 
 }
+
+
+
+
+
+
+
+
+/* ==========================================================
+   Generator Info
+   ========================================================== */
+
+export function info() {
+
+    return {
+
+        version: VERSION,
+
+        folder: DATA_DIR,
+
+        raw: RAW_FILE,
+
+        feed: FEED_FILE,
+
+        lite: LITE_FILE,
+
+        search: SEARCH_FILE,
+
+        rss: RSS_FILE,
+
+        sitemap: SITEMAP_FILE
+
+    };
+
+}
+
 
 
 
@@ -75,21 +197,78 @@ async function generateRaw(feed) {
 
 
 
+
+
+
 /* ==========================================================
-   Feed
+   Main Feed
    ========================================================== */
 
 async function generateFeed(feed) {
 
     const output = {
 
-        version: feed.version,
+        version:
 
-        generated_at: now(),
+            VERSION,
 
-        channel: feed.channel,
+        generated_at:
 
-        episodes: feed.episodes
+            now(),
+
+        source: {
+
+            type:
+
+                feed.source?.type ||
+
+                "aparat",
+
+            url:
+
+                feed.source?.url ||
+
+                ""
+
+        },
+
+        site:
+
+            SITE,
+
+        hero: {
+
+            episode_id:
+
+                feed.hero?.episode_id ||
+
+                (
+
+                    feed.episodes.length
+
+                        ? feed.episodes[0].id
+
+                        : null
+
+                )
+
+        },
+
+        pagination: {
+
+            page: 1,
+
+            per_page: 10,
+
+            has_more:
+
+                feed.episodes.length > 10
+
+        },
+
+        episodes:
+
+            feed.episodes
 
     };
 
@@ -105,6 +284,8 @@ async function generateFeed(feed) {
 
 
 
+
+
 /* ==========================================================
    Feed Lite
    ========================================================== */
@@ -113,31 +294,51 @@ async function generateLite(feed) {
 
     const output = {
 
-        version: feed.version,
+        version:
 
-        generated_at: now(),
+            VERSION,
 
-        episodes: feed.episodes.map(
+        generated_at:
 
-            episode => ({
+            now(),
 
-                id: episode.id,
+        episodes:
 
-                title: episode.title,
+            feed.episodes.map(
 
-                cover: episode.cover,
+                episode => ({
 
-                audio: episode.audio,
+                    id:
 
-                video: episode.video,
+                        episode.id,
 
-                duration: episode.duration,
+                    title:
 
-                published: episode.published
+                        episode.title,
 
-            })
+                    cover:
 
-        )
+                        episode.cover,
+
+                    description:
+
+                        episode.description,
+
+                    duration:
+
+                        episode.duration,
+
+                    published:
+
+                        episode.published,
+
+                    video:
+
+                        episode.video
+
+                })
+
+            )
 
     };
 
@@ -154,7 +355,6 @@ async function generateLite(feed) {
 
 
 
-
 /* ==========================================================
    Search Index
    ========================================================== */
@@ -167,21 +367,41 @@ async function generateSearch(feed) {
 
             episode => ({
 
-                id: episode.id,
+                id:
 
-                title: episode.title,
+                    episode.id,
 
-                subtitle: episode.subtitle,
+                title:
 
-                author: episode.author,
+                    episode.title,
 
-                category: episode.category,
+                description:
 
-                tags: episode.tags,
+                    episode.description,
 
-                published: episode.published,
+                author:
 
-                source: episode.source
+                    episode.author,
+
+                category:
+
+                    episode.category,
+
+                tags:
+
+                    episode.tags,
+
+                published:
+
+                    episode.published,
+
+                cover:
+
+                    episode.cover,
+
+                url:
+
+                    episode.video
 
             })
 
@@ -199,30 +419,6 @@ async function generateSearch(feed) {
 
 
 
-/* ==========================================================
-   Generator Info
-   ========================================================== */
-
-export function info() {
-
-    return {
-
-        raw: RAW_FILE,
-
-        feed: FEED_FILE,
-
-        lite: LITE_FILE,
-
-        search: SEARCH_FILE,
-
-        rss: RSS_FILE,
-
-        sitemap: SITEMAP_FILE
-
-    };
-
-}
-
 
 
 
@@ -235,17 +431,12 @@ async function generateRSS(feed) {
     let xml = "";
 
     xml += '<?xml version="1.0" encoding="UTF-8"?>\n';
+    xml += "<rss version=\"2.0\">\n";
+    xml += "<channel>\n";
 
-    xml += '<rss version="2.0">\n';
-
-    xml += '<channel>\n';
-
-    xml += `<title>${escape(feed.channel.title)}</title>\n`;
-
-    xml += `<link>${feed.channel.link}</link>\n`;
-
-    xml += `<description>${escape(feed.channel.description)}</description>\n`;
-
+    xml += `<title>${escape(SITE.title)}</title>\n`;
+    xml += `<description>${escape(SITE.description)}</description>\n`;
+    xml += `<language>fa</language>\n`;
     xml += `<lastBuildDate>${now()}</lastBuildDate>\n`;
 
     for (const episode of feed.episodes) {
@@ -262,12 +453,17 @@ async function generateRSS(feed) {
 
         xml += `<pubDate>${episode.published}</pubDate>\n`;
 
+        if (episode.cover) {
+
+            xml += `<enclosure url="${episode.cover}" type="image/jpeg"/>\n`;
+
+        }
+
         xml += "</item>\n";
 
     }
 
     xml += "</channel>\n";
-
     xml += "</rss>";
 
     await fs.writeFile(
@@ -285,7 +481,6 @@ async function generateRSS(feed) {
 
 
 
-
 /* ==========================================================
    Sitemap
    ========================================================== */
@@ -298,15 +493,24 @@ async function generateSitemap(feed) {
 
     xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
 
+    xml += `
+<url>
+<loc>https://nightcast.ir/</loc>
+<lastmod>${now()}</lastmod>
+</url>
+`;
+
     for (const episode of feed.episodes) {
 
-        xml += "<url>\n";
+        xml += `
+<url>
 
-        xml += `<loc>${episode.video}</loc>\n`;
+<loc>${episode.video}</loc>
 
-        xml += `<lastmod>${episode.published}</lastmod>\n`;
+<lastmod>${episode.published}</lastmod>
 
-        xml += "</url>\n";
+</url>
+`;
 
     }
 
@@ -323,6 +527,8 @@ async function generateSitemap(feed) {
     );
 
 }
+
+
 
 
 /* ==========================================================
@@ -347,69 +553,78 @@ function escape(text = "") {
 
 
 
-
-
-
-
-
-
-
-
 /* ==========================================================
-   Run All Generators
+   Build
    ========================================================== */
 
 export async function build(feed) {
 
-    try {
+    await ensureOutput();
 
-        await generateRaw(feed);
+    log(
 
-        await generateFeed(feed);
+        "Generating data files..."
 
-        await generateLite(feed);
+    );
 
-        await generateSearch(feed);
+    await generateRaw(feed);
 
-        await generateRSS(feed);
+    await generateFeed(feed);
 
-        await generateSitemap(feed);
+    await generateLite(feed);
 
-        log("All files generated successfully.");
+    await generateSearch(feed);
 
-    }
+    await generateRSS(feed);
 
-    catch (err) {
+    await generateSitemap(feed);
 
-        console.error(
+    log(
 
-            "Generator Error:",
+        "Generator completed."
 
-            err.message
-
-        );
-
-        throw err;
-
-    }
+    );
 
 }
 
+
+
+
+
 /* ==========================================================
-   Clean Output Folder
+   Clean
    ========================================================== */
 
 export async function clean() {
 
-    await fs.ensureDir(DATA_DIR);
+    await fs.ensureDir(
+
+        DATA_DIR
+
+    );
 
 }
 
+
+
 /* ==========================================================
-   Generator Version
+   Public API
    ========================================================== */
 
-export const VERSION = "2.0.0";
+export {
+
+    VERSION
+
+};
+
+
+
+
+
+
+
+
+
 
 /* ==========================================================
    Default Export
@@ -427,9 +642,20 @@ export default {
 
 };
 
+
+
+
+
+
 /* ==========================================================
    End Of File
    ========================================================== */
+
+
+
+
+
+
 
 
 

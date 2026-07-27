@@ -152,3 +152,161 @@ function printStatistics(feed){
 
 
 
+
+
+/* ==========================================================
+   Build Process
+   ========================================================== */
+
+async function start(){
+
+    banner();
+
+    try{
+
+        log(
+            "Cleaning output..."
+        );
+
+        await Generator.clean();
+
+        log(
+            "Extracting Aparat RSS..."
+        );
+
+        const extracted =
+            await Extractor.extract();
+
+        health(extracted);
+
+        log(
+            "Validating data..."
+        );
+
+        const validated =
+            validate(extracted);
+
+        log(
+            "Generating output files..."
+        );
+
+        await Generator.build(
+            validated
+        );
+
+        printStatistics(
+            validated
+        );
+
+        return validated;
+
+    }
+
+    catch(err){
+
+        error("");
+
+        error("==============================");
+
+        error("Parser Error");
+
+        error("==============================");
+
+        error(err.message);
+
+        error("");
+
+        throw err;
+
+    }
+
+       }
+
+
+
+
+
+/* ==========================================================
+   Main
+   ========================================================== */
+
+async function main(){
+
+    try{
+
+        await start();
+
+        log("");
+
+        log("================================");
+
+        log(" NightCast Build Completed ");
+
+        log("================================");
+
+        log("");
+
+        process.exit(0);
+
+    }
+
+    catch(err){
+
+        error("");
+
+        error("================================");
+
+        error(" BUILD FAILED ");
+
+        error("================================");
+
+        error(err.message);
+
+        error("");
+
+        process.exit(1);
+
+    }
+
+}
+
+/* ==========================================================
+   Execute
+   ========================================================== */
+
+main();
+
+/* ==========================================================
+   Public API
+   ========================================================== */
+
+export {
+
+    start,
+
+    main,
+
+    VERSION
+
+};
+
+/* ==========================================================
+   Default Export
+   ========================================================== */
+
+export default{
+
+    start,
+
+    main,
+
+    VERSION
+
+};
+
+/* ==========================================================
+   End Of File
+   ========================================================== */
+
+
+

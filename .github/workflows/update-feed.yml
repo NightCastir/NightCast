@@ -6,8 +6,7 @@ on:
 
   schedule:
 
-    # هر ۶ ساعت
-
+    # هر 6 ساعت
     - cron: "0 */6 * * *"
 
   push:
@@ -32,6 +31,10 @@ jobs:
 
         uses: actions/checkout@v4
 
+        with:
+
+          fetch-depth: 0
+
       - name: Setup Node.js
 
         uses: actions/setup-node@v4
@@ -40,38 +43,30 @@ jobs:
 
           node-version: 20
 
-          cache: npm
 
       - name: Install Dependencies
 
         run: npm install
 
-      - name: Run Feed Generator
-
-        run: node scripts/parser.js
-
-
-      - name: Commit Changes
+      - name: Show Node Version
 
         run: |
 
-          git config user.name "github-actions[bot]"
+          node -v
 
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          npm -v
 
-          git add data/
+      - name: Run Feed Generator
 
-          git diff --cached --quiet || git commit -m "Update NightCast feed"
+        run: |
 
-      - name: Push Changes
+          echo "=============================="
 
-        uses: ad-m/github-push-action@master
+          echo "Running NightCast Generator..."
 
-        with:
+          echo "=============================="
 
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-          branch: main
+          node scripts/parser.js
 
       - name: Verify Output Files
 
@@ -89,7 +84,19 @@ jobs:
 
           test -f data/sitemap-feed.xml
 
-      - name: Commit Changes
+      - name: Show Generated Files
+
+        run: |
+
+          echo "=============================="
+
+          ls -lah data/
+
+          echo "=============================="
+
+
+
+                - name: Commit Changes
 
         run: |
 
@@ -99,24 +106,37 @@ jobs:
 
           git add data/
 
-          git diff --cached --quiet && echo "No changes" || git commit -m "NightCast Feed Update"
+          git diff --cached --quiet && echo "No changes to commit." || git commit -m "Update NightCast Feed"
 
-      - name: Push
+      - name: Push Changes
 
         if: success()
 
-        run: |
+        uses: ad-m/github-push-action@master
 
-          git push origin main
+        with:
+
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+          branch: main
 
       - name: Finished
 
         run: |
 
-          echo "=============================="
+          echo ""
 
-          echo " NightCast Feed Updated"
+          echo "===================================="
 
-          echo "=============================="
+          echo " NightCast Feed Updated Successfully "
+
+          echo "===================================="
+
+          echo ""
+
+
+
+
           
-        
+
+          

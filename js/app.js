@@ -186,3 +186,156 @@ document.addEventListener(
     }
 
 );
+
+
+/* ==========================================================
+   Service Worker
+   ========================================================== */
+
+App.registerServiceWorker = async function () {
+
+    if (!("serviceWorker" in navigator)) {
+
+        return;
+
+    }
+
+    try {
+
+        await navigator.serviceWorker.register(
+
+            "/sw.js"
+
+        );
+
+        console.log(
+
+            "Service Worker Registered"
+
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+
+            "Service Worker Error",
+
+            error
+
+        );
+
+    }
+
+};
+
+/* ==========================================================
+   Application Information
+   ========================================================== */
+
+App.info = function () {
+
+    console.group(
+
+        "NightCast"
+
+    );
+
+    console.log(
+
+        "Version :", this.version
+
+    );
+
+    console.log(
+
+        "Feed :", Feed.url
+
+    );
+
+    console.log(
+
+        "Episodes :",
+
+        Feed.count()
+
+    );
+
+    console.groupEnd();
+
+};
+
+/* ==========================================================
+   Debug
+   ========================================================== */
+
+App.debug = false;
+
+App.log = function (...args) {
+
+    if (!this.debug) {
+
+        return;
+
+    }
+
+    console.log(
+
+        "[NightCast]",
+
+        ...args
+
+    );
+
+};
+
+/* ==========================================================
+   Feed Ready
+   ========================================================== */
+
+Feed.on(
+
+    "feed:ready",
+
+    () => {
+
+        App.registerServiceWorker();
+
+        App.info();
+
+    }
+
+);
+
+/* ==========================================================
+   Public API
+   ========================================================== */
+
+App.reload = async function () {
+
+    await Feed.reload();
+
+    UI.refresh();
+
+};
+
+App.destroy = function () {
+
+    Player.stop();
+
+    UI.destroy();
+
+};
+
+/* ==========================================================
+   Global Export
+   ========================================================== */
+
+window.App = App;
+
+/* ==========================================================
+   End Of File
+   ========================================================== */
+
+

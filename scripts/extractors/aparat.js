@@ -1,725 +1,327 @@
+/* ==========================================================
+   NightCast
+   Aparat RSS Extractor
+   Version 4.0.0
+   ========================================================== */
+
 import Parser from "rss-parser";
 
 import {
-
     createId,
-
     cleanText,
-
     formatDate,
-
+    now,
     log
-
 } from "../utils.js";
 
 /* ==========================================================
-   RSS Configuration
+   RSS
    ========================================================== */
 
-const RSS_URL =
-
+export const RSS_URL =
     "https://www.aparat.com/rss/nightcast";
 
-const rss = new Parser({
+const parser = new Parser({
 
-    timeout: 20000,
+    timeout: 30000,
 
     headers: {
-
         "User-Agent":
-
-            "NightCast RSS Reader"
-
-    },
-
-    customFields: {
-
-        item: [
-
-            ["guid", "guid"],
-
-            ["description", "description"],
-
-            ["content:encoded", "contentEncoded"],
-
-            ["media:thumbnail", "thumbnail"],
-
-            ["media:content", "media"],
-
-            ["enclosure", "enclosure"]
-
-        ],
-
-        feed: [
-
-            ["image", "image"]
-
-        ]
-
+            "NightCast Feed Generator"
     }
 
 });
 
-
-
 /* ==========================================================
-   Download RSS
+   Download Feed
    ========================================================== */
 
-export async function loadRSS() {
+async function downloadFeed(){
 
-    log(
+    log("Downloading RSS...");
 
-        "Connecting to Aparat RSS..."
+    const rss =
+        await parser.parseURL(RSS_URL);
 
-    );
-
-    const feed =
-
-        await rss.parseURL(
-
-            RSS_URL
-
-        );
-
-    if (
-
-        !feed ||
-
-        !feed.items ||
-
-        feed.items.length === 0
-
-    ) {
+    if(
+        !rss ||
+        !rss.items ||
+        rss.items.length===0
+    ){
 
         throw new Error(
-
-            "RSS feed is empty."
-
+            "RSS Feed Empty."
         );
 
     }
 
-    log(
-
-        `RSS Loaded (${feed.items.length} items)`
-
-    );
-
-    return feed;
+    return rss;
 
 }
 
-
-
 /* ==========================================================
-   Extract Channel
+   Channel
    ========================================================== */
 
-export function extractChannel(feed) {
+function buildChannel(feed){
 
-    return {
+    return{
 
         title:
-
             feed.title || "",
 
         description:
-
             feed.description || "",
 
         link:
-
             feed.link || "",
 
-        image:
-
-            feed.image?.url ||
-
-            "",
-
         language:
-
             "fa",
 
         platform:
-
             "aparat"
 
     };
 
 }
 
-
-
-
 /* ==========================================================
-   Extract Image
+   Extract Cover
    ========================================================== */
 
-function getImage(item) {
-
-    if (item.thumbnail?.url) {
-
-        return item.thumbnail.url;
-
-    }
-
-    if (item.thumbnail?.$?.url) {
-
-        return item.thumbnail.$.url;
-
-    }
-
-    if (item.media?.url) {
-
-        return item.media.url;
-
-    }
-
-    if (item.media?.$?.url) {
-
-        return item.media.$.url;
-
-    }
-
-    if (
-
-        item.enclosure?.url &&
-
-        item.enclosure.type?.startsWith("image")
-
-    ) {
-
-        return item.enclosure.url;
-
-    }
+function getCover(item) {
 
     const html =
-
         item.contentEncoded ||
-
         item.description ||
-
         item.content ||
-
         "";
 
-    const match = html.match(
-
+    const image = html.match(
         /<img[^>]+src=["']([^"']+)["']/i
-
     );
 
-    if (match) {
+    if (image) {
 
-        return match[1];
-
-    }
-
-    return "";
-
-}
-
-
-
-/* ==========================================================
-   Extract Video
-   ========================================================== */
-
-function getVideoUrl(item) {
-
-    if (item.link) {
-
-        return item.link;
+        return image[1];
 
     }
 
-    if (
-
-        item.enclosure?.url
-
-    ) {
-
-        return item.enclosure.url;
-
-    }
-
-    return "";
+    return "assets/images/default-cover.jpg";
 
 }
 
-
-
-
-
-
-
-
-
 /* ==========================================================
-   Extract Description
+   Guess Book
    ========================================================== */
 
-function getDescription(item) {
+function guessBook(title = "") {
 
-    return cleanText(
+    title = cleanText(title);
 
-        item.contentSnippet ||
-
-        item.description ||
-
-        item.content ||
-
-        item.contentEncoded ||
-
-        ""
-
-    );
-
-}
-
-
-
-
-/* ==========================================================
-   Normalize Item
-   ========================================================== */
-
-function normalizeItem(item) {
+    title = title
+        .replace(/^پادکست صوتی/i, "")
+        .replace(/^پادکست/i, "")
+        .replace(/^خلاصه کتاب/i, "")
+        .trim();
 
     return {
 
-        id:
+        title,
 
-            createId(
-
-                item.guid ||
-
-                item.link ||
-
-                item.title
-
-            ),
-
-        title:
-
-            cleanText(
-
-                item.title || ""
-
-            ),
-
-        subtitle: "",
-
-        description:
-
-            getDescription(item),
-
-        cover:
-
-            getImage(item),
-
-        audio:
-
-            "",
-
-        video:
-
-            getVideoUrl(item),
-
-        duration:
-
-            "",
-
-        published:
-
-            formatDate(
-
-                item.pubDate
-
-            ),
-
-        author:
-
-            item.creator ||
-
-            item.author ||
-
-            "NightCast",
-
-        category:
-
-            item.categories?.[0] ||
-
-            "",
-
-        tags:
-
-            item.categories ||
-
-            [],
-
-        source:
-
-            item.link ||
-
-            "",
-
-        platform:
-
-            "aparat",
-
-        views: 0,
-
-        likes: 0
+        author: ""
 
     };
 
 }
 
-
-
-
-
-
-
-
 /* ==========================================================
-   Validate Episode
+   Guess Duration
    ========================================================== */
 
-function isValidEpisode(episode) {
+function guessDuration() {
 
-    if (!episode) {
+    return 0;
 
-        return false;
+}
 
-    }
+function guessDurationText() {
 
-    if (!episode.title) {
-
-        return false;
-
-    }
-
-    if (!episode.video) {
-
-        return false;
-
-    }
-
-    return true;
+    return "";
 
 }
 
 
 
+/* ==========================================================
+   Normalize One Episode
+   ========================================================== */
+
+function normalizeEpisode(item, index = 0) {
+
+    const title = cleanText(item.title);
+
+    const description = cleanText(item.contentSnippet);
+
+    const published = formatDate(item.pubDate);
+
+    const id = createId(
+        item.guid ||
+        item.link ||
+        title
+    );
+
+    return {
+
+        id,
+
+        title,
+
+        description,
+
+        cover:
+            DEFAULT_COVER,
+
+        audio:
+            item.link,
+
+        source:{
+
+            platform:"aparat",
+
+            url:item.link
+
+        },
+
+        published_at:
+            published,
+
+        duration:
+            0,
+
+        duration_text:
+            "00:00",
+
+        book:{
+
+            title:
+                extractBookTitle(title),
+
+            author:""
+
+        },
+
+        category:
+            "book",
+
+        tags:[],
+
+        views:0,
+
+        likes:0
+
+    };
+
+}
 
 /* ==========================================================
    Normalize Feed
    ========================================================== */
 
-export function normalizeFeed(feed) {
+function normalize(feed){
 
-    const episodes = [];
+    return feed.items.map(
 
-    for (const item of feed.items) {
+        (item,index)=>
 
-        try {
+            normalizeEpisode(
 
-            const episode =
+                item,
 
-                normalizeItem(item);
+                index
 
-            if (
+            )
 
-                isValidEpisode(episode)
-
-            ) {
-
-                episodes.push(
-
-                    episode
-
-                );
-
-            }
-
-        }
-
-        catch (err) {
-
-            log(
-
-                `Skip Item : ${err.message}`
-
-            );
-
-        }
-
-    }
-
-    return episodes;
+    );
 
 }
 
 
 
 
-
-
 /* ==========================================================
-   Extract Episodes
-   ========================================================== */
-
-export function extractEpisodes(feed) {
-
-    return normalizeFeed(feed);
-
-}
-
-
-
-
-
-
-
-
-
-/* ==========================================================
-   Get Latest Episode
-   ========================================================== */
-
-export function latestEpisode(feed) {
-
-    const episodes =
-
-        normalizeFeed(feed);
-
-    if (
-
-        episodes.length === 0
-
-    ) {
-
-        return null;
-
-    }
-
-    return episodes[0];
-
-}
-
-
-
-
-
-
-
-
-/* ==========================================================
-   Feed Summary
-   ========================================================== */
-
-export function feedSummary(feed) {
-
-    const episodes =
-
-        normalizeFeed(feed);
-
-    return {
-
-        total:
-
-            episodes.length,
-
-        latest:
-
-            episodes[0]?.title ||
-
-            "",
-
-        generated:
-
-            new Date()
-
-                .toISOString()
-
-    };
-
-}
-
-
-
-/* ==========================================================
-   Statistics
-   ========================================================== */
-
-export function statistics(feed) {
-
-    const episodes = normalizeFeed(feed);
-
-    return {
-
-        total: feed.items.length,
-
-        extracted: episodes.length,
-
-        skipped:
-
-            feed.items.length -
-
-            episodes.length
-
-    };
-
-}
-
-
-
-/* ==========================================================
-   Main Extract Function
+   Extract Feed
    ========================================================== */
 
 export async function extract() {
 
-    try {
+    log("Downloading RSS...");
 
-        log(
+    const rss = await loadRSS();
 
-            "Starting Aparat Extract..."
+    const episodes = normalize(rss);
 
-        );
+    return {
 
-        const feed =
+        version: "3.0.0",
 
-            await loadRSS();
+        generated_at: now(),
 
-        const channel =
+        source: {
 
-            extractChannel(feed);
+            type: "aparat",
 
-        const episodes =
+            url: RSS_URL
 
-            normalizeFeed(feed);
+        },
 
-        const stats =
+        channel: extractChannel(rss),
 
-            statistics(feed);
+        hero: {
 
-        log(
+            episode_id:
 
-            `Downloaded : ${stats.total}`
+                episodes.length
+                    ? episodes[0].id
+                    : null
 
-        );
+        },
 
-        log(
+        pagination: {
 
-            `Extracted : ${stats.extracted}`
+            page: 1,
 
-        );
+            per_page: 10,
 
-        log(
+            has_more:
+                episodes.length > 10
 
-            `Skipped : ${stats.skipped}`
+        },
 
-        );
+        episodes
 
-        return {
-
-            version: "2.1.0",
-
-            generated_at:
-
-                new Date().toISOString(),
-
-            source: {
-
-                type: "aparat",
-
-                url: RSS_URL
-
-            },
-
-            channel,
-
-            hero: {
-
-                episode_id:
-
-                    episodes.length > 0
-
-                        ? episodes[0].id
-
-                        : null
-
-            },
-
-            pagination: {
-
-                page: 1,
-
-                per_page: 10,
-
-                has_more:
-
-                    episodes.length > 10
-
-            },
-
-            episodes
-
-        };
-
-    }
-
-    catch (err) {
-
-        log(
-
-            `Extractor Error : ${err.message}`
-
-        );
-
-        throw err;
-
-    }
+    };
 
 }
 
-
 /* ==========================================================
-   Health Check
+   Health
    ========================================================== */
 
 export async function health() {
 
     try {
 
-        const feed =
-
-            await loadRSS();
-
-        const stats =
-
-            statistics(feed);
+        const rss = await loadRSS();
 
         return {
 
             status: "ok",
 
-            title:
+            title: rss.title,
 
-                feed.title,
-
-            items:
-
-                stats.total,
-
-            extracted:
-
-                stats.extracted
+            items: rss.items.length
 
         };
 
@@ -731,9 +333,7 @@ export async function health() {
 
             status: "error",
 
-            message:
-
-                err.message
+            message: err.message
 
         };
 
@@ -741,10 +341,11 @@ export async function health() {
 
 }
 
+/* ==========================================================
+   Module Version
+   ========================================================== */
 
-
-
-
+export const VERSION = "3.0.0";
 
 /* ==========================================================
    Public API
@@ -757,77 +358,8 @@ export {
 };
 
 /* ==========================================================
-   Self Test
-   ========================================================== */
-
-export async function selfTest() {
-
-    log(
-
-        "Running Aparat Extractor Self Test..."
-
-    );
-
-    const result =
-
-        await extract();
-
-    log(
-
-        `Channel : ${result.channel.title}`
-
-    );
-
-    log(
-
-        `Episodes : ${result.episodes.length}`
-
-    );
-
-    if (
-
-        result.episodes.length > 0
-
-    ) {
-
-        log(
-
-            `Latest : ${result.episodes[0].title}`
-
-        );
-
-    }
-
-    return true;
-
-}
-
-/* ==========================================================
-   Module Version
-   ========================================================== */
-
-export const VERSION = "2.1.0";
-
-/* ==========================================================
    End Of File
    ========================================================== */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

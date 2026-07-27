@@ -1,1 +1,122 @@
+name: Update NightCast Feed
 
+on:
+
+  workflow_dispatch:
+
+  schedule:
+
+    # هر ۶ ساعت
+
+    - cron: "0 */6 * * *"
+
+  push:
+
+    branches:
+
+      - main
+
+permissions:
+
+  contents: write
+
+jobs:
+
+  update:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Repository
+
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+
+        uses: actions/setup-node@v4
+
+        with:
+
+          node-version: 20
+
+          cache: npm
+
+      - name: Install Dependencies
+
+        run: npm install
+
+      - name: Run Feed Generator
+
+        run: node scripts/parser.js
+
+
+      - name: Commit Changes
+
+        run: |
+
+          git config user.name "github-actions[bot]"
+
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add data/
+
+          git diff --cached --quiet || git commit -m "Update NightCast feed"
+
+      - name: Push Changes
+
+        uses: ad-m/github-push-action@master
+
+        with:
+
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+          branch: main
+
+      - name: Verify Output Files
+
+        run: |
+
+          test -f data/feed.json
+
+          test -f data/feed-lite.json
+
+          test -f data/raw-feed.json
+
+          test -f data/search.json
+
+          test -f data/rss.xml
+
+          test -f data/sitemap-feed.xml
+
+      - name: Commit Changes
+
+        run: |
+
+          git config --global user.name "github-actions[bot]"
+
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add data/
+
+          git diff --cached --quiet && echo "No changes" || git commit -m "NightCast Feed Update"
+
+      - name: Push
+
+        if: success()
+
+        run: |
+
+          git push origin main
+
+      - name: Finished
+
+        run: |
+
+          echo "=============================="
+
+          echo " NightCast Feed Updated"
+
+          echo "=============================="
+          
+        

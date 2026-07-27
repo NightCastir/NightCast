@@ -1,30 +1,21 @@
 
+
 /* ==========================================================
    NightCast
    Application
-   File : app.js
-   Version : 1.0.0
    ========================================================== */
 
 "use strict";
 
-/* ==========================================================
-   Application
-   ========================================================== */
+const App={
 
-const App = {
+    version:"3.0.0",
 
-    version : "1.0.0",
-
-    initialized : false
+    initialized:false
 
 };
 
-/* ==========================================================
-   Initialize
-   ========================================================== */
-
-App.init = async function(){
+App.init=async function(){
 
     if(this.initialized){
 
@@ -32,31 +23,21 @@ App.init = async function(){
 
     }
 
-    console.log(
-
-        "NightCast Starting..."
-
-    );
+    console.log("NightCast Starting...");
 
     UI.start();
 
-    Player.start();
-
     await Feed.init();
 
-    this.initialized = true;
+    this.initialized=true;
 
 };
-
-/* ==========================================================
-   Ready
-   ========================================================== */
 
 document.addEventListener(
 
     "DOMContentLoaded",
 
-    async ()=>{
+    async()=>{
 
         await App.init();
 
@@ -64,9 +45,8 @@ document.addEventListener(
 
 );
 
-
 /* ==========================================================
-   Global Error Handler
+   Global Error
    ========================================================== */
 
 window.addEventListener(
@@ -75,29 +55,11 @@ window.addEventListener(
 
     function(event){
 
-        console.error(
-
-            "[NightCast Error]",
-
-            event.error
-
-        );
-
-        UI.toast(
-
-            "خطایی در برنامه رخ داد.",
-
-            "error"
-
-        );
+        console.error(event.error);
 
     }
 
 );
-
-/* ==========================================================
-   Promise Error Handler
-   ========================================================== */
 
 window.addEventListener(
 
@@ -105,35 +67,33 @@ window.addEventListener(
 
     function(event){
 
-        console.error(
-
-            "[Promise Error]",
-
-            event.reason
-
-        );
-
-        UI.toast(
-
-            "خطا در اجرای عملیات.",
-
-            "error"
-
-        );
+        console.error(event.reason);
 
     }
 
 );
 
 /* ==========================================================
-   Network Status
+   Network
    ========================================================== */
+
+window.addEventListener(
+
+    "online",
+
+    ()=>{
+
+        Feed.reload();
+
+    }
+
+);
 
 window.addEventListener(
 
     "offline",
 
-    function(){
+    ()=>{
 
         UI.toast(
 
@@ -147,60 +107,23 @@ window.addEventListener(
 
 );
 
-window.addEventListener(
-
-    "online",
-
-    function(){
-
-        UI.toast(
-
-            "ارتباط اینترنت برقرار شد.",
-
-            "success"
-
-        );
-
-        Feed.reload();
-
-    }
-
-);
-
-/* ==========================================================
-   Visibility API
-   ========================================================== */
-
-document.addEventListener(
-
-    "visibilitychange",
-
-    function(){
-
-        if(document.hidden){
-
-            Player.savePlayback();
-
-        }
-
-    }
-
-);
-
-
 /* ==========================================================
    Service Worker
    ========================================================== */
 
-App.registerServiceWorker = async function () {
+App.registerServiceWorker=async function(){
 
-    if (!("serviceWorker" in navigator)) {
+    if(
+
+        !("serviceWorker" in navigator)
+
+    ){
 
         return;
 
     }
 
-    try {
+    try{
 
         await navigator.serviceWorker.register(
 
@@ -208,134 +131,36 @@ App.registerServiceWorker = async function () {
 
         );
 
-        console.log(
-
-            "Service Worker Registered"
-
-        );
-
     }
 
-    catch (error) {
+    catch(err){
 
-        console.error(
-
-            "Service Worker Error",
-
-            error
-
-        );
+        console.error(err);
 
     }
 
 };
 
-/* ==========================================================
-   Application Information
-   ========================================================== */
+if(window.Feed){
 
-App.info = function () {
+    Feed.on(
 
-    console.group(
+        "feed:ready",
 
-        "NightCast"
+        ()=>{
 
-    );
+            App.registerServiceWorker();
 
-    console.log(
-
-        "Version :", this.version
+        }
 
     );
 
-    console.log(
+}
 
-        "Feed :", Feed.url
+window.App=App;
 
-    );
 
-    console.log(
 
-        "Episodes :",
 
-        Feed.count()
-
-    );
-
-    console.groupEnd();
-
-};
-
-/* ==========================================================
-   Debug
-   ========================================================== */
-
-App.debug = false;
-
-App.log = function (...args) {
-
-    if (!this.debug) {
-
-        return;
-
-    }
-
-    console.log(
-
-        "[NightCast]",
-
-        ...args
-
-    );
-
-};
-
-/* ==========================================================
-   Feed Ready
-   ========================================================== */
-
-Feed.on(
-
-    "feed:ready",
-
-    () => {
-
-        App.registerServiceWorker();
-
-        App.info();
-
-    }
-
-);
-
-/* ==========================================================
-   Public API
-   ========================================================== */
-
-App.reload = async function () {
-
-    await Feed.reload();
-
-    UI.refresh();
-
-};
-
-App.destroy = function () {
-
-    Player.stop();
-
-    UI.destroy();
-
-};
-
-/* ==========================================================
-   Global Export
-   ========================================================== */
-
-window.App = App;
-
-/* ==========================================================
-   End Of File
-   ========================================================== */
 
 

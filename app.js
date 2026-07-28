@@ -31,7 +31,7 @@ async function loadVideos(){
 
                 <button onclick="playVideo('${video.embed}')">
 
-                    ▶ تماشای ویدیو
+                    ▶ پخش خلاصه کتاب
 
                 </button>
 

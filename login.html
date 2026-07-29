@@ -5,13 +5,19 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport"
+<meta
+name="viewport"
 content="width=device-width,initial-scale=1">
 
 <title>ورود | NightCast</title>
 
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="css/profile.css">
+<link
+rel="stylesheet"
+href="style.css">
+
+<link
+rel="stylesheet"
+href="css/profile.css">
 
 </head>
 
@@ -29,7 +35,7 @@ content="width=device-width,initial-scale=1">
 
 <p>
 
-ایمیل یا شماره موبایل را وارد کنید
+ایمیل یا شماره موبایل خود را وارد کنید
 
 </p>
 
@@ -40,12 +46,27 @@ content="width=device-width,initial-scale=1">
 <div class="profile-menu">
 
 <input
+
 id="identity"
+
 type="text"
+
+autocomplete="username"
+
+autocapitalize="off"
+
+autocorrect="off"
+
+spellcheck="false"
+
+inputmode="email"
+
 placeholder="example@gmail.com یا +989123456789">
 
 <button
+
 class="edit-profile"
+
 id="sendCode">
 
 ادامه
@@ -54,18 +75,32 @@ id="sendCode">
 
 </div>
 
-<div id="verifyBox"
+<div
+
+id="verifyBox"
+
 style="display:none">
 
 <div class="profile-menu">
 
 <input
+
 id="verifyCode"
+
 type="text"
-placeholder="کد تایید">
+
+maxlength="6"
+
+inputmode="numeric"
+
+autocomplete="one-time-code"
+
+placeholder="کد ۶ رقمی">
 
 <button
+
 class="edit-profile"
+
 id="verify">
 
 ورود
@@ -73,6 +108,16 @@ id="verify">
 </button>
 
 </div>
+
+</div>
+
+<div
+
+id="loading"
+
+style="display:none">
+
+در حال برقراری ارتباط...
 
 </div>
 

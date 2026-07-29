@@ -18,12 +18,14 @@ async function loadEpisodes(){
 try{
 
 const data=await res.json();
-
+console.log(data);
+    
 loader.style.display="none";
 
 allEpisodes = data.episodes;
 
 showEpisodes(allEpisodes);
+ console.log(allEpisodes);   
 
 }
 

@@ -2,7 +2,7 @@
 <html lang="fa" dir="rtl">
 
 <head>
-<script src="auth.js"></script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
@@ -24,6 +24,9 @@ content="#0b0b0b">
 
 <link rel="stylesheet" href="style.css">
 
+<!-- ابتدا وضعیت ورود کاربر بررسی می‌شود -->
+<script src="auth.js" defer></script>
+
 </head>
 
 <body>
@@ -38,14 +41,18 @@ content="#0b0b0b">
 
 <header>
 
-<img src="logo.png" class="logo">
+<a href="profile.html">
+
+<img src="logo.png" class="logo" alt="NightCast">
+
+</a>
 
 <div>
 
 <h1>NightCast</h1>
 
 <p>
-  پلی به‌ سوی آیندست 
+پلی به‌سوی آیندست
 </p>
 
 </div>
@@ -73,16 +80,16 @@ content="#0b0b0b">
 </p>
 
 </section>
-  
+
 <section id="searchBox">
 
-    <input
-        type="search"
-        id="search"
-        placeholder="جستجوی کتاب یا پادکست ...">
+<input
+type="search"
+id="search"
+placeholder="جستجوی کتاب یا پادکست ...">
 
 </section>
-  
+
 <main id="episodes">
 
 <!-- توسط app.js ساخته می‌شود -->
@@ -137,7 +144,7 @@ content="#0b0b0b">
 
 </button>
 
-<button>
+<button onclick="location.href='profile.html'">
 
 👤
 

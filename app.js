@@ -17,27 +17,37 @@ let allEpisodes = [];
 
 async function loadEpisodes() {
 
+    loader.style.display = "flex";
+
     try {
+
+        console.log("1- شروع");
 
         const res = await fetch(API);
 
-        if (!res.ok) throw new Error("API Error");
+        console.log("2- Fetch Status:", res.status);
 
         const data = await res.json();
 
-        console.log(data);
+        console.log("3- JSON:", data);
 
         allEpisodes = data.episodes || [];
 
+        console.log("4- تعداد اپیزود:", allEpisodes.length);
+
         showEpisodes(allEpisodes);
+
+        console.log("5- کارت‌ها ساخته شدند");
 
     } catch (err) {
 
-        console.error(err);
+        console.error("ERROR:", err);
 
-        toast("خطا در دریافت اطلاعات");
+        alert(err.message);
 
     } finally {
+
+        console.log("6- Loader مخفی شد");
 
         loader.style.display = "none";
 

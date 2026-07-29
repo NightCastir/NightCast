@@ -1,21 +1,32 @@
 {
-  "name": "NightCast",
+  "name": "NightCast Radio",
   "short_name": "NightCast",
-  "description": "رادیو NightCast | خلاصه کتاب‌های ارزشمند",
+  "description": "رادیو NightCast پلی به سوی آیندست",
   "lang": "fa",
   "dir": "rtl",
-  "start_url": "/",
-  "scope": "/",
+
+  "start_url": "/v2/",
+  "scope": "/v2/",
+
   "display": "standalone",
-  "background_color": "#0D1117",
-  "theme_color": "#D9A441",
-  "orientation": "portrait",
+
+  "theme_color": "#0b0b0b",
+  "background_color": "#0b0b0b",
+
   "icons": [
     {
       "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "logo.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ]
 }
+
+
+
+

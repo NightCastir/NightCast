@@ -143,7 +143,13 @@ value:loginValue
 }
 
 );
+  
+console.log(response.status);
 
+console.log(await response.text());
+
+return;
+  
 const result =
 await response.json();
 
@@ -251,7 +257,12 @@ code:code
 }
 
 );
+console.log(response.status);
 
+console.log(await response.text());
+
+return;
+  
 const result =
 await response.json();
 
@@ -356,6 +367,13 @@ Authorization:
 
 );
 
+console.log(response.status);
+
+console.log(await response.text());
+
+return;
+
+  
 const result =
 
 await response.json();

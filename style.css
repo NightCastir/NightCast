@@ -493,3 +493,34 @@ repeat(3,1fr);
 
   }
 
+#searchBox{
+
+padding:20px;
+
+}
+
+#search{
+
+width:100%;
+
+padding:16px 18px;
+
+background:#1b1b1b;
+
+border:1px solid rgba(255,255,255,.08);
+
+border-radius:18px;
+
+outline:none;
+
+font-size:16px;
+
+color:#fff;
+
+}
+
+#search::placeholder{
+
+color:#777;
+
+}

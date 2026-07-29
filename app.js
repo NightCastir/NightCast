@@ -1,104 +1,180 @@
-const API = "https://ncstgetrssfromaparat.tomasgermany2580.workers.dev/";
+const API =
+"https://ncstgetrssfromaparat.tomasgermany2580.workers.dev";
 
-const episodes = document.getElementById("episodes");
+const episodes=document.getElementById("episodes");
+const loader=document.getElementById("loader");
 
-const modal = document.getElementById("modal");
+const sheet=document.getElementById("playerSheet");
+const overlay=document.getElementById("overlay");
 
-const player = document.getElementById("player");
+const title=document.getElementById("sheetTitle");
+const video=document.getElementById("videoContainer");
+const desc=document.getElementById("episodeDescription");
 
-const closeModal = document.getElementById("closeModal");
+async function loadEpisodes(){
 
+try{
 
-async function loadVideos(){
+const res=await fetch(API);
 
-    try{
+const data=await res.json();
 
-        const response = await fetch(API);
+loader.style.display="none";
 
-        const data = await response.json();
-
-        episodes.innerHTML = "";
-
-        data.episodes.forEach(video=>{
-
-            episodes.innerHTML += `
-
-            <article class="card">
-
-                <h2>${video.title}</h2>
-
-                <p>${video.description}</p>
-
-                <button onclick="playVideo('${video.embed}')">
-
-                    ▶ پخش خلاصه کتاب
-
-                </button>
-
-            </article>
-
-            `;
-
-        });
-
-    }
-
-    catch(error){
-
-        episodes.innerHTML=`
-
-            <article class="card">
-
-                <h2>خطا</h2>
-
-                <p>
-
-                ارتباط با سرور برقرار نشد.
-
-                </p>
-
-            </article>
-
-        `;
-
-    }
+showEpisodes(data.episodes);
 
 }
 
+catch(e){
 
+loader.style.display="none";
 
-function playVideo(url){
+toast("خطا در ارتباط با سرور");
 
-    player.src=url;
-
-    modal.style.display="flex";
-
-}
-
-
-
-closeModal.onclick=function(){
-
-    player.src="";
-
-    modal.style.display="none";
+console.log(e);
 
 }
 
+}
 
+function showEpisodes(list){
 
-window.onclick=function(e){
+episodes.innerHTML="";
 
-    if(e.target===modal){
+list.forEach(item=>{
 
-        player.src="";
+const card=document.createElement("div");
 
-        modal.style.display="none";
+card.className="card";
 
-    }
+card.innerHTML=`
+
+<h3>${item.title}</h3>
+
+<p>
+
+${shortText(item.description)}
+
+</p>
+
+<div class="meta">
+
+<span>${date(item.published)}</span>
+
+<span>آپارات</span>
+
+</div>
+
+<button class="listen">
+
+🎧 گوش بده
+
+</button>
+
+`;
+
+card.onclick=()=>openEpisode(item);
+
+episodes.appendChild(card);
+
+});
 
 }
 
+function openEpisode(item){
 
+title.innerText=item.title;
 
-loadVideos();
+desc.innerText=item.description;
+
+video.innerHTML=`
+
+<iframe
+
+src="${item.embed}"
+
+allowfullscreen
+
+loading="lazy">
+
+</iframe>
+
+`;
+
+sheet.classList.add("show");
+
+overlay.classList.add("show");
+
+}
+
+function closePlayer(){
+
+sheet.classList.remove("show");
+
+overlay.classList.remove("show");
+
+video.innerHTML="";
+
+}
+
+document
+.getElementById("closeSheet")
+.onclick=closePlayer;
+
+overlay.onclick=closePlayer;
+
+function shortText(text){
+
+if(!text) return "";
+
+return text.length>170
+?text.substring(0,170)+"..."
+:text;
+
+}
+
+function date(text){
+
+return text
+.replace("+0330","")
+.replace("Mon,","")
+.replace("Tue,","")
+.replace("Wed,","")
+.replace("Thu,","")
+.replace("Fri,","")
+.replace("Sat,","")
+.replace("Sun,","");
+
+}
+
+function toast(msg){
+
+const t=document.getElementById("toast");
+
+t.innerHTML=msg;
+
+t.style.display="block";
+
+setTimeout(()=>{
+
+t.style.display="none";
+
+},2500);
+
+}
+
+document
+.getElementById("listenButton")
+.onclick=function(){
+
+sheet.scrollTo({
+
+top:0,
+
+behavior:"smooth"
+
+});
+
+};
+
+loadEpisodes();

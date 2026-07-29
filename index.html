@@ -1,73 +1,174 @@
-
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+<title>NightCast | رادیو خلاصه کتاب</title>
 
-    <title>رادیو NightCast</title>
+<meta name="description"
+content="رادیو NightCast - مجموعه‌ای از پادکست‌های خلاصه کتاب">
 
-    <meta name="description"
-          content="رادیو NightCast | خلاصه کتاب‌های ارزشمند">
+<meta name="theme-color"
+content="#0b0b0b">
 
-    <meta name="theme-color"
-          content="#0D1117">
+<link rel="manifest" href="manifest.json">
 
-    <link rel="icon"
-          href="favicon.ico">
+<link rel="icon" href="favicon.ico">
 
-    <link rel="manifest"
-          href="manifest.json">
+<link rel="apple-touch-icon" href="logo.png">
 
-    <link rel="stylesheet"
-          href="style.css">
+<link rel="stylesheet" href="style.css">
 
 </head>
 
 <body>
 
+<div id="loader">
+
+<div class="spinner"></div>
+
+<p>در حال بارگذاری ...</p>
+
+</div>
+
 <header>
 
-    <img src="logo.png"
-         alt="NightCast Logo"
-         class="logo">
+<img src="logo.png" class="logo">
 
-    <h1>رادیو NightCast</h1>
+<div>
 
-    <p>خلاصه کتاب‌های ارزشمند</p>
+<h1>NightCast</h1>
+
+<p>رادیو خلاصه کتاب</p>
+
+</div>
+
+<button id="searchButton">
+
+🔍
+
+</button>
 
 </header>
 
-<main>
+<section id="hero">
 
-    <section id="episodes">
+<h2>
 
-        <!-- ویدیوها توسط app.js ساخته می‌شوند -->
+به دنیای خلاصه کتاب‌ها خوش آمدید
 
-    </section>
+</h2>
+
+<p>
+
+جدیدترین قسمت‌ها همیشه اینجا هستند.
+
+</p>
+
+</section>
+
+<main id="episodes">
+
+<!-- توسط app.js ساخته می‌شود -->
 
 </main>
 
-<div id="modal">
+<section id="requestBox">
 
-    <div id="modalContent">
+<h2>
 
-        <button id="closeModal">
-            ×
-        </button>
+کتاب مورد علاقه‌ات را پیدا نکردی؟
 
-        <iframe id="player"
-                src=""
-                allowfullscreen>
-        </iframe>
+</h2>
 
-    </div>
+<p>
+
+درخواست ساخت پادکست ثبت کن.
+
+</p>
+
+<button id="requestButton">
+
+📚 ثبت درخواست
+
+</button>
+
+</section>
+
+<nav>
+
+<button class="active">
+
+🏠
+
+<span>خانه</span>
+
+</button>
+
+<button>
+
+🎙
+
+<span>درخواست</span>
+
+</button>
+
+<button>
+
+🌐
+
+<span>شبکه‌ها</span>
+
+</button>
+
+<button>
+
+👤
+
+<span>حساب</span>
+
+</button>
+
+</nav>
+
+<div id="playerSheet">
+
+<div id="sheetHeader">
+
+<div id="closeSheet">
+
+✕
 
 </div>
+
+<h3 id="sheetTitle">
+
+</h3>
+
+</div>
+
+<div id="videoContainer">
+
+</div>
+
+<div id="episodeDescription">
+
+</div>
+
+<button id="listenButton">
+
+🎧 گوش بده
+
+</button>
+
+</div>
+
+<div id="overlay"></div>
+
+<div id="toast"></div>
 
 <script src="app.js"></script>
 

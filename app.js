@@ -4,6 +4,8 @@ const API =
 const episodes=document.getElementById("episodes");
 const loader=document.getElementById("loader");
 
+let allEpisodes = [];
+
 const sheet=document.getElementById("playerSheet");
 const overlay=document.getElementById("overlay");
 
@@ -15,13 +17,13 @@ async function loadEpisodes(){
 
 try{
 
-const res=await fetch(API);
-
 const data=await res.json();
 
 loader.style.display="none";
 
-showEpisodes(data.episodes);
+allEpisodes = data.episodes;
+
+showEpisodes(allEpisodes);
 
 }
 

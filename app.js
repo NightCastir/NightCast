@@ -47,7 +47,52 @@ const card=document.createElement("div");
 
 card.className="card";
 
-card.innerHTML=`
+card.card.innerHTML=`
+
+<img
+class="cover"
+src="${item.image}"
+loading="lazy">
+
+<div class="cardBody">
+
+<h3>
+
+${item.title}
+
+</h3>
+
+<p>
+
+${shortText(item.description)}
+
+</p>
+
+<div class="meta">
+
+<span>
+
+📅 ${date(item.published)}
+
+</span>
+
+<span>
+
+▶ آپارات
+
+</span>
+
+</div>
+
+<button class="listen">
+
+🎧 همین الان گوش بده
+
+</button>
+
+</div>
+
+`;
 
 <h3>${item.title}</h3>
 

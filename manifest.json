@@ -5,8 +5,8 @@
   "lang": "fa",
   "dir": "rtl",
 
-  "start_url": "/v2/",
-  "scope": "/v2/",
+  "start_url": "/",
+  "scope": "/",
 
   "display": "standalone",
 

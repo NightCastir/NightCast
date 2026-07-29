@@ -1,4 +1,4 @@
-alert("app.js loaded");
+
 const API = "https://ncstgetrssfromaparat.tomasgermany2580.workers.dev";
 
 const episodes = document.getElementById("episodes");

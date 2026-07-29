@@ -143,11 +143,14 @@ value:loginValue
 }
 
 );
-  
-console.log(response.status);
 
-console.log(await response.text());
+console.log("STATUS =", response.status);
 
+const text = await response.text();
+
+console.log("BODY =", text);
+
+const result = JSON.parse(text);
 return;
   
 const result =

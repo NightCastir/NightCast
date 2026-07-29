@@ -225,3 +225,22 @@ behavior:"smooth"
 };
 
 loadEpisodes();
+
+const search = document.getElementById("search");
+
+search.addEventListener("input", function () {
+
+    const text = this.value.trim().toLowerCase();
+
+    const filtered = allEpisodes.filter(item => {
+
+        return (
+            item.title.toLowerCase().includes(text) ||
+            item.description.toLowerCase().includes(text)
+        );
+
+    });
+
+    showEpisodes(filtered);
+
+});

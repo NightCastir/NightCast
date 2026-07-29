@@ -1,1 +1,160 @@
+/* ===========================
+   User Card
+=========================== */
 
+.user-card{
+display:flex;
+align-items:center;
+gap:14px;
+padding:18px;
+margin:18px;
+border-radius:18px;
+background:#171717;
+border:1px solid rgba(255,255,255,.05);
+}
+
+.user-avatar{
+
+width:64px;
+height:64px;
+
+border-radius:50%;
+
+background:#D9A441;
+
+color:#111;
+
+font-size:28px;
+
+font-weight:bold;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+}
+
+.user-info{
+
+flex:1;
+
+}
+
+.user-info h3{
+
+margin:0;
+font-size:18px;
+
+}
+
+.user-info p{
+
+margin:6px 0 0;
+
+color:#999;
+
+font-size:13px;
+
+}
+
+.edit-profile{
+
+background:#D9A441;
+
+color:#111;
+
+border:none;
+
+padding:10px 18px;
+
+border-radius:12px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+}
+
+/* ===========================
+Menu
+=========================== */
+
+.profile-menu{
+
+margin:20px;
+
+display:flex;
+
+flex-direction:column;
+
+gap:12px;
+
+}
+
+.profile-item{
+
+display:flex;
+
+align-items:center;
+
+justify-content:space-between;
+
+padding:18px;
+
+background:#171717;
+
+border-radius:16px;
+
+cursor:pointer;
+
+transition:.25s;
+
+}
+
+.profile-item:hover{
+
+background:#222;
+
+}
+
+.profile-item span{
+
+font-size:15px;
+
+}
+
+.profile-item i{
+
+font-style:normal;
+
+font-size:20px;
+
+}
+
+/* ===========================
+Logout
+=========================== */
+
+.logout{
+
+margin:20px;
+
+width:calc(100% - 40px);
+
+background:#d9534f;
+
+border:none;
+
+padding:15px;
+
+border-radius:16px;
+
+color:white;
+
+font-size:16px;
+
+cursor:pointer;
+
+  }

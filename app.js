@@ -1,424 +1,739 @@
-/*==================================================
-NightCast Premium App
-Version : 1.0
-Author : ChatGPT
-==================================================*/
-
 "use strict";
 
 /*==================================================
-CONFIG
-==================================================*/
-
-const CONFIG = {
-
-API:
-"https://nightcast-api.tomasgermany2580.workers.dev/api",
-
-CACHE_TIME:
-1000 * 60 * 5,
-
-THEME_KEY:
-"nightcast_theme",
-
-TOKEN_KEY:
-"nightcast_token",
-
-PLAYER_KEY:
-"nightcast_player",
-
-LAST_PLAYED_KEY:
-"nightcast_last",
-
-REQUEST_TIMEOUT:
-15000
-
-};
-
-
-/*==================================================
-GLOBAL STATE
+NightCast
+Application Core
+Version 6.0
 ==================================================*/
 
 const App = {
 
-theme:"auto",
+version: "6.0.0",
 
-user:null,
+api: "https://nightcast-api.tomasgermany2580.workers.dev",
 
-token:null,
+rss: null,
 
-rss:[],
+user: null,
 
-books:[],
+player: null,
 
-favorites:[],
+theme: "auto",
 
-recent:[],
+loading: false,
 
-player:null,
+currentEpisode: null,
 
-audio:null,
+episodes: [],
 
-currentEpisode:null,
+favorites: [],
 
-cache:{},
+history: [],
 
-loading:false,
-
-initialized:false
+searchResult: [],
 
 };
+
+/*==================================================
+DOM CACHE
+==================================================*/
+
+const DOM = {};
+
+/*==================================================
+INITIALIZE DOM
+==================================================*/
+
+function cacheDOM() {
+
+DOM.body = document.body;
+
+DOM.html = document.documentElement;
+
+DOM.loader = document.getElementById("pageLoader");
+
+DOM.overlay = document.getElementById("overlay");
+
+DOM.toast = document.getElementById("toast");
+
+DOM.player = document.getElementById("player");
+
+DOM.bottomNav = document.getElementById("bottomNav");
+
+DOM.backTop = document.getElementById("backToTop");
+
+DOM.progress = document.getElementById("scrollProgress");
+
+DOM.searchInput = document.getElementById("searchInput");
+
+DOM.episodes = document.getElementById("episodesContainer");
+
+}
+
+/*==================================================
+BOOTSTRAP
+==================================================*/
+
+document.addEventListener("DOMContentLoaded", init);
+
+function init() {
+
+console.log(
+
+`NightCast ${App.version}`
+
+);
+
+cacheDOM();
+
+loadTheme();
+
+bindGlobalEvents();
+
+hideLoader();
+
+}
+
+
 
 
 /*==================================================
-DOM
+THEME ENGINE
 ==================================================*/
 
-const DOM = {
+function loadTheme() {
 
-body:
-document.body,
+const savedTheme = localStorage.getItem("nightcast-theme");
 
-overlay:
-document.getElementById("overlay"),
+if (savedTheme) {
 
-toast:
-document.getElementById("toast"),
+App.theme = savedTheme;
 
-player:
-document.getElementById("player"),
+} else {
 
-playerTitle:
-document.getElementById("playerTitle"),
+App.theme = "auto";
 
-playerAuthor:
-document.getElementById("playerAuthor"),
+}
 
-playerImage:
-document.getElementById("playerImage"),
+applyTheme(App.theme);
 
-playerProgress:
-document.getElementById("playerProgress"),
+}
 
-playerPlay:
-document.getElementById("playerPlay"),
+function applyTheme(theme) {
 
-playerNext:
-document.getElementById("playerNext"),
+App.theme = theme;
 
-playerPrev:
-document.getElementById("playerPrev"),
+DOM.html.setAttribute("data-theme", theme);
 
-playerSheet:
-document.getElementById("playerSheet"),
+localStorage.setItem(
 
-sheetImage:
-document.getElementById("sheetImage"),
+"nightcast-theme",
 
-sheetTitle:
-document.getElementById("sheetTitle"),
+theme
 
-sheetDescription:
-document.getElementById("sheetDescription"),
+);
 
-sheetPlay:
-document.getElementById("sheetPlay"),
+updateThemeIcon();
 
-searchInput:
-document.getElementById("searchInput"),
+}
 
-searchModal:
-document.getElementById("searchModal"),
+function toggleTheme() {
 
-searchResults:
-document.getElementById("searchResults")
+switch (App.theme) {
 
-};
+case "light":
+
+applyTheme("dark");
+
+break;
+
+case "dark":
+
+applyTheme("auto");
+
+break;
+
+default:
+
+applyTheme("light");
+
+}
+
+}
+
+function updateThemeIcon() {
+
+const btn = document.getElementById("themeToggle");
+
+if (!btn) return;
+
+const icon = btn.querySelector("i");
+
+if (!icon) return;
+
+icon.className = "";
+
+switch (App.theme) {
+
+case "light":
+
+icon.classList.add(
+
+"fa-solid",
+
+"fa-sun"
+
+);
+
+break;
+
+case "dark":
+
+icon.classList.add(
+
+"fa-solid",
+
+"fa-moon"
+
+);
+
+break;
+
+default:
+
+icon.classList.add(
+
+"fa-solid",
+
+"fa-circle-half-stroke"
+
+);
+
+}
+
+}
+
+/*==================================================
+SYSTEM THEME CHANGE
+==================================================*/
+
+window.matchMedia(
+
+"(prefers-color-scheme: dark)"
+
+).addEventListener(
+
+"change",
+
+() => {
+
+if (App.theme === "auto") {
+
+applyTheme("auto");
+
+}
+
+}
+
+);
+
+
+
+
 
 
 /*==================================================
-UTILITIES
+STORAGE MANAGER
 ==================================================*/
 
-const Utils = {
+const Storage = {
 
-sleep(ms){
+get(key, defaultValue = null) {
 
-return new Promise(resolve=>{
+try {
 
-setTimeout(resolve,ms);
+const value = localStorage.getItem(key);
 
-});
+return value ? JSON.parse(value) : defaultValue;
 
-},
+} catch {
 
-uuid(){
+return defaultValue;
 
-return crypto.randomUUID();
-
-},
-
-formatTime(seconds){
-
-seconds=
-Math.floor(seconds);
-
-const m=
-Math.floor(seconds/60);
-
-const s=
-seconds%60;
-
-return `${m}:${s.toString().padStart(2,"0")}`;
+}
 
 },
 
-isEmail(value){
+set(key, value) {
 
-return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+try {
 
-},
+localStorage.setItem(
 
-isPhone(value){
+key,
 
-return /^\+[1-9]\d{7,14}$/.test(value);
+JSON.stringify(value)
 
-},
+);
 
-escape(text){
+} catch (err) {
 
-const div=
-document.createElement("div");
+console.error(err);
 
-div.innerText=text;
-
-return div.innerHTML;
+}
 
 },
 
-debounce(fn,delay){
+remove(key) {
 
-let timer;
+localStorage.removeItem(key);
 
-return (...args)=>{
+},
 
-clearTimeout(timer);
+clear() {
 
-timer=setTimeout(()=>{
-
-fn(...args);
-
-},delay);
-
-};
+localStorage.clear();
 
 }
 
 };
+
+/*==================================================
+USER
+==================================================*/
+
+function saveUser(user) {
+
+App.user = user;
+
+Storage.set(
+
+"nightcast-user",
+
+user
+
+);
+
+}
+
+function loadUser() {
+
+App.user = Storage.get(
+
+"nightcast-user",
+
+null
+
+);
+
+}
+
+/*==================================================
+TOKEN
+==================================================*/
+
+function saveToken(token) {
+
+Storage.set(
+
+"nightcast-token",
+
+token
+
+);
+
+}
+
+function getToken() {
+
+return Storage.get(
+
+"nightcast-token",
+
+null
+
+);
+
+}
+
+function logoutLocal() {
+
+Storage.remove(
+
+"nightcast-user"
+
+);
+
+Storage.remove(
+
+"nightcast-token"
+
+);
+
+App.user = null;
+
+}
+
+/*==================================================
+FAVORITES
+==================================================*/
+
+function loadFavorites() {
+
+App.favorites = Storage.get(
+
+"nightcast-favorites",
+
+[]
+
+);
+
+}
+
+function saveFavorites() {
+
+Storage.set(
+
+"nightcast-favorites",
+
+App.favorites
+
+);
+
+}
+
+/*==================================================
+HISTORY
+==================================================*/
+
+function loadHistory() {
+
+App.history = Storage.get(
+
+"nightcast-history",
+
+[]
+
+);
+
+}
+
+function saveHistory() {
+
+Storage.set(
+
+"nightcast-history",
+
+App.history
+
+);
+
+}
+
+/*==================================================
+PLAYER POSITION
+==================================================*/
+
+function savePlayerState() {
+
+if (!App.player) return;
+
+Storage.set(
+
+"nightcast-player",
+
+{
+
+episode: App.currentEpisode,
+
+time: App.player.currentTime,
+
+speed: App.player.playbackRate
+
+}
+
+);
+
+}
+
+function loadPlayerState() {
+
+return Storage.get(
+
+"nightcast-player",
+
+null
+
+);
+
+}
+
+
+
+
+
+
+
+
+/*==================================================
+HELPERS
+==================================================*/
+
+function $(selector) {
+
+return document.querySelector(selector);
+
+}
+
+function $$(selector) {
+
+return document.querySelectorAll(selector);
+
+}
+
+function sleep(ms) {
+
+return new Promise(resolve =>
+
+setTimeout(resolve, ms)
+
+);
+
+}
+
+function escapeHTML(text = "") {
+
+const div = document.createElement("div");
+
+div.textContent = text;
+
+return div.innerHTML;
+
+}
+
+function formatTime(seconds = 0) {
+
+seconds = Math.floor(seconds);
+
+const m = Math.floor(seconds / 60);
+
+const s = seconds % 60;
+
+return `${m}:${String(s).padStart(2,"0")}`;
+
+}
+
+function formatNumber(number) {
+
+return new Intl.NumberFormat("fa-IR")
+
+.format(number);
+
+}
+
+
+/*==================================================
+LOADER
+==================================================*/
+
+function showLoader() {
+
+if (DOM.loader) {
+
+DOM.loader.classList.remove("hide");
+
+}
+
+App.loading = true;
+
+}
+
+function hideLoader() {
+
+if (DOM.loader) {
+
+DOM.loader.classList.add("hide");
+
+}
+
+App.loading = false;
+
+}
+
+
+/*==================================================
+OVERLAY
+==================================================*/
+
+function showOverlay() {
+
+if (!DOM.overlay) return;
+
+DOM.overlay.classList.add("show");
+
+}
+
+function hideOverlay() {
+
+if (!DOM.overlay) return;
+
+DOM.overlay.classList.remove("show");
+
+}
 
 
 /*==================================================
 TOAST
 ==================================================*/
 
-const Toast={
+let toastTimer = null;
 
-show(message,time=2500){
+function showToast(
 
-if(!DOM.toast){
+message,
 
-return;
+type = "info",
+
+duration = 3000
+
+) {
+
+if (!DOM.toast) return;
+
+clearTimeout(toastTimer);
+
+DOM.toast.textContent = message;
+
+DOM.toast.className = "toast show";
+
+switch (type) {
+
+case "success":
+
+DOM.toast.style.background = "#27AE60";
+
+break;
+
+case "error":
+
+DOM.toast.style.background = "#E53935";
+
+break;
+
+case "warning":
+
+DOM.toast.style.background = "#F39C12";
+
+break;
+
+default:
+
+DOM.toast.style.background = "var(--primary)";
 
 }
 
-DOM.toast.innerText=
-message;
+toastTimer = setTimeout(() => {
 
-DOM.toast.style.display=
-"block";
+DOM.toast.classList.remove("show");
 
-DOM.toast.classList.add(
-"fade-in"
-);
-
-clearTimeout(
-
-Toast.timer
-
-);
-
-Toast.timer=
-setTimeout(()=>{
-
-DOM.toast.style.display=
-"none";
-
-},time);
+}, duration);
 
 }
-
-};
 
 
 /*==================================================
-LOADING
+BUTTON LOADING
 ==================================================*/
 
-const Loading={
+function buttonLoading(
 
-show(button,text="در حال پردازش..."){
+button,
 
-if(!button)return;
+loading = true
 
-button.dataset.original=
-button.innerHTML;
+) {
 
-button.disabled=true;
+if (!button) return;
 
-button.innerHTML=text;
+if (loading) {
 
-},
+button.classList.add(
 
-hide(button){
-
-if(!button)return;
-
-button.disabled=false;
-
-button.innerHTML=
-button.dataset.original ||
-"ادامه";
-
-}
-
-};
-
-
-/*==================================================
-THEME MANAGER
-==================================================*/
-
-const Theme={
-
-init(){
-
-let saved=
-
-localStorage.getItem(
-
-CONFIG.THEME_KEY
+"button-loading"
 
 );
 
-if(!saved){
+button.disabled = true;
 
-saved="auto";
+} else {
 
-}
+button.classList.remove(
 
-App.theme=saved;
-
-Theme.apply(saved);
-
-},
-
-apply(mode){
-
-document.documentElement
-
-.setAttribute(
-
-"data-theme",
-
-mode
+"button-loading"
 
 );
 
-localStorage.setItem(
-
-CONFIG.THEME_KEY,
-
-mode
-
-);
-
-App.theme=mode;
-
-},
-
-toggle(){
-
-if(App.theme==="dark"){
-
-Theme.apply("light");
-
-return;
+button.disabled = false;
 
 }
 
-if(App.theme==="light"){
-
-Theme.apply("auto");
-
-return;
-
 }
 
-Theme.apply("dark");
 
-}
 
-};
 
 
 
 
 /*==================================================
-HTTP ENGINE
+API ENGINE
 ==================================================*/
 
-const Http = {
+const API = {
 
-async request(
+base: App.api,
 
-url,
-options={}
+timeout: 15000,
 
-){
+async request(endpoint, options = {}) {
 
-const controller =
-new AbortController();
+const controller = new AbortController();
 
-const timeout =
-setTimeout(()=>{
+const timeout = setTimeout(() => {
 
 controller.abort();
 
-},CONFIG.REQUEST_TIMEOUT);
+}, this.timeout);
 
-try{
+const headers = {
 
-const response =
-await fetch(
+"Content-Type": "application/json",
 
-url,
+...options.headers
+
+};
+
+const token = getToken();
+
+if (token) {
+
+headers.Authorization = `Bearer ${token}`;
+
+}
+
+try {
+
+const response = await fetch(
+
+this.base + endpoint,
 
 {
 
 ...options,
 
-signal:
-controller.signal,
+headers,
 
-headers:{
-
-"Content-Type":
-"application/json",
-
-...(options.headers||{})
-
-}
+signal: controller.signal
 
 }
 
@@ -426,1425 +741,273 @@ headers:{
 
 clearTimeout(timeout);
 
-const json =
-await response.json();
+const data = await response.json();
 
-if(!response.ok){
+if (!response.ok) {
 
-throw{
+throw {
 
-status:
-response.status,
+status: response.status,
 
 message:
-json.message ||
+
+data.message ||
+
 "Server Error"
 
 };
 
 }
 
-return json;
+return data;
 
-}catch(error){
+} catch (err) {
 
 clearTimeout(timeout);
 
-if(error.name==="AbortError"){
+if (err.name === "AbortError") {
 
-throw{
+throw {
+
+status: 408,
 
 message:
-"Request Timeout"
+
+"ارتباط با سرور بیش از حد طول کشید."
 
 };
 
 }
 
-throw error;
+throw err;
 
 }
 
-},
+}
 
-get(url){
+};
 
-return Http.request(
 
-url,
+/*==================================================
+GET
+==================================================*/
+
+async function apiGet(endpoint) {
+
+return API.request(endpoint, {
+
+method: "GET"
+
+});
+
+}
+
+
+/*==================================================
+POST
+==================================================*/
+
+async function apiPost(endpoint, body) {
+
+return API.request(endpoint, {
+
+method: "POST",
+
+body: JSON.stringify(body)
+
+});
+
+}
+
+
+/*==================================================
+API STATUS
+==================================================*/
+
+async function apiStatus() {
+
+return apiGet("/api");
+
+}
+
+
+/*==================================================
+ERROR HANDLER
+==================================================*/
+
+function handleApiError(error) {
+
+console.error(error);
+
+const message =
+
+error.message ||
+
+"خطای ناشناخته";
+
+showToast(
+
+message,
+
+"error"
+
+);
+
+}
+
+
+
+
+
+/*==================================================
+LOGIN MODULE
+==================================================*/
+
+const Login = {
+
+step: 1,
+
+type: "phone",
+
+value: "",
+
+code: ""
+
+};
+
+
+/*==================================================
+START LOGIN
+==================================================*/
+
+async function startLogin() {
+
+const input = document.getElementById("loginInput");
+
+const button = document.getElementById("continueButton");
+
+if (!input) return;
+
+const value = input.value.trim();
+
+if (!value) {
+
+showToast(
+
+"شماره موبایل یا ایمیل را وارد کنید.",
+
+"warning"
+
+);
+
+input.focus();
+
+return;
+
+}
+
+Login.value = value;
+
+Login.type =
+
+value.includes("@")
+
+? "email"
+
+: "phone";
+
+try {
+
+buttonLoading(button, true);
+
+showLoader();
+
+const result = await apiPost(
+
+"/api/auth/start",
 
 {
 
-method:"GET"
+type: Login.type,
+
+value: Login.value
 
 }
 
 );
 
-},
+hideLoader();
 
-post(
+buttonLoading(button, false);
 
-url,
-body
+showToast(
 
-){
+"کد تایید ارسال شد.",
 
-return Http.request(
-
-url,
-
-{
-
-method:"POST",
-
-body:
-JSON.stringify(body)
-
-}
+"success"
 
 );
 
-}
+showOTPPage();
 
-};
-
-
-
-/*==================================================
-CACHE
-==================================================*/
-
-const Cache={
-
-set(
-
-key,
-data
-
-){
-
-App.cache[key]={
-
-time:
-Date.now(),
-
-data
-
-};
-
-},
-
-get(key){
-
-const item=
-
-App.cache[key];
-
-if(!item){
-
-return null;
-
-}
-
-if(
-
-Date.now()
-
--
-
-item.time
-
->
-
-CONFIG.CACHE_TIME
-
-){
-
-delete App.cache[key];
-
-return null;
-
-}
-
-return item.data;
-
-},
-
-clear(){
-
-App.cache={};
-
-}
-
-};
-
-
-
-/*==================================================
-API
-==================================================*/
-
-const API={
-
-async status(){
-
-return await Http.get(
-
-CONFIG.API
-
-);
-
-},
-
-async me(){
-
-const token=
-
-localStorage.getItem(
-
-CONFIG.TOKEN_KEY
-
-);
-
-if(!token){
-
-return null;
-
-}
-
-return await Http.get(
-
-CONFIG.API+
-
-"/me",
-
-{
-
-headers:{
-
-Authorization:
-
-"Bearer "+token
-
-}
-
-}
-
-);
-
-},
-
-async logout(){
-
-const token=
-
-localStorage.getItem(
-
-CONFIG.TOKEN_KEY
-
-);
-
-return await Http.post(
-
-CONFIG.API+
-
-"/logout",
-
-{},{
-
-headers:{
-
-Authorization:
-
-"Bearer "+token
-
-}
-
-}
-
-);
-
-},
-
-async requestBook(
-
-body
-
-){
-
-return await Http.post(
-
-CONFIG.API+
-
-"/request",
-
-body
-
-);
-
-}
-
-};
-
-
-
-/*==================================================
-USER
-==================================================*/
-
-const User={
-
-async load(){
-
-try{
-
-const result=
-
-await API.me();
-
-if(
-
-result &&
-
-result.success
-
-){
-
-App.user=
-
-result.user;
-
-return true;
-
-}
-
-}catch(e){
-
-console.log(e);
-
-}
-
-localStorage.removeItem(
-
-CONFIG.TOKEN_KEY
-
-);
-
-return false;
-
-},
-
-logout(){
-
-localStorage.removeItem(
-
-CONFIG.TOKEN_KEY
-
-);
-
-App.user=null;
-
-location.href=
-
-"login.html";
-
-}
-
-};
-
-
-
-/*==================================================
-BOOT
-==================================================*/
-
-const Boot={
-
-async start(){
-
-Theme.init();
-
-await User.load();
+/* فقط برای تست */
 
 console.log(
 
-"NightCast Ready"
+"OTP:",
+
+result.code
 
 );
 
+} catch (err) {
+
+hideLoader();
+
+buttonLoading(button, false);
+
+handleApiError(err);
+
 }
 
-};
-
-document.addEventListener(
-
-"DOMContentLoaded",
-
-()=>{
-
-Boot.start();
-
-});
-
-
+}
 
 
 /*==================================================
-RSS ENGINE
+SHOW OTP
 ==================================================*/
 
-const Feed = {
+function showOTPPage() {
 
-items:[],
+const loginBox =
 
-async load(){
+document.getElementById("loginBox");
 
-try{
+const otpBox =
 
-const cache =
+document.getElementById("otpBox");
 
-Cache.get("rss");
+if (loginBox)
 
-if(cache){
+loginBox.classList.add("hide");
 
-Feed.items = cache;
+if (otpBox)
 
-Renderer.renderEpisodes(cache);
+otpBox.classList.remove("hide");
 
-return;
+const firstInput =
 
-}
+document.querySelector(".otp-input");
 
-const result =
+if (firstInput)
 
-await Http.get(
-
-CONFIG.API + "/rss"
-
-);
-
-if(
-
-!result.success
-
-){
-
-throw "RSS Error";
+firstInput.focus();
 
 }
 
-Feed.items =
 
-result.items || [];
 
-Cache.set(
 
-"rss",
-
-Feed.items
-
-);
-
-Renderer.renderEpisodes(
-
-Feed.items
-
-);
-
-}catch(e){
-
-console.error(e);
-
-Toast.show(
-
-"خطا در دریافت اطلاعات"
-
-);
-
-}
-
-}
-
-};
-
-
-
-/*==================================================
-RENDERER
-==================================================*/
-
-const Renderer = {
-
-renderEpisodes(items){
-
-const container =
-
-document.getElementById(
-
-"episodes"
-
-);
-
-if(!container){
-
-return;
-
-}
-
-container.innerHTML="";
-
-items.forEach(item=>{
-
-container.appendChild(
-
-Renderer.createCard(item)
-
-);
-
-});
-
-},
-
-createCard(item){
-
-const card =
-
-document.createElement("article");
-
-card.className =
-
-"episode-card fade-in";
-
-card.innerHTML =
-
-`
-
-<div class="episode-cover">
-
-<img
-
-loading="lazy"
-
-src="${item.image}"
-
-alt="${Utils.escape(item.title)}">
-
-<div class="play-overlay">
-
-<div class="play-circle">
-
-▶
-
-</div>
-
-</div>
-
-</div>
-
-<div class="episode-body">
-
-<h3 class="episode-title">
-
-${Utils.escape(item.title)}
-
-</h3>
-
-<p class="episode-desc">
-
-${Utils.escape(
-
-item.description || ""
-
-)}
-
-</p>
-
-<div class="episode-footer">
-
-<span>
-
-🎧 ${item.duration || ""}
-
-</span>
-
-<span>
-
-📅 ${item.date || ""}
-
-</span>
-
-</div>
-
-</div>
-
-`;
-
-card.onclick = ()=>{
-
-Player.open(item);
-
-};
-
-return card;
-
-}
-
-};
-
-
-
-/*==================================================
-BOOKS
-==================================================*/
-
-const Books = {
-
-items:[],
-
-set(items){
-
-Books.items = items;
-
-},
-
-find(text){
-
-text =
-
-text.toLowerCase();
-
-return Books.items.filter(book=>{
-
-return (
-
-book.title
-
-.toLowerCase()
-
-.includes(text)
-
-||
-
-book.author
-
-.toLowerCase()
-
-.includes(text)
-
-);
-
-});
-
-}
-
-};
-
-
-
-/*==================================================
-HOME
-==================================================*/
-
-const Home={
-
-async init(){
-
-await Feed.load();
-
-}
-
-};
-
-
-
-/*==================================================
-BOOT UPDATE
-==================================================*/
-
-document.addEventListener(
-
-"DOMContentLoaded",
-
-async ()=>{
-
-await Boot.start();
-
-await Home.init();
-
-});
-
-
-
-/*==================================================
-SEARCH ENGINE
-==================================================*/
-
-const Search={
-
-keyword:"",
-
-results:[],
-
-init(){
-
-if(!DOM.searchInput){
-
-return;
-
-}
-
-DOM.searchInput.addEventListener(
-
-"input",
-
-Utils.debounce(
-
-Search.onSearch,
-
-250
-
-)
-
-);
-
-},
-
-onSearch(e){
-
-Search.keyword=
-
-e.target.value
-
-.trim()
-
-.toLowerCase();
-
-if(
-
-Search.keyword===""
-
-){
-
-Search.clear();
-
-return;
-
-}
-
-Search.results=
-
-Feed.items.filter(item=>{
-
-const title=
-
-(item.title||"")
-
-.toLowerCase();
-
-const desc=
-
-(item.description||"")
-
-.toLowerCase();
-
-const author=
-
-(item.author||"")
-
-.toLowerCase();
-
-return(
-
-title.includes(Search.keyword)||
-
-desc.includes(Search.keyword)||
-
-author.includes(Search.keyword)
-
-);
-
-});
-
-Search.render();
-
-},
-
-render(){
-
-if(!DOM.searchResults){
-
-return;
-
-}
-
-DOM.searchResults.innerHTML="";
-
-if(
-
-Search.results.length===0
-
-){
-
-DOM.searchResults.innerHTML=`
-
-<div class="empty-search">
-
-<h3>
-
-نتیجه‌ای پیدا نشد
-
-</h3>
-
-<p>
-
-عبارت دیگری را امتحان کنید.
-
-</p>
-
-</div>
-
-`;
-
-return;
-
-}
-
-Search.results.forEach(item=>{
-
-const card=
-
-Renderer.createCard(item);
-
-DOM.searchResults
-
-.appendChild(card);
-
-});
-
-},
-
-clear(){
-
-if(DOM.searchResults){
-
-DOM.searchResults.innerHTML="";
-
-}
-
-},
-
-open(){
-
-if(!DOM.searchModal){
-
-return;
-
-}
-
-DOM.searchModal
-
-.classList.add("open");
-
-DOM.overlay?.classList.add(
-
-"show"
-
-);
-
-setTimeout(()=>{
-
-DOM.searchInput?.focus();
-
-},150);
-
-},
-
-close(){
-
-DOM.searchModal
-
-.classList.remove("open");
-
-DOM.overlay?.classList.remove(
-
-"show"
-
-);
-
-Search.clear();
-
-if(DOM.searchInput){
-
-DOM.searchInput.value="";
-
-}
-
-Search.keyword="";
-
-}
-
-};
-
-
-
-/*==================================================
-SEARCH BUTTONS
-==================================================*/
-
-document
-
-.getElementById("searchButton")
-
-?.addEventListener(
-
-"click",
-
-()=>{
-
-Search.open();
-
-}
-
-);
-
-document
-
-.getElementById("searchClose")
-
-?.addEventListener(
-
-"click",
-
-()=>{
-
-Search.close();
-
-}
-
-);
-
-DOM.overlay?.addEventListener(
-
-"click",
-
-()=>{
-
-Search.close();
-
-}
-
-);
-
-
-
-/*==================================================
-KEYBOARD SHORTCUTS
-==================================================*/
-
-document.addEventListener(
-
-"keydown",
-
-e=>{
-
-if(
-
-e.key==="Escape"
-
-){
-
-Search.close();
-
-}
-
-if(
-
-e.ctrlKey &&
-
-e.key==="k"
-
-){
-
-e.preventDefault();
-
-Search.open();
-
-}
-
-}
-
-);
-
-
-
-/*==================================================
-BOOT UPDATE
-==================================================*/
-
-document.addEventListener(
-
-"DOMContentLoaded",
-
-()=>{
-
-Search.init();
-
-});
-
-
-
-
-
-/*==================================================
-PLAYER ENGINE
-==================================================*/
-
-const Player={
-
-audio:new Audio(),
-
-current:null,
-
-playing:false,
-
-init(){
-
-Player.audio.preload="metadata";
-
-Player.audio.addEventListener(
-
-"timeupdate",
-
-Player.updateProgress
-
-);
-
-Player.audio.addEventListener(
-
-"ended",
-
-Player.next
-
-);
-
-Player.audio.addEventListener(
-
-"loadedmetadata",
-
-Player.updateDuration
-
-);
-
-},
-
-open(item){
-
-Player.current=item;
-
-Player.audio.src=item.audio;
-
-Player.audio.load();
-
-Player.render(item);
-
-Player.play();
-
-localStorage.setItem(
-
-CONFIG.LAST_PLAYED_KEY,
-
-JSON.stringify(item)
-
-);
-
-},
-
-render(item){
-
-if(DOM.player){
-
-DOM.player.style.display="flex";
-
-}
-
-if(DOM.playerTitle){
-
-DOM.playerTitle.innerText=item.title;
-
-}
-
-if(DOM.playerAuthor){
-
-DOM.playerAuthor.innerText=
-
-item.author || "";
-
-}
-
-if(DOM.playerImage){
-
-DOM.playerImage.src=item.image;
-
-}
-
-if(DOM.sheetTitle){
-
-DOM.sheetTitle.innerText=item.title;
-
-}
-
-if(DOM.sheetDescription){
-
-DOM.sheetDescription.innerText=
-
-item.description || "";
-
-}
-
-if(DOM.sheetImage){
-
-DOM.sheetImage.src=item.image;
-
-}
-
-},
-
-play(){
-
-Player.audio.play();
-
-Player.playing=true;
-
-Player.refreshButtons();
-
-},
-
-pause(){
-
-Player.audio.pause();
-
-Player.playing=false;
-
-Player.refreshButtons();
-
-},
-
-toggle(){
-
-if(Player.playing){
-
-Player.pause();
-
-}else{
-
-Player.play();
-
-}
-
-},
-
-refreshButtons(){
-
-const icon=
-
-Player.playing ? "⏸" : "▶";
-
-if(DOM.playerPlay){
-
-DOM.playerPlay.innerHTML=icon;
-
-}
-
-if(DOM.sheetPlay){
-
-DOM.sheetPlay.innerHTML=icon;
-
-}
-
-},
-
-updateProgress(){
-
-if(
-
-!DOM.playerProgress ||
-
-!Player.audio.duration
-
-){
-
-return;
-
-}
-
-const percent=
-
-(Player.audio.currentTime/
-
-Player.audio.duration)
-
-*100;
-
-DOM.playerProgress.style.width=
-
-percent+"%";
-
-},
-
-updateDuration(){
-
-console.log(
-
-Utils.formatTime(
-
-Player.audio.duration
-
-)
-
-);
-
-},
-
-next(){
-
-if(
-
-Feed.items.length===0 ||
-
-!Player.current
-
-){
-
-return;
-
-}
-
-const index=
-
-Feed.items.findIndex(
-
-x=>x.audio===Player.current.audio
-
-);
-
-if(index===-1){
-
-return;
-
-}
-
-const next=
-
-Feed.items[
-
-(index+1)
-
-%
-
-Feed.items.length
-
-];
-
-Player.open(next);
-
-},
-
-previous(){
-
-if(
-
-Feed.items.length===0 ||
-
-!Player.current
-
-){
-
-return;
-
-}
-
-const index=
-
-Feed.items.findIndex(
-
-x=>x.audio===Player.current.audio
-
-);
-
-if(index===-1){
-
-return;
-
-}
-
-const prev=
-
-Feed.items[
-
-(index-1+Feed.items.length)
-
-%
-
-Feed.items.length
-
-];
-
-Player.open(prev);
-
-}
-
-};
-
-
-
-/*==================================================
-PLAYER EVENTS
-==================================================*/
-
-DOM.playerPlay?.addEventListener(
-
-"click",
-
-()=>{
-
-Player.toggle();
-
-}
-
-);
-
-DOM.sheetPlay?.addEventListener(
-
-"click",
-
-()=>{
-
-Player.toggle();
-
-}
-
-);
-
-DOM.playerNext?.addEventListener(
-
-"click",
-
-()=>{
-
-Player.next();
-
-}
-
-);
-
-DOM.playerPrev?.addEventListener(
-
-"click",
-
-()=>{
-
-Player.previous();
-
-}
-
-);
-
-
-
-DOM.player?.addEventListener(
-
-"dblclick",
-
-()=>{
-
-DOM.playerSheet?.classList.add(
-
-"open"
-
-);
-
-DOM.overlay?.classList.add(
-
-"show"
-
-);
-
-}
-
-);
-
-
-
-document
-
-.getElementById("sheetClose")
-
-?.addEventListener(
-
-"click",
-
-()=>{
-
-DOM.playerSheet?.classList.remove(
-
-"open"
-
-);
-
-DOM.overlay?.classList.remove(
-
-"show"
-
-);
-
-}
-
-);
-
-
-
-/*==================================================
-RESTORE LAST PLAYED
-==================================================*/
-
-document.addEventListener(
-
-"DOMContentLoaded",
-
-()=>{
-
-Player.init();
-
-const last=
-
-localStorage.getItem(
-
-CONFIG.LAST_PLAYED_KEY
-
-);
-
-if(last){
-
-try{
-
-const item=
-
-JSON.parse(last);
-
-Player.render(item);
-
-Player.current=item;
-
-}catch(e){
-
-console.log(e);
-
-}
-
-}
-
-});
 
 
 

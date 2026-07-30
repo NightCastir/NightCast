@@ -2295,6 +2295,8 @@ index
 
 createCard(item, index) {
 
+console.log("Create Card:", item);
+
 const card = document.createElement("article");
 
 card.className = "episode-card";

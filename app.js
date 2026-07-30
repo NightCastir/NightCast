@@ -2273,6 +2273,139 @@ this.loading = false;
 
 
 
+/*==================================================
+EPISODE RENDER ENGINE
+==================================================*/
+
+const EpisodeRenderer = {
+
+container: null,
+
+init() {
+
+this.container = document.getElementById(
+
+"episodesGrid"
+
+);
+
+},
+
+render() {
+
+if (!this.container) return;
+
+const episodes = DataStore.get("episodes");
+
+this.container.innerHTML = "";
+
+if (!episodes || episodes.length === 0) {
+
+this.container.innerHTML = `
+
+<div class="empty-state">
+
+هیچ پادکستی یافت نشد.
+
+</div>
+
+`;
+
+return;
+
+}
+
+episodes.forEach((episode, index) => {
+
+this.container.appendChild(
+
+this.createCard(
+
+episode,
+
+index
+
+)
+
+);
+
+});
+
+},
+
+createCard(item, index) {
+
+const card = document.createElement("article");
+
+card.className = "episode-card";
+
+card.dataset.index = index;
+
+card.innerHTML = `
+
+<div class="episode-image">
+
+<img
+
+loading="lazy"
+
+src="${item.image || "assets/images/placeholder-book.jpg"}"
+
+alt="${escapeHTML(item.title)}">
+
+<button
+
+class="episode-play"
+
+data-index="${index}">
+
+▶
+
+</button>
+
+</div>
+
+<div class="episode-body">
+
+<h3>
+
+${escapeHTML(item.title)}
+
+</h3>
+
+<p>
+
+${escapeHTML(item.description || "")}
+
+</p>
+
+<div class="episode-footer">
+
+<span>
+
+${item.author || ""}
+
+</span>
+
+</div>
+
+</div>
+
+`;
+
+return card;
+
+}
+
+};
+
+
+
+
+
+
+
+
 
 
 

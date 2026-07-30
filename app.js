@@ -2504,51 +2504,7 @@ this.currentIndex - 1
 
 
 
-/*==================================================
-PLAYER STATE
-==================================================*/
 
-function savePlayerState() {
-
-const episode = App.currentEpisode;
-
-if (!episode) return;
-
-const state = {
-
-id:
-
-episode.id ||
-
-episode.guid ||
-
-episode.link ||
-
-"",
-
-currentTime:
-
-Player.audio.currentTime || 0,
-
-duration:
-
-Player.audio.duration || 0,
-
-updatedAt:
-
-Date.now()
-
-};
-
-localStorage.setItem(
-
-"nightcast_player",
-
-JSON.stringify(state)
-
-);
-
-}
 
 /*==================================================
 RESTORE PLAYER

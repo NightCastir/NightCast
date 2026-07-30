@@ -1746,8 +1746,11 @@ showToast(
 /* ادامه در Part12 */
 
 }
+
+await RSS.load();
+
 applicationReady();
-RSS.load();
+  
 }
 
 

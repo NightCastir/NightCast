@@ -1726,7 +1726,9 @@ APPLICATION BOOT
 ==================================================*/
 
 async function bootApplication(){
+if (App.booted) return;
 
+App.booted = true;
 /* بررسی Session */
 
 const loggedIn = await Session.restore();

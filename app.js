@@ -66,8 +66,8 @@ DOM.progress = document.getElementById("scrollProgress");
 
 DOM.searchInput = document.getElementById("searchInput");
 
-DOM.episodes = document.getElementById("episodesContainer");
 
+  DOM.episodes = document.getElementById("episodesGrid");
 }
 
 /*==================================================

@@ -1962,7 +1962,26 @@ EpisodeRenderer.render();
 }
 
 );
+App.events.on(
 
+"rss-loaded",
+
+(data) => {
+
+console.log(
+
+"RSS Event Fired",
+
+data
+
+);
+
+EpisodeRenderer.render();
+
+}
+
+);
+  
 Player.init();
 
 App.events.emit(

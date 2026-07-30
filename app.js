@@ -1747,6 +1747,7 @@ showToast(
 
 }
 applicationReady();
+RSS.load();
 }
 
 

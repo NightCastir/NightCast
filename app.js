@@ -2109,7 +2109,101 @@ RSS ENGINE
 ==================================================*/
 
 
+const RSS = {
 
+loading: false,
+
+loaded: false,
+
+async load() {
+
+if (this.loading) return;
+
+this.loading = true;
+
+showLoader();
+
+try {
+
+const response = await fetch(
+
+"https://ncstgetrssfromaparat.tomasgermany2580.workers.dev",
+
+{
+
+cache: "no-cache"
+
+}
+
+);
+
+if (!response.ok) {
+
+throw new Error("RSS Error");
+
+}
+
+const data = await response.json();
+
+if (!data || !data.episodes) {
+
+throw new Error("Invalid RSS");
+
+}
+
+DataStore.set(
+
+"episodes",
+
+data.episodes
+
+);
+
+this.loaded = true;
+
+App.data.rssLoaded = true;
+
+App.events.emit(
+
+"rss-loaded",
+
+data.episodes
+
+);
+
+console.log(
+
+`RSS Loaded : ${data.episodes.length}`
+
+);
+
+}
+
+catch(error){
+
+console.error(error);
+
+showToast(
+
+"خطا در دریافت پادکست‌ها",
+
+"error"
+
+);
+
+}
+
+finally{
+
+hideLoader();
+
+this.loading = false;
+
+}
+
+}
+
+};
 
 
 

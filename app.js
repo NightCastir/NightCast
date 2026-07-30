@@ -1943,12 +1943,8 @@ if(App.ready) return;
 
 App.ready = true;
 
-App.events.emit(
 
-"application-ready"
-
-);
-EpisodeRenderer.init();
+  EpisodeRenderer.init();
 
 App.events.on(
 
@@ -1959,6 +1955,14 @@ App.events.on(
 EpisodeRenderer.render();
 
 }
+
+);
+
+Player.init();
+
+App.events.emit(
+
+"application-ready"
 
 );
 

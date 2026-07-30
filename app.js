@@ -857,70 +857,145 @@ message,
 
 
 
-
-
 /*==================================================
-LOGIN MODULE
+LOGIN MANAGER
 ==================================================*/
 
 const Login = {
 
-step: 1,
-
-type: "phone",
+type: null,
 
 value: "",
 
-code: ""
+step: 1,
+
+isRunning: false,
+
+reset() {
+
+this.type = null;
+
+this.value = "";
+
+this.step = 1;
+
+this.isRunning = false;
+
+}
 
 };
 
-
 /*==================================================
-START LOGIN
+LOGIN HELPERS
 ==================================================*/
 
-async function startLogin() {
+function detectLoginType(value) {
 
-const input = document.getElementById("loginInput");
+value = value.trim();
 
-const button = document.getElementById("continueButton");
+if (value.includes("@")) {
 
-if (!input) return;
+return "email";
 
-const value = input.value.trim();
+}
+
+return "phone";
+
+}
+
+function validateLoginValue(value) {
+
+value = value.trim();
 
 if (!value) {
 
+return {
+
+ok: false,
+
+message: "شماره موبایل یا ایمیل را وارد کنید."
+
+};
+
+}
+
+if (value.includes("@")) {
+
+const emailRegex =
+
+/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+if (!emailRegex.test(value)) {
+
+return {
+
+ok: false,
+
+message: "ایمیل صحیح نیست."
+
+};
+
+}
+
+} else {
+
+const phone = value.replace(/\D/g, "");
+
+if (phone.length < 10) {
+
+return {
+
+ok: false,
+
+message: "شماره موبایل صحیح نیست."
+
+};
+
+}
+
+}
+
+return {
+
+ok: true
+
+};
+
+}
+
+/*==================================================
+LOGIN START
+==================================================*/
+
+async function loginStart(value) {
+
+if (Login.isRunning) return;
+
+const check = validateLoginValue(value);
+
+if (!check.ok) {
+
 showToast(
 
-"شماره موبایل یا ایمیل را وارد کنید.",
+check.message,
 
 "warning"
 
 );
 
-input.focus();
-
-return;
+return false;
 
 }
 
-Login.value = value;
+Login.isRunning = true;
 
-Login.type =
-
-value.includes("@")
-
-? "email"
-
-: "phone";
+showLoader();
 
 try {
 
-buttonLoading(button, true);
+Login.type = detectLoginType(value);
 
-showLoader();
+Login.value = value.trim();
 
 const result = await apiPost(
 
@@ -936,11 +1011,11 @@ value: Login.value
 
 );
 
-hideLoader();
-
-buttonLoading(button, false);
+Login.step = 2;
 
 showToast(
+
+result.message ||
 
 "کد تایید ارسال شد.",
 
@@ -948,67 +1023,252 @@ showToast(
 
 );
 
-showOTPPage();
-
-/* فقط برای تست */
-
 console.log(
 
-"OTP:",
+"Verification Code:",
 
 result.code
 
 );
 
-} catch (err) {
+return true;
+
+}
+
+catch(error){
+
+handleApiError(error);
+
+return false;
+
+}
+
+finally{
 
 hideLoader();
 
-buttonLoading(button, false);
-
-handleApiError(err);
+Login.isRunning = false;
 
 }
 
-}
+  }
+
 
 
 /*==================================================
-SHOW OTP
+APP MODULES
 ==================================================*/
 
-function showOTPPage() {
+App.login = Login;
 
-const loginBox =
+App.player = {
 
-document.getElementById("loginBox");
+audio: null,
 
-const otpBox =
+episode: null,
 
-document.getElementById("otpBox");
+playing: false,
 
-if (loginBox)
+duration: 0,
 
-loginBox.classList.add("hide");
+currentTime: 0,
 
-if (otpBox)
+speed: 1,
 
-otpBox.classList.remove("hide");
+volume: 1
 
-const firstInput =
+};
 
-document.querySelector(".otp-input");
+App.search = {
 
-if (firstInput)
+keyword: "",
 
-firstInput.focus();
+result: []
+
+};
+
+App.profile = {
+
+loaded: false
+
+};
+
+App.ui = {
+
+page: "home",
+
+modal: null,
+
+loading: false
+
+};
+
+App.network = {
+
+online: navigator.onLine
+
+};
+
+/*==================================================
+APPLICATION STATE
+==================================================*/
+
+function setPage(name){
+
+App.ui.page = name;
 
 }
 
+function getPage(){
+
+return App.ui.page;
+
+}
+
+function setLoading(state){
+
+App.ui.loading = state;
+
+if(state){
+
+showLoader();
+
+}else{
+
+hideLoader();
+
+}
+
+}
+
+function isLoggedIn(){
+
+return getToken() !== null;
+
+  }
 
 
 
 
+/*==================================================
+UI CONTROLLER
+==================================================*/
+
+const UI = {
+
+elements: {},
+
+init() {
+
+this.elements = {
+
+loginInput: $("#loginInput"),
+
+continueButton: $("#continueButton"),
+
+otpContainer: $("#otpBox"),
+
+loginContainer: $("#loginBox"),
+
+themeButton: $("#themeButton"),
+
+player: $("#player"),
+
+playerSheet: $("#playerSheet"),
+
+searchModal: $("#searchModal")
+
+};
+
+},
+
+get(name) {
+
+return this.elements[name] || null;
+
+},
+
+show(name) {
+
+const el = this.get(name);
+
+if (!el) return;
+
+el.classList.remove("hide");
+
+},
+
+hide(name) {
+
+const el = this.get(name);
+
+if (!el) return;
+
+el.classList.add("hide");
+
+},
+
+enable(name) {
+
+const el = this.get(name);
+
+if (!el) return;
+
+el.disabled = false;
+
+},
+
+disable(name) {
+
+const el = this.get(name);
+
+if (!el) return;
+
+el.disabled = true;
+
+},
+
+value(name) {
+
+const el = this.get(name);
+
+if (!el) return "";
+
+return el.value.trim();
+
+},
+
+setValue(name, value) {
+
+const el = this.get(name);
+
+if (!el) return;
+
+el.value = value;
+
+},
+
+focus(name) {
+
+const el = this.get(name);
+
+if (!el) return;
+
+el.focus();
+
+}
+
+};
+
+/*==================================================
+UI BOOTSTRAP
+==================================================*/
+
+function initUI(){
+
+UI.init();
+
+}
 
 
 

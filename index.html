@@ -4,25 +4,55 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1">
 
 <title>
-  NightCast | پادکست خلاصه و تحلیل کتاب‌های ارزشمند
+NightCast | پادکست خلاصه و تحلیل کتاب
 </title>
 
-<meta name="description"
-content="رادیو NightCast - مجموعه‌ای از پادکست‌های خلاصه کتاب">
+<meta
+name="description"
+content="NightCast - خلاصه و تحلیل بهترین کتاب‌های دنیا">
 
-<meta name="theme-color"
-content="#0b0b0b">
+<meta
+name="theme-color"
+content="#0d0d0d">
 
-<link rel="manifest" href="manifest.json">
+<meta
+name="color-scheme"
+content="dark light">
 
-<link rel="icon" href="favicon.ico">
+<link
+rel="manifest"
+href="manifest.json">
 
-<link rel="apple-touch-icon" href="logo.png">
+<link
+rel="icon"
+href="favicon.ico">
 
-<link rel="stylesheet" href="style.css">
+<link
+rel="apple-touch-icon"
+href="logo.png">
+
+<link
+rel="preconnect"
+href="https://fonts.googleapis.com">
+
+<link
+rel="preconnect"
+href="https://fonts.gstatic.com"
+crossorigin>
+
+<link
+href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;800&display=swap"
+rel="stylesheet">
+
+<link
+rel="stylesheet"
+href="style.css">
 
 </head>
 
@@ -30,161 +60,1112 @@ content="#0b0b0b">
 
 <div id="loader">
 
-<div class="spinner"></div>
-
-<p>در حال بارگذاری ...</p>
-
-</div>
-
-<header>
-
-<img src="logo.png" class="logo">
-
-<div>
-
-<h1>NightCast</h1>
+<div class="loader"></div>
 
 <p>
-  پلی به‌ سوی آیندست 
+
+در حال آماده‌سازی NightCast ...
+
 </p>
 
 </div>
 
-<button id="searchButton">
+
+<header class="header">
+
+<div class="header-container">
+
+<a
+href="index.html"
+class="logo-area">
+
+<img
+src="logo.png"
+class="logo"
+alt="NightCast">
+
+<div>
+
+<h1>
+
+NightCast
+
+</h1>
+
+<span>
+
+پادکست خلاصه کتاب
+
+</span>
+
+</div>
+
+</a>
+
+
+<div class="header-actions">
+
+<button
+id="themeButton"
+class="icon-button">
+
+🌙
+
+</button>
+
+<button
+id="searchButton"
+class="icon-button">
 
 🔍
 
 </button>
 
+<a
+href="login.html"
+class="icon-button">
+
+👤
+
+</a>
+
+</div>
+
+</div>
+
 </header>
 
-<section id="hero">
+
+
+<section class="hero">
+
+<div class="hero-box">
+
+<div class="hero-text">
+
+<div class="hero-badge">
+
+🎧
+جدیدترین اپیزودها
+
+</div>
 
 <h2>
 
-به دنیای خلاصه کتاب‌ها خوش آمدید
+خلاصه و تحلیل
+بهترین کتاب‌های دنیا
 
 </h2>
 
 <p>
 
-جدیدترین قسمت‌ها همیشه اینجا هستند.
+در NightCast کتاب‌های ارزشمند را
+در کوتاه‌ترین زمان
+به‌صورت پادکست تحلیلی
+گوش کنید.
 
 </p>
 
-</section>
-  
-<section id="searchBox">
+<div class="hero-buttons">
 
-    <input
-        type="search"
-        id="search"
-        placeholder="جستجوی کتاب یا پادکست ...">
+<a
+href="#episodes"
+class="primary-button">
+
+شروع شنیدن
+
+</a>
+
+<a
+href="request.html"
+class="secondary-button">
+
+درخواست کتاب
+
+</a>
+
+</div>
+
+</div>
+
+<div class="hero-image">
+
+<img
+src="logo.png"
+alt="NightCast">
+
+</div>
+
+</div>
 
 </section>
-  
-<main id="episodes">
+
+
+
+<section class="search-section">
+
+<div class="search-wrapper">
+
+<input
+
+type="search"
+
+id="search"
+
+placeholder="نام کتاب، نویسنده یا پادکست ...">
+
+<button
+id="searchSubmit">
+
+جستجو
+
+</button>
+
+</div>
+
+</section>
+
+
+<!-- ===================================== -->
+<!-- CONTINUE LISTENING -->
+<!-- ===================================== -->
+
+<section class="section">
+
+<div class="section-header">
+
+<h2>
+
+ادامه شنیدن
+
+</h2>
+
+<a href="#">
+
+مشاهده همه
+
+</a>
+
+</div>
+
+<div id="continueListening"
+
+class="horizontal-scroll">
+
+<!-- app.js -->
+
+</div>
+
+</section>
+
+
+
+<!-- ===================================== -->
+<!-- LATEST EPISODES -->
+<!-- ===================================== -->
+
+<section class="section"
+
+id="episodesSection">
+
+<div class="section-header">
+
+<h2>
+
+جدیدترین پادکست‌ها
+
+</h2>
+
+<a href="#">
+
+آرشیو
+
+</a>
+
+</div>
+
+<main
+
+id="episodes"
+
+class="episodes-grid">
 
 <!-- توسط app.js ساخته می‌شود -->
 
 </main>
 
-<section id="requestBox">
+</section>
+
+
+
+<!-- ===================================== -->
+<!-- FEATURED BOOK -->
+<!-- ===================================== -->
+
+<section class="featured-book">
+
+<div class="featured-content">
+
+<div>
+
+<span class="featured-label">
+
+📖 پیشنهاد ویژه
+
+</span>
 
 <h2>
 
-کتاب مورد علاقه‌ات را پیدا نکردی؟
+هر روز یک کتاب،
+هر روز یک قدم جلوتر
 
 </h2>
 
 <p>
 
-درخواست ساخت پادکست ثبت کن.
+در NightCast مهم‌ترین ایده‌های کتاب‌های ارزشمند را
+در چند دقیقه یاد بگیرید.
 
 </p>
 
-<button id="requestButton">
+<a
 
-📚 ثبت درخواست
+href="#episodes"
 
-</button>
+class="primary-button">
+
+شروع شنیدن
+
+</a>
+
+</div>
+
+<div class="featured-image">
+
+<img
+
+src="logo.png"
+
+alt="NightCast">
+
+</div>
+
+</div>
 
 </section>
 
-<nav>
 
-<button class="active">
 
-🏠
+<!-- ===================================== -->
+<!-- POPULAR -->
+<!-- ===================================== -->
 
-<span>خانه</span>
+<section class="section">
 
-</button>
+<div class="section-header">
 
-<button>
+<h2>
 
-🎙
+محبوب‌ترین کتاب‌ها
 
-<span>درخواست</span>
+</h2>
 
-</button>
+<a href="#">
 
-<button>
+همه
 
-🌐
-
-<span>شبکه‌ها</span>
-
-</button>
-
-<button>
-
-👤
-
-<span>حساب</span>
-
-</button>
-
-</nav>
-
-<div id="playerSheet">
-
-<div id="sheetHeader">
-
-<div id="closeSheet">
-
-✕
+</a>
 
 </div>
 
-<h3 id="sheetTitle">
+<div
+
+id="popularBooks"
+
+class="book-grid">
+
+<!-- app.js -->
+
+</div>
+
+</section>
+
+
+
+<!-- ===================================== -->
+<!-- CATEGORY -->
+<!-- ===================================== -->
+
+<section class="section">
+
+<div class="section-header">
+
+<h2>
+
+دسته‌بندی‌ها
+
+</h2>
+
+</div>
+
+<div class="category-grid">
+
+<button class="category">
+
+کسب‌وکار
+
+</button>
+
+<button class="category">
+
+روانشناسی
+
+</button>
+
+<button class="category">
+
+موفقیت
+
+</button>
+
+<button class="category">
+
+اقتصاد
+
+</button>
+
+<button class="category">
+
+مدیریت
+
+</button>
+
+<button class="category">
+
+فلسفه
+
+</button>
+
+<button class="category">
+
+زندگینامه
+
+</button>
+
+<button class="category">
+
+توسعه فردی
+
+</button>
+
+</div>
+
+  </section>
+
+
+
+<!-- ===================================== -->
+<!-- REQUEST BOOK -->
+<!-- ===================================== -->
+
+<section class="request-banner">
+
+<div class="request-content">
+
+<div>
+
+<span class="request-badge">
+
+✨ مشارکت مخاطبان
+
+</span>
+
+<h2>
+
+کتاب مورد علاقه‌تان را
+به NightCast پیشنهاد دهید
+
+</h2>
+
+<p>
+
+اگر کتابی را دوست دارید که هنوز در NightCast
+خلاصه نشده است، درخواست خود را ثبت کنید.
+
+</p>
+
+<a
+href="request.html"
+class="primary-button">
+
+ثبت درخواست کتاب
+
+</a>
+
+</div>
+
+<div class="request-icon">
+
+📚
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- ===================================== -->
+<!-- STATISTICS -->
+<!-- ===================================== -->
+
+<section class="section">
+
+<div class="section-header">
+
+<h2>
+
+NightCast در یک نگاه
+
+</h2>
+
+</div>
+
+<div class="stats-grid">
+
+<div class="stat-card">
+
+<h3 id="booksCount">
+
+۰
 
 </h3>
 
-</div>
+<span>
 
-<div id="videoContainer">
+کتاب خلاصه شده
 
-</div>
-
-<div id="episodeDescription">
+</span>
 
 </div>
 
-<button id="listenButton">
+<div class="stat-card">
 
-🎧 گوش بده
+<h3 id="episodesCount">
+
+۰
+
+</h3>
+
+<span>
+
+اپیزود
+
+</span>
+
+</div>
+
+<div class="stat-card">
+
+<h3 id="minutesCount">
+
+۰
+
+</h3>
+
+<span>
+
+دقیقه پادکست
+
+</span>
+
+</div>
+
+<div class="stat-card">
+
+<h3 id="followersCount">
+
+۰
+
+</h3>
+
+<span>
+
+دنبال‌کننده
+
+</span>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- ===================================== -->
+<!-- SOCIAL -->
+<!-- ===================================== -->
+
+<section class="section">
+
+<div class="section-header">
+
+<h2>
+
+شبکه‌های اجتماعی
+
+</h2>
+
+</div>
+
+<div class="social-grid">
+
+<a
+href="https://eitaa.com/NightCast"
+target="_blank"
+class="social-card">
+
+<div class="social-icon">
+
+📡
+
+</div>
+
+<div>
+
+<h3>
+
+ایتا
+
+</h3>
+
+<p>
+
+دریافت آخرین اپیزودها
+
+</p>
+
+</div>
+
+</a>
+
+<a
+href="https://t.me/NightCast_ir"
+target="_blank"
+class="social-card">
+
+<div class="social-icon">
+
+✈️
+
+</div>
+
+<div>
+
+<h3>
+
+تلگرام
+
+</h3>
+
+<p>
+
+کانال رسمی
+
+</p>
+
+</div>
+
+</a>
+
+<a
+href="https://www.youtube.com/@NightCast-r5e"
+target="_blank"
+class="social-card">
+
+<div class="social-icon">
+
+▶️
+
+</div>
+
+<div>
+
+<h3>
+
+YouTube
+
+</h3>
+
+<p>
+
+نسخه تصویری
+
+</p>
+
+</div>
+
+</a>
+
+<a
+href="https://www.instagram.com/NightCast.ir"
+target="_blank"
+class="social-card">
+
+<div class="social-icon">
+
+📷
+
+</div>
+
+<div>
+
+<h3>
+
+Instagram
+
+</h3>
+
+<p>
+
+آخرین اخبار
+
+</p>
+
+</div>
+
+</a>
+
+</div>
+
+</section>
+
+
+
+<!-- ===================================== -->
+<!-- NEWSLETTER -->
+<!-- ===================================== -->
+
+<section class="newsletter">
+
+<h2>
+
+از انتشار اپیزودهای جدید باخبر شوید
+
+</h2>
+
+<p>
+
+ایمیل خود را وارد کنید.
+
+</p>
+
+<div class="newsletter-box">
+
+<input
+
+type="email"
+
+placeholder="example@gmail.com">
+
+<button>
+
+عضویت
 
 </button>
 
 </div>
 
+</section>
+
+
+
+<!-- ===================================== -->
+<!-- FOOTER -->
+<!-- ===================================== -->
+
+<footer class="footer">
+
+<div class="footer-logo">
+
+<img
+src="logo.png"
+alt="NightCast">
+
+<h2>
+
+NightCast
+
+</h2>
+
+</div>
+
+<p>
+
+خلاصه و تحلیل بهترین کتاب‌های دنیا
+به صورت پادکست.
+
+</p>
+
+<div class="footer-links">
+
+<a href="about.html">
+
+درباره ما
+
+</a>
+
+<a href="contact.html">
+
+تماس با ما
+
+</a>
+
+<a href="privacy.html">
+
+حریم خصوصی
+
+</a>
+
+<a href="request.html">
+
+درخواست کتاب
+
+</a>
+
+</div>
+
+<div class="copyright">
+
+© 2026 NightCast.ir
+
+</div>
+
+</footer>
+
+
+
+<!-- ===================================== -->
+<!-- MINI PLAYER -->
+<!-- ===================================== -->
+
+<div id="miniPlayer" class="player">
+
+<div class="player-cover">
+
+<img
+id="playerCover"
+src="logo.png"
+alt="Cover">
+
+</div>
+
+<div class="player-info">
+
+<div
+id="playerTitle"
+class="player-title">
+
+در حال حاضر چیزی پخش نمی‌شود
+
+</div>
+
+<div
+id="playerAuthor"
+class="player-author">
+
+NightCast
+
+</div>
+
+<div class="player-progress">
+
+<span id="playerProgress"></span>
+
+</div>
+
+</div>
+
+<div class="player-actions">
+
+<button
+id="playerPrev"
+class="player-btn">
+
+⏮
+
+</button>
+
+<button
+id="playerPlay"
+class="player-btn play">
+
+▶
+
+</button>
+
+<button
+id="playerNext"
+class="player-btn">
+
+⏭
+
+</button>
+
+</div>
+
+</div>
+
+
+
+<!-- ===================================== -->
+<!-- PLAYER SHEET -->
+<!-- ===================================== -->
+
+<div id="playerSheet">
+
+<div class="sheet-header">
+
+<button
+id="closePlayer">
+
+✕
+
+</button>
+
+<h2 id="sheetEpisodeTitle">
+
+NightCast
+
+</h2>
+
+</div>
+
+<div class="sheet-cover">
+
+<img
+id="sheetCover"
+src="logo.png"
+alt="Cover">
+
+</div>
+
+<div
+id="sheetDescription">
+
+...
+
+</div>
+
+<div id="sheetControls">
+
+<button id="sheetBackward">
+
+⏪
+
+</button>
+
+<button id="sheetPlay">
+
+▶
+
+</button>
+
+<button id="sheetForward">
+
+⏩
+
+</button>
+
+</div>
+
+<audio
+id="audioPlayer"
+preload="none">
+
+</audio>
+
+</div>
+
+
+
+<!-- ===================================== -->
+<!-- SEARCH MODAL -->
+<!-- ===================================== -->
+
+<div id="searchModal">
+
+<div class="search-modal-box">
+
+<div class="search-modal-header">
+
+<h2>
+
+جستجوی پیشرفته
+
+</h2>
+
+<button
+id="closeSearch">
+
+✕
+
+</button>
+
+</div>
+
+<input
+
+id="searchInput"
+
+type="search"
+
+placeholder="نام کتاب یا نویسنده...">
+
+<div id="searchResults">
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- ===================================== -->
+<!-- TOAST -->
+<!-- ===================================== -->
+
+<div
+id="toast"
+class="toast">
+
+</div>
+
+
+
+<!-- ===================================== -->
+<!-- OVERLAY -->
+<!-- ===================================== -->
+
 <div id="overlay"></div>
 
-<div id="toast"></div>
+
+
+<!-- ===================================== -->
+<!-- BOTTOM NAVIGATION -->
+<!-- ===================================== -->
+
+<nav class="bottom-nav">
+
+<a
+href="index.html"
+class="active">
+
+<i>
+
+🏠
+
+</i>
+
+<span>
+
+خانه
+
+</span>
+
+</a>
+
+<a
+href="request.html">
+
+<i>
+
+📚
+
+</i>
+
+<span>
+
+درخواست
+
+</span>
+
+</a>
+
+<a
+href="#"
+id="openPlayer">
+
+<i>
+
+🎧
+
+</i>
+
+<span>
+
+پخش
+
+</span>
+
+</a>
+
+<a
+href="social.html">
+
+<i>
+
+🌐
+
+</i>
+
+<span>
+
+شبکه‌ها
+
+</span>
+
+</a>
+
+<a
+href="login.html">
+
+<i>
+
+👤
+
+</i>
+
+<span>
+
+حساب
+
+</span>
+
+</a>
+
+</nav>
+
+
+
+<!-- ===================================== -->
+<!-- JAVASCRIPT -->
+<!-- ===================================== -->
 
 <script src="app.js"></script>
 
 </body>
 
 </html>
+
+
+
+
+
+
+  
+
+  

@@ -1948,7 +1948,21 @@ App.events.emit(
 "application-ready"
 
 );
+EpisodeRenderer.init();
 
+App.events.on(
+
+"data:episodes",
+
+() => {
+
+EpisodeRenderer.render();
+
+}
+
+);
+
+  
 console.log(
 
 "NightCast Ready"

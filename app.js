@@ -2235,11 +2235,18 @@ this.container.innerHTML = "";
 
 if (!episodes || episodes.length === 0) {
 
+this.container.innerHTML = 
+  const episodes = DataStore.get("episodes");
+
+console.log("Episodes:", episodes);
+
+if (!episodes || episodes.length === 0) {
+
 this.container.innerHTML = `
 
 <div class="empty-state">
 
-هیچ پادکستی یافت نشد.
+هیچ پادکستی پیدا نشد.
 
 </div>
 

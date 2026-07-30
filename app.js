@@ -1965,6 +1965,309 @@ console.log(
 
 
 
+/*==================================================
+DATA STORE
+==================================================*/
+
+App.data = {
+
+episodes: [],
+
+books: [],
+
+categories: [],
+
+favorites: [],
+
+continueListening: [],
+
+statistics: {},
+
+profile: null
+
+};
+
+/*==================================================
+DATA MANAGER
+==================================================*/
+
+const DataStore = {
+
+set(key, value) {
+
+if (!(key in App.data)) {
+
+console.warn("Unknown Data Key:", key);
+
+return;
+
+}
+
+App.data[key] = value;
+
+App.events.emit("data:" + key, value);
+
+},
+
+get(key) {
+
+return App.data[key];
+
+},
+
+clear(key) {
+
+if (!(key in App.data)) return;
+
+if (Array.isArray(App.data[key])) {
+
+App.data[key] = [];
+
+} else {
+
+App.data[key] = {};
+
+}
+
+},
+
+reset() {
+
+App.data.episodes = [];
+
+App.data.books = [];
+
+App.data.categories = [];
+
+App.data.favorites = [];
+
+App.data.continueListening = [];
+
+App.data.statistics = {};
+
+App.data.profile = null;
+
+}
+
+};
+
+
+
+
+
+
+/*==================================================
+DATA STORE
+==================================================*/
+
+App.data = {
+
+episodes: [],
+
+books: [],
+
+categories: [],
+
+favorites: [],
+
+continueListening: [],
+
+statistics: {},
+
+profile: null,
+
+rssLoaded: false
+
+};
+
+/*==================================================
+DATA STORE MANAGER
+==================================================*/
+
+const DataStore = {
+
+set(key, value) {
+
+if (!(key in App.data)) {
+
+console.warn("Unknown key:", key);
+
+return;
+
+}
+
+App.data[key] = value;
+
+App.events.emit("data:" + key, value);
+
+},
+
+get(key) {
+
+return App.data[key];
+
+},
+
+push(key, value) {
+
+if (!Array.isArray(App.data[key])) return;
+
+App.data[key].push(value);
+
+App.events.emit("data:" + key, App.data[key]);
+
+},
+
+clear(key) {
+
+if (!(key in App.data)) return;
+
+if (Array.isArray(App.data[key])) {
+
+App.data[key] = [];
+
+} else {
+
+App.data[key] = {};
+
+}
+
+},
+
+reset() {
+
+Object.keys(App.data).forEach(key => {
+
+if (Array.isArray(App.data[key])) {
+
+App.data[key] = [];
+
+} else if (typeof App.data[key] === "object") {
+
+App.data[key] = {};
+
+} else if (typeof App.data[key] === "boolean") {
+
+App.data[key] = false;
+
+} else {
+
+App.data[key] = null;
+
+}
+
+});
+
+}
+
+};
+
+
+
+
+
+
+
+
+
+
+/*==================================================
+RSS ENGINE
+==================================================*/
+
+const RSS = {
+
+loading: false,
+
+loaded: false,
+
+async load() {
+
+if (this.loading) return;
+
+this.loading = true;
+
+try {
+
+const response = await fetch(
+
+"/data/feed.json",
+
+{
+
+cache: "no-cache"
+
+}
+
+);
+
+if (!response.ok) {
+
+throw new Error(
+
+"RSS Load Error"
+
+);
+
+}
+
+const data = await response.json();
+
+/* ذخیره داده */
+
+DataStore.set(
+
+"episodes",
+
+data.items || []
+
+);
+
+App.data.rssLoaded = true;
+
+this.loaded = true;
+
+/* رویداد */
+
+App.events.emit(
+
+"rss-loaded",
+
+data.items || []
+
+);
+
+console.log(
+
+`RSS Loaded : ${data.items.length}`
+
+);
+
+}
+
+catch(error){
+
+console.error(error);
+
+showToast(
+
+"خطا در دریافت اطلاعات.",
+
+"error"
+
+);
+
+}
+
+finally{
+
+this.loading = false;
+
+}
+
+}
+
+};
 
 
 

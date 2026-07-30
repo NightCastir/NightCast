@@ -1746,7 +1746,7 @@ showToast(
 /* ادامه در Part12 */
 
 }
-
+applicationReady();
 }
 
 

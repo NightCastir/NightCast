@@ -2423,4 +2423,177 @@ return card;
 
 
 
+/*==================================================
+PLAYER ENGINE
+==================================================*/
+
+const Player = {
+
+playlist: [],
+
+currentIndex: -1,
+
+audio: new Audio(),
+
+ready: false,
+
+init() {
+
+if (this.ready) return;
+
+this.ready = true;
+
+this.audio.preload = "metadata";
+
+this.audio.addEventListener(
+
+"timeupdate",
+
+() => {
+
+App.player.currentTime =
+
+this.audio.currentTime;
+
+savePlayerState();
+
+}
+
+);
+
+this.audio.addEventListener(
+
+"loadedmetadata",
+
+() => {
+
+App.player.duration =
+
+this.audio.duration;
+
+}
+
+);
+
+this.audio.addEventListener(
+
+"ended",
+
+() => {
+
+this.next();
+
+}
+
+);
+
+},
+
+play(index) {
+
+const episodes =
+
+DataStore.get("episodes");
+
+if (!episodes.length) return;
+
+this.playlist = episodes;
+
+this.currentIndex = index;
+
+const item = episodes[index];
+
+if (!item) return;
+
+App.currentEpisode = item;
+
+this.audio.src = item.audio || "";
+
+this.audio.play();
+
+App.player.playing = true;
+
+showToast(
+
+"در حال پخش",
+
+"success",
+
+1000
+
+);
+
+},
+
+pause() {
+
+this.audio.pause();
+
+App.player.playing = false;
+
+},
+
+toggle() {
+
+if (this.audio.paused) {
+
+this.audio.play();
+
+App.player.playing = true;
+
+} else {
+
+this.pause();
+
+}
+
+},
+
+next() {
+
+if (
+
+this.currentIndex + 1 >=
+
+this.playlist.length
+
+)
+
+return;
+
+this.play(
+
+this.currentIndex + 1
+
+);
+
+},
+
+previous() {
+
+if (
+
+this.currentIndex <= 0
+
+)
+
+return;
+
+this.play(
+
+this.currentIndex - 1
+
+);
+
+}
+
+};
+
+
+
+
+
+
+
+
 

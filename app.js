@@ -1276,6 +1276,699 @@ UI.init();
 
 
 
+/*==================================================
+OTP MANAGER
+==================================================*/
+
+App.otp = {
+
+length: 6,
+
+code: "",
+
+timer: 120,
+
+countdown: null,
+
+verified: false
+
+};
+
+/*==================================================
+OTP INPUTS
+==================================================*/
+
+function otpInputs() {
+
+return document.querySelectorAll(".otp-input");
+
+}
+
+/*==================================================
+INIT OTP
+==================================================*/
+
+function initOTP() {
+
+const inputs = otpInputs();
+
+if (!inputs.length) return;
+
+inputs.forEach((input, index) => {
+
+input.addEventListener("input", e => {
+
+let value = e.target.value.replace(/\D/g, "");
+
+e.target.value = value;
+
+if (value && index < inputs.length - 1) {
+
+inputs[index + 1].focus();
+
+}
+
+collectOTP();
+
+});
+
+input.addEventListener("keydown", e => {
+
+if (
+
+e.key === "Backspace" &&
+
+!e.target.value &&
+
+index > 0
+
+) {
+
+inputs[index - 1].focus();
+
+}
+
+});
+
+input.addEventListener("paste", e => {
+
+e.preventDefault();
+
+const text =
+
+(e.clipboardData || window.clipboardData)
+
+.getData("text")
+
+.replace(/\D/g, "");
+
+if (!text) return;
+
+for (
+
+let i = 0;
+
+i < inputs.length;
+
+i++
+
+) {
+
+inputs[i].value = text[i] || "";
+
+}
+
+collectOTP();
+
+});
+
+});
+
+}
+
+/*==================================================
+COLLECT OTP
+==================================================*/
+
+function collectOTP() {
+
+const inputs = otpInputs();
+
+let code = "";
+
+inputs.forEach(input => {
+
+code += input.value;
+
+});
+
+App.otp.code = code;
+
+if (
+
+code.length === App.otp.length
+
+) {
+
+verifyOTP();
+
+}
+
+}
+
+/*==================================================
+CLEAR OTP
+==================================================*/
+
+function clearOTP() {
+
+otpInputs().forEach(input => {
+
+input.value = "";
+
+});
+
+App.otp.code = "";
+
+}
+
+/*==================================================
+FOCUS FIRST OTP
+==================================================*/
+
+function focusOTP() {
+
+const first = otpInputs()[0];
+
+if (first) first.focus();
+
+  }
+
+
+
+
+
+
+
+
+
+
+/*==================================================
+AUTHENTICATION MANAGER
+==================================================*/
+
+const Auth = {
+
+isAuthenticated: false,
+
+token: null,
+
+user: null,
+
+loading: false,
+
+async verify() {
+
+if (this.loading) return false;
+
+if (App.otp.code.length !== App.otp.length) {
+
+showToast(
+
+"کد تایید کامل نیست.",
+
+"warning"
+
+);
+
+return false;
+
+}
+
+this.loading = true;
+
+setLoading(true);
+
+try {
+
+const result = await apiPost(
+
+"/api/auth/verify",
+
+{
+
+type: App.login.type,
+
+value: App.login.value,
+
+code: App.otp.code
+
+}
+
+);
+
+this.token = result.token;
+
+this.isAuthenticated = true;
+
+/* Save Token */
+
+saveToken(result.token);
+
+/* Load Profile */
+
+await this.loadProfile();
+
+/* Success */
+
+showToast(
+
+"ورود با موفقیت انجام شد.",
+
+"success"
+
+);
+
+return true;
+
+}
+
+catch(error){
+
+handleApiError(error);
+
+clearOTP();
+
+focusOTP();
+
+return false;
+
+}
+
+finally{
+
+this.loading = false;
+
+setLoading(false);
+
+}
+
+},
+
+async loadProfile(){
+
+try{
+
+const result = await apiGet(
+
+"/api/me"
+
+);
+
+this.user = result.user;
+
+saveUser(result.user);
+
+}catch(error){
+
+console.error(error);
+
+}
+
+},
+
+logout(){
+
+logoutLocal();
+
+this.token = null;
+
+this.user = null;
+
+this.isAuthenticated = false;
+
+}
+
+};
+
+/*==================================================
+VERIFY OTP
+==================================================*/
+
+async function verifyOTP(){
+
+const ok = await Auth.verify();
+
+if(!ok) return;
+
+/*
+
+در Part11
+
+اینجا وارد صفحه اصلی می‌شویم
+
+و وضعیت رابط کاربری تغییر می‌کند.
+
+*/
+
+}
+
+
+
+
+
+
+
+
+
+/*==================================================
+SESSION MANAGER
+==================================================*/
+
+const Session = {
+
+ready: false,
+
+restoring: false,
+
+async restore() {
+
+if (this.restoring) return;
+
+this.restoring = true;
+
+const token = getToken();
+
+if (!token) {
+
+this.restoring = false;
+
+return false;
+
+}
+
+try {
+
+setLoading(true);
+
+const result = await apiGet("/api/me");
+
+/* ذخیره اطلاعات کاربر */
+
+Auth.user = result.user;
+Auth.token = token;
+Auth.isAuthenticated = true;
+
+saveUser(result.user);
+
+/* آماده شدن Session */
+
+this.ready = true;
+
+console.log(
+
+"Session Restored",
+
+result.user
+
+);
+
+return true;
+
+}
+
+catch(error){
+
+console.warn(
+
+"Session Expired"
+
+);
+
+logoutLocal();
+
+Auth.logout();
+
+return false;
+
+}
+
+finally{
+
+this.restoring = false;
+
+setLoading(false);
+
+}
+
+},
+
+isReady(){
+
+return this.ready;
+
+},
+
+destroy(){
+
+this.ready = false;
+
+Auth.logout();
+
+logoutLocal();
+
+}
+
+};
+
+/*==================================================
+APPLICATION BOOT
+==================================================*/
+
+async function bootApplication(){
+
+/* بررسی Session */
+
+const loggedIn = await Session.restore();
+
+if(loggedIn){
+
+showToast(
+
+"خوش آمدید.",
+
+"success",
+
+1500
+
+);
+
+/* ادامه در Part12 */
+
+}
+
+}
+
+
+
+
+
+
+
+
+
+/*==================================================
+USER INTERFACE MANAGER
+==================================================*/
+
+const UserInterface = {
+
+refresh() {
+
+if (Auth.isAuthenticated) {
+
+this.showLoggedIn();
+
+} else {
+
+this.showGuest();
+
+}
+
+},
+
+showGuest() {
+
+const loginButton =
+
+document.querySelector("#loginButton");
+
+if (!loginButton) return;
+
+loginButton.textContent = "ورود";
+
+loginButton.setAttribute(
+
+"href",
+
+"login.html"
+
+);
+
+loginButton.classList.remove(
+
+"is-user"
+
+);
+
+},
+
+showLoggedIn() {
+
+const loginButton =
+
+document.querySelector("#loginButton");
+
+if (!loginButton) return;
+
+const name =
+
+Auth.user?.full_name ||
+
+Auth.user?.email ||
+
+Auth.user?.phone ||
+
+"حساب کاربری";
+
+loginButton.textContent = name;
+
+loginButton.removeAttribute("href");
+
+loginButton.classList.add(
+
+"is-user"
+
+);
+
+loginButton.onclick = () => {
+
+openProfile();
+
+};
+
+}
+
+};
+
+/*==================================================
+PROFILE
+==================================================*/
+
+function openProfile(){
+
+console.log(
+
+Auth.user
+
+);
+
+showToast(
+
+"پنل کاربری در Part بعد ساخته می‌شود.",
+
+"info"
+
+);
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/*==================================================
+APPLICATION MODULE REGISTRY
+==================================================*/
+
+App.modules = {
+
+auth: Auth,
+
+session: Session,
+
+ui: UserInterface,
+
+storage: Storage
+
+};
+
+/*==================================================
+APPLICATION EVENTS
+==================================================*/
+
+App.events = {
+
+emit(name, data = null) {
+
+document.dispatchEvent(
+
+new CustomEvent(
+
+name,
+
+{
+
+detail: data
+
+}
+
+)
+
+);
+
+},
+
+on(name, callback) {
+
+document.addEventListener(
+
+name,
+
+callback
+
+);
+
+}
+
+};
+
+/*==================================================
+APPLICATION READY
+==================================================*/
+
+App.ready = false;
+
+function applicationReady(){
+
+if(App.ready) return;
+
+App.ready = true;
+
+App.events.emit(
+
+"application-ready"
+
+);
+
+console.log(
+
+"NightCast Ready"
+
+);
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

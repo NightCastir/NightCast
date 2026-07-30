@@ -86,6 +86,8 @@ console.log(
 
 cacheDOM();
 
+initUI();
+  
 loadTheme();
 
 bindGlobalEvents();

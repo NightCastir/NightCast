@@ -2595,5 +2595,257 @@ this.currentIndex - 1
 
 
 
+/*==================================================
+PLAYER STATE
+==================================================*/
+
+function savePlayerState() {
+
+const episode = App.currentEpisode;
+
+if (!episode) return;
+
+const state = {
+
+id:
+
+episode.id ||
+
+episode.guid ||
+
+episode.link ||
+
+"",
+
+currentTime:
+
+Player.audio.currentTime || 0,
+
+duration:
+
+Player.audio.duration || 0,
+
+updatedAt:
+
+Date.now()
+
+};
+
+localStorage.setItem(
+
+"nightcast_player",
+
+JSON.stringify(state)
+
+);
+
+}
+
+/*==================================================
+RESTORE PLAYER
+==================================================*/
+
+function restorePlayerState() {
+
+const raw =
+
+localStorage.getItem(
+
+"nightcast_player"
+
+);
+
+if (!raw) return;
+
+try {
+
+const state = JSON.parse(raw);
+
+App.player.lastState = state;
+
+console.log(
+
+"Player Restored",
+
+state
+
+);
+
+} catch (e) {
+
+console.warn(
+
+"Player State Corrupted"
+
+);
+
+}
+
+}
+
+/*==================================================
+CLEAR PLAYER
+==================================================*/
+
+function clearPlayerState() {
+
+localStorage.removeItem(
+
+"nightcast_player"
+
+);
+
+App.player.lastState = null;
+
+}
+
+/*==================================================
+PLAYER EVENTS
+==================================================*/
+
+App.events.on(
+
+"application-ready",
+
+() => {
+
+restorePlayerState();
+
+}
+
+);
+
+
+/*==================================================
+APPLICATION FINALIZER
+==================================================*/
+
+const Bootstrap = {
+
+started: false,
+
+async start() {
+
+if (this.started) return;
+
+this.started = true;
+
+console.log(
+
+"NightCast Bootstrap..."
+
+);
+
+/* وضعیت آنلاین */
+
+window.addEventListener(
+
+"online",
+
+() => {
+
+App.network.online = true;
+
+showToast(
+
+"اتصال اینترنت برقرار شد.",
+
+"success",
+
+1500
+
+);
+
+}
+
+);
+
+window.addEventListener(
+
+"offline",
+
+() => {
+
+App.network.online = false;
+
+showToast(
+
+"اتصال اینترنت قطع شد.",
+
+"warning"
+
+);
+
+}
+
+/* خطاهای عمومی */
+
+window.addEventListener(
+
+"error",
+
+(event) => {
+
+console.error(
+
+"Global Error:",
+
+event.error
+
+);
+
+}
+
+);
+
+window.addEventListener(
+
+"unhandledrejection",
+
+(event) => {
+
+console.error(
+
+"Promise Error:",
+
+event.reason
+
+);
+
+}
+
+);
+
+/* آماده شدن برنامه */
+
+App.events.emit(
+
+"bootstrap-ready"
+
+);
+
+console.log(
+
+"NightCast Ready ✓"
+
+);
+
+}
+
+};
+
+/*==================================================
+START APPLICATION
+==================================================*/
+
+App.events.on(
+
+"application-ready",
+
+() => {
+
+Bootstrap.start();
+
+});
 
 

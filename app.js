@@ -21,7 +21,7 @@ player: null,
 theme: "auto",
 
 loading: false,
-
+booted: false,
 currentEpisode: null,
 
 episodes: [],

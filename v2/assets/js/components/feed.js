@@ -1,14 +1,24 @@
+/*
+────────────────────────────────────────
+NightCast Feed
+────────────────────────────────────────
+*/
+
+'use strict';
+
 const Feed = {
 
-    endpoint: "/api/episodes",
-
-    container: null,
-
     page: 1,
+
+    limit: 12,
 
     loading: false,
 
     finished: false,
+
+    container: null,
+
+    observer: null,
 
     async init() {
 
@@ -17,7 +27,7 @@ const Feed = {
 
         await this.load();
 
-        this.scroll();
+        this.createObserver();
 
     },
 
@@ -31,13 +41,14 @@ const Feed = {
 
         try {
 
-            const response =
-                await fetch(`${this.endpoint}?page=${this.page}`);
-
             const json =
-                await response.json();
+                await API.getEpisodes(
+                    this.page,
+                    this.limit
+                );
 
-            if (!json.success) return;
+            if (!json.success)
+                throw new Error(json.message);
 
             if (json.data.length === 0) {
 
@@ -57,9 +68,9 @@ const Feed = {
 
         }
 
-        catch (error) {
+        catch (e) {
 
-            console.error(error);
+            console.error(e);
 
         }
 
@@ -81,17 +92,36 @@ const Feed = {
 
         article.innerHTML = `
 
-<div class="podcast-cover">
+<div class="podcast-card-cover">
 
-<img src="${item.cover}" loading="lazy">
+<img
+src="${item.cover}"
+alt="${item.title}"
+loading="lazy">
 
 </div>
 
-<div class="podcast-content">
+<div class="podcast-card-body">
 
-<h2>${item.title}</h2>
+<h2>
 
-<p>${item.author}</p>
+${item.title}
+
+</h2>
+
+<p>
+
+${item.author}
+
+</p>
+
+<button
+class="play-button"
+data-id="${item.id}">
+
+<i class="fa-solid fa-play"></i>
+
+</button>
 
 </div>
 
@@ -101,27 +131,38 @@ const Feed = {
 
     },
 
-    scroll() {
+    createObserver() {
 
-        window.addEventListener("scroll", async () => {
+        const loader =
+            document.createElement("div");
 
-            if (
+        loader.id =
+            "feed-loader";
 
-                window.innerHeight +
+        this.container.after(loader);
 
-                window.scrollY
+        this.observer =
+            new IntersectionObserver(
 
-                >=
+                async entries => {
 
-                document.body.offsetHeight - 600
+                    if (
+                        entries[0].isIntersecting
+                    ) {
 
-            ) {
+                        await this.load();
 
-                await this.load();
+                    }
 
-            }
+                },
 
-        });
+                {
+                    rootMargin: "600px"
+                }
+
+            );
+
+        this.observer.observe(loader);
 
     }
 

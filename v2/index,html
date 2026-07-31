@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+    <meta
+        http-equiv="X-UA-Compatible"
+        content="IE=edge">
+
+    <meta
+        name="theme-color"
+        content="#0B0F14">
+
+    <meta
+        name="color-scheme"
+        content="dark light">
+
+    <meta
+        name="application-name"
+        content="NightCast">
+
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes">
+
+    <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent">
+
+    <meta
+        name="apple-mobile-web-app-title"
+        content="NightCast">
+
+    <meta
+        name="mobile-web-app-capable"
+        content="yes">
+
+    <title>
+        NightCast | پادکست خلاصه و تحلیل کتاب‌های ارزشمند
+    </title>
+
+    <meta
+        name="description"
+        content="پادکست خلاصه و تحلیل کاربردی کتاب‌های ارزشمند. سریع یاد بگیر، عمیق‌تر فکر کن.">
+
+    <meta
+        name="keywords"
+        content="خلاصه کتاب,پادکست کتاب,کتاب صوتی,مدیریت,روانشناسی,NightCast">
+
+    <meta
+        name="author"
+        content="NightCast">
+
+    <meta
+        name="robots"
+        content="index,follow">
+
+    <link
+        rel="canonical"
+        href="https://nightcast.ir/v2/">
+
+    <!-- Open Graph -->
+
+    <meta property="og:type" content="website">
+
+    <meta property="og:site_name" content="NightCast">
+
+    <meta property="og:title"
+        content="NightCast">
+
+    <meta property="og:description"
+        content="پادکست خلاصه و تحلیل کتاب‌های ارزشمند">
+
+    <meta property="og:url"
+        content="https://nightcast.ir/v2/">
+
+    <meta property="og:image"
+        content="assets/images/cover.webp">
+
+    <!-- Twitter -->
+
+    <meta
+        name="twitter:card"
+        content="summary_large_image">
+
+    <!-- Manifest -->
+
+    <link
+        rel="manifest"
+        href="manifest.json">
+
+    <!-- Icons -->
+
+    <link
+        rel="icon"
+        href="favicon.ico">
+
+    <link
+        rel="apple-touch-icon"
+        href="assets/icons/icon-192.png">
+
+    <!-- Fonts -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <!-- Font Awesome -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+
+    <!-- CSS -->
+
+    <link rel="stylesheet" href="assets/css/reset.css">
+
+    <link rel="stylesheet" href="assets/css/variables.css">
+
+    <link rel="stylesheet" href="assets/css/layout.css">
+
+    <link rel="stylesheet" href="assets/css/components.css">
+
+    <link rel="stylesheet" href="assets/css/player.css">
+
+    <link rel="stylesheet" href="assets/css/responsive.css">
+
+    <link rel="stylesheet" href="assets/css/style.css">
+
+</head>

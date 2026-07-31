@@ -1,45 +1,97 @@
 /*
 ──────────────────────────────────────────────
-app.js
 NightCast V2
-Main Application
+Main Application Controller
 ──────────────────────────────────────────────
 */
 
+
 'use strict';
-
-
-document.addEventListener(
-    'DOMContentLoaded',
-    async () => {
-
-        await App.init();
-
-    }
-);
 
 
 
 const App = {
 
-    async init() {
 
 
-        Header.init();
+    async init(){
 
 
-        await Feed.init();
+        console.log(
+            "NightCast V2 Started"
+        );
 
 
-        Footer.init();
+
+        // Header
+
+        if(window.Header){
+
+            Header.init();
+
+        }
 
 
-        Player.init();
+
+        // Player
+
+        if(window.Player){
+
+            Player.init();
+
+        }
 
 
-        Router.init();
+
+        // Feed
+
+        if(window.Feed){
+
+            await Feed.init();
+
+        }
+
+
+
+        // Footer
+
+        if(window.Footer){
+
+            Footer.init();
+
+        }
+
+
+
+        // Router
+
+        if(window.Router){
+
+            Router.init();
+
+        }
+
 
 
     }
 
+
 };
+
+
+
+
+
+document.addEventListener(
+
+    "DOMContentLoaded",
+
+    ()=>{
+
+
+        App.init();
+
+
+    }
+
+);

@@ -23,3 +23,91 @@
     height: auto;
 
 }
+
+
+/* =========================
+   HEADER
+========================= */
+
+#header {
+
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    background: rgba(10,18,32,0.95);
+
+    backdrop-filter: blur(10px);
+
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+
+}
+
+
+.header-container {
+
+    height: 70px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 18px;
+
+}
+
+
+
+.brand {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    color: #d9a441;
+
+    text-decoration: none;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+}
+
+
+
+.brand img {
+
+    width: 45px;
+
+    height: 45px;
+
+    object-fit: contain;
+
+    border-radius: 50%;
+
+}
+
+
+
+.main-menu button {
+
+    width: 45px;
+
+    height: 45px;
+
+    border-radius: 12px;
+
+    border: none;
+
+    background: #d9a441;
+
+    color: #111;
+
+    font-size: 20px;
+
+}

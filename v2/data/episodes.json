@@ -1,1 +1,15 @@
-
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "title": "عنوان اولین پادکست",
+      "description": "توضیح کوتاه درباره این قسمت از رادیو NightCast",
+      "author": "NightCast",
+      "cover": "https://nightcastir.github.io/NightCast-Media/cover/001.jpg",
+      "audio": "https://nightcastir.github.io/NightCast-Media/audio/001.mp3",
+      "duration": "00:00",
+      "published": "2026-07-31"
+    }
+  ]
+}

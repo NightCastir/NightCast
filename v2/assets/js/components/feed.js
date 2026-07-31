@@ -1,15 +1,19 @@
 /*
-========================================
-NightCast Feed Component
-========================================
+──────────────────────────────────────────────
+NightCast V2
+Feed Component
+──────────────────────────────────────────────
 */
 
+
 const Feed = {
+
 
     container: null,
 
 
     async init(){
+
 
         this.container =
             document.getElementById(
@@ -20,7 +24,7 @@ const Feed = {
         if(!this.container){
 
             console.error(
-                "podcast-feed not found"
+                "Feed container not found"
             );
 
             return;
@@ -28,27 +32,37 @@ const Feed = {
         }
 
 
+
         const episodes =
             await FeedService.getEpisodes();
 
 
+
         this.render(episodes);
 
+
     },
+
+
+
 
 
     render(episodes){
 
 
-        if(episodes.length === 0){
+        if(!episodes || episodes.length === 0){
+
 
             this.container.innerHTML = `
 
-                <p class="empty-message">
+                <div class="empty-message">
+
                     هنوز پادکستی منتشر نشده است.
-                </p>
+
+                </div>
 
             `;
+
 
             return;
 
@@ -56,11 +70,16 @@ const Feed = {
 
 
 
+
+
         this.container.innerHTML = "";
+
+
 
 
         episodes.forEach(
             episode => {
+
 
 
                 const card =
@@ -69,52 +88,154 @@ const Feed = {
                     );
 
 
+
                 card.className =
                     "podcast-card";
 
 
+
+
                 card.innerHTML = `
 
+
                     <img
-                        class="podcast-cover"
-                        src="${episode.cover}"
-                        alt="${episode.title}"
-                        loading="lazy"
+
+                    class="podcast-cover"
+
+                    src="${episode.cover}"
+
+                    alt="${episode.title}"
+
+                    loading="lazy"
+
                     >
+
+
 
 
                     <div class="podcast-info">
 
+
                         <h2>
+
                             ${episode.title}
+
                         </h2>
 
 
+
+
                         <p>
+
                             ${episode.description}
+
                         </p>
 
 
-                        <button
-                            class="play-btn"
-                            data-audio="${episode.audio}">
 
-                            ▶ پخش
+
+                        <div class="episode-meta">
+
+
+                            <span>
+
+                                ${episode.published || ""}
+
+                            </span>
+
+
+                        </div>
+
+
+
+
+                        <button
+
+                        class="play-btn"
+
+                        data-audio="${episode.audio}"
+
+                        >
+
+                            <i class="fa-solid fa-play"></i>
+
+                            پخش
+
 
                         </button>
 
+
+
                     </div>
+
 
                 `;
 
 
+
+
                 this.container.appendChild(card);
+
+
+
+            }
+
+        );
+
+
+
+        this.bindEvents();
+
+
+    },
+
+
+
+
+
+
+    bindEvents(){
+
+
+
+        const buttons =
+            document.querySelectorAll(
+                ".play-btn"
+            );
+
+
+
+        buttons.forEach(
+            button => {
+
+
+                button.addEventListener(
+                    "click",
+                    ()=>{
+
+
+                        const audio =
+                            button.dataset.audio;
+
+
+
+                        Player.play(
+                            audio
+                        );
+
+
+                    }
+                );
 
 
             }
         );
 
 
+
     }
+
+
+
 
 };

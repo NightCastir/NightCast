@@ -150,6 +150,114 @@
         <header
             id="header"
             role="banner">
+
+<header
+    id="header"
+    class="app-header"
+    role="banner">
+
+    <div class="header-container">
+
+        <!-- Left -->
+        <div class="header-left">
+
+            <button
+                id="menu-button"
+                class="icon-button"
+                type="button"
+                aria-label="منو">
+
+                <i class="fa-solid fa-bars"></i>
+
+            </button>
+
+            <a
+                href="/v2/"
+                id="logo"
+                class="logo"
+                aria-label="NightCast">
+
+                <img
+                    src="assets/images/logo.svg"
+                    alt="NightCast Logo">
+
+                <span>
+                    NightCast
+                </span>
+
+            </a>
+
+        </div>
+
+        <!-- Center -->
+
+        <div class="header-center">
+
+            <form
+                id="search-form"
+                role="search"
+                autocomplete="off">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                <input
+                    id="search-input"
+                    type="search"
+                    placeholder="جستجوی کتاب، نویسنده یا موضوع..."
+                    aria-label="جستجو">
+
+                <button
+                    id="search-clear"
+                    type="button"
+                    aria-label="پاک کردن">
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+            </form>
+
+        </div>
+
+        <!-- Right -->
+
+        <div class="header-right">
+
+            <button
+                id="theme-button"
+                class="icon-button"
+                type="button"
+                aria-label="حالت شب">
+
+                <i class="fa-solid fa-moon"></i>
+
+            </button>
+
+            <button
+                id="notification-button"
+                class="icon-button"
+                type="button"
+                aria-label="اعلان‌ها">
+
+                <i class="fa-regular fa-bell"></i>
+
+            </button>
+
+            <button
+                id="profile-button"
+                class="icon-button"
+                type="button"
+                aria-label="حساب کاربری">
+
+                <i class="fa-regular fa-user"></i>
+
+            </button>
+
+        </div>
+
+    </div>
+
+</header>
         </header>
 
         <!-- Main -->

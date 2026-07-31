@@ -1,1 +1,25 @@
+.logo img {
 
+    width: 180px;
+    height: auto;
+    display: block;
+    margin: auto;
+
+}
+
+
+.hero-logo {
+
+    text-align: center;
+    padding: 40px 0;
+
+}
+
+
+.hero-logo img {
+
+    max-width: 220px;
+    width: 70%;
+    height: auto;
+
+}

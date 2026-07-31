@@ -22,22 +22,18 @@
           content="#0b1220">
 
 
-    <!-- Favicon -->
-
     <link rel="icon"
           href="assets/images/logo.png">
 
-
-    <!-- PWA -->
 
     <link rel="manifest"
           href="manifest.json">
 
 
-    <!-- CSS -->
+    <!-- Main CSS -->
 
     <link rel="stylesheet"
-          href="assets/css/style.css">
+          href="assets/css/style.css?v=1.0.0">
 
 
     <!-- Font Awesome -->
@@ -51,6 +47,7 @@
 
 
 <body>
+
 
 
 <!-- =========================
@@ -68,7 +65,7 @@
 
 
             <img src="assets/images/logo.png"
-                 alt="NightCast Logo">
+                 alt="NightCast">
 
 
             <span>
@@ -80,21 +77,52 @@
 
 
 
-        <nav class="main-menu">
+        <div class="header-actions">
 
 
-            <button>
-                <i class="fa-solid fa-bars"></i>
+            <button class="icon-btn"
+                    id="search-btn">
+
+                <i class="fa-solid fa-search"></i>
+
             </button>
 
 
-        </nav>
+
+            <button class="icon-btn"
+                    id="user-btn">
+
+                <i class="fa-solid fa-user"></i>
+
+            </button>
+
+
+
+            <button class="icon-btn"
+                    id="theme-btn">
+
+                <i class="fa-solid fa-moon"></i>
+
+            </button>
+
+
+
+            <button class="menu-btn">
+
+                <i class="fa-solid fa-bars"></i>
+
+            </button>
+
+
+        </div>
 
 
     </div>
 
 
+
 </header>
+
 
 
 
@@ -104,28 +132,51 @@
      MAIN
 ========================= -->
 
+
 <main>
 
 
 
 <!-- HERO -->
 
-<section class="hero">
+<section id="hero">
 
 
-    <img src="assets/images/logo.png"
-         class="hero-logo"
-         alt="NightCast">
+    <div class="hero-content">
 
 
-    <h1>
-        پادکست خلاصه و تحلیل کتاب
-    </h1>
+        <img src="assets/images/logo.png"
+             class="hero-image"
+             alt="NightCast">
 
 
-    <p>
-        ایده‌های بزرگ کتاب‌ها را کوتاه‌تر و کاربردی‌تر بشنوید.
-    </p>
+        <h1>
+
+            پادکست خلاصه و تحلیل کتاب
+
+        </h1>
+
+
+
+        <p>
+
+            مهم‌ترین ایده‌های کتاب‌های ارزشمند
+            را کوتاه، عمیق و کاربردی بشنوید.
+
+        </p>
+
+
+
+        <button class="primary-btn">
+
+            <i class="fa-solid fa-play"></i>
+
+            شروع شنیدن
+
+        </button>
+
+
+    </div>
 
 
 </section>
@@ -134,16 +185,54 @@
 
 
 
-<!-- PODCAST FEED -->
 
-<section id="podcast-feed"
-         class="podcast-feed">
+<!-- SEARCH BOX -->
+
+<section id="search-box"
+         class="hidden">
 
 
-    <!-- Episodes Loaded By JS -->
+    <input type="text"
+           placeholder="جستجوی کتاب، نویسنده یا موضوع...">
 
 
 </section>
+
+
+
+
+
+
+<!-- PODCAST LIST -->
+
+
+<section id="podcast-feed">
+
+
+</section>
+
+
+
+
+
+
+<!-- GLOBAL PLAYER -->
+
+
+<section id="player">
+
+
+    <audio id="audio-player"
+           controls>
+
+
+    </audio>
+
+
+</section>
+
+
+
 
 
 
@@ -158,16 +247,81 @@
      FOOTER
 ========================= -->
 
+
 <footer id="footer">
 
 
-    <p>
-        © NightCast
-    </p>
+    <div class="footer-container">
+
+
+        <div>
+
+
+            <img src="assets/images/logo.png"
+                 alt="NightCast">
+
+
+            <p>
+
+                رادیو NightCast
+
+                <br>
+
+                خلاصه و تحلیل کتاب‌های ارزشمند
+
+            </p>
+
+
+        </div>
+
+
+
+
+
+        <div class="social-links">
+
+
+            <a href="#">
+
+                <i class="fa-brands fa-youtube"></i>
+
+            </a>
+
+
+            <a href="#">
+
+                <i class="fa-brands fa-telegram"></i>
+
+            </a>
+
+
+            <a href="#">
+
+                <i class="fa-solid fa-globe"></i>
+
+            </a>
+
+
+        </div>
+
+
+
+
+    </div>
+
+
+
+
+    <div class="copyright">
+
+
+        © 2026 NightCast
+
+    </div>
+
 
 
 </footer>
-
 
 
 
@@ -179,13 +333,13 @@
 ========================= -->
 
 
-<script src="assets/js/services/feed-service.js"></script>
+<script src="assets/js/services/feed-service.js?v=1.0.0"></script>
 
 
-<script src="assets/js/components/feed.js"></script>
+<script src="assets/js/components/feed.js?v=1.0.0"></script>
 
 
-<script src="assets/js/app.js"></script>
+<script src="assets/js/app.js?v=1.0.0"></script>
 
 
 

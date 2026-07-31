@@ -139,3 +139,86 @@
     <link rel="stylesheet" href="assets/css/style.css">
 
 </head>
+
+<body>
+
+    <!-- App -->
+
+    <div id="app">
+
+        <!-- Header -->
+        <header
+            id="header"
+            role="banner">
+        </header>
+
+        <!-- Main -->
+
+        <main
+            id="main"
+            role="main">
+
+            <!-- Podcast Feed -->
+
+            <section
+                id="podcast-feed"
+                aria-label="Podcast Feed">
+
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+
+        <footer
+            id="footer"
+            role="contentinfo">
+        </footer>
+
+    </div>
+
+    <!-- Floating Player -->
+
+    <aside
+        id="player"
+        aria-label="Audio Player">
+    </aside>
+
+    <!-- Bottom Sheet -->
+
+    <section
+        id="bottom-sheet"
+        aria-hidden="true">
+    </section>
+
+    <!-- Dialog -->
+
+    <section
+        id="dialog"
+        aria-hidden="true">
+    </section>
+
+    <!-- Toast -->
+
+    <div
+        id="toast"
+        aria-live="polite">
+    </div>
+
+    <!-- Loading -->
+
+    <div
+        id="loading"
+        aria-hidden="true">
+    </div>
+
+    <!-- Scripts -->
+
+    <script
+        type="module"
+        src="assets/js/app.js"></script>
+
+</body>
+
+</html>
+

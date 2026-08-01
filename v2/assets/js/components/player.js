@@ -403,7 +403,29 @@ seek(event) {
         this.audio.duration;
 
             };
+setVolume(value) {
 
+    if (!this.audio)
+        return;
+
+    this.volume = value / 100;
+
+    this.audio.volume =
+        this.volume;
+
+},
+
+
+
+setPlaybackSpeed(rate) {
+
+    if (!this.audio)
+        return;
+
+    this.audio.playbackRate =
+        parseFloat(rate);
+
+},
 Object.freeze(Player);
 
 play(episode) {

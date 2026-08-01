@@ -1,1 +1,81 @@
+/*
+==================================================
+NightCast V2
+Variables
+==================================================
+*/
 
+:root{
+
+/* Colors */
+
+--primary:#D9A441;
+
+--primary-hover:#E6B54A;
+
+--background:#070B14;
+
+--surface:#111827;
+
+--surface-light:#1F2937;
+
+--border:rgba(255,255,255,.08);
+
+--text:#FFFFFF;
+
+--text-secondary:#9CA3AF;
+
+--success:#22C55E;
+
+--warning:#F59E0B;
+
+--danger:#EF4444;
+
+
+/* Radius */
+
+--radius-xs:6px;
+
+--radius-sm:10px;
+
+--radius-md:16px;
+
+--radius-lg:22px;
+
+--radius-xl:30px;
+
+
+/* Shadow */
+
+--shadow:
+
+0 8px 30px rgba(0,0,0,.35);
+
+
+/* Transition */
+
+--transition:
+
+all .25s ease;
+
+
+/* Header */
+
+--header-height:72px;
+
+
+/* Bottom Navigation */
+
+--bottom-nav-height:70px;
+
+
+/* Player */
+
+--player-height:86px;
+
+
+/* Max Width */
+
+--container:1300px;
+
+}

@@ -374,6 +374,63 @@ id="retryFeed">
         this.render();
 
     },
+   
+initInfiniteScroll() {
+
+    window.addEventListener(
+
+        "scroll",
+
+        () => {
+
+            if (
+
+                this.loading ||
+
+                !this.hasMore
+
+            ) {
+
+                return;
+
+            }
+
+            const scrollTop =
+                window.scrollY;
+
+            const windowHeight =
+                window.innerHeight;
+
+            const documentHeight =
+                document.documentElement.scrollHeight;
+
+            if (
+
+                scrollTop + windowHeight >=
+
+                documentHeight - 300
+
+            ) {
+
+                this.loadMore();
+
+            }
+
+        }
+
+    );
+
+},
+
+
+
+loadMore() {
+
+    this.page++;
+
+    this.render();
+
+},
 
 
 Object.freeze(Feed);

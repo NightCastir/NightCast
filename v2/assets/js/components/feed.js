@@ -1,3 +1,4 @@
+
 /*
 ==================================================
 NightCast V2
@@ -149,14 +150,6 @@ const Feed = {
 };
 
 Object.freeze(Feed);
-
-
-
-
-
-
-
-
 createCard(episode) {
 
     const article =
@@ -349,12 +342,6 @@ class="btn btn-secondary">
     return article;
 
 }
-
-
-
-
-
-
     showLoading() {
 
         this.container.innerHTML = "";
@@ -432,14 +419,3 @@ style="height:42px;border-radius:12px;"></div>
         this.load();
 
     },
-
-
-
-
-
-
-
-
-
-
-

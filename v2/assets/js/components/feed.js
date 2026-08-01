@@ -87,7 +87,16 @@ const Feed = {
 
             this.episodes =
                 result.episodes || [];
+if (window.Player) {
 
+    Player.setPlaylist(
+
+        this.episodes
+
+    );
+
+}
+            
             this.filteredEpisodes =
                 [...this.episodes];
         this.saveCache();

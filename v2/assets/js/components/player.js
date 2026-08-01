@@ -233,7 +233,47 @@ this.speedSelector =
 
 
     bindEvents() {
+if (this.volumeSlider) {
 
+    this.volumeSlider.addEventListener(
+
+        "input",
+
+        e => {
+
+            this.setVolume(
+
+                e.target.value
+
+            );
+
+        }
+
+    );
+
+}
+
+
+
+if (this.speedSelector) {
+
+    this.speedSelector.addEventListener(
+
+        "change",
+
+        e => {
+
+            this.setPlaybackSpeed(
+
+                e.target.value
+
+            );
+
+        }
+
+    );
+
+}
         if (!this.audio)
             return;
 

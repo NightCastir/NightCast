@@ -24,10 +24,12 @@ const FeedService = {
 
             }
 
-            const data =
-                await response.json();
+            const data = await response.json();
 
-            return data.data || [];
+return {
+    success: data.success === true,
+    episodes: data.data || []
+};
 
         }
 
@@ -38,7 +40,10 @@ const FeedService = {
                 error
             );
 
-            return [];
+            return {
+    success: false,
+    episodes: []
+};
 
         }
 

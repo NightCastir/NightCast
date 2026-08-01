@@ -7,7 +7,7 @@ Load Episodes From GitHub JSON
 
 const FeedService = {
 
-    url: "/data/episodes.json",
+    url: "v2/data/episodes.json",
 
     async getEpisodes(){
 

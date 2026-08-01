@@ -168,7 +168,15 @@ preload="metadata">
 
 
     cache() {
+this.volumeSlider =
+    document.getElementById(
+        "volumeSlider"
+    );
 
+this.speedSelector =
+    document.getElementById(
+        "speedSelector"
+    );
     this.audio =
         document.getElementById(
             "audioPlayer"
@@ -218,6 +226,7 @@ preload="metadata">
         document.getElementById(
             "duration"
         );
+        
 
 },
 

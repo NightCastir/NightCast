@@ -44,6 +44,8 @@ const Feed = {
         this.initSearch();
 
         this.initInfiniteScroll();
+
+        this.initPullToRefresh();
         
     },
 
@@ -433,7 +435,79 @@ loadMore() {
     this.render();
 
 },
+    startY: 0,
 
+    endY: 0,
+
+
+
+    initPullToRefresh() {
+
+        document.addEventListener(
+
+            "touchstart",
+
+            e => {
+
+                if (
+
+                    window.scrollY === 0
+
+                ) {
+
+                    this.startY =
+
+                        e.touches[0].clientY;
+
+                }
+
+            },
+
+            {
+
+                passive: true
+
+            }
+
+        );
+
+
+
+        document.addEventListener(
+
+            "touchend",
+
+            e => {
+
+                this.endY =
+
+                    e.changedTouches[0].clientY;
+
+
+
+                if (
+
+                    window.scrollY === 0 &&
+
+                    this.endY - this.startY > 120
+
+                ) {
+
+                    this.refresh();
+
+                }
+
+            },
+
+            {
+
+                passive: true
+
+            }
+
+        );
+
+    },
 
 Object.freeze(Feed);
 createCard(episode) {

@@ -41,6 +41,8 @@ const Feed = {
 
         await this.load();
 
+        this.initSearch();
+
     },
 
 

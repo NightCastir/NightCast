@@ -1,9 +1,8 @@
-
 /*
 ==================================================
 NightCast V2
 Feed Component
-Version : 2.0.0
+Version : 3.0.0
 ==================================================
 */
 
@@ -15,51 +14,43 @@ const Feed = {
 
     filteredEpisodes: [],
 
-    loading: false,
-
     page: 1,
 
     pageSize: 20,
 
     hasMore: true,
 
+    loading: false,
+
+    container: null,
+
 
 
     async init() {
 
-    this.container =
+        this.container =
+            document.getElementById(
+                "podcast-feed"
+            );
 
-        document.getElementById(
+        if (!this.container)
+            return;
 
-            "podcast-feed"
+        this.loadCache();
 
-        );
+        this.showLoading();
 
+        await this.load();
 
+        this.initSearch();
 
-    if (!this.container)
+        this.initInfiniteScroll();
 
-        return;
+        this.initPullToRefresh();
 
+        this.startAutoRefresh();
 
-
-    this.loadCache();
-
-    this.showLoading();
-
-    await this.load();
-
-    this.saveCache();
-
-    this.initSearch();
-
-    this.initInfiniteScroll();
-
-    this.initPullToRefresh();
-
-    this.startAutoRefresh();
-
-},
+    },
 
 
 
@@ -78,7 +69,7 @@ const Feed = {
             ) {
 
                 this.hideLoading();
-                
+
                 this.showError();
 
                 return;
@@ -87,21 +78,22 @@ const Feed = {
 
             this.episodes =
                 result.episodes || [];
-if (window.Player) {
 
-    Player.setPlaylist(
-
-        this.episodes
-
-    );
-
-}
-            
             this.filteredEpisodes =
                 [...this.episodes];
-        this.saveCache();
+
+            if (window.Player) {
+
+                Player.setPlaylist(
+                    this.episodes
+                );
+
+            }
+
+            this.saveCache();
+
             this.hideLoading();
-           
+
             this.render();
 
         }
@@ -110,10 +102,10 @@ if (window.Player) {
 
             console.error(error);
 
-           this.hideLoading();
+            this.hideLoading();
 
-           this.showError();
-            
+            this.showError();
+
         }
 
         finally {
@@ -128,55 +120,49 @@ if (window.Player) {
 
     render() {
 
-    if (!this.filteredEpisodes.length) {
+        if (
+            !this.filteredEpisodes.length
+        ) {
 
-        this.showEmpty();
+            this.showEmpty();
 
-        return;
+            return;
 
-    }
+        }
 
-    this.container.innerHTML = "";
+        this.container.innerHTML = "";
 
-    const limit =
-        this.page *
-        this.pageSize;
+        const limit =
+            this.page *
+            this.pageSize;
 
-    this.filteredEpisodes
+        this.filteredEpisodes
 
-        .slice(0, limit)
+            .slice(0, limit)
 
-        .forEach(
+            .forEach(
 
-            episode => {
+                episode => {
 
-                this.container.appendChild(
+                    this.container.appendChild(
 
-                    this.createCard(
-                        episode
-                    )
+                        this.createCard(
+                            episode
+                        )
 
-                );
+                    );
 
-            }
+                }
 
-        );
+            );
 
-    this.hasMore =
+        this.hasMore =
 
-        limit <
+            limit <
 
-        this.filteredEpisodes.length;
+            this.filteredEpisodes.length;
 
-    },
-
-
-
-    createCard(
-
-        episode
-
-    ) {
+    },    createCard(episode) {
 
         const article =
             document.createElement(
@@ -186,546 +172,51 @@ if (window.Player) {
         article.className =
             "podcast-card fade-in";
 
-        return article;
 
-    }
 
-};
+        const image =
 
-    showEmpty() {
+            episode.image ||
 
-        this.container.innerHTML = `
+            episode.thumbnail ||
 
-<section class="empty-state fade-in">
+            "assets/images/logo.png";
 
-<i class="fa-solid fa-podcast"></i>
 
-<h2>
 
-هنوز پادکستی منتشر نشده است
+        const title =
 
-</h2>
+            episode.title ||
 
-<p>
+            "بدون عنوان";
 
-به زودی اولین قسمت NightCast
-در این بخش منتشر خواهد شد.
 
-</p>
 
-<button
-class="btn btn-primary"
-id="refreshFeed">
+        const description =
 
-<i class="fa-solid fa-rotate"></i>
+            episode.description ||
 
-بروزرسانی
+            "توضیحی برای این قسمت ثبت نشده است.";
 
-</button>
 
-</section>
 
-`;
+        const duration =
 
-        const btn =
-            document.getElementById(
-                "refreshFeed"
-            );
+            episode.duration ||
 
-        if (btn) {
+            "--:--";
 
-            btn.onclick = () => {
 
-                this.refresh();
 
-            };
+        const published =
 
-        }
+            episode.published ||
 
-    },
+            "";
 
 
 
-    showError() {
-
-        this.container.innerHTML = `
-
-<section class="empty-state fade-in">
-
-<i class="fa-solid fa-triangle-exclamation"></i>
-
-<h2>
-
-خطا در دریافت اطلاعات
-
-</h2>
-
-<p>
-
-اتصال به سرور برقرار نشد.
-
-لطفاً دوباره تلاش کنید.
-
-</p>
-
-<button
-class="btn btn-primary"
-id="retryFeed">
-
-<i class="fa-solid fa-arrows-rotate"></i>
-
-تلاش مجدد
-
-</button>
-
-</section>
-
-`;
-
-        const btn =
-            document.getElementById(
-                "retryFeed"
-            );
-
-        if (btn) {
-
-            btn.onclick = () => {
-
-                this.refresh();
-
-            };
-
-        }
-
-    },
-
-    initSearch() {
-
-        const input =
-            document.querySelector(
-                "#search-box input"
-            );
-
-        if (!input) {
-
-            return;
-
-        }
-
-        input.addEventListener(
-
-            "input",
-
-            e => {
-
-                this.search(
-
-                    e.target.value
-
-                );
-
-            }
-
-        );
-
-    },
-
-
-
-    search(keyword = "") {
-
-        keyword =
-
-            keyword
-            .trim()
-            .toLowerCase();
-
-
-
-        if (!keyword) {
-
-            this.filteredEpisodes =
-
-                [...this.episodes];
-
-            this.render();
-
-            return;
-
-        }
-
-
-
-        this.filteredEpisodes =
-
-            this.episodes.filter(
-
-                episode => {
-
-                    const title =
-
-                        (
-                            episode.title || ""
-                        ).toLowerCase();
-
-                    const description =
-
-                        (
-                            episode.description || ""
-                        ).toLowerCase();
-
-                    const author =
-
-                        (
-                            episode.author || ""
-                        ).toLowerCase();
-
-                    return (
-
-                        title.includes(keyword) ||
-
-                        description.includes(keyword) ||
-
-                        author.includes(keyword)
-
-                    );
-
-                }
-
-            );
-
-
-
-        this.render();
-
-    },
-   
-initInfiniteScroll() {
-
-    window.addEventListener(
-
-        "scroll",
-
-        () => {
-
-            if (
-
-                this.loading ||
-
-                !this.hasMore
-
-            ) {
-
-                return;
-
-            }
-
-            const scrollTop =
-                window.scrollY;
-
-            const windowHeight =
-                window.innerHeight;
-
-            const documentHeight =
-                document.documentElement.scrollHeight;
-
-            if (
-
-                scrollTop + windowHeight >=
-
-                documentHeight - 300
-
-            ) {
-
-                this.loadMore();
-
-            }
-
-        }
-
-    );
-
-},
-
-
-
-loadMore() {
-
-    this.page++;
-
-    this.render();
-
-},
-    startY: 0,
-
-    endY: 0,
-
-
-
-    initPullToRefresh() {
-
-        document.addEventListener(
-
-            "touchstart",
-
-            e => {
-
-                if (
-
-                    window.scrollY === 0
-
-                ) {
-
-                    this.startY =
-
-                        e.touches[0].clientY;
-
-                }
-
-            },
-
-            {
-
-                passive: true
-
-            }
-
-        );
-
-
-
-        document.addEventListener(
-
-            "touchend",
-
-            e => {
-
-                this.endY =
-
-                    e.changedTouches[0].clientY;
-
-
-
-                if (
-
-                    window.scrollY === 0 &&
-
-                    this.endY - this.startY > 120
-
-                ) {
-
-                    this.refresh();
-
-                }
-
-            },
-
-            {
-
-                passive: true
-
-            }
-
-        );
-
-    },
-    saveCache() {
-
-        try {
-
-            Utils.save(
-
-                "feed_cache",
-
-                this.episodes
-
-            );
-
-            Utils.save(
-
-                "feed_cache_time",
-
-                Date.now()
-
-            );
-
-        }
-
-        catch (e) {
-
-            console.warn(
-
-                "Feed cache save failed.",
-
-                e
-
-            );
-
-        }
-
-    },
-
-
-
-    loadCache() {
-
-        try {
-
-            const cache =
-
-                Utils.load(
-
-                    "feed_cache",
-
-                    []
-
-                );
-
-
-
-            if (
-
-                cache &&
-
-                cache.length
-
-            ) {
-
-                this.episodes = cache;
-
-                this.filteredEpisodes = [...cache];
-
-                this.render();
-
-            }
-
-        }
-
-        catch (e) {
-
-            console.warn(
-
-                "Feed cache load failed.",
-
-                e
-
-            );
-
-        }
-
-    },
-
-
-
-    startAutoRefresh() {
-
-        setInterval(
-
-            async () => {
-
-                try {
-
-                    const result =
-
-                        await FeedService.getEpisodes();
-
-                    if (
-
-                        result.success
-
-                    ) {
-
-                        this.episodes =
-
-                            result.episodes || [];
-
-                        this.filteredEpisodes =
-
-                            [...this.episodes];
-
-                        this.saveCache();
-
-                        this.render();
-
-                    }
-
-                }
-
-                catch (e) {
-
-                    console.warn(
-
-                        "Auto refresh failed.",
-
-                        e
-
-                    );
-
-                }
-
-            },
-
-            300000
-
-        );
-
-            },
-Object.freeze(Feed);
-createCard(episode) {
-
-    const article =
-        document.createElement(
-            "article"
-        );
-
-    article.className =
-        "podcast-card fade-in";
-
-
-
-    const image =
-
-        episode.image ||
-
-        episode.thumbnail ||
-
-        "assets/images/logo.png";
-
-
-
-    const title =
-
-        episode.title ||
-
-        "بدون عنوان";
-
-
-
-    const description =
-
-        episode.description ||
-
-        "توضیحی برای این قسمت ثبت نشده است.";
-
-
-
-    const duration =
-
-        episode.duration ||
-
-        "--:--";
-
-
-
-    const published =
-
-        episode.published ||
-
-        "";
-
-
-
-    article.innerHTML = `
+        article.innerHTML = `
 
 <div class="podcast-cover">
 
@@ -752,35 +243,31 @@ ${duration}
 
 <div class="podcast-content">
 
-<div class="podcast-title">
+<h3 class="podcast-title">
 
 ${title}
 
-</div>
+</h3>
 
 
 
-<div class="podcast-description">
+<p class="podcast-description">
 
 ${description}
 
-</div>
+</p>
 
 
 
 <div class="podcast-meta">
 
-<div class="meta-item">
+<span>
 
 <i class="fa-regular fa-calendar"></i>
-
-<span>
 
 ${published}
 
 </span>
-
-</div>
 
 </div>
 
@@ -800,7 +287,7 @@ class="btn btn-primary play-btn">
 
 
 <button
-class="btn btn-secondary">
+class="btn btn-secondary favorite-btn">
 
 <i class="fa-regular fa-heart"></i>
 
@@ -814,66 +301,57 @@ class="btn btn-secondary">
 
 
 
-    const playButton =
+        const playButton =
 
-        article.querySelector(
+            article.querySelector(
 
-            ".play-btn"
+                ".play-btn"
+
+            );
+
+
+
+        playButton.addEventListener(
+
+            "click",
+
+            () => {
+
+                if (
+
+                    window.Player
+
+                ) {
+
+                    Player.play(
+
+                        episode
+
+                    );
+
+                }
+
+            }
 
         );
 
 
 
-    if (playButton) {
+        return article;
 
-        playButton.onclick = () => {
-
-            if (
-
-                window.Player &&
-
-                episode.audio
-
-            ) {
-
-                Player.play(
-
-                    episode
-
-                );
-
-            }
-
-            else {
-
-                console.log(
-
-                    episode
-
-                );
-
-            }
-
-        };
-
-    }
-
-
-
-    return article;
-
-}
-    showLoading() {
+    },    showLoading() {
 
         this.container.innerHTML = "";
 
         for (let i = 0; i < 6; i++) {
 
             const card =
-                document.createElement("article");
+                document.createElement(
+                    "article"
+                );
 
             card.className =
-                "podcast-card";
+                "podcast-card skeleton-card";
 
             card.innerHTML = `
 
@@ -887,16 +365,15 @@ class="btn btn-secondary">
 
 <div class="skeleton skeleton-text"></div>
 
-<div style="height:18px"></div>
-
-<div class="skeleton"
-style="height:42px;border-radius:12px;"></div>
+<div class="skeleton skeleton-button"></div>
 
 </div>
 
 `;
 
-            this.container.appendChild(card);
+            this.container.appendChild(
+                card
+            );
 
         }
 
@@ -906,20 +383,212 @@ style="height:42px;border-radius:12px;"></div>
 
     hideLoading() {
 
-        const skeletons =
-            this.container.querySelectorAll(
-                ".skeleton"
+        this.container
+            .querySelectorAll(
+                ".skeleton-card"
+            )
+            .forEach(
+
+                item => {
+
+                    item.remove();
+
+                }
+
             );
 
-        skeletons.forEach(
+    },
 
-            item => {
 
-                item.remove();
+
+    showEmpty() {
+
+        this.container.innerHTML = `
+
+<div class="feed-state">
+
+<i class="fa-solid fa-podcast"></i>
+
+<h2>
+
+هنوز پادکستی منتشر نشده است
+
+</h2>
+
+<p>
+
+به زودی اولین قسمت NightCast
+منتشر خواهد شد.
+
+</p>
+
+<button
+class="btn btn-primary"
+id="feedReload">
+
+بروزرسانی
+
+</button>
+
+</div>
+
+`;
+
+        document
+            .getElementById(
+                "feedReload"
+            )
+            ?.addEventListener(
+
+                "click",
+
+                () => {
+
+                    this.refresh();
+
+                }
+
+            );
+
+    },
+
+
+
+    showError() {
+
+        this.container.innerHTML = `
+
+<div class="feed-state">
+
+<i class="fa-solid fa-triangle-exclamation"></i>
+
+<h2>
+
+خطا در دریافت اطلاعات
+
+</h2>
+
+<p>
+
+ارتباط با سرور برقرار نشد.
+
+</p>
+
+<button
+class="btn btn-primary"
+id="feedRetry">
+
+تلاش مجدد
+
+</button>
+
+</div>
+
+`;
+
+        document
+            .getElementById(
+                "feedRetry"
+            )
+            ?.addEventListener(
+
+                "click",
+
+                () => {
+
+                    this.refresh();
+
+                }
+
+            );
+
+    },    initSearch() {
+
+        const input =
+            document.querySelector(
+                "#search-box input"
+            );
+
+        if (!input)
+            return;
+
+        input.addEventListener(
+
+            "input",
+
+            e => {
+
+                this.search(
+
+                    e.target.value
+
+                );
 
             }
 
         );
+
+    },
+
+
+
+    search(keyword = "") {
+
+        keyword = keyword
+            .trim()
+            .toLowerCase();
+
+        if (!keyword) {
+
+            this.filteredEpisodes = [
+
+                ...this.episodes
+
+            ];
+
+            this.page = 1;
+
+            this.render();
+
+            return;
+
+        }
+
+        this.filteredEpisodes =
+
+            this.episodes.filter(
+
+                episode => {
+
+                    const title =
+                        (episode.title || "")
+                        .toLowerCase();
+
+                    const description =
+                        (episode.description || "")
+                        .toLowerCase();
+
+                    const author =
+                        (episode.author || "")
+                        .toLowerCase();
+
+                    return (
+
+                        title.includes(keyword) ||
+
+                        description.includes(keyword) ||
+
+                        author.includes(keyword)
+
+                    );
+
+                }
+
+            );
+
+        this.page = 1;
+
+        this.render();
 
     },
 
@@ -931,7 +600,7 @@ style="height:42px;border-radius:12px;"></div>
 
         this.hasMore = true;
 
-        this.episodes = [];
+        this.loading = false;
 
         this.filteredEpisodes = [];
 
@@ -939,4 +608,325 @@ style="height:42px;border-radius:12px;"></div>
 
         this.load();
 
+    },    initInfiniteScroll() {
+
+        window.addEventListener(
+
+            "scroll",
+
+            () => {
+
+                if (
+
+                    this.loading ||
+
+                    !this.hasMore
+
+                ) {
+
+                    return;
+
+                }
+
+                const scrollTop =
+                    window.scrollY;
+
+                const windowHeight =
+                    window.innerHeight;
+
+                const documentHeight =
+                    document.documentElement.scrollHeight;
+
+                if (
+
+                    scrollTop + windowHeight >=
+
+                    documentHeight - 300
+
+                ) {
+
+                    this.loadMore();
+
+                }
+
+            }
+
+        );
+
     },
+
+
+
+    loadMore() {
+
+        if (
+
+            this.loading ||
+
+            !this.hasMore
+
+        ) {
+
+            return;
+
+        }
+
+        this.page++;
+
+        this.render();
+
+    },    startY: 0,
+
+    endY: 0,
+
+
+
+    initPullToRefresh() {
+
+        document.addEventListener(
+
+            "touchstart",
+
+            (event) => {
+
+                if (window.scrollY === 0) {
+
+                    this.startY =
+
+                        event.touches[0].clientY;
+
+                }
+
+            },
+
+            {
+
+                passive: true
+
+            }
+
+        );
+
+
+
+        document.addEventListener(
+
+            "touchend",
+
+            (event) => {
+
+                this.endY =
+
+                    event.changedTouches[0].clientY;
+
+
+
+                if (
+
+                    window.scrollY === 0 &&
+
+                    this.endY - this.startY > 120
+
+                ) {
+
+                    this.refresh();
+
+                }
+
+            },
+
+            {
+
+                passive: true
+
+            }
+
+        );
+
+    },    saveCache() {
+
+        try {
+
+            localStorage.setItem(
+
+                "nightcast_feed",
+
+                JSON.stringify(
+
+                    this.episodes
+
+                )
+
+            );
+
+
+
+            localStorage.setItem(
+
+                "nightcast_feed_time",
+
+                Date.now()
+
+            );
+
+        }
+
+        catch (error) {
+
+            console.warn(
+
+                "Cache Save Error",
+
+                error
+
+            );
+
+        }
+
+    },
+
+
+
+    loadCache() {
+
+        try {
+
+            const cache =
+
+                localStorage.getItem(
+
+                    "nightcast_feed"
+
+                );
+
+
+
+            if (!cache)
+
+                return;
+
+
+
+            this.episodes =
+
+                JSON.parse(cache);
+
+
+
+            this.filteredEpisodes =
+
+                [...this.episodes];
+
+
+
+            this.render();
+
+        }
+
+        catch (error) {
+
+            console.warn(
+
+                "Cache Load Error",
+
+                error
+
+            );
+
+        }
+
+    },
+
+
+
+    clearCache() {
+
+        localStorage.removeItem(
+
+            "nightcast_feed"
+
+        );
+
+
+
+        localStorage.removeItem(
+
+            "nightcast_feed_time"
+
+        );
+
+    },    startAutoRefresh() {
+
+        setInterval(
+
+            async () => {
+
+                if (this.loading) {
+
+                    return;
+
+                }
+
+                try {
+
+                    const result =
+
+                        await FeedService.getEpisodes();
+
+                    if (
+
+                        result &&
+
+                        result.success
+
+                    ) {
+
+                        this.episodes =
+
+                            result.episodes || [];
+
+                        this.filteredEpisodes =
+
+                            [...this.episodes];
+
+                        if (window.Player) {
+
+                            Player.setPlaylist(
+
+                                this.episodes
+
+                            );
+
+                        }
+
+                        this.saveCache();
+
+                        this.render();
+
+                    }
+
+                }
+
+                catch (error) {
+
+                    console.warn(
+
+                        "Auto Refresh Error",
+
+                        error
+
+                    );
+
+                }
+
+            },
+
+            300000
+
+        );
+
+    }
+
+};
+
+Object.freeze(Feed);

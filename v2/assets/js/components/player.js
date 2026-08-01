@@ -125,54 +125,57 @@ preload="metadata">
 
     cache() {
 
-        this.audio =
-            document.getElementById(
-                "audioPlayer"
-            );
+    this.audio =
+        document.getElementById(
+            "audioPlayer"
+        );
 
+    this.miniPlayer =
+        document.getElementById(
+            "miniPlayer"
+        );
 
+    this.cover =
+        document.getElementById(
+            "playerCover"
+        );
 
-        this.miniPlayer =
-            document.getElementById(
-                "miniPlayer"
-            );
+    this.title =
+        document.getElementById(
+            "playerTitle"
+        );
 
+    this.author =
+        document.getElementById(
+            "playerAuthor"
+        );
 
+    this.playButton =
+        document.getElementById(
+            "playerPlay"
+        );
 
-        this.cover =
-            document.getElementById(
-                "playerCover"
-            );
+    this.progressContainer =
+        document.getElementById(
+            "progressContainer"
+        );
 
+    this.progressBar =
+        document.getElementById(
+            "progressBar"
+        );
 
+    this.currentTime =
+        document.getElementById(
+            "currentTime"
+        );
 
-        this.title =
-            document.getElementById(
-                "playerTitle"
-            );
+    this.duration =
+        document.getElementById(
+            "duration"
+        );
 
-
-
-        this.author =
-            document.getElementById(
-                "playerAuthor"
-            );
-
-
-
-        this.progress =
-            document.getElementById(
-                "playerProgress"
-            );
-
-
-
-        this.playButton =
-            document.getElementById(
-                "playerPlay"
-            );
-
-    },
+},
 
 
 

@@ -103,28 +103,32 @@ const Feed = {
 
     render() {
 
-        if (
-            !this.filteredEpisodes.length
-        ) {
+    if (!this.filteredEpisodes.length) {
 
-            this.showEmpty();
+        this.showEmpty();
 
-            return;
+        return;
 
-        }
+    }
 
-        this.container.innerHTML = "";
+    this.container.innerHTML = "";
 
-        this.filteredEpisodes.forEach(
+    const limit =
+        this.page *
+        this.pageSize;
+
+    this.filteredEpisodes
+
+        .slice(0, limit)
+
+        .forEach(
 
             episode => {
 
                 this.container.appendChild(
 
                     this.createCard(
-
                         episode
-
                     )
 
                 );
@@ -132,6 +136,12 @@ const Feed = {
             }
 
         );
+
+    this.hasMore =
+
+        limit <
+
+        this.filteredEpisodes.length;
 
     },
 

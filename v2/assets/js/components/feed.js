@@ -27,27 +27,39 @@ const Feed = {
 
     async init() {
 
-        this.container = document.getElementById(
+    this.container =
+
+        document.getElementById(
+
             "podcast-feed"
+
         );
 
-        if (!this.container) {
 
-            return;
 
-        }
+    if (!this.container)
 
-        this.showLoading();
+        return;
 
-        await this.load();
 
-        this.initSearch();
 
-        this.initInfiniteScroll();
+    this.loadCache();
 
-        this.initPullToRefresh();
-        
-    },
+    this.showLoading();
+
+    await this.load();
+
+    this.saveCache();
+
+    this.initSearch();
+
+    this.initInfiniteScroll();
+
+    this.initPullToRefresh();
+
+    this.startAutoRefresh();
+
+},
 
 
 
@@ -78,7 +90,7 @@ const Feed = {
 
             this.filteredEpisodes =
                 [...this.episodes];
-        
+        this.saveCache();
             this.hideLoading();
            
             this.render();
@@ -508,7 +520,147 @@ loadMore() {
         );
 
     },
+    saveCache() {
 
+        try {
+
+            Utils.save(
+
+                "feed_cache",
+
+                this.episodes
+
+            );
+
+            Utils.save(
+
+                "feed_cache_time",
+
+                Date.now()
+
+            );
+
+        }
+
+        catch (e) {
+
+            console.warn(
+
+                "Feed cache save failed.",
+
+                e
+
+            );
+
+        }
+
+    },
+
+
+
+    loadCache() {
+
+        try {
+
+            const cache =
+
+                Utils.load(
+
+                    "feed_cache",
+
+                    []
+
+                );
+
+
+
+            if (
+
+                cache &&
+
+                cache.length
+
+            ) {
+
+                this.episodes = cache;
+
+                this.filteredEpisodes = [...cache];
+
+                this.render();
+
+            }
+
+        }
+
+        catch (e) {
+
+            console.warn(
+
+                "Feed cache load failed.",
+
+                e
+
+            );
+
+        }
+
+    },
+
+
+
+    startAutoRefresh() {
+
+        setInterval(
+
+            async () => {
+
+                try {
+
+                    const result =
+
+                        await FeedService.getEpisodes();
+
+                    if (
+
+                        result.success
+
+                    ) {
+
+                        this.episodes =
+
+                            result.episodes || [];
+
+                        this.filteredEpisodes =
+
+                            [...this.episodes];
+
+                        this.saveCache();
+
+                        this.render();
+
+                    }
+
+                }
+
+                catch (e) {
+
+                    console.warn(
+
+                        "Auto refresh failed.",
+
+                        e
+
+                    );
+
+                }
+
+            },
+
+            300000
+
+        );
+
+            },
 Object.freeze(Feed);
 createCard(episode) {
 

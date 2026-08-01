@@ -43,6 +43,8 @@ const Feed = {
 
         this.initSearch();
 
+        this.initInfiniteScroll();
+        
     },
 
 

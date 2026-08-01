@@ -151,6 +151,116 @@ const Feed = {
 
 };
 
+    showEmpty() {
+
+        this.container.innerHTML = `
+
+<section class="empty-state fade-in">
+
+<i class="fa-solid fa-podcast"></i>
+
+<h2>
+
+هنوز پادکستی منتشر نشده است
+
+</h2>
+
+<p>
+
+به زودی اولین قسمت NightCast
+در این بخش منتشر خواهد شد.
+
+</p>
+
+<button
+class="btn btn-primary"
+id="refreshFeed">
+
+<i class="fa-solid fa-rotate"></i>
+
+بروزرسانی
+
+</button>
+
+</section>
+
+`;
+
+        const btn =
+            document.getElementById(
+                "refreshFeed"
+            );
+
+        if (btn) {
+
+            btn.onclick = () => {
+
+                this.refresh();
+
+            };
+
+        }
+
+    },
+
+
+
+    showError() {
+
+        this.container.innerHTML = `
+
+<section class="empty-state fade-in">
+
+<i class="fa-solid fa-triangle-exclamation"></i>
+
+<h2>
+
+خطا در دریافت اطلاعات
+
+</h2>
+
+<p>
+
+اتصال به سرور برقرار نشد.
+
+لطفاً دوباره تلاش کنید.
+
+</p>
+
+<button
+class="btn btn-primary"
+id="retryFeed">
+
+<i class="fa-solid fa-arrows-rotate"></i>
+
+تلاش مجدد
+
+</button>
+
+</section>
+
+`;
+
+        const btn =
+            document.getElementById(
+                "retryFeed"
+            );
+
+        if (btn) {
+
+            btn.onclick = () => {
+
+                this.refresh();
+
+            };
+
+        }
+
+    },
+
+
+
+
 Object.freeze(Feed);
 createCard(episode) {
 

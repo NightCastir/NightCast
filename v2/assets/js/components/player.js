@@ -185,7 +185,27 @@ preload="metadata">
             return;
 
 
+this.audio.addEventListener(
 
+    "timeupdate",
+
+    () => {
+
+        this.updateProgress();
+
+    }
+
+);
+
+
+
+this.progressContainer.onclick =
+
+    (event) => {
+
+        this.seek(event);
+
+    };
         this.audio.addEventListener(
 
             "ended",

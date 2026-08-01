@@ -14,6 +14,10 @@ const Player = {
 
     currentEpisode: null,
 
+    playlist: [],
+
+    currentIndex: -1,
+    
     isPlaying: false,
 
     volume: 1,

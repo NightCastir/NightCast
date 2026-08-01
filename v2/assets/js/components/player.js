@@ -203,6 +203,134 @@ preload="metadata">
 
 };
 
+formatTime(seconds) {
+
+    if (
+
+        isNaN(seconds)
+
+    ) {
+
+        return "00:00";
+
+    }
+
+    const minutes =
+
+        Math.floor(
+
+            seconds / 60
+
+        );
+
+    const secs =
+
+        Math.floor(
+
+            seconds % 60
+
+        );
+
+    return (
+
+        String(minutes)
+
+        .padStart(2,"0")
+
+        +
+
+        ":"
+
+        +
+
+        String(secs)
+
+        .padStart(2,"0")
+
+    );
+
+},
+
+
+
+updateProgress() {
+
+    if (
+
+        !this.audio.duration
+
+    ) {
+
+        return;
+
+    }
+
+    const percent =
+
+        (
+
+            this.audio.currentTime
+
+            /
+
+            this.audio.duration
+
+        )
+
+        *
+
+        100;
+
+    this.progressBar.style.width =
+
+        percent + "%";
+
+    this.currentTime.textContent =
+
+        this.formatTime(
+
+            this.audio.currentTime
+
+        );
+
+    this.duration.textContent =
+
+        this.formatTime(
+
+            this.audio.duration
+
+        );
+
+},
+
+
+
+seek(event) {
+
+    const rect =
+
+        this.progressContainer.getBoundingClientRect();
+
+    const percent =
+
+        (
+
+            event.clientX - rect.left
+
+        )
+
+        /
+
+        rect.width;
+
+    this.audio.currentTime =
+
+        percent *
+
+        this.audio.duration;
+
+            };
+
 Object.freeze(Player);
 
 play(episode) {

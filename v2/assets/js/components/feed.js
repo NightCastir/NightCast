@@ -70,7 +70,9 @@ const Feed = {
 
             this.filteredEpisodes =
                 [...this.episodes];
-
+        
+            this.hideLoading();
+           
             this.render();
 
         }

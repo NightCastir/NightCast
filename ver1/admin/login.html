@@ -1,1 +1,198 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
 
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ورود مدیر - NightCast</title>
+
+
+<style>
+
+body{
+    margin:0;
+    font-family:tahoma,Arial;
+    background:#111;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+
+.box{
+
+    background:white;
+    width:350px;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 10px 30px #0005;
+
+}
+
+
+h2{
+    text-align:center;
+}
+
+
+input{
+
+    width:100%;
+    padding:12px;
+    margin:8px 0;
+    box-sizing:border-box;
+    border:1px solid #ddd;
+    border-radius:8px;
+
+}
+
+
+button{
+
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+    background:#111;
+    color:white;
+    border:0;
+    border-radius:8px;
+    cursor:pointer;
+
+}
+
+
+#message{
+
+    text-align:center;
+    margin-top:15px;
+
+    color:red;
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="box">
+
+
+<h2>
+ورود مدیر NightCast
+</h2>
+
+
+<input
+id="username"
+placeholder="نام کاربری"
+/>
+
+
+<input
+id="password"
+type="password"
+placeholder="رمز عبور"
+/>
+
+
+<button onclick="login()">
+ورود
+</button>
+
+
+<div id="message"></div>
+
+
+</div>
+
+
+
+<script>
+
+
+async function login(){
+
+
+const username =
+document.getElementById("username").value;
+
+
+const password =
+document.getElementById("password").value;
+
+
+
+const result =
+await fetch(
+"https://nightcast-api.tomasgermany2580.workers.dev/api/admin/login",
+{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+username,
+password
+
+})
+
+}
+
+);
+
+
+
+const data =
+await result.json();
+
+
+
+if(data.success){
+
+
+document.getElementById("message").style.color="green";
+
+document.getElementById("message").innerHTML=
+"ورود موفق، انتقال...";
+
+
+setTimeout(()=>{
+
+window.location.href="dashboard.html";
+
+},1000);
+
+
+
+}
+else{
+
+
+document.getElementById("message").innerHTML=
+data.message || "خطا در ورود";
+
+
+}
+
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>

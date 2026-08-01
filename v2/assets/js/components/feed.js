@@ -83,8 +83,10 @@ const Feed = {
 
             console.error(error);
 
-            this.showError();
+           this.hideLoading();
 
+           this.showError();
+            
         }
 
         finally {

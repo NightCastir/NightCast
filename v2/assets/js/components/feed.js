@@ -262,7 +262,106 @@ id="retryFeed">
 
     },
 
+    initSearch() {
 
+        const input =
+            document.querySelector(
+                "#search-box input"
+            );
+
+        if (!input) {
+
+            return;
+
+        }
+
+        input.addEventListener(
+
+            "input",
+
+            e => {
+
+                this.search(
+
+                    e.target.value
+
+                );
+
+            }
+
+        );
+
+    },
+
+
+
+    search(keyword = "") {
+
+        keyword =
+
+            keyword
+            .trim()
+            .toLowerCase();
+
+
+
+        if (!keyword) {
+
+            this.filteredEpisodes =
+
+                [...this.episodes];
+
+            this.render();
+
+            return;
+
+        }
+
+
+
+        this.filteredEpisodes =
+
+            this.episodes.filter(
+
+                episode => {
+
+                    const title =
+
+                        (
+                            episode.title || ""
+                        ).toLowerCase();
+
+                    const description =
+
+                        (
+                            episode.description || ""
+                        ).toLowerCase();
+
+                    const author =
+
+                        (
+                            episode.author || ""
+                        ).toLowerCase();
+
+                    return (
+
+                        title.includes(keyword) ||
+
+                        description.includes(keyword) ||
+
+                        author.includes(keyword)
+
+                    );
+
+                }
+
+            );
+
+
+
+        this.render();
+
+    },
 
 
 Object.freeze(Feed);

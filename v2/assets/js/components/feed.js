@@ -59,6 +59,8 @@ const Feed = {
                 !result.success
             ) {
 
+                this.hideLoading();
+                
                 this.showError();
 
                 return;

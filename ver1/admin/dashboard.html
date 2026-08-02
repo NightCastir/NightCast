@@ -4,110 +4,34 @@
 
 <head>
 
+
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
 
 <title>
-NightCast Dashboard
+NightCast CMS
 </title>
 
 
-<style>
 
+<!-- Design System -->
 
-body{
+<link rel="stylesheet" href="css/variables.css">
 
-margin:0;
+<link rel="stylesheet" href="css/reset.css">
 
-font-family:tahoma,Arial;
+<link rel="stylesheet" href="css/layout.css">
 
-background:#111;
+<link rel="stylesheet" href="css/components.css">
 
-color:white;
+<link rel="stylesheet" href="css/responsive.css">
 
-}
+<link rel="stylesheet" href="css/dashboard.css">
 
-
-.container{
-
-max-width:900px;
-
-margin:40px auto;
-
-padding:20px;
-
-}
-
-
-
-.card{
-
-background:#222;
-
-padding:25px;
-
-border-radius:15px;
-
-box-shadow:0 10px 30px #0005;
-
-margin-bottom:20px;
-
-}
-
-
-
-h1{
-
-text-align:center;
-
-}
-
-
-
-.info{
-
-font-size:18px;
-
-line-height:2;
-
-}
-
-
-
-button{
-
-background:#c0392b;
-
-color:white;
-
-border:0;
-
-padding:12px 25px;
-
-border-radius:8px;
-
-cursor:pointer;
-
-font-size:16px;
-
-}
-
-
-
-#message{
-
-text-align:center;
-
-margin-top:20px;
-
-color:#ffcc00;
-
-}
-
-
-</style>
 
 
 </head>
@@ -118,64 +42,425 @@ color:#ffcc00;
 
 
 
-<div class="container">
-
-
-<div class="card">
-
-
-<h1>
-پنل مدیریت NightCast
-</h1>
-
-
-<div id="message">
-
-در حال بررسی دسترسی...
-
-</div>
-
-
-</div>
+<div class="nc-app">
 
 
 
-<div 
-class="card"
-id="adminBox"
-style="display:none"
->
+<!-- =====================
+     SIDEBAR
+===================== -->
+
+
+<aside class="nc-sidebar" id="sidebar">
+
+
+
+<div class="nc-sidebar-header">
 
 
 <h2>
-اطلاعات مدیر
+NightCast
 </h2>
 
 
-<div class="info">
+</div>
+
+
+
+
+<nav class="nc-sidebar-menu">
+
+
+
+<a class="nc-menu-item active">
+
+🏠
+
+<span>
+داشبورد
+</span>
+
+</a>
+
+
+
+
+<a class="nc-menu-item">
+
+🎙
+
+<span>
+پادکست‌ها
+</span>
+
+</a>
+
+
+
+
+
+<a class="nc-menu-item">
+
+📚
+
+<span>
+کتاب‌ها
+</span>
+
+</a>
+
+
+
+
+
+<a class="nc-menu-item">
+
+👤
+
+<span>
+نویسندگان
+</span>
+
+</a>
+
+
+
+
+
+<a class="nc-menu-item">
+
+🏷
+
+<span>
+دسته‌بندی‌ها
+</span>
+
+</a>
+
+
+
+
+
+<a class="nc-menu-item">
+
+🖼
+
+<span>
+رسانه‌ها
+</span>
+
+</a>
+
+
+
+
+
+<a class="nc-menu-item">
+
+⚙
+
+<span>
+تنظیمات
+</span>
+
+</a>
+
+
+
+</nav>
+
+
+
+
+</aside>
+
+
+
+
+
+<!-- Overlay Mobile -->
+
+<div class="nc-overlay" id="overlay"></div>
+
+
+
+
+
+<!-- =====================
+     MAIN
+===================== -->
+
+
+<section class="nc-main">
+
+
+
+<!-- HEADER -->
+
+<header class="nc-header">
+
 
 
 <div>
+
+
+<button class="nc-btn nc-btn-ghost">
+
+☰
+
+</button>
+
+
+</div>
+
+
+
+
+<div>
+
+
+<span>
+
+مدیریت NightCast
+
+</span>
+
+
+</div>
+
+
+
+
+</header>
+<!-- =====================
+     CONTENT
+===================== -->
+
+
+<main class="nc-content">
+
+
+<div class="nc-container">
+
+
+
+<!-- Welcome Card -->
+
+
+<section class="nc-card nc-welcome">
+
+
+
+<div class="nc-card-header">
+
+
+<h1 class="nc-card-title">
+
+پنل مدیریت NightCast
+
+</h1>
+
+
+</div>
+
+
+
+
+<p id="message">
+
+در حال بررسی دسترسی...
+
+</p>
+
+
+
+</section>
+
+
+
+
+
+<!-- Dashboard Cards -->
+
+
+<div class="nc-dashboard-grid">
+
+
+
+
+
+<!-- Admin Info -->
+
+
+<section class="nc-card">
+
+
+<div class="nc-card-header">
+
+<h3 class="nc-card-title">
+
+مدیر سیستم
+
+</h3>
+
+</div>
+
+
+
+<div class="nc-info-list">
+
+
+<div>
+
 نام کاربری:
-<span id="username"></span>
+
+<strong id="username">
+
+-
+
+</strong>
+
+
 </div>
+
 
 
 <div>
+
 نام:
-<span id="fullname"></span>
-</div>
+
+<strong id="fullname">
+
+-
+
+</strong>
 
 
 </div>
 
 
-<br>
+
+<div>
+
+وضعیت:
+
+<span class="nc-badge nc-badge-success">
+
+فعال
+
+</span>
 
 
-<button onclick="logout()">
+</div>
 
-خروج
+
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+<!-- API Status -->
+
+
+<section class="nc-card">
+
+
+<div class="nc-card-header">
+
+<h3 class="nc-card-title">
+
+وضعیت سیستم
+
+</h3>
+
+</div>
+
+
+
+<div class="nc-info-list">
+
+
+
+<div>
+
+API:
+
+<span class="nc-badge nc-badge-success">
+
+Online
+
+</span>
+
+</div>
+
+
+
+<div>
+
+Database:
+
+<span class="nc-badge nc-badge-success">
+
+Connected
+
+</span>
+
+</div>
+
+
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+<!-- Quick Actions -->
+
+
+<section class="nc-card">
+
+
+<div class="nc-card-header">
+
+<h3 class="nc-card-title">
+
+دسترسی سریع
+
+</h3>
+
+</div>
+
+
+
+
+<div class="nc-actions">
+
+
+
+<button class="nc-btn nc-btn-primary">
+
+➕ پادکست جدید
+
+</button>
+
+
+
+
+<button class="nc-btn nc-btn-secondary">
+
+🎙 مدیریت پادکست‌ها
 
 </button>
 
@@ -185,245 +470,88 @@ style="display:none"
 
 
 
+</section>
+
+
+
 </div>
 
-<script>
 
 
-const API =
 
-"https://nightcast-api.tomasgermany2580.workers.dev";
 
+<!-- Main Module Area -->
 
 
+<section class="nc-card nc-module-area">
 
-async function checkSession(){
 
+<div class="nc-card-header">
 
 
-const token =
+<h3 class="nc-card-title">
 
-sessionStorage.getItem(
-"NightCastSession"
-);
+ماژول فعال
 
+</h3>
 
 
+</div>
 
-if(!token){
 
 
-window.location.href="login.html";
 
-return;
+<div id="moduleContent">
 
 
-}
+<p>
 
+برای شروع یک بخش را انتخاب کنید.
 
+</p>
 
 
+</div>
 
-try{
 
 
-const response =
+</section>
 
-await fetch(
 
-API + "/api/admin/me",
 
-{
 
-method:"GET",
 
-headers:{
+</div>
 
-"Authorization":
 
-"Bearer " + token
+</main>
 
-}
 
-}
 
-);
 
+</section>
 
 
 
+</div>
 
-const data =
+<!-- =====================
+     SCRIPTS
+===================== -->
 
-await response.json();
 
+<script src="js/api.js"></script>
 
+<script src="js/auth.js"></script>
 
+<script src="js/ui.js"></script>
 
+<script src="js/dashboard.js"></script>
 
-console.log(
-"SESSION CHECK:",
-data
-);
 
 
-
-
-
-
-if(data.logged){
-
-
-
-document.getElementById("message")
-
-.innerHTML=
-
-"ورود تایید شد";
-
-
-
-
-document.getElementById("adminBox")
-
-.style.display="block";
-
-
-
-
-document.getElementById("username")
-
-.innerHTML=
-
-data.admin.username;
-
-
-
-
-document.getElementById("fullname")
-
-.innerHTML=
-
-data.admin.full_name || "";
-
-
-
-
-
-}
-
-else{
-
-
-sessionStorage.removeItem(
-
-"NightCastSession"
-
-);
-
-
-
-window.location.href="login.html";
-
-
-}
-
-
-
-}
-
-catch(error){
-
-
-console.error(
-
-error
-
-);
-
-
-document.getElementById("message")
-
-.innerHTML=
-
-"خطا در ارتباط با سرور";
-
-
-}
-
-
-
-}
-
-
-
-
-
-
-async function logout(){
-
-
-
-const token =
-
-sessionStorage.getItem(
-
-"NightCastSession"
-
-);
-
-
-
-
-await fetch(
-
-API + "/api/admin/logout",
-
-{
-
-method:"POST",
-
-headers:{
-
-"Authorization":
-
-"Bearer " + token
-
-}
-
-}
-
-);
-
-
-
-
-sessionStorage.removeItem(
-
-"NightCastSession"
-
-);
-
-
-
-window.location.href="login.html";
-
-
-
-}
-
-
-
-
-
-
-checkSession();
-
-
-
-  </script>
-
-  
 </body>
 
+
 </html>
+  

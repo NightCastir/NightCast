@@ -1,65 +1,139 @@
-
 document
 .getElementById("loginForm")
-.addEventListener("submit", function(e){
+.addEventListener("submit", async function(e){
+
+e.preventDefault();
 
 
-    e.preventDefault();
+const username =
+document.getElementById("username").value.trim();
 
 
-    const username =
-    document
-    .getElementById("username")
-    .value
-    .trim();
+const password =
+document.getElementById("password").value;
 
 
-
-    const password =
-    document
-    .getElementById("password")
-    .value;
+const message =
+document.getElementById("message");
 
 
 
-    const message =
-    document
-    .getElementById("message");
+if(!username || !password){
+
+message.innerHTML =
+"نام کاربری و رمز عبور را وارد کنید";
+
+message.style.color="red";
+
+return;
+
+}
 
 
 
-    if(!username || !password){
-
-
-        message.innerHTML =
-        "لطفاً نام کاربری و رمز عبور را وارد کنید";
-
-
-        message.style.color = "red";
-
-
-        return;
-
-    }
+message.innerHTML =
+"در حال ورود...";
 
 
 
-    message.innerHTML =
-    "در حال بررسی اطلاعات...";
+try{
 
 
-    message.style.color =
-    "#2563eb";
+const response = await fetch(
+
+"https://YOUR-WORKER-DOMAIN/api/login",
+
+{
+
+method:"POST",
+
+headers:{
+
+"Content-Type":"application/json"
+
+},
+
+body:JSON.stringify({
+
+username,
+
+password
+
+})
+
+}
+
+);
 
 
 
-    console.log({
+const data =
+await response.json();
 
-        username,
 
-        password
 
-    });
+
+
+if(!data.success){
+
+
+message.innerHTML =
+data.message;
+
+
+message.style.color="red";
+
+
+return;
+
+}
+
+
+
+
+
+localStorage.setItem(
+
+"NightCastToken",
+
+data.token
+
+);
+
+
+
+message.innerHTML =
+"ورود موفق";
+
+message.style.color="green";
+
+
+
+setTimeout(()=>{
+
+
+window.location.href =
+"dashboard.html";
+
+
+},1000);
+
+
+
+}
+
+catch(error){
+
+
+message.innerHTML =
+"خطا در ارتباط با سرور";
+
+
+message.style.color="red";
+
+
+}
+
 
 
 });

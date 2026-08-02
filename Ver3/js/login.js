@@ -18,21 +18,7 @@ document.getElementById("message");
 
 
 
-if(!username || !password){
-
-message.innerHTML =
-"نام کاربری و رمز عبور را وارد کنید";
-
-message.style.color="red";
-
-return;
-
-}
-
-
-
-message.innerHTML =
-"در حال ورود...";
+message.innerHTML = "در حال اتصال...";
 
 
 
@@ -41,8 +27,7 @@ try{
 
 const response = await fetch(
 
-
-  "https://nightcast-api.tomasgermany2580.workers.dev/api/login",
+"https://nightcast-api.tomasgermany2580.workers.dev/api/login",
 
 {
 
@@ -56,9 +41,9 @@ headers:{
 
 body:JSON.stringify({
 
-username,
+username: username,
 
-password
+password: password
 
 })
 
@@ -68,10 +53,7 @@ password
 
 
 
-const data =
-await response.json();
-
-
+const data = await response.json();
 
 
 
@@ -106,15 +88,15 @@ data.token
 message.innerHTML =
 "ورود موفق";
 
+
 message.style.color="green";
 
 
 
-setTimeout(()=>{
+setTimeout(function(){
 
 
-window.location.href =
-"dashboard.html";
+window.location.href="dashboard.html";
 
 
 },1000);
@@ -122,6 +104,7 @@ window.location.href =
 
 
 }
+
 
 catch(error){
 

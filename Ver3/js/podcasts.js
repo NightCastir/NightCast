@@ -1,30 +1,47 @@
 /*
 NightCast CMS
-
-File:
-podcasts.js
-
-Version:
-1.0.0
+Podcast Manager
+Version 1.0
 */
+
+
+const API_URL =
+
+"https://nightcast-api.tomasgermany2580.workers.dev/api/v1";
+
+
+
 
 
 async function loadPodcasts(){
 
 
 const area =
+
 document.getElementById("contentArea");
 
 
 
 area.innerHTML =
+
 `
-<h2>🎙 پادکست‌ها</h2>
+
+<div class="card">
+
+<h2>
+🎙 مدیریت پادکست‌ها
+</h2>
+
 
 <p>
 در حال دریافت اطلاعات...
 </p>
+
+
+</div>
+
 `;
+
 
 
 
@@ -32,13 +49,16 @@ try{
 
 
 const token =
+
 localStorage.getItem("NightCastToken");
 
 
 
-const response = await fetch(
+const response =
 
-"https://nightcast-api.tomasgermany2580.workers.dev/api/v1/podcasts",
+await fetch(
+
+API_URL + "/podcasts",
 
 {
 
@@ -47,6 +67,7 @@ method:"GET",
 headers:{
 
 "Authorization":
+
 "Bearer "+token
 
 }
@@ -58,26 +79,40 @@ headers:{
 
 
 const data =
+
 await response.json();
+
+
 
 
 
 if(!data.success){
 
 
-area.innerHTML =
+area.innerHTML=
+
 `
+
+<div class="card">
+
 <h3>
-خطا در دریافت پادکست‌ها
+خطا
 </h3>
+
 <p>
 ${data.message}
 </p>
+
+</div>
+
 `;
+
 
 return;
 
+
 }
+
 
 
 
@@ -86,37 +121,87 @@ let rows="";
 
 
 
-data.podcasts.forEach(p=>{
+
+data.podcasts.forEach(item=>{
 
 
 rows +=
 
+
 `
+
 <tr>
 
-<td>${p.id}</td>
 
-<td>${p.title || ""}</td>
+<td>
+${item.id}
+</td>
 
-<td>${p.book_name || ""}</td>
 
-<td>${p.author_name || ""}</td>
 
-<td>${p.status || ""}</td>
+<td>
+${item.title || ""}
+</td>
+
+
+
+<td>
+${item.book_name || "-"}
+</td>
+
+
+
+<td>
+${item.episode_number || 1}
+</td>
+
+
 
 <td>
 
-<button onclick="editPodcast(${p.id})">
+${
+
+item.status==="active"
+
+?
+
+"فعال"
+
+:
+
+"غیرفعال"
+
+}
+
+</td>
+
+
+
+<td>
+
+<button
+
+class="btn-primary"
+
+onclick="editPodcast(${item.id})"
+
+>
 
 ویرایش
 
 </button>
 
+
 </td>
+
+
 
 </tr>
 
+
 `;
+
+
 
 });
 
@@ -128,48 +213,79 @@ area.innerHTML =
 
 `
 
+<div class="card">
+
+
+<div style="display:flex;justify-content:space-between;align-items:center">
+
+
 <h2>
-🎙 مدیریت پادکست‌ها
+🎙 پادکست‌ها
 </h2>
 
 
-<br>
 
+<button
 
-<button onclick="newPodcast()">
+class="btn-primary"
+
+onclick="createPodcast()"
+
+>
 
 ➕ پادکست جدید
 
 </button>
 
 
-<br><br>
+
+</div>
+
+
+<br>
 
 
 
-<table border="1" width="100%" cellpadding="10">
+<table>
 
 
 <thead>
 
 <tr>
 
-<th>ID</th>
+<th>
+ID
+</th>
 
-<th>عنوان</th>
 
-<th>کتاب</th>
+<th>
+عنوان
+</th>
 
-<th>نویسنده</th>
 
-<th>وضعیت</th>
+<th>
+کتاب
+</th>
 
-<th>عملیات</th>
+
+<th>
+قسمت
+</th>
+
+
+<th>
+وضعیت
+</th>
+
+
+<th>
+عملیات
+</th>
+
 
 </tr>
 
 </thead>
-
 
 
 <tbody>
@@ -182,57 +298,81 @@ ${rows}
 </table>
 
 
+
+</div>
+
 `;
 
 
 
 }
 
-
 catch(error){
 
 
-area.innerHTML =
+area.innerHTML=
 
 `
 
+<div class="card">
+
 <h3>
-خطای ارتباط با سرور
+خطای سرور
 </h3>
+
 
 <p>
 ${error.message}
 </p>
 
+</div>
+
 `;
 
-}
-
-
 
 }
 
 
 
-function newPodcast(){
+}
+
+
+
+
+
+
+function createPodcast(){
 
 
 document.getElementById("contentArea").innerHTML=
 
 `
 
+<div class="card">
+
+
 <h2>
-➕ پادکست جدید
+➕ ثبت پادکست جدید
 </h2>
 
 
 <p>
-فرم ثبت در مرحله بعد اضافه می‌شود.
+
+فرم ثبت در مرحله بعد ساخته می‌شود.
+
 </p>
+
+
+</div>
 
 `;
 
+
+
 }
+
+
+
 
 
 
@@ -243,15 +383,26 @@ document.getElementById("contentArea").innerHTML=
 
 `
 
+<div class="card">
+
 <h2>
+
 ویرایش پادکست شماره ${id}
+
 </h2>
 
 
 <p>
-فرم ویرایش در مرحله بعد اضافه می‌شود.
+
+فرم ویرایش در مرحله بعد ساخته می‌شود.
+
 </p>
 
+
+</div>
+
 `;
+
+
 
 }

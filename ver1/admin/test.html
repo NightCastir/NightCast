@@ -123,6 +123,12 @@ Settings
 
 </button>
 
+<button onclick="testCreatePodcast()">
+تست ثبت پادکست
+</button>
+
+<pre id="result"></pre>
+  
 <hr>
 
 <pre id="result"></pre>
@@ -186,7 +192,63 @@ show(data);
 
 }
 
+async function testCreatePodcast(){
 
+
+const token = sessionStorage.getItem(
+"NightCastSession"
+);
+
+
+
+const response = await fetch(
+
+"https://nightcast-api.tomasgermany2580.workers.dev/api/podcasts",
+
+{
+
+method:"POST",
+
+headers:{
+
+"Content-Type":"application/json",
+
+"Authorization":"Bearer " + token
+
+},
+
+
+body:JSON.stringify({
+
+title:"تست از Test.html",
+
+episode_number:1,
+
+summary:"تست ثبت پادکست",
+
+status:"draft"
+
+})
+
+
+}
+
+);
+
+
+
+const data = await response.json();
+
+
+console.log(data);
+
+
+document.getElementById("result").innerHTML =
+JSON.stringify(data,null,2);
+
+
+
+  }
 
 async function checkSession(){
 

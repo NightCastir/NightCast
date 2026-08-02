@@ -1,63 +1,297 @@
-
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 
 <head>
 
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>NightCast Dashboard</title>
+<title>NightCast CMS</title>
 
 <link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/admin.css">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:tahoma;
+}
+
+body{
+background:#f3f4f6;
+height:100vh;
+overflow:hidden;
+}
+
+.wrapper{
+display:flex;
+height:100vh;
+}
+
+.sidebar{
+
+width:240px;
+
+background:#1f2937;
+
+color:white;
+
+display:flex;
+
+flex-direction:column;
+
+}
+
+.logo{
+
+padding:25px;
+
+font-size:24px;
+
+font-weight:bold;
+
+text-align:center;
+
+border-bottom:1px solid rgba(255,255,255,.15);
+
+}
+
+.menu{
+
+flex:1;
+
+padding:15px;
+
+}
+
+.menu a{
+
+display:block;
+
+padding:14px;
+
+margin-bottom:8px;
+
+border-radius:8px;
+
+text-decoration:none;
+
+color:white;
+
+transition:.2s;
+
+}
+
+.menu a:hover{
+
+background:#374151;
+
+}
+
+.logout{
+
+padding:20px;
+
+border-top:1px solid rgba(255,255,255,.15);
+
+}
+
+.logout button{
+
+width:100%;
+
+padding:12px;
+
+background:#dc2626;
+
+color:white;
+
+border:none;
+
+border-radius:8px;
+
+cursor:pointer;
+
+}
+
+.main{
+
+flex:1;
+
+display:flex;
+
+flex-direction:column;
+
+}
+
+.header{
+
+height:70px;
+
+background:white;
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+padding:0 30px;
+
+box-shadow:0 2px 8px rgba(0,0,0,.08);
+
+}
+
+.header h2{
+
+color:#2563eb;
+
+}
+
+.user{
+
+text-align:left;
+
+}
+
+.content{
+
+padding:30px;
+
+overflow:auto;
+
+flex:1;
+
+}
+
+.card{
+
+background:white;
+
+border-radius:10px;
+
+padding:25px;
+
+box-shadow:0 2px 8px rgba(0,0,0,.08);
+
+}
+
+</style>
 
 </head>
 
-
 <body>
 
+<div class="wrapper">
 
-<div class="login-container">
+<div class="sidebar">
 
+<div class="logo">
 
-<div class="login-box">
-
-
-<h1>
-NightCast
-</h1>
-
-
-<h3>
-داشبورد مدیریت
-</h3>
-
-
-<div id="userInfo">
-
-در حال بررسی دسترسی...
+🎙 NightCast
 
 </div>
 
+<div class="menu">
 
-<hr>
+<a href="#" data-view="dashboard">🏠 داشبورد</a>
 
+<a href="#" data-view="podcasts">🎙 پادکست‌ها</a>
 
-<button onclick="logout()">
+<a href="#" data-view="books">📚 کتاب‌ها</a>
+
+<a href="#" data-view="authors">👤 نویسنده‌ها</a>
+
+<a href="#" data-view="categories">🏷 دسته‌بندی</a>
+
+<a href="#" data-view="media">🖼 مدیا</a>
+
+<a href="#" data-view="users">👥 کاربران</a>
+
+<a href="#" data-view="settings">⚙ تنظیمات</a>
+
+</div>
+
+<div class="logout">
+
+<button id="btnLogout">
+
 خروج
+
 </button>
 
+</div>
 
 </div>
 
+<div class="main">
+
+<div class="header">
+
+<h2>
+
+NightCast CMS
+
+</h2>
+
+<div class="user" id="userInfo">
+
+...
 
 </div>
 
+</div>
 
+<div class="content">
+
+<div class="card" id="contentArea">
+
+<h2>
+
+به پنل مدیریت NightCast خوش آمدید
+
+</h2>
+
+<br>
+
+<p>
+
+از منوی سمت راست بخش مورد نظر را انتخاب کنید.
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
 
 <script src="../js/auth.js"></script>
 
+<script>
+
+document.querySelectorAll(".menu a").forEach(item=>{
+
+item.onclick=function(e){
+
+e.preventDefault();
+
+document.getElementById("contentArea").innerHTML=
+
+"<h2>"+this.innerText+"</h2>";
+
+};
+
+});
+
+document.getElementById("btnLogout").onclick=logout;
+
+</script>
 
 </body>
 

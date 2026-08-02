@@ -13,66 +13,108 @@
 <style>
 
 body{
+
     margin:0;
+
     font-family:tahoma,Arial;
+
     background:#111;
+
     display:flex;
+
     justify-content:center;
+
     align-items:center;
+
     height:100vh;
+
 }
+
 
 
 .box{
 
     background:white;
+
     width:350px;
+
     padding:30px;
+
     border-radius:15px;
+
     box-shadow:0 10px 30px #0005;
 
 }
 
 
+
 h2{
+
     text-align:center;
+
 }
+
 
 
 input{
 
     width:100%;
+
     padding:12px;
+
     margin:8px 0;
+
     box-sizing:border-box;
+
     border:1px solid #ddd;
+
     border-radius:8px;
 
 }
+
 
 
 button{
 
     width:100%;
+
     padding:12px;
+
     margin-top:15px;
+
     background:#111;
+
     color:white;
+
     border:0;
+
     border-radius:8px;
+
     cursor:pointer;
 
 }
 
 
+
+button:hover{
+
+    opacity:.8;
+
+}
+
+
+
 #message{
 
     text-align:center;
+
     margin-top:15px;
 
     color:red;
 
 }
+
+
 
 </style>
 
@@ -104,7 +146,9 @@ placeholder="رمز عبور"
 
 
 <button onclick="login()">
+
 ورود
+
 </button>
 
 
@@ -112,17 +156,21 @@ placeholder="رمز عبور"
 
 
 </div>
-
-
-
 <script>
 
 
 async function login(){
 
 
+
+const message =
+document.getElementById("message");
+
+
+
 const username =
-document.getElementById("username").value;
+document.getElementById("username").value.trim();
+
 
 
 const password =
@@ -130,67 +178,201 @@ document.getElementById("password").value;
 
 
 
+if(!username || !password){
+
+
+message.style.color="red";
+
+message.innerHTML=
+"نام کاربری و رمز عبور را وارد کنید";
+
+
+return;
+
+
+}
+
+
+
+
+message.style.color="black";
+
+message.innerHTML=
+"در حال بررسی...";
+
+
+
+
+
+try{
+
+
 const result =
+
 await fetch(
+
 "https://nightcast-api.tomasgermany2580.workers.dev/api/admin/login",
+
 {
 
 method:"POST",
-credentials:"include",
+
+
 headers:{
+
 "Content-Type":"application/json"
+
 },
+
 
 body:JSON.stringify({
 
-username,
-password
+username:username,
+
+password:password
 
 })
+
 
 }
 
 );
+
+
+
+
+console.log(
+"HTTP STATUS:",
+result.status
+);
+
+
 
 
 
 const data =
+
 await result.json();
-console.log("LOGIN RESPONSE:", data);
-    
+
+
+
+
+console.log(
+"LOGIN RESPONSE:",
+data
+);
+
+
+
+
+
 
 if(data.success){
 
 
+
+if(data.token){
+
+
+
 sessionStorage.setItem(
+
 "NightCastSession",
+
 data.token
+
 );
 
 
-document.getElementById("message").style.color="green";
+
+console.log(
+"SESSION SAVED:",
+sessionStorage.getItem("NightCastSession")
+);
 
 
-document.getElementById("message").innerHTML=
+
+}
+
+
+
+
+
+message.style.color="green";
+
+
+message.innerHTML=
+
 "ورود موفق، انتقال...";
+
+
 
 
 setTimeout(()=>{
 
+
 window.location.href="dashboard.html";
+
 
 },1000);
 
 
-}
 
 
 }
+
+else{
+
+
+message.style.color="red";
+
+
+message.innerHTML=
+
+data.message || "خطا در ورود";
+
+
+
+}
+
+
+
+
+}
+
+
+catch(error){
+
+
+
+console.error(
+
+"LOGIN ERROR:",
+
+error
+
+);
+
+
+
+message.style.color="red";
+
+
+message.innerHTML=
+
+"خطا در ارتباط با سرور";
+
+
+
+}
+
+
+
+}
+
 
 
 </script>
-
-
 </body>
 
 </html>

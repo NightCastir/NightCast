@@ -1,16 +1,22 @@
-document
-.getElementById("loginForm")
-.addEventListener("submit", async function(e){
+/*
+NightCast CMS
 
-e.preventDefault();
+File:
+login.js
+
+Version:
+1.0.1
+*/
 
 
-const username =
-document.getElementById("username").value.trim();
+const API_URL =
+"https://nightcast-api.tomasgermany2580.workers.dev/api/v1";
 
 
-const password =
-document.getElementById("password").value;
+
+const form =
+document.getElementById("loginForm");
+
 
 
 const message =
@@ -18,33 +24,84 @@ document.getElementById("message");
 
 
 
-message.innerHTML = "در حال اتصال...";
+
+form.addEventListener(
+
+"submit",
+
+async function(e){
+
+
+e.preventDefault();
+
+
+
+const username =
+
+document
+
+.getElementById("username")
+
+.value
+
+.trim();
+
+
+
+
+const password =
+
+document
+
+.getElementById("password")
+
+.value;
+
+
+
+
+
+message.innerHTML =
+"در حال بررسی اطلاعات...";
+
+message.style.color="black";
+
+
 
 
 
 try{
 
 
-const response = await fetch(
+const response =
 
-"https://nightcast-api.tomasgermany2580.workers.dev/api/v1/auth/login"
+await fetch(
+
+API_URL + "/auth/login",
+
 {
 
 method:"POST",
 
 headers:{
 
-"Content-Type":"application/json"
+"Content-Type":
+
+"application/json"
 
 },
 
-body:JSON.stringify({
 
-username: username,
+body:
 
-password: password
+JSON.stringify({
+
+username,
+
+password
 
 })
+
 
 }
 
@@ -52,7 +109,13 @@ password: password
 
 
 
-const data = await response.json();
+
+
+const data =
+
+await response.json();
+
+
 
 
 
@@ -67,6 +130,7 @@ message.style.color="red";
 
 
 return;
+
 
 }
 
@@ -84,31 +148,49 @@ data.token
 
 
 
+
+localStorage.setItem(
+
+"NightCastUser",
+
+JSON.stringify(data.user)
+
+);
+
+
+
+
+
 message.innerHTML =
 "ورود موفق";
-
 
 message.style.color="green";
 
 
 
-setTimeout(function(){
+
+setTimeout(()=>{
 
 
-window.location.href="dashboard.html";
+window.location.href=
+
+"dashboard.html";
 
 
-},1000);
+
+},800);
+
 
 
 
 }
 
-
 catch(error){
 
 
+
 message.innerHTML =
+
 "خطا در ارتباط با سرور";
 
 

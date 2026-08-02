@@ -27,8 +27,7 @@ try{
 
 const response = await fetch(
 
-"https://nightcast-api.tomasgermany2580.workers.dev/api/login",
-
+"https://nightcast-api.tomasgermany2580.workers.dev/api/v1/auth/login"
 {
 
 method:"POST",

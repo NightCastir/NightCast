@@ -208,9 +208,8 @@ coverEmpty.style.display="none";
 
 
 
-
 // =====================
-// SAVE BUTTON TEMP
+// SAVE PODCAST
 // =====================
 
 
@@ -227,42 +226,56 @@ if(saveButton){
 
 saveButton.addEventListener(
 "click",
-function(){
+async function(){
+
+
+
+const token =
+
+sessionStorage.getItem(
+"NightCastSession"
+);
+
+
+
+if(!token){
+
+
+window.location.href="login.html";
+
+return;
+
+
+}
+
 
 
 
 const podcast = {
 
 
+
+book_id:
+
+document.getElementById(
+"bookSelect"
+).value || null,
+
+
+
 title:
 
 document.getElementById(
 "podcastTitle"
-).value,
+).value.trim(),
 
 
 
-episode:
+episode_number:
 
 document.getElementById(
 "episodeNumber"
-).value,
-
-
-
-status:
-
-document.getElementById(
-"status"
-).value,
-
-
-
-book:
-
-document.getElementById(
-"bookSelect"
-).value,
+).value || 1,
 
 
 
@@ -282,11 +295,19 @@ document.getElementById(
 
 
 
-tags:
+status:
 
 document.getElementById(
-"tags"
-).value
+"status"
+).value,
+
+
+
+publish_date:
+
+document.getElementById(
+"publishDate"
+).value || null
 
 
 
@@ -295,19 +316,140 @@ document.getElementById(
 
 
 
-console.log(
-"Podcast Data:",
-podcast
+
+
+if(!podcast.title){
+
+
+NightCastUI.error(
+
+"عنوان پادکست را وارد کنید"
+
 );
 
+
+return;
+
+
+}
+
+
+
+
+try{
+
+
+
+const response =
+
+await fetch(
+
+API + "/api/podcasts",
+
+{
+
+method:"POST",
+
+
+headers:{
+
+
+"Content-Type":
+"application/json",
+
+
+"Authorization":
+
+"Bearer " + token
+
+
+},
+
+
+
+body:
+
+JSON.stringify(podcast)
+
+
+
+}
+
+);
+
+
+
+
+
+const data =
+
+await response.json();
+
+
+
+
+
+console.log(
+"CREATE PODCAST:",
+data
+);
+
+
+
+
+
+
+if(data.success){
 
 
 
 NightCastUI.success(
 
-"اطلاعات پادکست آماده ذخیره است"
+"پادکست با موفقیت ثبت شد"
 
 );
+
+
+
+}
+
+else{
+
+
+NightCastUI.error(
+
+data.message ||
+
+"خطا در ثبت پادکست"
+
+);
+
+
+}
+
+
+
+
+
+}
+
+catch(error){
+
+
+
+console.error(error);
+
+
+
+NightCastUI.error(
+
+"خطا در ارتباط با سرور"
+
+);
+
+
+
+}
 
 
 
@@ -315,8 +457,5 @@ NightCastUI.success(
 
 
 }
-
-
-
 
 });

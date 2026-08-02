@@ -1,9 +1,24 @@
+/*
+NightCast CMS
+Auth Manager
+Version 2.0
+*/
 
-const token = localStorage.getItem("NightCastToken");
+
+const API =
+"https://nightcast-api.tomasgermany2580.workers.dev/api/v1";
+
+
+
+const token =
+localStorage.getItem("NightCastToken");
+
 
 
 const userInfo =
 document.getElementById("userInfo");
+
+
 
 
 
@@ -16,6 +31,7 @@ window.location.href="login.html";
 
 
 
+
 async function checkSession(){
 
 
@@ -24,8 +40,8 @@ try{
 
 const response = await fetch(
 
-"https://nightcast-api.tomasgermany2580.workers.dev/api/v1/auth/me"
-  
+API + "/auth/me",
+
 {
 
 method:"GET",
@@ -33,7 +49,12 @@ method:"GET",
 headers:{
 
 "Authorization":
-"Bearer "+token
+
+"Bearer " + token,
+
+"Cache-Control":
+
+"no-cache"
 
 }
 
@@ -48,10 +69,23 @@ await response.json();
 
 
 
+console.log("SESSION:",data);
+
+
+
+
 if(!data.success){
 
 
-localStorage.removeItem("NightCastToken");
+localStorage.removeItem(
+"NightCastToken"
+);
+
+
+localStorage.removeItem(
+"NightCastUser"
+);
+
 
 
 window.location.href="login.html";
@@ -65,19 +99,34 @@ return;
 
 
 
+if(userInfo){
+
 
 userInfo.innerHTML =
 
 `
-<p>
-خوش آمدید:
-<b>${data.user.full_name}</b>
-</p>
 
-<p>
+<div>
+
+👤
+
+<b>
+
+${data.user.full_name}
+
+</b>
+
+</div>
+
+
+<div>
+
 نقش:
-<b>${data.user.role}</b>
-</p>
+
+${data.user.role}
+
+</div>
+
 `;
 
 
@@ -85,17 +134,31 @@ userInfo.innerHTML =
 }
 
 
+
+}
+
 catch(error){
 
 
+console.error(error);
+
+
+
+if(userInfo){
+
 userInfo.innerHTML =
-"خطا در ارتباط با سرور";
+
+"خطا در ارتباط";
+
+}
 
 
 }
 
 
+
 }
+
 
 
 
@@ -103,10 +166,13 @@ userInfo.innerHTML =
 async function logout(){
 
 
+try{
+
+
 await fetch(
 
-  "https://nightcast-api.tomasgermany2580.workers.dev/api/v1/auth/logout"
-  
+API + "/auth/logout",
+
 {
 
 method:"POST",
@@ -114,6 +180,7 @@ method:"POST",
 headers:{
 
 "Authorization":
+
 "Bearer "+token
 
 }
@@ -124,13 +191,37 @@ headers:{
 
 
 
-localStorage.removeItem("NightCastToken");
+}
+
+
+catch(e){
+
+
+
+console.log(e);
+
+
+}
+
+
+
+localStorage.removeItem(
+"NightCastToken"
+);
+
+
+localStorage.removeItem(
+"NightCastUser"
+);
+
 
 
 window.location.href="login.html";
 
 
 }
+
+
 
 
 

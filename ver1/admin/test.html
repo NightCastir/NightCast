@@ -66,7 +66,16 @@ white-space:pre-wrap;
 NightCast API Tester
 
 </h2>
+<button onclick="loadBooksTest()">
+Load Books Test
+</button>
 
+<select id="testBookSelect" style="width:100%;padding:15px;font-size:18px;">
+<option>
+در انتظار دریافت کتاب‌ها...
+</option>
+</select>
+  
 <button onclick="testCreatePodcast()">
   
 تست ثبت پادکست
@@ -194,7 +203,104 @@ data.token
 show(data);
 
 }
+async function loadBooksTest(){
 
+
+const r =
+
+await fetch(
+
+API + "/api/books",
+
+{
+
+headers:{
+
+Authorization:
+
+"Bearer " + token()
+
+}
+
+}
+
+);
+
+
+
+const data =
+
+await r.json();
+
+
+
+console.log(
+"BOOKS:",
+data
+);
+
+
+
+const select =
+
+document.getElementById(
+"testBookSelect"
+);
+
+
+
+select.innerHTML = "";
+
+
+
+if(data.success && data.books.length){
+
+
+
+data.books.forEach(
+
+book=>{
+
+
+const option =
+
+document.createElement(
+"option"
+);
+
+
+option.value = book.id;
+
+
+option.textContent = book.title;
+
+
+select.appendChild(option);
+
+
+}
+
+);
+
+
+
+}
+
+else{
+
+
+select.innerHTML =
+
+"<option>کتابی وجود ندارد</option>";
+
+}
+
+
+
+show(data);
+
+
+}
 async function testCreatePodcast(){
 
 

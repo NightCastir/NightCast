@@ -24,8 +24,8 @@ try{
 
 const response = await fetch(
 
-"https://nightcast-api.tomasgermany2580.workers.dev/api/me",
-
+"https://nightcast-api.tomasgermany2580.workers.dev/api/v1/auth/me"
+  
 {
 
 method:"GET",
@@ -105,8 +105,8 @@ async function logout(){
 
 await fetch(
 
-"https://nightcast-api.tomasgermany2580.workers.dev/api/logout",
-
+  "https://nightcast-api.tomasgermany2580.workers.dev/api/v1/auth/logout"
+  
 {
 
 method:"POST",

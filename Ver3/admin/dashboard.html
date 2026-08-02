@@ -282,14 +282,27 @@ item.onclick=function(e){
 
 e.preventDefault();
 
+
+const view=this.dataset.view;
+
+
+if(view==="podcasts"){
+
+loadPodcasts();
+
+}
+else{
+
 document.getElementById("contentArea").innerHTML=
 
 "<h2>"+this.innerText+"</h2>";
 
+}
+
+
 };
 
 });
-
 document.getElementById("btnLogout").onclick=logout;
 
 </script>

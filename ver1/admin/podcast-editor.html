@@ -304,3 +304,389 @@ id="publishDate"
 
 </section>
  
+<!-- =====================
+     MEDIA FILES
+===================== -->
+
+
+<section class="nc-card">
+
+
+<div class="nc-card-header">
+
+
+<h3 class="nc-card-title">
+
+رسانه‌های پادکست
+
+</h3>
+
+
+</div>
+
+
+
+
+
+<!-- AUDIO -->
+
+
+<div class="nc-field">
+
+
+<label>
+
+فایل صوتی (MP3)
+
+</label>
+
+
+
+<input
+
+type="file"
+
+id="audioFile"
+
+accept="audio/mpeg"
+
+>
+
+
+
+<div id="audioPreview">
+
+
+<p>
+
+هنوز فایل صوتی انتخاب نشده است.
+
+</p>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+<!-- COVER -->
+
+
+<div class="nc-field">
+
+
+<label>
+
+تصویر کاور
+
+</label>
+
+
+
+<input
+
+type="file"
+
+id="coverFile"
+
+accept="image/*"
+
+>
+
+
+
+
+<div class="nc-cover-preview">
+
+
+<img
+
+id="coverPreview"
+
+src=""
+
+alt="Cover Preview"
+
+style="display:none"
+
+>
+
+
+<p id="coverEmpty">
+
+هنوز تصویری انتخاب نشده است.
+
+</p>
+
+
+</div>
+
+
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+
+<!-- =====================
+     DESCRIPTION
+===================== -->
+
+
+<section class="nc-card">
+
+
+<div class="nc-card-header">
+
+
+<h3 class="nc-card-title">
+
+توضیحات پادکست
+
+</h3>
+
+
+</div>
+
+
+
+
+
+<div class="nc-field">
+
+
+<label>
+
+خلاصه پادکست
+
+</label>
+
+
+
+<textarea
+
+id="summary"
+
+rows="5"
+
+placeholder="خلاصه‌ای کوتاه برای معرفی پادکست"
+
+></textarea>
+
+
+
+</div>
+
+
+
+
+
+<div class="nc-field">
+
+
+<label>
+
+متن کامل پادکست
+
+</label>
+
+
+
+<textarea
+
+id="transcript"
+
+rows="12"
+
+placeholder="متن پیاده‌سازی شده صوت"
+
+></textarea>
+
+
+
+</div>
+
+
+
+</section>
+
+ <!-- =====================
+     TAGS
+===================== -->
+
+
+<section class="nc-card">
+
+
+<div class="nc-card-header">
+
+
+<h3 class="nc-card-title">
+
+برچسب‌ها
+
+</h3>
+
+
+</div>
+
+
+
+
+<div class="nc-field">
+
+
+<label>
+
+کلمات کلیدی
+
+</label>
+
+
+
+<input
+
+type="text"
+
+id="tags"
+
+placeholder="مثلاً مدیریت، موفقیت، روانشناسی"
+
+>
+
+
+
+<small>
+
+کلمات را با ویرگول جدا کنید.
+
+</small>
+
+
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+
+<!-- =====================
+     ACTIONS
+===================== -->
+
+
+<section class="nc-card">
+
+
+<div class="nc-actions">
+
+
+<button
+
+id="savePodcast"
+
+class="nc-btn nc-btn-primary"
+
+>
+
+💾 ذخیره پادکست
+
+</button>
+
+
+
+
+<button
+
+id="previewPodcast"
+
+class="nc-btn nc-btn-secondary"
+
+>
+
+👁 پیش‌نمایش
+
+</button>
+
+
+
+<button
+
+id="cancelEdit"
+
+class="nc-btn nc-btn-danger"
+
+>
+
+لغو
+
+</button>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+</div>
+
+</main>
+
+
+
+</div>
+
+
+
+
+
+
+<!-- Toast -->
+
+<div class="nc-toast-container"></div>
+
+
+
+
+
+<!-- Scripts -->
+
+
+<script src="js/api.js"></script>
+
+<script src="js/auth.js"></script>
+
+<script src="js/ui.js"></script>
+
+<script src="js/podcast-editor.js"></script>
+
+
+
+</body>
+
+
+</html>

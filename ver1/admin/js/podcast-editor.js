@@ -27,7 +27,162 @@ return;
 
 }
 
+// =====================
+// LOAD BOOKS
+// =====================
 
+async function loadBooks(){
+
+
+const token =
+
+sessionStorage.getItem(
+"NightCastSession"
+);
+
+
+
+try{
+
+
+const response =
+
+await fetch(
+
+API + "/api/books",
+
+{
+
+method:"GET",
+
+headers:{
+
+"Authorization":
+
+"Bearer " + token
+
+}
+
+}
+
+);
+
+
+
+const data =
+
+await response.json();
+
+
+
+
+
+const select =
+
+document.getElementById(
+"bookSelect"
+);
+
+
+
+
+select.innerHTML = "";
+
+
+
+
+
+if(data.success && data.books.length > 0){
+
+
+
+data.books.forEach(
+
+book=>{
+
+
+const option =
+
+document.createElement(
+"option"
+);
+
+
+
+option.value =
+book.id;
+
+
+
+option.textContent =
+book.title;
+
+
+
+select.appendChild(
+option
+);
+
+
+
+}
+
+);
+
+
+
+}
+
+else{
+
+
+select.innerHTML = `
+
+<option>
+
+کتابی وجود ندارد
+
+</option>
+
+`;
+
+
+}
+
+
+
+
+}
+
+catch(error){
+
+
+console.error(
+"LOAD BOOKS ERROR:",
+error
+);
+
+
+document.getElementById(
+"bookSelect"
+).innerHTML = `
+
+<option>
+
+خطا در دریافت کتاب‌ها
+
+</option>
+
+`;
+
+}
+
+
+}
+
+
+
+await loadBooks();
 
 
 

@@ -1,1 +1,186 @@
+:root{
 
+/* =====================
+   NIGHTCAST COLORS
+===================== */
+
+
+/* Primary */
+
+--nc-primary:#2563EB;
+--nc-primary-hover:#1D4ED8;
+
+
+/* Success */
+
+--nc-success:#16A34A;
+
+
+/* Warning */
+
+--nc-warning:#F59E0B;
+
+
+/* Danger */
+
+--nc-danger:#DC2626;
+
+
+
+/* Background */
+
+--nc-bg:#F8FAFC;
+
+
+/* Surface */
+
+--nc-surface:#FFFFFF;
+
+
+/* Border */
+
+--nc-border:#E2E8F0;
+
+
+
+/* Text */
+
+--nc-text-primary:#0F172A;
+
+--nc-text-secondary:#64748B;
+
+
+
+/* =====================
+   SHADOW
+===================== */
+
+
+--nc-shadow-sm:
+0 1px 2px rgba(0,0,0,.05);
+
+
+--nc-shadow-md:
+0 8px 24px rgba(0,0,0,.08);
+
+
+--nc-shadow-lg:
+0 20px 40px rgba(0,0,0,.12);
+
+
+
+
+/* =====================
+   RADIUS
+===================== */
+
+
+--nc-radius-sm:8px;
+
+--nc-radius-md:12px;
+
+--nc-radius-lg:18px;
+
+--nc-radius-xl:24px;
+
+
+
+/* =====================
+   SPACING
+===================== */
+
+
+--space-1:4px;
+
+--space-2:8px;
+
+--space-3:12px;
+
+--space-4:16px;
+
+--space-5:24px;
+
+--space-6:32px;
+
+--space-7:48px;
+
+--space-8:64px;
+
+
+
+/* =====================
+   TYPOGRAPHY
+===================== */
+
+
+--font-family:
+
+Tahoma,
+"Segoe UI",
+Arial,
+sans-serif;
+
+
+
+--font-xs:12px;
+
+--font-sm:14px;
+
+--font-md:16px;
+
+--font-lg:20px;
+
+--font-xl:28px;
+
+--font-xxl:36px;
+
+
+
+/* =====================
+   TRANSITION
+===================== */
+
+
+--transition-fast:
+0.15s ease;
+
+
+--transition-normal:
+0.25s ease;
+
+
+
+}
+
+
+
+/* =====================
+   DARK MODE
+===================== */
+
+
+[data-theme="dark"]{
+
+
+--nc-bg:#020617;
+
+
+--nc-surface:#0F172A;
+
+
+--nc-border:#1E293B;
+
+
+--nc-text-primary:#F8FAFC;
+
+
+--nc-text-secondary:#94A3B8;
+
+
+
+--nc-shadow-md:
+0 8px 24px rgba(0,0,0,.35);
+
+
+
+}

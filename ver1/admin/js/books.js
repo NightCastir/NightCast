@@ -279,7 +279,7 @@ category.id;
 
 
 option.textContent =
-category.title;
+category.name;
 
 
 select.appendChild(option);

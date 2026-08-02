@@ -4,190 +4,32 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>NightCast CMS</title>
 
+
 <link rel="stylesheet" href="../css/style.css">
+
 <link rel="stylesheet" href="../css/admin.css">
 
-<style>
+<link rel="stylesheet" href="../css/responsive.css">
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:tahoma;
-}
-
-body{
-background:#f3f4f6;
-height:100vh;
-overflow:hidden;
-}
-
-.wrapper{
-display:flex;
-height:100vh;
-}
-
-.sidebar{
-
-width:240px;
-
-background:#1f2937;
-
-color:white;
-
-display:flex;
-
-flex-direction:column;
-
-}
-
-.logo{
-
-padding:25px;
-
-font-size:24px;
-
-font-weight:bold;
-
-text-align:center;
-
-border-bottom:1px solid rgba(255,255,255,.15);
-
-}
-
-.menu{
-
-flex:1;
-
-padding:15px;
-
-}
-
-.menu a{
-
-display:block;
-
-padding:14px;
-
-margin-bottom:8px;
-
-border-radius:8px;
-
-text-decoration:none;
-
-color:white;
-
-transition:.2s;
-
-}
-
-.menu a:hover{
-
-background:#374151;
-
-}
-
-.logout{
-
-padding:20px;
-
-border-top:1px solid rgba(255,255,255,.15);
-
-}
-
-.logout button{
-
-width:100%;
-
-padding:12px;
-
-background:#dc2626;
-
-color:white;
-
-border:none;
-
-border-radius:8px;
-
-cursor:pointer;
-
-}
-
-.main{
-
-flex:1;
-
-display:flex;
-
-flex-direction:column;
-
-}
-
-.header{
-
-height:70px;
-
-background:white;
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-padding:0 30px;
-
-box-shadow:0 2px 8px rgba(0,0,0,.08);
-
-}
-
-.header h2{
-
-color:#2563eb;
-
-}
-
-.user{
-
-text-align:left;
-
-}
-
-.content{
-
-padding:30px;
-
-overflow:auto;
-
-flex:1;
-
-}
-
-.card{
-
-background:white;
-
-border-radius:10px;
-
-padding:25px;
-
-box-shadow:0 2px 8px rgba(0,0,0,.08);
-
-}
-
-</style>
 
 </head>
 
+
 <body>
+
 
 <div class="wrapper">
 
-<div class="sidebar">
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar">
+
 
 <div class="logo">
 
@@ -195,41 +37,100 @@ box-shadow:0 2px 8px rgba(0,0,0,.08);
 
 </div>
 
-<div class="menu">
 
-<a href="#" data-view="dashboard">🏠 داشبورد</a>
 
-<a href="#" data-view="podcasts">🎙 پادکست‌ها</a>
+<nav class="menu">
 
-<a href="#" data-view="books">📚 کتاب‌ها</a>
 
-<a href="#" data-view="authors">👤 نویسنده‌ها</a>
+<a href="#" data-view="dashboard">
 
-<a href="#" data-view="categories">🏷 دسته‌بندی</a>
+🏠 داشبورد
 
-<a href="#" data-view="media">🖼 مدیا</a>
+</a>
 
-<a href="#" data-view="users">👥 کاربران</a>
 
-<a href="#" data-view="settings">⚙ تنظیمات</a>
+<a href="#" data-view="podcasts">
 
-</div>
+🎙 پادکست‌ها
+
+</a>
+
+
+<a href="#" data-view="books">
+
+📚 کتاب‌ها
+
+</a>
+
+
+<a href="#" data-view="authors">
+
+👤 نویسنده‌ها
+
+</a>
+
+
+<a href="#" data-view="categories">
+
+🏷 دسته‌بندی‌ها
+
+</a>
+
+
+<a href="#" data-view="media">
+
+🖼 مدیا
+
+</a>
+
+
+<a href="#" data-view="users">
+
+👥 کاربران
+
+</a>
+
+
+<a href="#" data-view="settings">
+
+⚙ تنظیمات
+
+</a>
+
+
+
+</nav>
+
+
 
 <div class="logout">
 
+
 <button id="btnLogout">
 
-خروج
+🚪 خروج
 
 </button>
 
-</div>
 
 </div>
 
-<div class="main">
 
-<div class="header">
+</aside>
+
+
+
+
+
+<!-- MAIN -->
+
+
+<section class="main">
+
+
+
+<header class="header">
+
 
 <h2>
 
@@ -237,17 +138,25 @@ NightCast CMS
 
 </h2>
 
+
+
 <div class="user" id="userInfo">
 
-...
+در حال بررسی...
 
 </div>
 
-</div>
 
-<div class="content">
+
+</header>
+
+
+
+<main class="content">
+
 
 <div class="card" id="contentArea">
+
 
 <h2>
 
@@ -255,57 +164,320 @@ NightCast CMS
 
 </h2>
 
-<br>
 
 <p>
 
-از منوی سمت راست بخش مورد نظر را انتخاب کنید.
+سیستم مدیریت پادکست و محتوای صوتی
 
 </p>
 
+
 </div>
+
+
+
+</main>
+
+
+
+</section>
+
+
+
+</div>
+
+  <!-- DASHBOARD CARDS -->
+
+<div id="dashboardWidgets" style="display:none;">
+
+
+<div class="stats-grid">
+
+
+<div class="stat-card">
+
+<div class="stat-icon">
+🎙
+</div>
+
+<div>
+
+<h3>
+پادکست‌ها
+</h3>
+
+<strong id="podcastCount">
+0
+</strong>
 
 </div>
 
 </div>
 
+
+
+
+<div class="stat-card">
+
+<div class="stat-icon">
+👥
 </div>
-<script src="../js/podcasts.js"></script>
-  
+
+<div>
+
+<h3>
+کاربران
+</h3>
+
+<strong>
+1
+</strong>
+
+</div>
+
+</div>
+
+
+
+
+
+<div class="stat-card">
+
+<div class="stat-icon">
+▶️
+</div>
+
+<div>
+
+<h3>
+شنونده‌ها
+</h3>
+
+<strong>
+0
+</strong>
+
+</div>
+
+</div>
+
+
+
+
+
+<div class="stat-card">
+
+<div class="stat-icon">
+📁
+</div>
+
+<div>
+
+<h3>
+مدیا
+</h3>
+
+<strong>
+0
+</strong>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+</main>
+
+
+</section>
+
+
+</div>
+
+
+
+
+
+<!-- SCRIPTS -->
+
+
 <script src="../js/auth.js"></script>
+
+<script src="../js/podcasts.js"></script>
+
+
 
 <script>
 
-document.querySelectorAll(".menu a").forEach(item=>{
 
-item.onclick=function(e){
+
+document
+.querySelectorAll(".menu a")
+.forEach(item=>{
+
+
+item.addEventListener(
+
+"click",
+
+function(e){
+
 
 e.preventDefault();
 
 
-const view=this.dataset.view;
+
+const view =
+this.dataset.view;
 
 
-if(view==="podcasts"){
+
+const area =
+document.getElementById("contentArea");
+
+
+
+
+if(view==="dashboard"){
+
+
+area.innerHTML =
+
+`
+
+<div class="card">
+
+
+<h2>
+داشبورد
+</h2>
+
+
+<div class="stats-grid">
+
+
+<div class="stat-card">
+
+<h3>
+🎙 پادکست‌ها
+</h3>
+
+<p>
+مدیریت قسمت‌های صوتی
+</p>
+
+</div>
+
+
+
+<div class="stat-card">
+
+<h3>
+🖼 مدیا
+</h3>
+
+<p>
+فایل‌های صوتی و تصویری
+</p>
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+`;
+
+
+
+}
+
+
+
+
+
+else if(view==="podcasts"){
+
 
 loadPodcasts();
 
+
 }
+
+
+
+
+
 else{
 
-document.getElementById("contentArea").innerHTML=
 
-"<h2>"+this.innerText+"</h2>";
+area.innerHTML =
+
+`
+
+<div class="card">
+
+
+<h2>
+
+${this.innerText}
+
+</h2>
+
+
+<p>
+
+این بخش در حال توسعه است.
+
+</p>
+
+
+</div>
+
+
+`;
+
+
 
 }
 
 
-};
+
+}
+
+
+);
+
 
 });
-document.getElementById("btnLogout").onclick=logout;
+
+
+
+
+
+document
+
+.getElementById("btnLogout")
+
+.onclick = logout;
+
+
 
 </script>
+
+
 
 </body>
 

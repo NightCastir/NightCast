@@ -1,1 +1,98 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<meta charset="UTF-8">
+<title>NightCast API Test</title>
+<style>
+body{font-family:tahoma;padding:20px;max-width:700px;margin:auto}
+input{display:block;width:100%;padding:8px;margin:8px 0}
+button{padding:10px 20px;margin-top:10px}
+pre{background:#f4f4f4;padding:10px;white-space:pre-wrap}
+</style>
+</head>
+<body>
 
+<h2>NightCast API Test</h2>
+
+<label>Username</label>
+<input id="username" value="Hamed">
+
+<label>Password</label>
+<input id="password" type="password" value="09115112580">
+
+<button onclick="login()">Login</button>
+<button onclick="me()">Get Me</button>
+
+<h3>Token</h3>
+<input id="token" readonly>
+
+<h3>Result</h3>
+<pre id="result"></pre>
+
+<script>
+
+const API="https://nightcast-api.tomasgermany2580.workers.dev/api/v1";
+
+function show(data){
+document.getElementById("result").textContent=
+JSON.stringify(data,null,2);
+}
+
+async function login(){
+
+const res=await fetch(API+"/auth/login",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+username:document.getElementById("username").value,
+
+password:document.getElementById("password").value
+
+})
+
+});
+
+const data=await res.json();
+
+show(data);
+
+if(data.token){
+
+document.getElementById("token").value=data.token;
+
+localStorage.setItem("token",data.token);
+
+}
+
+}
+
+async function me(){
+
+const token=
+localStorage.getItem("token")||
+document.getElementById("token").value;
+
+const res=await fetch(API+"/auth/me",{
+
+headers:{
+Authorization:"Bearer "+token
+}
+
+});
+
+const data=await res.json();
+
+show(data);
+
+}
+
+</script>
+
+</body>
+</html>

@@ -2,22 +2,24 @@
 =================================================
 
 NightCast Ver4
-Components CSS
+UI Components
 
 Cards
 Buttons
 Forms
 Tables
-Loader
-Toast
+Upload
+Feedback
 
 =================================================
 */
 
 
 
+
+
 /* ==========================
-CARD
+CARDS
 ========================== */
 
 
@@ -26,15 +28,41 @@ CARD
 
     background:
 
-    var(--card);
+    var(--surface);
+
+
+    border:
+
+    1px solid var(--border);
 
 
     border-radius:
 
-    var(--radius);
+    var(--radius-lg);
 
 
-    padding:25px;
+    padding:
+
+    24px;
+
+
+    box-shadow:
+
+    var(--shadow-sm);
+
+
+    transition:
+
+    var(--normal);
+
+
+
+}
+
+
+
+
+.card:hover{
 
 
     box-shadow:
@@ -42,7 +70,30 @@ CARD
     var(--shadow);
 
 
-    margin-bottom:25px;
+
+}
+
+
+
+
+
+
+
+.card-header{
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    justify-content:space-between;
+
+
+
+    margin-bottom:20px;
+
 
 
 }
@@ -52,14 +103,19 @@ CARD
 
 
 
-.card h2,
-.card h3{
+
+.card-title{
 
 
-    margin-bottom:15px;
+    font-size:18px;
+
+
+    font-weight:800;
+
 
 
 }
+
 
 
 
@@ -69,22 +125,46 @@ CARD
 
 
 /* ==========================
-STAT CARD
+STAT CARDS
 ========================== */
+
+
+.stats-grid{
+
+
+    display:grid;
+
+
+    grid-template-columns:
+
+    repeat(4,1fr);
+
+
+    gap:20px;
+
+
+
+}
+
+
+
 
 
 .stat-card{
 
 
-    background:white;
+    background:
+
+    var(--surface);
 
 
     border-radius:
 
-    var(--radius);
+    var(--radius-lg);
 
 
-    padding:20px;
+    padding:22px;
+
 
 
     display:flex;
@@ -93,7 +173,35 @@ STAT CARD
     align-items:center;
 
 
-    gap:20px;
+    gap:18px;
+
+
+
+    border:
+
+    1px solid var(--border);
+
+
+
+    transition:
+
+    var(--normal);
+
+
+
+}
+
+
+
+
+
+.stat-card:hover{
+
+
+    transform:
+
+    translateY(-5px);
+
 
 
     box-shadow:
@@ -101,22 +209,10 @@ STAT CARD
     var(--shadow);
 
 
-}
-
-
-
-
-
-.stat-card h3{
-
-
-    font-size:28px;
-
-
-    margin-bottom:5px;
-
 
 }
+
+
 
 
 
@@ -125,13 +221,19 @@ STAT CARD
 .stat-icon{
 
 
-    width:60px;
+    width:58px;
 
 
-    height:60px;
+    height:58px;
 
 
-    border-radius:50%;
+    border-radius:18px;
+
+
+    background:
+
+    rgba(108,92,231,.12);
+
 
 
     display:flex;
@@ -143,15 +245,46 @@ STAT CARD
     justify-content:center;
 
 
-    background:
+    font-size:28px;
 
-    rgba(108,92,231,.12);
+
+
+}
+
+
+
+
+
+.stat-number{
 
 
     font-size:28px;
 
 
+    font-weight:900;
+
+
+
 }
+
+
+
+
+.stat-label{
+
+
+    color:
+
+    var(--text-soft);
+
+
+
+    margin-top:5px;
+
+
+
+}
+
 
 
 
@@ -168,16 +301,23 @@ BUTTONS
 .btn{
 
 
-    padding:12px 20px;
+    border:none;
 
 
-    border-radius:10px;
+    border-radius:
+
+    12px;
+
+
+    padding:
+
+    12px 20px;
 
 
     font-size:14px;
 
 
-    transition:.3s;
+    font-weight:700;
 
 
     display:inline-flex;
@@ -192,7 +332,14 @@ BUTTONS
     gap:8px;
 
 
+    transition:
+
+    var(--fast);
+
+
+
 }
+
 
 
 
@@ -202,10 +349,15 @@ BUTTONS
 .btn:hover{
 
 
-    transform:translateY(-2px);
+    transform:
+
+    translateY(-2px);
+
 
 
 }
+
+
 
 
 
@@ -222,8 +374,8 @@ BUTTONS
     color:white;
 
 
-}
 
+}
 
 
 
@@ -237,8 +389,8 @@ BUTTONS
     var(--primary-dark);
 
 
-}
 
+}
 
 
 
@@ -250,10 +402,11 @@ BUTTONS
 
     background:
 
-    var(--success);
+    var(--secondary);
 
 
     color:white;
+
 
 
 }
@@ -275,6 +428,7 @@ BUTTONS
     color:white;
 
 
+
 }
 
 
@@ -282,16 +436,232 @@ BUTTONS
 
 
 
-.btn-sm{
 
 
-    padding:7px 12px;
+
+/* ==========================
+BADGES
+========================== */
+
+
+.badge{
+
+
+    display:inline-flex;
+
+
+    align-items:center;
+
+
+    padding:
+
+    6px 12px;
+
+
+    border-radius:20px;
 
 
     font-size:12px;
 
 
+    font-weight:700;
+
+
+
 }
+
+
+
+
+.badge-success{
+
+
+    background:
+
+    rgba(0,184,148,.15);
+
+
+    color:
+
+    #009b7d;
+
+
+
+}
+
+
+
+
+
+.badge-warning{
+
+
+    background:
+
+    rgba(243,156,18,.15);
+
+
+    color:
+
+    #d68910;
+
+
+
+}
+
+
+
+
+
+.badge-danger{
+
+
+    background:
+
+    rgba(231,76,60,.15);
+
+
+    color:
+
+    #c0392b;
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ==========================
+TABLE
+========================== */
+
+
+.table-container{
+
+
+    width:100%;
+
+
+    overflow-x:auto;
+
+
+
+}
+
+
+
+
+
+
+table{
+
+
+    width:100%;
+
+
+    border-collapse:collapse;
+
+
+
+}
+
+
+
+
+
+thead{
+
+
+    background:
+
+    #f8fafc;
+
+
+
+}
+
+
+
+
+
+th{
+
+
+    padding:
+
+    16px;
+
+
+    text-align:right;
+
+
+    color:
+
+    var(--text-soft);
+
+
+    font-size:13px;
+
+
+
+}
+
+
+
+
+
+td{
+
+
+    padding:
+
+    16px;
+
+
+    border-bottom:
+
+    1px solid var(--border);
+
+
+
+}
+
+
+
+
+
+tbody tr{
+
+
+    transition:
+
+    var(--fast);
+
+
+
+}
+
+
+
+
+
+tbody tr:hover{
+
+
+    background:
+
+    #fafafa;
+
+
+
+}
+
 
 
 
@@ -311,12 +681,14 @@ FORMS
     margin-bottom:20px;
 
 
+
 }
 
 
 
 
-.form-group label{
+
+label{
 
 
     display:block;
@@ -325,7 +697,8 @@ FORMS
     margin-bottom:8px;
 
 
-    font-weight:bold;
+    font-weight:700;
+
 
 
 }
@@ -334,10 +707,71 @@ FORMS
 
 
 
-textarea{
+input,
+textarea,
+select{
 
 
-    resize:vertical;
+    width:100%;
+
+
+    border:
+
+    1px solid var(--border);
+
+
+
+    background:
+
+    var(--surface);
+
+
+
+    border-radius:
+
+    12px;
+
+
+
+    padding:
+
+    13px 15px;
+
+
+
+    outline:none;
+
+
+
+    transition:
+
+    var(--fast);
+
+
+
+}
+
+
+
+
+
+
+
+input:focus,
+textarea:focus,
+select:focus{
+
+
+    border-color:
+
+    var(--primary);
+
+
+
+    box-shadow:
+
+    0 0 0 4px rgba(108,92,231,.12);
+
 
 
 }
@@ -351,26 +785,118 @@ textarea{
 
 
 /* ==========================
-BADGE
+UPLOAD BOX
 ========================== */
 
 
-.badge{
+.upload-box{
 
 
-    display:inline-block;
+    border:
+
+    2px dashed #cbd5e1;
 
 
-    padding:5px 12px;
+
+    border-radius:
+
+    var(--radius-lg);
+
+
+
+    padding:
+
+    35px;
+
+
+
+    text-align:center;
+
+
+
+    background:
+
+    #fafafa;
+
+
+
+    transition:
+
+    var(--normal);
+
+
+
+}
+
+
+
+
+.upload-box:hover{
+
+
+    border-color:
+
+    var(--primary);
+
+
+
+    background:
+
+    rgba(108,92,231,.04);
+
+
+
+}
+
+
+
+
+
+.upload-icon{
+
+
+    font-size:45px;
+
+
+    margin-bottom:15px;
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ==========================
+PROGRESS
+========================== */
+
+
+.progress{
+
+
+    width:100%;
+
+
+    height:10px;
+
+
+    background:
+
+    #e5e7eb;
+
 
 
     border-radius:20px;
 
 
-    font-size:12px;
+    overflow:hidden;
 
-
-    font-weight:bold;
 
 
 }
@@ -379,91 +905,30 @@ BADGE
 
 
 
-.badge-success{
+.progress-bar{
+
+
+    height:100%;
+
+
+    width:0;
+
 
 
     background:
 
-    rgba(0,184,148,.15);
+    var(--primary);
 
 
-    color:
 
-    var(--success);
+    transition:
+
+    .3s;
+
 
 
 }
 
-
-
-
-
-.badge-danger{
-
-
-    background:
-
-    rgba(214,48,49,.15);
-
-
-    color:
-
-    var(--danger);
-
-
-}
-
-
-
-
-
-
-
-
-/* ==========================
-SYSTEM STATUS
-========================== */
-
-
-.system-status{
-
-
-    display:flex;
-
-
-    flex-direction:column;
-
-
-    gap:12px;
-
-
-}
-
-
-
-
-
-.status-row{
-
-
-    display:flex;
-
-
-    justify-content:space-between;
-
-
-    align-items:center;
-
-
-    padding:10px 0;
-
-
-    border-bottom:
-
-    1px solid var(--border);
-
-
-}
 
 
 
@@ -483,42 +948,57 @@ TOAST
     position:fixed;
 
 
-    left:30px;
-
-
     bottom:30px;
 
 
-    min-width:250px;
+    left:30px;
 
 
-    padding:15px 20px;
+    min-width:280px;
 
 
-    background:#2d3436;
+    padding:
+
+    16px 20px;
+
+
+    background:
+
+    #1f2937;
 
 
     color:white;
 
 
-    border-radius:12px;
+    border-radius:
+
+    14px;
+
 
 
     box-shadow:
 
-    var(--shadow);
+    var(--shadow-lg);
+
+
+
+    transform:
+
+    translateY(120px);
+
 
 
     opacity:0;
 
 
-    transform:translateY(20px);
+    transition:
+
+    var(--normal);
 
 
-    transition:.3s;
 
+    z-index:3000;
 
-    z-index:999;
 
 
 }
@@ -530,112 +1010,11 @@ TOAST
 .toast.show{
 
 
-    opacity:1;
-
-
     transform:none;
 
 
-}
+    opacity:1;
 
-
-
-
-
-
-
-
-/* ==========================
-LOADER
-========================== */
-
-
-.loader-overlay{
-
-
-    position:fixed;
-
-
-    inset:0;
-
-
-    background:
-
-    rgba(255,255,255,.75);
-
-
-    display:none;
-
-
-    align-items:center;
-
-
-    justify-content:center;
-
-
-    z-index:1000;
 
 
 }
-
-
-
-
-
-.loader-overlay.active{
-
-
-    display:flex;
-
-
-}
-
-
-
-
-
-
-.spinner{
-
-
-    width:45px;
-
-
-    height:45px;
-
-
-    border-radius:50%;
-
-
-    border:
-
-    5px solid #ddd;
-
-
-    border-top-color:
-
-    var(--primary);
-
-
-    animation:
-
-    spin 1s linear infinite;
-
-
-}
-
-
-
-
-
-@keyframes spin{
-
-
-    to{
-
-        transform:rotate(360deg);
-
-    }
-
-
-  }

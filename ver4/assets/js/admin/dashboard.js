@@ -5,9 +5,11 @@ NightCast Ver4
 Admin Dashboard Controller
 
 Responsible for:
-- Dashboard Statistics
+- Dashboard Data
+- API Connection
+- Statistics
 - Recent Podcasts
-- System Status
+- Mobile Menu
 
 =================================================
 */
@@ -15,13 +17,16 @@ Responsible for:
 
 
 document.addEventListener(
-
 "DOMContentLoaded",
+async function(){
 
-()=>{
 
 
-loadDashboard();
+    initDashboard();
+
+
+
+    initMobileMenu();
 
 
 
@@ -32,90 +37,62 @@ loadDashboard();
 
 
 
+/*
+==========================
+INIT DASHBOARD
+==========================
+*/
+
+
+async function initDashboard(){
+
+
+    try{
+
+
+        Loader.show();
 
 
 
-async function loadDashboard(){
+        await loadStatistics();
+
+
+        await loadRecentPodcasts();
+
+
+        await loadSystemStatus();
 
 
 
-try{
+    }
 
 
-Loader.show();
+    catch(error){
 
 
+        Toast.error(
+
+            error.message ||
+
+            "خطا در دریافت اطلاعات داشبورد"
+
+        );
 
 
-
-await Promise.all([
-
-
-loadPodcastStats(),
+    }
 
 
-checkSystemStatus(),
+    finally{
 
 
-loadUserInfo()
+        Loader.hide();
 
 
-]);
-
-
-
-
-
-Toast.success(
-
-"داشبورد آماده شد"
-
-);
-
-
-
-
-}
-
-catch(error){
-
-
-console.error(
-
-error
-
-);
-
-
-
-Toast.error(
-
-error.message ||
-
-"خطا در دریافت اطلاعات داشبورد"
-
-);
+    }
 
 
 
 }
-
-
-
-finally{
-
-
-Loader.hide();
-
-
-
-}
-
-
-
-}
-
-
 
 
 
@@ -125,96 +102,51 @@ Loader.hide();
 
 
 /*
-==============================
-LOAD PODCAST DATA
-==============================
+==========================
+STATISTICS
+==========================
 */
 
 
-async function loadPodcastStats(){
+async function loadStatistics(){
 
 
 
-const result =
+    const response =
 
-await API.get(
+    await API.get(
 
-"/podcasts"
+        "/podcasts"
 
-);
-
-
-
-
-
-
-if(!result.success){
-
-
-throw new Error(
-
-"دریافت پادکست‌ها ناموفق بود"
-
-);
-
-
-}
+    );
 
 
 
 
-
-
-const podcasts =
-
-result.podcasts || [];
+    if(response.success){
 
 
 
+        const podcasts =
 
-
-
-
-const counter =
-
-document.getElementById(
-
-"totalPodcasts"
-
-);
+        response.podcasts || [];
 
 
 
 
+        document.getElementById(
 
-if(counter){
+            "totalPodcasts"
 
-
-counter.innerHTML =
-
-podcasts.length;
-
-
-}
+        ).innerText = podcasts.length;
 
 
 
-
-
-
-
-renderRecentPodcasts(
-
-podcasts
-
-);
+    }
 
 
 
 }
-
-
-
 
 
 
@@ -222,483 +154,160 @@ podcasts
 
 
 /*
-==============================
-RECENT PODCASTS TABLE
-==============================
+==========================
+RECENT PODCASTS
+==========================
 */
 
 
-function renderRecentPodcasts(
+async function loadRecentPodcasts(){
 
-podcasts
 
-){
 
+    const table =
 
+    document.getElementById(
 
-const table =
+        "recentPodcasts"
 
-document.getElementById(
+    );
 
-"recentPodcasts"
 
-);
 
 
+    const response =
 
+    await API.get(
 
-if(!table)
+        "/podcasts"
 
-return;
+    );
 
 
 
 
 
+    if(
 
-if(
+        !response.success
 
-podcasts.length === 0
+    ){
 
-){
 
+        throw new Error(
 
-table.innerHTML =
+            "دریافت پادکست‌ها ناموفق بود"
 
-`
+        );
 
-<tr>
 
-<td colspan="4">
+    }
 
-هنوز پادکستی ثبت نشده است
 
-</td>
 
-</tr>
 
-`;
 
-return;
 
+    const podcasts =
 
-}
+    response.podcasts || [];
 
 
 
 
 
+    if(
 
+        podcasts.length === 0
 
+    ){
 
-let html="";
 
 
+        table.innerHTML =
 
+        `
 
+        <tr>
 
+        <td colspan="3">
 
+        هنوز پادکستی ثبت نشده است
 
-podcasts
+        </td>
 
-.slice(0,5)
+        </tr>
 
-.forEach(
+        `;
 
-podcast=>{
 
+        return;
 
-html +=
 
+    }
 
-`
 
-<tr>
 
 
-<td>
 
-${
 
-podcast.title || "-"
 
-}
+    table.innerHTML =
 
-</td>
+    podcasts
 
+    .slice(0,5)
 
+    .map(
 
+        item =>
 
-<td>
 
-${
+        `
 
-podcast.episode_number || "-"
+        <tr>
 
-}
 
-</td>
+        <td>
 
+        ${item.title || "-"}
 
+        </td>
 
 
-<td>
 
-<span class="badge">
+        <td>
 
-${
+        ${item.status || "-"}
 
-podcast.status || "-"
+        </td>
 
-}
 
-</span>
 
+        <td>
 
-</td>
+        ${
 
+        item.created_at ?
 
+        item.created_at :
 
+        "-"
 
-<td>
+        }
 
-${
+        </td>
 
-formatDate(
 
-podcast.created_at
 
-)
+        </tr>
 
-}
+        `
 
-</td>
 
+    )
 
-
-</tr>
-
-
-`;
-
-
-
-}
-
-);
-
-
-
-
-
-
-
-table.innerHTML = html;
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/*
-==============================
-SYSTEM CHECK
-==============================
-*/
-
-
-async function checkSystemStatus(){
-
-
-
-try{
-
-
-
-const result =
-
-await API.get(
-
-"/system"
-
-);
-
-
-
-
-
-
-
-if(result.success){
-
-
-
-setStatus(
-
-"apiStatus",
-
-"🟢 Online"
-
-);
-
-
-
-setStatus(
-
-"databaseStatus",
-
-"🟢 Connected"
-
-);
-
-
-
-setStatus(
-
-"storageStatus",
-
-"🟢 Ready"
-
-);
-
-
-
-}
-
-
-
-}
-
-catch(error){
-
-
-
-setStatus(
-
-"apiStatus",
-
-"🔴 Offline"
-
-);
-
-
-
-setStatus(
-
-"databaseStatus",
-
-"نامشخص"
-
-);
-
-
-
-setStatus(
-
-"storageStatus",
-
-"نامشخص"
-
-);
-
-
-
-}
-
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-function setStatus(
-
-id,
-
-text
-
-){
-
-
-
-const element =
-
-document.getElementById(id);
-
-
-
-
-if(element){
-
-
-element.innerHTML = text;
-
-
-}
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-/*
-==============================
-USER INFO
-==============================
-*/
-
-
-async function loadUserInfo(){
-
-
-
-try{
-
-
-
-const result =
-
-await API.get(
-
-"/auth/me"
-
-);
-
-
-
-
-
-if(
-
-result.success &&
-
-result.user
-
-){
-
-
-
-const name =
-
-document.getElementById(
-
-"adminName"
-
-);
-
-
-
-
-
-if(name){
-
-
-name.innerHTML =
-
-result.user.full_name ||
-
-result.user.username;
-
-
-}
-
-
-
-}
-
-
-
-}
-
-catch(error){
-
-
-
-console.log(
-
-"User info unavailable"
-
-);
-
-
-
-}
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/*
-==============================
-DATE FORMAT
-==============================
-*/
-
-
-function formatDate(date){
-
-
-
-if(!date)
-
-return "-";
-
-
-
-
-
-try{
-
-
-return new Date(date)
-
-.toLocaleDateString(
-
-"fa-IR"
-
-);
-
-
-
-}
-
-catch{
-
-
-return "-";
-
-}
+    .join("");
 
 
 

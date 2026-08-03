@@ -739,36 +739,23 @@ async function savePodcast(){
 
 
 try{
+async function savePodcast(){
+
+try{
 
 
-
-const area =
+const cover =
 
 document.getElementById(
-"contentArea"
-);
+"cover_file"
+).files[0];
 
 
+const audio =
 
-area.innerHTML =
-
-`
-
-<div class="card">
-
-<h3>
-
-در حال آپلود فایل‌ها...
-
-</h3>
-
-</div>
-
-`;
-
-
-
-
+document.getElementById(
+"audio_file"
+).files[0];
 const cover =
 
 document.getElementById(

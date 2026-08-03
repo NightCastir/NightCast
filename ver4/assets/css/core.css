@@ -1,1 +1,323 @@
+/*
+=================================================
 
+NightCast Ver4
+Core CSS
+
+Global Rules
+Variables
+Reset
+Typography
+
+=================================================
+*/
+
+
+:root{
+
+
+    --primary:#6c5ce7;
+
+    --primary-dark:#4834d4;
+
+
+    --success:#00b894;
+
+    --danger:#d63031;
+
+    --warning:#fdcb6e;
+
+
+    --bg:#f5f6fa;
+
+    --card:#ffffff;
+
+
+    --text:#2d3436;
+
+    --muted:#636e72;
+
+
+    --border:#dfe6e9;
+
+
+    --sidebar-width:260px;
+
+
+    --radius:16px;
+
+
+    --shadow:
+
+    0 8px 25px rgba(0,0,0,.08);
+
+
+
+}
+
+
+
+
+
+*{
+
+    margin:0;
+
+    padding:0;
+
+    box-sizing:border-box;
+
+}
+
+
+
+
+html{
+
+    font-size:16px;
+
+    scroll-behavior:smooth;
+
+}
+
+
+
+
+
+body{
+
+
+    direction:rtl;
+
+    font-family:
+
+    Tahoma,
+
+    Arial,
+
+    sans-serif;
+
+
+    background:
+
+    var(--bg);
+
+
+    color:
+
+    var(--text);
+
+
+    min-height:100vh;
+
+
+}
+
+
+
+
+
+
+button,
+input,
+textarea,
+select{
+
+
+    font-family:inherit;
+
+
+}
+
+
+
+
+
+button{
+
+
+    cursor:pointer;
+
+
+    border:none;
+
+
+}
+
+
+
+
+
+a{
+
+
+    text-decoration:none;
+
+
+    color:inherit;
+
+
+}
+
+
+
+
+
+img{
+
+
+    max-width:100%;
+
+
+    display:block;
+
+
+}
+
+
+
+
+
+h1,
+h2,
+h3,
+h4{
+
+
+    font-weight:700;
+
+
+}
+
+
+
+
+
+p{
+
+
+    line-height:1.8;
+
+
+}
+
+
+
+
+
+input,
+textarea,
+select{
+
+
+    width:100%;
+
+
+    padding:12px 14px;
+
+
+    border:
+
+    1px solid var(--border);
+
+
+    border-radius:
+
+    10px;
+
+
+    background:white;
+
+
+    outline:none;
+
+
+    transition:.3s;
+
+
+}
+
+
+
+
+input:focus,
+textarea:focus,
+select:focus{
+
+
+    border-color:
+
+    var(--primary);
+
+
+    box-shadow:
+
+    0 0 0 3px rgba(108,92,231,.15);
+
+
+}
+
+
+
+
+
+.hidden{
+
+
+    display:none!important;
+
+
+}
+
+
+
+
+
+.text-center{
+
+
+    text-align:center;
+
+
+}
+
+
+
+
+
+.fade-in{
+
+
+    animation:
+
+    fadeIn .3s ease;
+
+
+}
+
+
+
+
+
+@keyframes fadeIn{
+
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(10px);
+
+    }
+
+
+    to{
+
+        opacity:1;
+
+        transform:none;
+
+    }
+
+
+}

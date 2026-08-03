@@ -1,337 +1,356 @@
 /*
+====================================================
 NightCast CMS
 Podcast Manager
-Final Version
+Version 2.1
+====================================================
 */
 
-
 const API_URL =
-
 "https://nightcast-api.tomasgermany2580.workers.dev/api/v1";
 
 
+function getToken() {
+    return localStorage.getItem("NightCastToken");
+}
 
 
+// ==========================
+// REQUEST
+// ==========================
 
-function getToken(){
+async function apiRequest(url, method = "GET", body = null) {
 
-return localStorage.getItem(
-"NightCastToken"
-);
+    const options = {
+        method,
+        headers: {
+            "Authorization": "Bearer " + getToken()
+        }
+    };
 
+    if (body) {
+        options.headers["Content-Type"] = "application/json";
+        options.body = JSON.stringify(body);
+    }
+
+    const response = await fetch(API_URL + url, options);
+    const data = await response.json();
+
+    if (!data.success) {
+        throw new Error(data.message || "Unknown Error");
+    }
+
+    return data;
 }
 
 
 
+// ==========================
+// Upload Media
+// ==========================
 
+async function uploadMedia(file, type) {
 
+    if (!file) {
+        return null;
+    }
+
+    const form = new FormData();
+
+    form.append("file", file);
+    form.append("type", type);
+
+    const response = await fetch(
+        API_URL + "/media/upload",
+        {
+            method: "POST",
+            headers: {
+                "Authorization": "Bearer " + getToken()
+            },
+            body: form
+        }
+    );
+
+    const data = await response.json();
+
+    if (!data.success) {
+        throw new Error(data.message);
+    }
+
+    return data.url;
+      }
 
 
 // ==========================
 // LOAD PODCASTS
 // ==========================
 
-
 async function loadPodcasts(){
 
-
-const area =
-
-document.getElementById(
-"contentArea"
-);
+    const area =
+    document.getElementById("contentArea");
 
 
+    area.innerHTML = `
 
-area.innerHTML =
+    <div class="card">
 
-`
+        <h2>
+        🎙 مدیریت پادکست‌ها
+        </h2>
 
-<div class="card">
+        <p>
+        در حال دریافت اطلاعات...
+        </p>
 
-<h2>
-🎙 پادکست‌ها
-</h2>
+    </div>
 
-<p>
-در حال دریافت اطلاعات...
-</p>
-
-</div>
-
-`;
+    `;
 
 
+    try {
 
-try{
+
+        const data =
+        await apiRequest("/podcasts");
 
 
-const response =
+        let rows = "";
 
-await fetch(
 
-API_URL + "/podcasts",
+        data.podcasts.forEach(p => {
 
-{
 
-headers:{
+            rows += `
 
-"Authorization":
+            <tr>
 
-"Bearer "+getToken()
+                <td>
+                ${p.id}
+                </td>
+
+
+                <td>
+                ${p.title || "-"}
+                </td>
+
+
+                <td>
+                ${p.book_name || "-"}
+                </td>
+
+
+                <td>
+                ${p.episode_number || "-"}
+                </td>
+
+
+                <td>
+
+                ${
+                    p.status === "active"
+                    ?
+                    "فعال"
+                    :
+                    "غیرفعال"
+                }
+
+                </td>
+
+
+                <td>
+
+                    <button
+
+                    class="btn-primary"
+
+                    onclick="editPodcast(${p.id})"
+
+                    >
+
+                    ✏️ ویرایش
+
+                    </button>
+
+
+                    <button
+
+                    class="btn-danger"
+
+                    onclick="deletePodcast(${p.id})"
+
+                    >
+
+                    🗑 حذف
+
+                    </button>
+
+
+                </td>
+
+
+            </tr>
+
+            `;
+
+
+        });
+
+
+
+        area.innerHTML = `
+
+
+        <div class="card">
+
+
+            <div class="page-header">
+
+
+                <h2>
+                🎙 مدیریت پادکست‌ها
+                </h2>
+
+
+
+                <button
+
+                class="btn-primary"
+
+                onclick="createPodcast()"
+
+                >
+
+                ➕ پادکست جدید
+
+                </button>
+
+
+            </div>
+
+
+
+
+            <div class="table-wrapper">
+
+
+            <table>
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                        ID
+                        </th>
+
+
+                        <th>
+                        عنوان
+                        </th>
+
+
+                        <th>
+                        کتاب
+                        </th>
+
+
+                        <th>
+                        قسمت
+                        </th>
+
+
+                        <th>
+                        وضعیت
+                        </th>
+
+
+                        <th>
+                        عملیات
+                        </th>
+
+
+                    </tr>
+
+
+                </thead>
+
+
+                <tbody>
+
+                ${rows}
+
+                </tbody>
+
+
+            </table>
+
+
+            </div>
+
+
+        </div>
+
+
+        `;
+
+
+
+    }
+
+
+    catch(error){
+
+
+        area.innerHTML = `
+
+
+        <div class="card">
+
+
+            <h3>
+            خطا
+            </h3>
+
+
+            <p>
+            ${error.message}
+            </p>
+
+
+        </div>
+
+
+        `;
+
+
+        console.error(
+            "LOAD PODCAST ERROR:",
+            error
+        );
+
+
+    }
 
 }
-
-}
-
-);
-
-
-
-const data =
-
-await response.json();
-
-
-
-if(!data.success){
-
-throw new Error(data.message);
-
-}
-
-
-
-let rows="";
-
-
-
-data.podcasts.forEach(p=>{
-
-
-rows +=
-
-`
-
-<tr>
-
-<td>
-${p.id}
-</td>
-
-
-<td>
-${p.title || "-"}
-</td>
-
-
-<td>
-${p.book_name || "-"}
-</td>
-
-
-<td>
-${p.episode_number || "-"}
-</td>
-
-
-<td>
-
-${
-p.status==="active"
-
-?
-
-"فعال"
-
-:
-
-"غیرفعال"
-
-}
-
-</td>
-
-
-<td>
-
-<button
-
-class="btn-primary"
-
-onclick="editPodcast(${p.id})"
-
->
-
-✏️
-
-</button>
-
-
-</td>
-
-
-</tr>
-
-`;
-
-
-
-});
-
-
-
-
-area.innerHTML =
-
-`
-
-<div class="card">
-
-
-<div class="page-header">
-
-
-<h2>
-🎙 مدیریت پادکست‌ها
-</h2>
-
-
-<button
-
-class="btn-primary"
-
-onclick="createPodcast()"
-
->
-
-➕ جدید
-
-</button>
-
-
-</div>
-
-
-
-<table>
-
-
-<thead>
-
-
-<tr>
-
-<th>
-ID
-</th>
-
-
-<th>
-عنوان
-</th>
-
-
-<th>
-کتاب
-</th>
-
-
-<th>
-قسمت
-</th>
-
-
-<th>
-وضعیت
-</th>
-
-
-<th>
-عملیات
-</th>
-
-
-</tr>
-
-
-</thead>
-
-
-<tbody>
-
-${rows}
-
-</tbody>
-
-
-</table>
-
-
-</div>
-
-`;
-
-
-
-}
-
-
-catch(error){
-
-
-area.innerHTML =
-
-`
-
-<div class="card">
-
-<h3>
-خطا
-</h3>
-
-
-<p>
-${error.message}
-</p>
-
-
-</div>
-
-`;
-
-
-
-}
-
-
-
-}
-
-
-
 
 
 
 // ==========================
-// CREATE FORM START
+// CREATE PODCAST FORM
 // ==========================
-
 
 function createPodcast(){
 
 
 const area =
-
-document.getElementById(
-"contentArea"
-);
+document.getElementById("contentArea");
 
 
 
-area.innerHTML =
+area.innerHTML = `
 
-`
 
 <div class="card">
 
@@ -349,12 +368,13 @@ area.innerHTML =
 <div class="form-group">
 
 <label>
-عنوان
+عنوان پادکست
 </label>
 
 <input id="title">
 
 </div>
+
 
 
 
@@ -370,6 +390,7 @@ area.innerHTML =
 
 
 
+
 <div class="form-group">
 
 <label>
@@ -382,15 +403,17 @@ area.innerHTML =
 
 
 
+
 <div class="form-group">
 
 <label>
-دسته بندی
+دسته‌بندی
 </label>
 
 <input id="category_name">
 
 </div>
+
 
 
 
@@ -403,6 +426,7 @@ area.innerHTML =
 <input id="tags">
 
 </div>
+
 
 
 
@@ -426,6 +450,7 @@ value="1"
 
 
 </div>
+
 
 
 
@@ -477,6 +502,7 @@ rows="10"
 <div class="form-grid">
 
 
+
 <div class="form-group">
 
 <label>
@@ -494,8 +520,9 @@ value="0"
 
 >
 
-
 </div>
+
+
 
 
 
@@ -516,7 +543,6 @@ value="0"
 </option>
 
 
-
 <option value="inactive">
 
 غیرفعال
@@ -531,6 +557,8 @@ value="0"
 
 
 </div>
+
+
 
 
 
@@ -555,6 +583,8 @@ accept="image/*"
 
 
 </div>
+
+
 
 
 
@@ -585,6 +615,7 @@ accept="audio/*"
 
 
 
+
 <br>
 
 
@@ -603,128 +634,13 @@ onclick="savePodcast()"
 
 
 
-
 </div>
+
 
 
 `;
 
-
-
 }
-
-
-
-
-
-
-
-// ==========================
-// UPLOAD MEDIA
-// ==========================
-
-
-
-async function uploadMedia(file,type){
-
-
-
-if(!file){
-
-return null;
-
-}
-
-
-
-const form =
-
-new FormData();
-
-
-
-form.append(
-"file",
-file
-);
-
-
-
-form.append(
-"type",
-type
-);
-
-
-
-
-
-
-const response =
-
-await fetch(
-
-API_URL+"/media/upload",
-
-{
-
-method:"POST",
-
-
-headers:{
-
-
-"Authorization":
-
-"Bearer "+getToken()
-
-
-},
-
-
-body:form
-
-
-}
-
-);
-
-
-
-
-
-
-const data =
-
-await response.json();
-
-
-
-
-
-
-if(!data.success){
-
-
-throw new Error(
-data.message
-);
-
-
-}
-
-
-
-
-
-return data.url;
-
-
-
-}
-
-
-
 
 
 
@@ -732,229 +648,168 @@ return data.url;
 // SAVE PODCAST
 // ==========================
 
-
-
 async function savePodcast(){
 
-
-
-try{
-async function savePodcast(){
 
 try{
 
 
-const cover =
+    const coverInput =
+    document.getElementById("cover_file");
 
-document.getElementById(
-"cover_file"
-).files[0];
 
+    const audioInput =
+    document.getElementById("audio_file");
 
-const audio =
 
-document.getElementById(
-"audio_file"
-).files[0];
-const cover =
 
-document.getElementById(
-"cover_file"
-).files[0];
+    const cover =
+    coverInput && coverInput.files.length
+    ?
+    coverInput.files[0]
+    :
+    null;
 
 
 
-const audio =
+    const audio =
+    audioInput && audioInput.files.length
+    ?
+    audioInput.files[0]
+    :
+    null;
 
-document.getElementById(
-"audio_file"
-).files[0];
 
 
 
+    let cover_url = null;
+    let audio_url = null;
 
 
 
-const cover_url =
+    if(cover){
 
-await uploadMedia(
-cover,
-"cover"
-);
+        cover_url =
+        await uploadMedia(
+            cover,
+            "cover"
+        );
 
+    }
 
 
 
-const audio_url =
+    if(audio){
 
-await uploadMedia(
-audio,
-"audio"
-);
+        audio_url =
+        await uploadMedia(
+            audio,
+            "audio"
+        );
 
+    }
 
 
 
 
 
+    const body = {
 
 
-const body = {
+        title:
+        document.getElementById("title").value.trim(),
 
 
-title:
 
-document.getElementById(
-"title"
-).value,
+        book_name:
+        document.getElementById("book_name").value.trim(),
 
 
-book_name:
 
-document.getElementById(
-"book_name"
-).value,
+        author_name:
+        document.getElementById("author_name").value.trim(),
 
 
-author_name:
 
-document.getElementById(
-"author_name"
-).value,
+        category_name:
+        document.getElementById("category_name").value.trim(),
 
 
-category_name:
 
-document.getElementById(
-"category_name"
-).value,
+        tags:
+        document.getElementById("tags").value.trim(),
 
 
-tags:
 
-document.getElementById(
-"tags"
-).value,
+        episode_number:
+        Number(
+            document.getElementById("episode_number").value
+        ),
 
 
-episode_number:
 
-document.getElementById(
-"episode_number"
-).value,
+        summary:
+        document.getElementById("summary").value,
 
 
-summary:
 
-document.getElementById(
-"summary"
-).value,
+        transcript:
+        document.getElementById("transcript").value,
 
 
-transcript:
 
-document.getElementById(
-"transcript"
-).value,
+        duration_seconds:
+        Number(
+            document.getElementById("duration_seconds").value
+        ),
 
 
-duration_seconds:
 
-document.getElementById(
-"duration_seconds"
-).value,
+        status:
+        document.getElementById("status").value,
 
 
-status:
 
-document.getElementById(
-"status"
-).value,
+        cover_url,
 
+        audio_url
 
-cover_url,
+    };
 
-audio_url
 
 
-};
 
 
+    if(!body.title){
 
+        throw new Error(
+            "عنوان پادکست الزامی است"
+        );
 
+    }
 
-const response =
 
-await fetch(
 
-API_URL+"/podcasts",
 
-{
 
-method:"POST",
+    const data =
+    await apiRequest(
+        "/podcasts",
+        "POST",
+        body
+    );
 
 
-headers:{
 
 
-"Content-Type":
 
-"application/json",
+    alert(
+        "✅ پادکست با موفقیت ثبت شد"
+    );
 
 
-"Authorization":
 
-"Bearer "+getToken()
-
-
-},
-
-
-
-body:
-
-JSON.stringify(body)
-
-
-}
-
-);
-
-
-
-
-
-
-
-const data =
-
-await response.json();
-
-
-
-
-
-if(!data.success){
-
-
-throw new Error(
-data.message
-);
-
-
-}
-
-
-
-
-
-alert(
-"پادکست با موفقیت ثبت شد"
-);
-
-
-
-loadPodcasts();
+    loadPodcasts();
 
 
 
@@ -965,22 +820,23 @@ loadPodcasts();
 catch(error){
 
 
+    console.error(
+        "SAVE PODCAST ERROR:",
+        error
+    );
 
-alert(
-"خطا: "+error.message
-);
 
+    alert(
+        "خطا در ثبت پادکست:\n"
+        +
+        error.message
+    );
 
 
 }
 
 
-
 }
-
-
-
-
 
 
 
@@ -989,24 +845,15 @@ alert(
 // EDIT PODCAST
 // ==========================
 
-
-
 async function editPodcast(id){
 
 
-
 const area =
-
-document.getElementById(
-"contentArea"
-);
+document.getElementById("contentArea");
 
 
 
-
-area.innerHTML =
-
-`
+area.innerHTML = `
 
 <div class="card">
 
@@ -1020,57 +867,31 @@ area.innerHTML =
 
 
 
-
-
 try{
 
 
-const response =
-
-await fetch(
-
-API_URL+
-
-"/podcasts/"+id
-
-);
-
-
-
 const data =
-
-await response.json();
-
-
-
-if(!data.success){
-
-throw new Error(
-data.message
+await apiRequest(
+"/podcasts/" + id
 );
 
-}
+
+
+const p =
+data.podcast;
 
 
 
-const p = data.podcast;
+area.innerHTML = `
 
-
-
-
-
-area.innerHTML =
-
-`
 
 <div class="card">
 
 
 <h2>
-
 ✏️ ویرایش پادکست
-
 </h2>
+
 
 
 
@@ -1089,6 +910,112 @@ value="${p.title || ""}"
 
 >
 
+</div>
+
+
+
+
+
+<div class="form-group">
+
+<label>
+نام کتاب
+</label>
+
+
+<input
+
+id="edit_book_name"
+
+value="${p.book_name || ""}"
+
+>
+
+</div>
+
+
+
+
+
+<div class="form-group">
+
+<label>
+نویسنده
+</label>
+
+
+<input
+
+id="edit_author_name"
+
+value="${p.author_name || ""}"
+
+>
+
+</div>
+
+
+
+
+
+<div class="form-group">
+
+<label>
+دسته بندی
+</label>
+
+
+<input
+
+id="edit_category_name"
+
+value="${p.category_name || ""}"
+
+>
+
+</div>
+
+
+
+
+
+<div class="form-group">
+
+<label>
+تگ‌ها
+</label>
+
+
+<input
+
+id="edit_tags"
+
+value="${p.tags || ""}"
+
+>
+
+</div>
+
+
+
+
+
+<div class="form-group">
+
+<label>
+شماره قسمت
+</label>
+
+
+<input
+
+id="edit_episode_number"
+
+type="number"
+
+value="${p.episode_number || 1}"
+
+>
 
 </div>
 
@@ -1103,7 +1030,6 @@ value="${p.title || ""}"
 </label>
 
 
-
 <textarea
 
 id="edit_summary"
@@ -1111,6 +1037,28 @@ id="edit_summary"
 rows="6"
 
 >${p.summary || ""}</textarea>
+
+
+</div>
+
+
+
+
+
+<div class="form-group">
+
+<label>
+متن کامل
+</label>
+
+
+<textarea
+
+id="edit_transcript"
+
+rows="10"
+
+>${p.transcript || ""}</textarea>
 
 
 </div>
@@ -1152,7 +1100,6 @@ ${p.status==="inactive"?"selected":""}
 </option>
 
 
-
 </select>
 
 
@@ -1178,6 +1125,7 @@ onclick="updatePodcast(${id})"
 
 </div>
 
+
 `;
 
 
@@ -1185,36 +1133,46 @@ onclick="updatePodcast(${id})"
 }
 
 
-
 catch(error){
 
 
-area.innerHTML =
-
-`
+area.innerHTML = `
 
 <div class="card">
 
+<h3>
+خطا
+</h3>
+
 <p>
-
 ${error.message}
-
 </p>
 
 </div>
 
 `;
 
+
+
+console.error(
+"EDIT PODCAST ERROR:",
+error
+);
+
+
+}
+
+
 }
 
 
 
-}
+
+
 
 // ==========================
 // UPDATE PODCAST
 // ==========================
-
 
 async function updatePodcast(id){
 
@@ -1226,24 +1184,41 @@ const body = {
 
 
 title:
+document.getElementById("edit_title").value,
 
-document.getElementById(
-"edit_title"
-).value,
+
+book_name:
+document.getElementById("edit_book_name").value,
+
+
+author_name:
+document.getElementById("edit_author_name").value,
+
+
+category_name:
+document.getElementById("edit_category_name").value,
+
+
+tags:
+document.getElementById("edit_tags").value,
+
+
+episode_number:
+Number(
+document.getElementById("edit_episode_number").value
+),
 
 
 summary:
+document.getElementById("edit_summary").value,
 
-document.getElementById(
-"edit_summary"
-).value,
+
+transcript:
+document.getElementById("edit_transcript").value,
 
 
 status:
-
-document.getElementById(
-"edit_status"
-).value
+document.getElementById("edit_status").value
 
 
 };
@@ -1252,71 +1227,22 @@ document.getElementById(
 
 
 
-const response =
+await apiRequest(
 
-await fetch(
+"/podcasts/" + id,
 
-API_URL+
+"PUT",
 
-"/podcasts/"+id,
-
-{
-
-method:"PUT",
-
-
-headers:{
-
-
-"Content-Type":
-
-"application/json",
-
-
-"Authorization":
-
-"Bearer "+getToken()
-
-
-},
-
-
-body:
-
-JSON.stringify(body)
-
-
-}
+body
 
 );
 
 
-
-
-
-
-const data =
-
-await response.json();
-
-
-
-
-
-if(!data.success){
-
-
-throw new Error(
-data.message
-);
-
-
-}
 
 
 
 alert(
-"ویرایش انجام شد"
+"✅ تغییرات ذخیره شد"
 );
 
 
@@ -1328,22 +1254,26 @@ loadPodcasts();
 }
 
 
-
 catch(error){
 
 
+console.error(
+"UPDATE PODCAST ERROR:",
+error
+);
+
+
 alert(
-"خطا: "+error.message
+"خطا در ویرایش:\n"
++
+error.message
 );
 
 
 }
 
 
-
 }
-
-
 
 
 
@@ -1353,83 +1283,40 @@ alert(
 // DELETE PODCAST
 // ==========================
 
-
 async function deletePodcast(id){
 
 
+const confirmDelete =
+confirm(
+"آیا از حذف این پادکست مطمئن هستید؟"
+);
 
-if(
 
-!confirm(
-"آیا مطمئن هستید؟"
-)
 
-){
+if(!confirmDelete){
 
-return;
+    return;
 
 }
-
 
 
 
 try{
 
 
+await apiRequest(
 
-const response =
+"/podcasts/" + id,
 
-await fetch(
-
-API_URL+
-
-"/podcasts/"+id,
-
-{
-
-method:"DELETE",
-
-
-headers:{
-
-
-"Authorization":
-
-"Bearer "+getToken()
-
-
-}
-
-}
+"DELETE"
 
 );
 
-
-
-
-
-const data =
-
-await response.json();
-
-
-
-
-
-if(!data.success){
-
-
-throw new Error(
-data.message
-);
-
-
-}
 
 
 
 alert(
-"حذف شد"
+"✅ پادکست حذف شد"
 );
 
 
@@ -1441,17 +1328,27 @@ loadPodcasts();
 }
 
 
-
 catch(error){
 
 
+console.error(
+"DELETE PODCAST ERROR:",
+error
+);
+
+
+
 alert(
+
+"خطا در حذف:\n"
++
 error.message
+
 );
 
 
 }
 
 
-
 }
+

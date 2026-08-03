@@ -2,73 +2,26 @@
 =================================================
 
 NightCast Ver4
-Core CSS
+Core Design System
 
-Global Rules
-Variables
-Reset
-Typography
+App First UI
 
 =================================================
 */
 
 
-:root{
+/* ==========================
+RESET
+========================== */
 
 
-    --primary:#6c5ce7;
-
-    --primary-dark:#4834d4;
-
-
-    --success:#00b894;
-
-    --danger:#d63031;
-
-    --warning:#fdcb6e;
-
-
-    --bg:#f5f6fa;
-
-    --card:#ffffff;
-
-
-    --text:#2d3436;
-
-    --muted:#636e72;
-
-
-    --border:#dfe6e9;
-
-
-    --sidebar-width:260px;
-
-
-    --radius:16px;
-
-
-    --shadow:
-
-    0 8px 25px rgba(0,0,0,.08);
-
-
-
-}
-
-
-
-
-
-*{
-
-    margin:0;
-
-    padding:0;
+*,
+*::before,
+*::after{
 
     box-sizing:border-box;
 
 }
-
 
 
 
@@ -82,37 +35,41 @@ html{
 
 
 
-
-
 body{
 
+    margin:0;
+
+    padding:0;
 
     direction:rtl;
 
     font-family:
 
-    Tahoma,
-
-    Arial,
-
+    "Vazirmatn",
+    "Tahoma",
     sans-serif;
-
 
     background:
 
-    var(--bg);
+    #f5f7fb;
 
+    color:#1f2937;
 
-    color:
-
-    var(--text);
-
-
-    min-height:100vh;
-
+    overflow-x:hidden;
 
 }
 
+
+
+
+
+img{
+
+    max-width:100%;
+
+    display:block;
+
+}
 
 
 
@@ -123,9 +80,7 @@ input,
 textarea,
 select{
 
-
     font-family:inherit;
-
 
 }
 
@@ -135,12 +90,7 @@ select{
 
 button{
 
-
     cursor:pointer;
-
-
-    border:none;
-
 
 }
 
@@ -150,12 +100,206 @@ button{
 
 a{
 
-
     text-decoration:none;
-
 
     color:inherit;
 
+}
+
+
+
+
+
+
+
+
+/* ==========================
+NIGHTCAST THEME
+========================== */
+
+
+:root{
+
+
+    /* Brand */
+
+    --primary:
+
+    #6c5ce7;
+
+
+    --primary-dark:
+
+    #5847d6;
+
+
+
+    --secondary:
+
+    #00b894;
+
+
+
+    --danger:
+
+    #e74c3c;
+
+
+
+    --warning:
+
+    #f39c12;
+
+
+
+    --info:
+
+    #0984e3;
+
+
+
+
+
+    /* Background */
+
+    --bg:
+
+    #f5f7fb;
+
+
+
+    --surface:
+
+    #ffffff;
+
+
+
+    --surface-soft:
+
+    #f8fafc;
+
+
+
+
+
+    /* Text */
+
+
+    --text:
+
+    #1f2937;
+
+
+    --text-soft:
+
+    #64748b;
+
+
+    --text-light:
+
+    #94a3b8;
+
+
+
+
+
+
+    /* Border */
+
+
+    --border:
+
+    #e5e7eb;
+
+
+
+
+
+    /* Shadow */
+
+
+    --shadow-sm:
+
+    0 2px 8px rgba(0,0,0,.05);
+
+
+
+    --shadow:
+
+
+    0 8px 25px rgba(15,23,42,.08);
+
+
+
+    --shadow-lg:
+
+
+    0 20px 40px rgba(15,23,42,.12);
+
+
+
+
+
+
+
+    /* Radius */
+
+
+    --radius-sm:
+
+    8px;
+
+
+
+    --radius:
+
+    14px;
+
+
+
+    --radius-lg:
+
+    22px;
+
+
+
+
+
+
+
+    /* Layout */
+
+
+    --sidebar-width:
+
+    270px;
+
+
+
+    --header-height:
+
+    72px;
+
+
+
+
+
+
+
+    /* Animation */
+
+
+    --fast:
+
+    .2s ease;
+
+
+
+    --normal:
+
+    .35s ease;
+
+
 
 }
 
@@ -163,13 +307,47 @@ a{
 
 
 
-img{
 
 
-    max-width:100%;
 
 
-    display:block;
+/* ==========================
+SCROLLBAR
+========================== */
+
+
+::-webkit-scrollbar{
+
+    width:8px;
+
+}
+
+
+
+::-webkit-scrollbar-track{
+
+    background:#eef2f7;
+
+}
+
+
+
+::-webkit-scrollbar-thumb{
+
+
+    background:#cbd5e1;
+
+    border-radius:20px;
+
+
+}
+
+
+
+::-webkit-scrollbar-thumb:hover{
+
+
+    background:#94a3b8;
 
 
 }
@@ -178,120 +356,28 @@ img{
 
 
 
-h1,
-h2,
-h3,
-h4{
-
-
-    font-weight:700;
-
-
-}
 
 
 
 
-
-p{
-
-
-    line-height:1.8;
-
-
-}
-
-
-
-
-
-input,
-textarea,
-select{
-
-
-    width:100%;
-
-
-    padding:12px 14px;
-
-
-    border:
-
-    1px solid var(--border);
-
-
-    border-radius:
-
-    10px;
-
-
-    background:white;
-
-
-    outline:none;
-
-
-    transition:.3s;
-
-
-}
-
-
-
-
-input:focus,
-textarea:focus,
-select:focus{
-
-
-    border-color:
-
-    var(--primary);
-
-
-    box-shadow:
-
-    0 0 0 3px rgba(108,92,231,.15);
-
-
-}
-
-
-
+/* ==========================
+GLOBAL STATES
+========================== */
 
 
 .hidden{
 
-
     display:none!important;
 
-
 }
-
-
-
-
-
-.text-center{
-
-
-    text-align:center;
-
-
-}
-
-
 
 
 
 .fade-in{
 
-
     animation:
 
-    fadeIn .3s ease;
-
+    fadeIn .35s ease;
 
 }
 
@@ -311,6 +397,7 @@ select:focus{
     }
 
 
+
     to{
 
         opacity:1;
@@ -318,6 +405,58 @@ select:focus{
         transform:none;
 
     }
+
+
+}
+
+
+
+
+
+
+
+
+/* ==========================
+APP SAFE AREA
+
+APK READY
+
+========================== */
+
+
+.app-container{
+
+
+    min-height:100vh;
+
+
+    padding-bottom:
+
+    env(safe-area-inset-bottom);
+
+
+}
+
+
+
+
+
+.no-select{
+
+
+    user-select:none;
+
+
+}
+
+
+
+
+
+.text-center{
+
+
+    text-align:center;
 
 
 }

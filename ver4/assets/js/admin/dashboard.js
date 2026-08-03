@@ -1,1 +1,685 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
 
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>
+NightCast Dashboard
+</title>
+
+
+<link rel="stylesheet" href="../assets/css/core.css">
+<link rel="stylesheet" href="../assets/css/layout.css">
+<link rel="stylesheet" href="../assets/css/components.css">
+<link rel="stylesheet" href="../assets/css/responsive.css">
+
+
+</head>
+
+
+
+<body>
+
+
+<div class="app-container">
+
+
+
+<!-- ==========================
+SIDEBAR
+========================== -->
+
+
+<aside class="sidebar">
+
+
+<div class="brand">
+
+
+<div class="brand-icon">
+
+🎙
+
+</div>
+
+
+<div>
+
+<h2>
+NightCast
+</h2>
+
+<span>
+CMS Ver4
+</span>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<nav class="menu">
+
+
+<a class="menu-item active"
+href="dashboard.html">
+
+🏠
+
+داشبورد
+
+</a>
+
+
+
+
+<a class="menu-item"
+href="podcasts.html">
+
+🎙
+
+پادکست‌ها
+
+</a>
+
+
+
+
+<a class="menu-item"
+href="media.html">
+
+🖼
+
+مدیا
+
+</a>
+
+
+
+
+<a class="menu-item"
+href="books.html">
+
+📚
+
+کتاب‌ها
+
+</a>
+
+
+
+
+<a class="menu-item"
+href="users.html">
+
+👥
+
+کاربران
+
+</a>
+
+
+
+
+<a class="menu-item"
+href="settings.html">
+
+⚙️
+
+تنظیمات
+
+</a>
+
+
+
+</nav>
+
+
+
+
+
+<button
+
+id="logoutBtn"
+
+class="btn-danger">
+
+خروج
+
+</button>
+
+
+
+</aside>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+CONTENT
+========================== -->
+
+
+<section class="main-container">
+
+
+
+
+
+<header class="top-header">
+
+
+<button
+
+id="menuToggle"
+
+class="icon-button">
+
+☰
+
+</button>
+
+
+
+<h1>
+
+داشبورد مدیریت
+
+</h1>
+
+
+
+
+<div class="header-user">
+
+
+<span id="adminName">
+
+مدیر سیستم
+
+</span>
+
+
+</div>
+
+
+</header>
+
+
+
+
+
+
+
+
+
+<main class="dashboard-page">
+
+
+
+
+
+<!-- Statistics -->
+
+
+<section class="stats-grid">
+
+
+
+<div class="stat-card">
+
+
+<div class="stat-icon">
+
+🎙
+
+</div>
+
+
+<div>
+
+<h2 id="totalPodcasts">
+
+0
+
+</h2>
+
+
+<p>
+
+پادکست‌ها
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="stat-card">
+
+
+<div class="stat-icon">
+
+📚
+
+</div>
+
+
+<div>
+
+<h2 id="totalBooks">
+
+0
+
+</h2>
+
+
+<p>
+
+کتاب‌ها
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="stat-card">
+
+
+<div class="stat-icon">
+
+👥
+
+</div>
+
+
+<div>
+
+<h2 id="totalUsers">
+
+0
+
+</h2>
+
+
+<p>
+
+کاربران
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="stat-card">
+
+
+<div class="stat-icon">
+
+🖼
+
+</div>
+
+
+<div>
+
+<h2 id="totalMedia">
+
+0
+
+</h2>
+
+
+<p>
+
+فایل‌ها
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- Quick Actions -->
+
+
+<section class="card">
+
+
+<h2>
+
+دسترسی سریع
+
+</h2>
+
+
+<div class="action-grid">
+
+
+
+<button
+onclick="location.href='podcasts.html'"
+class="action-btn">
+
+➕ ثبت پادکست جدید
+
+</button>
+
+
+
+
+<button
+onclick="location.href='media.html'"
+class="action-btn">
+
+🖼 مدیریت مدیا
+
+</button>
+
+
+
+
+<button
+onclick="location.href='books.html'"
+class="action-btn">
+
+📚 کتاب‌ها
+
+</button>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- Recent Podcasts -->
+
+
+<section class="card">
+
+
+<div class="section-header">
+
+
+<h2>
+
+آخرین پادکست‌ها
+
+</h2>
+
+
+<a href="podcasts.html">
+
+مشاهده همه
+
+</a>
+
+
+</div>
+
+
+
+
+
+<div class="table-wrapper">
+
+
+<table>
+
+
+<thead>
+
+<tr>
+
+<th>
+عنوان
+</th>
+
+
+<th>
+قسمت
+</th>
+
+
+<th>
+وضعیت
+</th>
+
+
+<th>
+تاریخ
+</th>
+
+
+</tr>
+
+</thead>
+
+
+
+
+<tbody id="recentPodcasts">
+
+
+<tr>
+
+<td colspan="4">
+
+در حال دریافت اطلاعات...
+
+</td>
+
+
+</tr>
+
+
+</tbody>
+
+
+
+</table>
+
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- System Status -->
+
+
+<section class="card">
+
+
+<h2>
+
+وضعیت سیستم
+
+</h2>
+
+
+
+<div class="status-list">
+
+
+<div>
+
+<span>
+API
+</span>
+
+
+<span id="apiStatus">
+
+بررسی...
+
+</span>
+
+
+</div>
+
+
+
+
+<div>
+
+<span>
+Database
+</span>
+
+
+<span id="databaseStatus">
+
+بررسی...
+
+</span>
+
+
+</div>
+
+
+
+
+
+<div>
+
+<span>
+Storage
+</span>
+
+
+<span id="storageStatus">
+
+بررسی...
+
+</span>
+
+
+</div>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+
+
+</main>
+
+
+
+</section>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<script src="../assets/js/core/api.js"></script>
+
+<script src="../assets/js/core/auth.js"></script>
+
+<script src="../assets/js/core/toast.js"></script>
+
+<script src="../assets/js/core/loader.js"></script>
+
+
+<script src="../assets/js/admin/dashboard.js"></script>
+
+
+
+</body>
+
+</html>

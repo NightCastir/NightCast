@@ -21,10 +21,6 @@
 
 <div class="wrapper">
 
-<!-- ========================= -->
-<!-- SIDEBAR -->
-<!-- ========================= -->
-
 <aside class="sidebar">
 
 <div class="logo">
@@ -35,51 +31,67 @@
 
 <div class="menu">
 
-<a href="#" data-view="dashboard">
+<a href="#" class="active" data-view="dashboard">
 
-🏠 داشبورد
+<span>🏠</span>
+
+<span>داشبورد</span>
 
 </a>
 
 <a href="#" data-view="podcasts">
 
-🎙 پادکست‌ها
+<span>🎙</span>
+
+<span>پادکست‌ها</span>
 
 </a>
 
 <a href="#" data-view="books">
 
-📚 کتاب‌ها
+<span>📚</span>
+
+<span>کتاب‌ها</span>
 
 </a>
 
 <a href="#" data-view="authors">
 
-👤 نویسنده‌ها
+<span>👤</span>
+
+<span>نویسنده‌ها</span>
 
 </a>
 
 <a href="#" data-view="categories">
 
-🏷 دسته‌بندی‌ها
+<span>🏷</span>
+
+<span>دسته‌بندی‌ها</span>
 
 </a>
 
 <a href="#" data-view="media">
 
-🖼 مدیا
+<span>🖼</span>
+
+<span>مدیا</span>
 
 </a>
 
 <a href="#" data-view="users">
 
-👥 کاربران
+<span>👥</span>
+
+<span>کاربران</span>
 
 </a>
 
 <a href="#" data-view="settings">
 
-⚙ تنظیمات
+<span>⚙</span>
+
+<span>تنظیمات</span>
 
 </a>
 
@@ -88,9 +100,7 @@
 <div class="logout">
 
 <button
-
-class="btn-danger"
-
+class="btn btn-danger"
 id="btnLogout">
 
 خروج
@@ -98,9 +108,7 @@ id="btnLogout">
 </button>
 
 <div
-
 id="version"
-
 class="version">
 
 ...
@@ -111,10 +119,6 @@ class="version">
 
 </aside>
 
-<!-- ========================= -->
-<!-- MAIN -->
-<!-- ========================= -->
-
 <div class="main">
 
 <header class="header">
@@ -122,9 +126,7 @@ class="version">
 <div>
 
 <button
-
 id="btnMenu"
-
 class="theme-btn">
 
 ☰
@@ -133,22 +135,16 @@ class="theme-btn">
 
 </div>
 
-<div>
-
 <h2 id="pageTitle">
 
 داشبورد
 
 </h2>
 
-</div>
-
-<div style="display:flex;gap:12px;align-items:center;">
+<div style="display:flex;align-items:center;gap:12px;">
 
 <button
-
 class="theme-btn"
-
 onclick="App.toggleTheme()">
 
 🌙
@@ -164,24 +160,23 @@ onclick="App.toggleTheme()">
 </div>
 
 </header>
-<!-- ========================= -->
-<!-- CONTENT -->
-<!-- ========================= -->
 
 <div class="content">
 
 <div id="contentArea">
 
-
-<!-- Dashboard -->
+<!-- ===========================
+Dashboard Statistics
+=========================== -->
 
 <div class="dashboard-grid">
-
 
 <div class="stat-card">
 
 <div class="stat-icon">
+
 🎙
+
 </div>
 
 <div>
@@ -194,7 +189,7 @@ onclick="App.toggleTheme()">
 
 <p>
 
-تعداد پادکست‌ها
+پادکست‌ها
 
 </p>
 
@@ -207,7 +202,9 @@ onclick="App.toggleTheme()">
 <div class="stat-card">
 
 <div class="stat-icon">
+
 📚
+
 </div>
 
 <div>
@@ -220,7 +217,7 @@ onclick="App.toggleTheme()">
 
 <p>
 
-تعداد کتاب‌ها
+کتاب‌ها
 
 </p>
 
@@ -233,7 +230,9 @@ onclick="App.toggleTheme()">
 <div class="stat-card">
 
 <div class="stat-icon">
+
 👤
+
 </div>
 
 <div>
@@ -246,7 +245,7 @@ onclick="App.toggleTheme()">
 
 <p>
 
-نویسندگان
+نویسنده‌ها
 
 </p>
 
@@ -259,7 +258,9 @@ onclick="App.toggleTheme()">
 <div class="stat-card">
 
 <div class="stat-icon">
+
 👥
+
 </div>
 
 <div>
@@ -280,17 +281,67 @@ onclick="App.toggleTheme()">
 
 </div>
 
-
 </div>
 
 
 
-<br>
+<!-- ===========================
+Quick Actions
+=========================== -->
+
+<div class="dashboard-actions">
+
+<button
+
+class="btn btn-primary"
+
+onclick="createPodcast()">
+
+➕ پادکست جدید
+
+</button>
 
 
+
+<button
+
+class="btn btn-success"
+
+onclick="loadPodcasts()">
+
+🎙 مدیریت پادکست‌ها
+
+</button>
+
+
+
+<button
+
+class="btn btn-primary">
+
+📚 ثبت کتاب
+
+</button>
+
+
+
+<button
+
+class="btn btn-primary">
+
+🖼 مدیا
+
+</button>
+
+  </div>
+
+
+
+  <!-- =========================================
+آخرین پادکست ها
+========================================= -->
 
 <div class="card">
-
 
 <div class="page-header">
 
@@ -300,10 +351,9 @@ onclick="App.toggleTheme()">
 
 </h2>
 
-
 <button
 
-class="btn-primary"
+class="btn btn-primary"
 
 onclick="loadPodcasts()">
 
@@ -311,10 +361,45 @@ onclick="loadPodcasts()">
 
 </button>
 
+</div>
+
+<div class="search-box">
+
+<input
+
+type="text"
+
+id="searchPodcast"
+
+placeholder="جستجوی عنوان پادکست..."
+
+>
+
+<select id="podcastFilter">
+
+<option value="">
+
+همه وضعیت‌ها
+
+</option>
+
+<option value="draft">
+
+پیش نویس
+
+</option>
+
+<option value="published">
+
+منتشر شده
+
+</option>
+
+</select>
 
 </div>
 
-
+<div class="table-wrapper">
 
 <table>
 
@@ -325,6 +410,12 @@ onclick="loadPodcasts()">
 <th>
 
 ID
+
+</th>
+
+<th>
+
+کاور
 
 </th>
 
@@ -352,6 +443,18 @@ ID
 
 </th>
 
+<th>
+
+مدت
+
+</th>
+
+<th>
+
+عملیات
+
+</th>
+
 </tr>
 
 </thead>
@@ -360,9 +463,9 @@ ID
 
 <tr>
 
-<td colspan="5">
+<td colspan="8">
 
-در حال بارگذاری...
+در حال دریافت اطلاعات...
 
 </td>
 
@@ -372,232 +475,68 @@ ID
 
 </table>
 
+</div>
 
-  </div>
+<div class="pagination">
 
-  <!-- ========================= -->
-<!-- Quick Actions -->
-<!-- ========================= -->
+<button>
 
-<br>
+«
+
+</button>
+
+<button class="active">
+
+1
+
+</button>
+
+<button>
+
+2
+
+</button>
+
+<button>
+
+3
+
+</button>
+
+<button>
+
+»
+
+</button>
+
+</div>
+
+<div class="pagination-info">
+
+نمایش آخرین پادکست‌های ثبت شده
+
+</div>
+
+</div>
+
+
+
+
+<!-- =========================================
+System Information
+========================================= -->
 
 <div class="dashboard-grid">
 
-<div class="card">
-
-<h3>
-
-⚡ عملیات سریع
-
-</h3>
-
-<br>
-
-<button
-class="btn-primary"
-onclick="createPodcast()">
-
-➕ ثبت پادکست جدید
-
-</button>
-
-<br><br>
-
-<button
-class="btn-success"
-onclick="loadPodcasts()">
-
-📋 مدیریت پادکست‌ها
-
-</button>
-
-<br><br>
-
-<button
-class="btn-primary">
-
-📚 ثبت کتاب
-
-</button>
-
-<br><br>
-
-<button
-class="btn-primary">
-
-👤 ثبت نویسنده
-
-</button>
-
-</div>
-
-
-
-
+<!-- وضعیت سیستم -->
 
 <div class="card">
 
 <h3>
 
-📊 وضعیت سیستم
+📡 وضعیت سیستم
 
 </h3>
-
-<br>
-
-<table>
-
-<tr>
-
-<td>
-
-API
-
-</td>
-
-<td id="apiStatus">
-
-🟢 Online
-
-</td>
-
-</tr>
-
-<tr>
-
-<td>
-
-Database
-
-</td>
-
-<td id="dbStatus">
-
-🟢 Connected
-
-</td>
-
-</tr>
-
-<tr>
-
-<td>
-
-GitHub Media
-
-</td>
-
-<td id="githubStatus">
-
-🟢 Ready
-
-</td>
-
-</tr>
-
-<tr>
-
-<td>
-
-نسخه
-
-</td>
-
-<td>
-
-2.0
-
-</td>
-
-</tr>
-
-</table>
-
-</div>
-
-
-
-
-
-<div class="card">
-
-<h3>
-
-👤 کاربر جاری
-
-</h3>
-
-<br>
-
-<div id="userInfo">
-
-در حال دریافت...
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- end contentArea -->
-
-</div>
-
-<!-- end content -->
-
-</div>
-
-<!-- end main -->
-
-</div>
-
-<!-- end wrapper -->
-
-<!-- ========================= -->
-<!-- QUICK ACTIONS -->
-<!-- ========================= -->
-
-<br>
-
-<div class="dashboard-actions">
-
-<button class="btn-primary" onclick="createPodcast()">
-
-➕ پادکست جدید
-
-</button>
-
-<button class="btn-success">
-
-📚 کتاب جدید
-
-</button>
-
-<button class="btn-primary">
-
-🖼 آپلود مدیا
-
-</button>
-
-<button class="btn-primary">
-
-👤 کاربر جدید
-
-</button>
-
-</div>
-
-<br>
-
-<div class="card">
-
-<h2>
-
-وضعیت سیستم
-
-</h2>
 
 <br>
 
@@ -611,7 +550,7 @@ API
 
 </span>
 
-<span id="apiStatus">
+<span id="apiStatus" class="badge badge-success">
 
 🟢 Online
 
@@ -627,7 +566,7 @@ Database
 
 </span>
 
-<span id="dbStatus">
+<span id="dbStatus" class="badge badge-success">
 
 🟢 Connected
 
@@ -639,13 +578,13 @@ Database
 
 <span>
 
-Storage
+GitHub Storage
 
 </span>
 
-<span id="storageStatus">
+<span id="storageStatus" class="badge badge-success">
 
-🟢 GitHub
+🟢 Ready
 
 </span>
 
@@ -655,7 +594,7 @@ Storage
 
 <span>
 
-نسخه سیستم
+نسخه CMS
 
 </span>
 
@@ -671,11 +610,373 @@ Storage
 
 </div>
 
+
+
+<!-- اطلاعات کاربر -->
+
+<div class="card">
+
+<h3>
+
+👤 اطلاعات کاربر
+
+</h3>
+
+<br>
+
+<div id="userInfo">
+
+در حال دریافت...
+
+</div>
+
+</div>
+
+
+
+<!-- آمار سرور -->
+
+<div class="card">
+
+<h3>
+
+📈 آمار سیستم
+
+</h3>
+
+<br>
+
+<div class="system-status">
+
+<div class="status-row">
+
+<span>
+
+آپلود فایل
+
+</span>
+
+<span id="uploadCount">
+
+0
+
+</span>
+
+</div>
+
+<div class="status-row">
+
+<span>
+
+فضای مصرف شده
+
+</span>
+
+<span id="storageSize">
+
+0 MB
+
+</span>
+
+</div>
+
+<div class="status-row">
+
+<span>
+
+کل دانلودها
+
+</span>
+
+<span id="downloadCount">
+
+0
+
+</span>
+
+</div>
+
+<div class="status-row">
+
+<span>
+
+آخرین بروزرسانی
+
+</span>
+
+<span id="lastUpdate">
+
+--
+
+</span>
+
+</div>
+
 </div>
 
 </div>
 
 </div>
+
+
+
+
+  
+
+  <!-- =========================================
+Recent Activity
+========================================= -->
+
+<div class="dashboard-grid">
+
+<!-- آخرین فعالیت‌ها -->
+
+<div class="card">
+
+<h3>
+
+📝 آخرین فعالیت‌ها
+
+</h3>
+
+<br>
+
+<div id="recentActivities">
+
+<div class="status-row">
+
+<span>
+
+🎙 پادکست جدید ثبت شد
+
+</span>
+
+<span>
+
+امروز
+
+</span>
+
+</div>
+
+<div class="status-row">
+
+<span>
+
+📚 کتاب جدید اضافه شد
+
+</span>
+
+<span>
+
+دیروز
+
+</span>
+
+</div>
+
+<div class="status-row">
+
+<span>
+
+🖼 فایل جدید آپلود شد
+
+</span>
+
+<span>
+
+۲ روز قبل
+
+</span>
+
+</div>
+
+<div class="status-row">
+
+<span>
+
+👤 کاربر جدید ایجاد شد
+
+</span>
+
+<span>
+
+۳ روز قبل
+
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- اعلان‌ها -->
+
+<div class="card">
+
+<h3>
+
+🔔 اعلان‌های سیستم
+
+</h3>
+
+<br>
+
+<div id="notifications">
+
+<div class="status-row">
+
+<span>
+
+✅ همه سرویس‌ها فعال هستند.
+
+</span>
+
+</div>
+
+<div class="status-row">
+
+<span>
+
+📦 فضای GitHub در وضعیت مناسب قرار دارد.
+
+</span>
+
+</div>
+
+<div class="status-row">
+
+<span>
+
+⚡ آخرین نسخه CMS نصب شده است.
+
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- لاگ سیستم -->
+
+<div class="card">
+
+<h3>
+
+📜 آخرین لاگ‌ها
+
+</h3>
+
+<br>
+
+<div class="table-wrapper">
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>
+
+زمان
+
+</th>
+
+<th>
+
+عملیات
+
+</th>
+
+<th>
+
+کاربر
+
+</th>
+
+</tr>
+
+</thead>
+
+<tbody id="systemLogs">
+
+<tr>
+
+<td>
+
+--
+
+</td>
+
+<td>
+
+در حال دریافت...
+
+</td>
+
+<td>
+
+--
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+
+</div>
+
+</div>
+
+</div>
+
+<!-- Toast -->
+
+<div
+
+id="toast"
+
+class="toast">
+
+</div>
+
+
+
+<!-- Loader -->
+
+<div
+
+id="loading"
+
+class="loader-overlay">
+
+<div
+
+class="spinner">
+
+</div>
+
+</div>
+
+
 
 <script src="../js/api.js"></script>
 
@@ -691,5 +992,196 @@ Storage
 
 <script>
 
+document
+
+.querySelectorAll(".menu a")
+
+.forEach(item=>{
+
+item.onclick=function(e){
+
+e.preventDefault();
+
+document
+
+.querySelectorAll(".menu a")
+
+.forEach(a=>a.classList.remove("active"));
+
+this.classList.add("active");
+
+const view=this.dataset.view;
+
+switch(view){
+
+case "dashboard":
+
+location.reload();
+
+break;
+
+case "podcasts":
+
+App.setTitle("مدیریت پادکست‌ها");
+
+loadPodcasts();
+
+break;
+
+default:
+
+App.setTitle(
+
+this.innerText.replace(/\n/g," ").trim()
+
+);
+
+document.getElementById("contentArea").innerHTML=
+
+`
+
+<div class="card fade-in">
+
+<h2>${this.innerText}</h2>
+
+<br>
+
+<p>
+
+این بخش در نسخه بعدی تکمیل خواهد شد.
+
+</p>
+
+</div>
+
+`;
+
+}
+
+};
+
+});
+
+
+
+document
+
+.getElementById("btnLogout")
+
+.onclick=logout;
+
+
+
+window.addEventListener(
+
+"DOMContentLoaded",
+
+()=>{
+
+loadDashboard();
+
+}
+
+);
+
+
+
+async function loadDashboard(){
+
+try{
+
+App.loading(true);
+
+const result=
+
+await API.get("/podcasts");
+
+if(result.success){
+
+document.getElementById("countPodcasts").innerHTML=
+
+result.podcasts.length;
+
+let html="";
+
+result.podcasts.slice(0,5).forEach(p=>{
+
+html+=`
+
+<tr>
+
+<td>${p.id}</td>
+
+<td>
+
+🖼
+
+</td>
+
+<td>${p.title}</td>
+
+<td>${p.book_name||"-"}</td>
+
+<td>${p.episode_number||"-"}</td>
+
+<td>
+
+<span class="badge badge-success">
+
+${p.status}
+
+</span>
+
+</td>
+
+<td>${p.duration||"--"}</td>
+
+<td>
+
+<button class="btn btn-primary btn-sm">
+
+ویرایش
+
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+document.getElementById("lastPodcasts").innerHTML=html;
+
+}
+
+App.loading(false);
+
+}
+
+catch(err){
+
+App.loading(false);
+
+App.toast(
+
+"خطا در بارگذاری داشبورد",
+
+"error"
+
+);
+
+console.error(err);
+
+}
+
+}
+
+</script>
+
+</body>
+
+</html>
   
   

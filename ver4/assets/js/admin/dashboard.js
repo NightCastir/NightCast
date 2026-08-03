@@ -1,225 +1,201 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
+/*
+=================================================
 
-<head>
+NightCast Ver4
+Admin Dashboard Controller
 
-<meta charset="UTF-8">
+Responsible for:
+- Dashboard Statistics
+- Recent Podcasts
+- System Status
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+=================================================
+*/
 
 
-<title>
-NightCast Dashboard
-</title>
 
+document.addEventListener(
 
-<link rel="stylesheet" href="../assets/css/core.css">
-<link rel="stylesheet" href="../assets/css/layout.css">
-<link rel="stylesheet" href="../assets/css/components.css">
-<link rel="stylesheet" href="../assets/css/responsive.css">
+"DOMContentLoaded",
 
+()=>{
 
-</head>
 
+loadDashboard();
 
 
-<body>
 
+});
 
-<div class="app-container">
 
 
 
-<!-- ==========================
-SIDEBAR
-========================== -->
 
 
-<aside class="sidebar">
 
 
-<div class="brand">
 
+async function loadDashboard(){
 
-<div class="brand-icon">
 
-🎙
 
-</div>
+try{
 
 
-<div>
+Loader.show();
 
-<h2>
-NightCast
-</h2>
 
-<span>
-CMS Ver4
-</span>
 
 
-</div>
 
+await Promise.all([
 
-</div>
 
+loadPodcastStats(),
 
 
+checkSystemStatus(),
 
 
-<nav class="menu">
+loadUserInfo()
 
 
-<a class="menu-item active"
-href="dashboard.html">
+]);
 
-🏠
 
-داشبورد
 
-</a>
 
 
+Toast.success(
 
+"داشبورد آماده شد"
 
-<a class="menu-item"
-href="podcasts.html">
+);
 
-🎙
 
-پادکست‌ها
 
-</a>
 
+}
 
+catch(error){
 
 
-<a class="menu-item"
-href="media.html">
+console.error(
 
-🖼
+error
 
-مدیا
+);
 
-</a>
 
 
+Toast.error(
 
+error.message ||
 
-<a class="menu-item"
-href="books.html">
+"خطا در دریافت اطلاعات داشبورد"
 
-📚
+);
 
-کتاب‌ها
 
-</a>
 
+}
 
 
 
-<a class="menu-item"
-href="users.html">
+finally{
 
-👥
 
-کاربران
+Loader.hide();
 
-</a>
 
 
+}
 
 
-<a class="menu-item"
-href="settings.html">
 
-⚙️
+}
 
-تنظیمات
 
-</a>
 
 
 
-</nav>
 
 
 
 
 
-<button
+/*
+==============================
+LOAD PODCAST DATA
+==============================
+*/
 
-id="logoutBtn"
 
-class="btn-danger">
+async function loadPodcastStats(){
 
-خروج
 
-</button>
 
+const result =
 
+await API.get(
 
-</aside>
+"/podcasts"
 
+);
 
 
 
 
 
 
+if(!result.success){
 
 
-<!-- ==========================
-CONTENT
-========================== -->
+throw new Error(
 
+"دریافت پادکست‌ها ناموفق بود"
 
-<section class="main-container">
+);
 
 
+}
 
 
 
-<header class="top-header">
 
 
-<button
 
-id="menuToggle"
+const podcasts =
 
-class="icon-button">
+result.podcasts || [];
 
-☰
 
-</button>
 
 
 
-<h1>
 
-داشبورد مدیریت
 
-</h1>
+const counter =
 
+document.getElementById(
 
+"totalPodcasts"
 
+);
 
-<div class="header-user">
 
 
-<span id="adminName">
 
-مدیر سیستم
 
-</span>
+if(counter){
 
 
-</div>
+counter.innerHTML =
 
+podcasts.length;
 
-</header>
 
+}
 
 
 
@@ -227,459 +203,503 @@ class="icon-button">
 
 
 
+renderRecentPodcasts(
 
-<main class="dashboard-page">
+podcasts
 
+);
 
 
 
+}
 
-<!-- Statistics -->
 
 
-<section class="stats-grid">
 
 
 
-<div class="stat-card">
 
 
-<div class="stat-icon">
 
-🎙
+/*
+==============================
+RECENT PODCASTS TABLE
+==============================
+*/
 
-</div>
 
+function renderRecentPodcasts(
 
-<div>
+podcasts
 
-<h2 id="totalPodcasts">
+){
 
-0
 
-</h2>
 
+const table =
 
-<p>
+document.getElementById(
 
-پادکست‌ها
+"recentPodcasts"
 
-</p>
+);
 
 
-</div>
 
 
-</div>
+if(!table)
 
+return;
 
 
 
 
 
 
-<div class="stat-card">
+if(
 
+podcasts.length === 0
 
-<div class="stat-icon">
+){
 
-📚
 
-</div>
+table.innerHTML =
 
-
-<div>
-
-<h2 id="totalBooks">
-
-0
-
-</h2>
-
-
-<p>
-
-کتاب‌ها
-
-</p>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-<div class="stat-card">
-
-
-<div class="stat-icon">
-
-👥
-
-</div>
-
-
-<div>
-
-<h2 id="totalUsers">
-
-0
-
-</h2>
-
-
-<p>
-
-کاربران
-
-</p>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-<div class="stat-card">
-
-
-<div class="stat-icon">
-
-🖼
-
-</div>
-
-
-<div>
-
-<h2 id="totalMedia">
-
-0
-
-</h2>
-
-
-<p>
-
-فایل‌ها
-
-</p>
-
-
-</div>
-
-
-</div>
-
-
-
-
-</section>
-
-
-
-
-
-
-
-
-
-<!-- Quick Actions -->
-
-
-<section class="card">
-
-
-<h2>
-
-دسترسی سریع
-
-</h2>
-
-
-<div class="action-grid">
-
-
-
-<button
-onclick="location.href='podcasts.html'"
-class="action-btn">
-
-➕ ثبت پادکست جدید
-
-</button>
-
-
-
-
-<button
-onclick="location.href='media.html'"
-class="action-btn">
-
-🖼 مدیریت مدیا
-
-</button>
-
-
-
-
-<button
-onclick="location.href='books.html'"
-class="action-btn">
-
-📚 کتاب‌ها
-
-</button>
-
-
-
-</div>
-
-
-</section>
-
-
-
-
-
-
-
-
-
-<!-- Recent Podcasts -->
-
-
-<section class="card">
-
-
-<div class="section-header">
-
-
-<h2>
-
-آخرین پادکست‌ها
-
-</h2>
-
-
-<a href="podcasts.html">
-
-مشاهده همه
-
-</a>
-
-
-</div>
-
-
-
-
-
-<div class="table-wrapper">
-
-
-<table>
-
-
-<thead>
-
-<tr>
-
-<th>
-عنوان
-</th>
-
-
-<th>
-قسمت
-</th>
-
-
-<th>
-وضعیت
-</th>
-
-
-<th>
-تاریخ
-</th>
-
-
-</tr>
-
-</thead>
-
-
-
-
-<tbody id="recentPodcasts">
-
+`
 
 <tr>
 
 <td colspan="4">
 
-در حال دریافت اطلاعات...
+هنوز پادکستی ثبت نشده است
 
 </td>
+
+</tr>
+
+`;
+
+return;
+
+
+}
+
+
+
+
+
+
+
+
+let html="";
+
+
+
+
+
+
+
+podcasts
+
+.slice(0,5)
+
+.forEach(
+
+podcast=>{
+
+
+html +=
+
+
+`
+
+<tr>
+
+
+<td>
+
+${
+
+podcast.title || "-"
+
+}
+
+</td>
+
+
+
+
+<td>
+
+${
+
+podcast.episode_number || "-"
+
+}
+
+</td>
+
+
+
+
+<td>
+
+<span class="badge">
+
+${
+
+podcast.status || "-"
+
+}
+
+</span>
+
+
+</td>
+
+
+
+
+<td>
+
+${
+
+formatDate(
+
+podcast.created_at
+
+)
+
+}
+
+</td>
+
 
 
 </tr>
 
 
-</tbody>
+`;
 
 
 
-</table>
+}
 
+);
 
-</div>
 
 
 
-</section>
 
 
 
+table.innerHTML = html;
 
 
 
+}
 
 
 
-<!-- System Status -->
 
 
-<section class="card">
 
 
-<h2>
 
-وضعیت سیستم
 
-</h2>
+/*
+==============================
+SYSTEM CHECK
+==============================
+*/
 
 
+async function checkSystemStatus(){
 
-<div class="status-list">
 
 
-<div>
+try{
 
-<span>
-API
-</span>
 
 
-<span id="apiStatus">
+const result =
 
-بررسی...
+await API.get(
 
-</span>
+"/system"
 
+);
 
-</div>
 
 
 
 
-<div>
 
-<span>
-Database
-</span>
 
+if(result.success){
 
-<span id="databaseStatus">
 
-بررسی...
 
-</span>
+setStatus(
 
+"apiStatus",
 
-</div>
+"🟢 Online"
 
+);
 
 
 
+setStatus(
 
-<div>
+"databaseStatus",
 
-<span>
-Storage
-</span>
+"🟢 Connected"
 
+);
 
-<span id="storageStatus">
 
-بررسی...
 
-</span>
+setStatus(
 
+"storageStatus",
 
-</div>
+"🟢 Ready"
 
+);
 
 
-</div>
 
+}
 
-</section>
 
 
+}
 
+catch(error){
 
 
 
+setStatus(
 
+"apiStatus",
 
-</main>
+"🔴 Offline"
 
+);
 
 
-</section>
 
+setStatus(
 
+"databaseStatus",
 
+"نامشخص"
 
+);
 
 
 
-</div>
+setStatus(
 
+"storageStatus",
 
+"نامشخص"
 
+);
 
 
 
+}
 
 
-<script src="../assets/js/core/api.js"></script>
 
-<script src="../assets/js/core/auth.js"></script>
 
-<script src="../assets/js/core/toast.js"></script>
+}
 
-<script src="../assets/js/core/loader.js"></script>
 
 
-<script src="../assets/js/admin/dashboard.js"></script>
 
 
 
-</body>
 
-</html>
+
+
+
+function setStatus(
+
+id,
+
+text
+
+){
+
+
+
+const element =
+
+document.getElementById(id);
+
+
+
+
+if(element){
+
+
+element.innerHTML = text;
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+/*
+==============================
+USER INFO
+==============================
+*/
+
+
+async function loadUserInfo(){
+
+
+
+try{
+
+
+
+const result =
+
+await API.get(
+
+"/auth/me"
+
+);
+
+
+
+
+
+if(
+
+result.success &&
+
+result.user
+
+){
+
+
+
+const name =
+
+document.getElementById(
+
+"adminName"
+
+);
+
+
+
+
+
+if(name){
+
+
+name.innerHTML =
+
+result.user.full_name ||
+
+result.user.username;
+
+
+}
+
+
+
+}
+
+
+
+}
+
+catch(error){
+
+
+
+console.log(
+
+"User info unavailable"
+
+);
+
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+==============================
+DATE FORMAT
+==============================
+*/
+
+
+function formatDate(date){
+
+
+
+if(!date)
+
+return "-";
+
+
+
+
+
+try{
+
+
+return new Date(date)
+
+.toLocaleDateString(
+
+"fa-IR"
+
+);
+
+
+
+}
+
+catch{
+
+
+return "-";
+
+}
+
+
+
+}

@@ -1,1 +1,641 @@
+/*
+=================================================
 
+NightCast Ver4
+Components CSS
+
+Cards
+Buttons
+Forms
+Tables
+Loader
+Toast
+
+=================================================
+*/
+
+
+
+/* ==========================
+CARD
+========================== */
+
+
+.card{
+
+
+    background:
+
+    var(--card);
+
+
+    border-radius:
+
+    var(--radius);
+
+
+    padding:25px;
+
+
+    box-shadow:
+
+    var(--shadow);
+
+
+    margin-bottom:25px;
+
+
+}
+
+
+
+
+
+
+.card h2,
+.card h3{
+
+
+    margin-bottom:15px;
+
+
+}
+
+
+
+
+
+
+
+
+/* ==========================
+STAT CARD
+========================== */
+
+
+.stat-card{
+
+
+    background:white;
+
+
+    border-radius:
+
+    var(--radius);
+
+
+    padding:20px;
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    gap:20px;
+
+
+    box-shadow:
+
+    var(--shadow);
+
+
+}
+
+
+
+
+
+.stat-card h3{
+
+
+    font-size:28px;
+
+
+    margin-bottom:5px;
+
+
+}
+
+
+
+
+
+.stat-icon{
+
+
+    width:60px;
+
+
+    height:60px;
+
+
+    border-radius:50%;
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    justify-content:center;
+
+
+    background:
+
+    rgba(108,92,231,.12);
+
+
+    font-size:28px;
+
+
+}
+
+
+
+
+
+
+
+
+/* ==========================
+BUTTONS
+========================== */
+
+
+.btn{
+
+
+    padding:12px 20px;
+
+
+    border-radius:10px;
+
+
+    font-size:14px;
+
+
+    transition:.3s;
+
+
+    display:inline-flex;
+
+
+    align-items:center;
+
+
+    justify-content:center;
+
+
+    gap:8px;
+
+
+}
+
+
+
+
+
+
+.btn:hover{
+
+
+    transform:translateY(-2px);
+
+
+}
+
+
+
+
+
+.btn-primary{
+
+
+    background:
+
+    var(--primary);
+
+
+    color:white;
+
+
+}
+
+
+
+
+
+
+.btn-primary:hover{
+
+
+    background:
+
+    var(--primary-dark);
+
+
+}
+
+
+
+
+
+
+
+.btn-success{
+
+
+    background:
+
+    var(--success);
+
+
+    color:white;
+
+
+}
+
+
+
+
+
+
+
+.btn-danger{
+
+
+    background:
+
+    var(--danger);
+
+
+    color:white;
+
+
+}
+
+
+
+
+
+
+.btn-sm{
+
+
+    padding:7px 12px;
+
+
+    font-size:12px;
+
+
+}
+
+
+
+
+
+
+
+
+/* ==========================
+FORMS
+========================== */
+
+
+.form-group{
+
+
+    margin-bottom:20px;
+
+
+}
+
+
+
+
+.form-group label{
+
+
+    display:block;
+
+
+    margin-bottom:8px;
+
+
+    font-weight:bold;
+
+
+}
+
+
+
+
+
+textarea{
+
+
+    resize:vertical;
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ==========================
+BADGE
+========================== */
+
+
+.badge{
+
+
+    display:inline-block;
+
+
+    padding:5px 12px;
+
+
+    border-radius:20px;
+
+
+    font-size:12px;
+
+
+    font-weight:bold;
+
+
+}
+
+
+
+
+
+.badge-success{
+
+
+    background:
+
+    rgba(0,184,148,.15);
+
+
+    color:
+
+    var(--success);
+
+
+}
+
+
+
+
+
+.badge-danger{
+
+
+    background:
+
+    rgba(214,48,49,.15);
+
+
+    color:
+
+    var(--danger);
+
+
+}
+
+
+
+
+
+
+
+
+/* ==========================
+SYSTEM STATUS
+========================== */
+
+
+.system-status{
+
+
+    display:flex;
+
+
+    flex-direction:column;
+
+
+    gap:12px;
+
+
+}
+
+
+
+
+
+.status-row{
+
+
+    display:flex;
+
+
+    justify-content:space-between;
+
+
+    align-items:center;
+
+
+    padding:10px 0;
+
+
+    border-bottom:
+
+    1px solid var(--border);
+
+
+}
+
+
+
+
+
+
+
+
+/* ==========================
+TOAST
+========================== */
+
+
+.toast{
+
+
+    position:fixed;
+
+
+    left:30px;
+
+
+    bottom:30px;
+
+
+    min-width:250px;
+
+
+    padding:15px 20px;
+
+
+    background:#2d3436;
+
+
+    color:white;
+
+
+    border-radius:12px;
+
+
+    box-shadow:
+
+    var(--shadow);
+
+
+    opacity:0;
+
+
+    transform:translateY(20px);
+
+
+    transition:.3s;
+
+
+    z-index:999;
+
+
+}
+
+
+
+
+
+.toast.show{
+
+
+    opacity:1;
+
+
+    transform:none;
+
+
+}
+
+
+
+
+
+
+
+
+/* ==========================
+LOADER
+========================== */
+
+
+.loader-overlay{
+
+
+    position:fixed;
+
+
+    inset:0;
+
+
+    background:
+
+    rgba(255,255,255,.75);
+
+
+    display:none;
+
+
+    align-items:center;
+
+
+    justify-content:center;
+
+
+    z-index:1000;
+
+
+}
+
+
+
+
+
+.loader-overlay.active{
+
+
+    display:flex;
+
+
+}
+
+
+
+
+
+
+.spinner{
+
+
+    width:45px;
+
+
+    height:45px;
+
+
+    border-radius:50%;
+
+
+    border:
+
+    5px solid #ddd;
+
+
+    border-top-color:
+
+    var(--primary);
+
+
+    animation:
+
+    spin 1s linear infinite;
+
+
+}
+
+
+
+
+
+@keyframes spin{
+
+
+    to{
+
+        transform:rotate(360deg);
+
+    }
+
+
+  }

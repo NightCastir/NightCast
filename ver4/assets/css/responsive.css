@@ -2,59 +2,55 @@
 =================================================
 
 NightCast Ver4
-Responsive CSS
+Responsive System
 
-Mobile
+Mobile First
 Tablet
-App Ready Layout
+Desktop
+APK Ready
 
 =================================================
 */
-
-
-
 
 
 /* ==========================
 TABLET
 ========================== */
 
-
 @media (max-width:1100px){
 
 
-    :root{
-
-        --sidebar-width:220px;
-
-    }
-
-
-
-    .content{
-
-
-        padding:20px;
-
-
-    }
-
-
-
-    .dashboard-grid{
-
+    .stats-grid{
 
         grid-template-columns:
 
         repeat(2,1fr);
 
+    }
+
+
+
+    .sidebar{
+
+        width:260px;
 
     }
 
 
 
-}
+    .main-area{
 
+        width:
+
+        calc(100% - 260px);
+
+
+        margin-right:260px;
+
+    }
+
+
+}
 
 
 
@@ -74,9 +70,20 @@ MOBILE
     html,
     body{
 
-
         overflow-x:hidden;
 
+        touch-action:manipulation;
+
+    }
+
+
+
+
+
+
+    .menu-toggle{
+
+        display:flex;
 
     }
 
@@ -93,13 +100,13 @@ MOBILE
         translateX(100%);
 
 
-        transition:.3s;
+        box-shadow:
 
-
-        width:260px;
+        var(--shadow-lg);
 
 
     }
+
 
 
 
@@ -120,7 +127,7 @@ MOBILE
 
 
 
-    .main{
+    .main-area{
 
 
         width:100%;
@@ -136,21 +143,8 @@ MOBILE
 
 
 
-    #btnMenu{
 
-
-        display:flex;
-
-
-    }
-
-
-
-
-
-
-
-    .header{
+    .app-header{
 
 
         padding:
@@ -158,7 +152,18 @@ MOBILE
         0 15px;
 
 
-        height:65px;
+    }
+
+
+
+
+
+
+
+    .user-box span{
+
+
+        display:none;
 
 
     }
@@ -168,10 +173,26 @@ MOBILE
 
 
 
-    .header h2{
+
+    .content-area{
 
 
-        font-size:18px;
+        padding:
+
+        16px;
+
+
+    }
+
+
+
+
+
+
+    .page-title{
+
+
+        font-size:22px;
 
 
     }
@@ -182,20 +203,8 @@ MOBILE
 
 
 
-    .content{
 
-
-        padding:15px;
-
-
-    }
-
-
-
-
-
-
-    .dashboard-grid{
+    .stats-grid{
 
 
         grid-template-columns:
@@ -203,20 +212,7 @@ MOBILE
         1fr;
 
 
-    }
-
-
-
-
-
-
-
-    .form-grid{
-
-
-        grid-template-columns:
-
-        1fr;
+        gap:14px;
 
 
     }
@@ -227,21 +223,13 @@ MOBILE
 
 
 
-
-    .page-header{
-
-
-        flex-direction:column;
+    .stat-card{
 
 
-        align-items:flex-start;
-
-
-        gap:15px;
+        padding:18px;
 
 
     }
-
 
 
 
@@ -255,10 +243,11 @@ MOBILE
         padding:18px;
 
 
-        border-radius:12px;
+        border-radius:18px;
 
 
     }
+
 
 
 
@@ -279,23 +268,53 @@ MOBILE
 
 
 
-
-    .toast{
-
-
-        left:15px;
+    .table-container{
 
 
-        right:15px;
+        overflow-x:auto;
 
 
-        bottom:20px;
-
-
-        min-width:auto;
+        -webkit-overflow-scrolling:touch;
 
 
     }
+
+
+
+
+
+
+
+
+    .btn{
+
+
+        min-height:44px;
+
+
+        padding:
+
+        12px 18px;
+
+
+    }
+
+
+
+
+
+
+    input,
+    textarea,
+    select{
+
+
+        font-size:16px;
+
+
+    }
+
+
 
 
 
@@ -314,17 +333,14 @@ SMALL MOBILE
 ========================== */
 
 
-@media(max-width:420px){
+@media (max-width:420px){
 
 
 
-    .stat-card{
+    .app-header{
 
 
-        flex-direction:column;
-
-
-        text-align:center;
+        height:60px;
 
 
     }
@@ -334,13 +350,104 @@ SMALL MOBILE
 
 
 
-    .btn{
+    .sidebar{
 
 
-        width:100%;
+        width:280px;
 
 
     }
+
+
+
+
+
+
+
+    .stat-number{
+
+
+        font-size:24px;
+
+
+    }
+
+
+
+
+
+
+    .card{
+
+
+        padding:15px;
+
+
+    }
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ==========================
+LANDSCAPE MOBILE
+========================== */
+
+
+@media (max-height:500px)
+and
+(max-width:900px){
+
+
+
+    .sidebar-menu{
+
+
+        padding-bottom:60px;
+
+
+    }
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ==========================
+LARGE DESKTOP
+========================== */
+
+
+@media (min-width:1400px){
+
+
+
+    .content-area{
+
+
+        max-width:1600px;
+
+
+        margin:auto;
+
+
+    }
+
 
 
 

@@ -7,15 +7,19 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<meta name="theme-color" content="#6c5ce7">
 
 <title>
-NightCast Dashboard
+NightCast Admin Dashboard
 </title>
 
 
 <link rel="stylesheet" href="../assets/css/core.css">
+
 <link rel="stylesheet" href="../assets/css/layout.css">
+
 <link rel="stylesheet" href="../assets/css/components.css">
+
 <link rel="stylesheet" href="../assets/css/responsive.css">
 
 
@@ -26,7 +30,7 @@ NightCast Dashboard
 <body>
 
 
-<div class="app-container">
+<div class="app-layout">
 
 
 
@@ -35,31 +39,18 @@ SIDEBAR
 ========================== -->
 
 
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar">
 
 
-<div class="brand">
+<div class="sidebar-logo">
 
-
-<div class="brand-icon">
-
-🎙
-
-</div>
-
-
-<div>
-
-<h2>
-NightCast
-</h2>
 
 <span>
-CMS Ver4
+◉
 </span>
 
 
-</div>
+NightCast
 
 
 </div>
@@ -68,13 +59,13 @@ CMS Ver4
 
 
 
-<nav class="menu">
+<nav class="sidebar-menu">
 
 
-<a class="menu-item active"
-href="dashboard.html">
 
-🏠
+<a href="dashboard.html" class="active">
+
+<span>🏠</span>
 
 داشبورد
 
@@ -82,11 +73,9 @@ href="dashboard.html">
 
 
 
+<a href="podcasts.html">
 
-<a class="menu-item"
-href="podcasts.html">
-
-🎙
+<span>🎙</span>
 
 پادکست‌ها
 
@@ -94,23 +83,19 @@ href="podcasts.html">
 
 
 
+<a href="media.html">
 
-<a class="menu-item"
-href="media.html">
+<span>🖼</span>
 
-🖼
-
-مدیا
+مدیریت رسانه
 
 </a>
 
 
 
+<a href="books.html">
 
-<a class="menu-item"
-href="books.html">
-
-📚
+<span>📚</span>
 
 کتاب‌ها
 
@@ -118,11 +103,9 @@ href="books.html">
 
 
 
+<a href="users.html">
 
-<a class="menu-item"
-href="users.html">
-
-👥
+<span>👥</span>
 
 کاربران
 
@@ -130,11 +113,9 @@ href="users.html">
 
 
 
+<a href="settings.html">
 
-<a class="menu-item"
-href="settings.html">
-
-⚙️
+<span>⚙</span>
 
 تنظیمات
 
@@ -148,15 +129,18 @@ href="settings.html">
 
 
 
-<button
 
-id="logoutBtn"
+<div class="sidebar-footer">
 
-class="btn-danger">
+
+<button class="btn btn-danger" id="logoutBtn">
 
 خروج
 
 </button>
+
+
+</div>
 
 
 
@@ -167,28 +151,34 @@ class="btn-danger">
 
 
 
+<div class="overlay" id="overlay"></div>
+
+
+
+
+
 
 
 
 <!-- ==========================
-CONTENT
+MAIN
 ========================== -->
 
 
-<section class="main-container">
+<div class="main-area">
 
 
 
 
 
-<header class="top-header">
+<header class="app-header">
 
 
-<button
 
-id="menuToggle"
+<div class="header-right">
 
-class="icon-button">
+
+<button class="menu-toggle" id="menuToggle">
 
 ☰
 
@@ -196,29 +186,67 @@ class="icon-button">
 
 
 
-<h1>
+<h3>
 
 داشبورد مدیریت
 
-</h1>
-
-
-
-
-<div class="header-user">
-
-
-<span id="adminName">
-
-مدیر سیستم
-
-</span>
+</h3>
 
 
 </div>
 
 
+
+
+
+
+
+<div class="header-left">
+
+
+<div class="user-box">
+
+
+<div class="avatar">
+
+A
+
+</div>
+
+
+<span id="username">
+
+Admin
+
+</span>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
 </header>
+<!-- ==========================
+CONTENT AREA
+========================== -->
+
+
+<section class="content-area">
+
+
+
+
+
+<div class="page-title">
+
+نمای کلی سیستم
+
+</div>
 
 
 
@@ -227,17 +255,14 @@ class="icon-button">
 
 
 
-
-<main class="dashboard-page">
-
-
-
+<!-- ==========================
+STAT CARDS
+========================== -->
 
 
-<!-- Statistics -->
+<div class="stats-grid">
 
 
-<section class="stats-grid">
 
 
 
@@ -253,24 +278,26 @@ class="icon-button">
 
 <div>
 
-<h2 id="totalPodcasts">
+<div class="stat-number" id="totalPodcasts">
 
 0
 
-</h2>
+</div>
 
 
-<p>
+<div class="stat-label">
 
-پادکست‌ها
-
-</p>
-
+تعداد پادکست‌ها
 
 </div>
 
 
 </div>
+
+
+</div>
+
+
 
 
 
@@ -290,24 +317,26 @@ class="icon-button">
 
 <div>
 
-<h2 id="totalBooks">
+<div class="stat-number" id="totalBooks">
 
 0
 
-</h2>
+</div>
 
 
-<p>
+<div class="stat-label">
 
 کتاب‌ها
 
-</p>
+</div>
+
+
+</div>
 
 
 </div>
 
 
-</div>
 
 
 
@@ -327,24 +356,26 @@ class="icon-button">
 
 <div>
 
-<h2 id="totalUsers">
+<div class="stat-number" id="totalUsers">
 
 0
 
-</h2>
+</div>
 
 
-<p>
+<div class="stat-label">
 
 کاربران
 
-</p>
+</div>
+
+
+</div>
 
 
 </div>
 
 
-</div>
 
 
 
@@ -357,26 +388,23 @@ class="icon-button">
 
 <div class="stat-icon">
 
-🖼
+▶
 
 </div>
 
 
 <div>
 
-<h2 id="totalMedia">
+<div class="stat-number" id="totalPlays">
 
 0
 
-</h2>
+</div>
 
 
-<p>
+<div class="stat-label">
 
-فایل‌ها
-
-</p>
-
+شنیده‌ها
 
 </div>
 
@@ -384,71 +412,16 @@ class="icon-button">
 </div>
 
 
-
-
-</section>
-
+</div>
 
 
 
-
-
-
-
-
-<!-- Quick Actions -->
-
-
-<section class="card">
-
-
-<h2>
-
-دسترسی سریع
-
-</h2>
-
-
-<div class="action-grid">
-
-
-
-<button
-onclick="location.href='podcasts.html'"
-class="action-btn">
-
-➕ ثبت پادکست جدید
-
-</button>
-
-
-
-
-<button
-onclick="location.href='media.html'"
-class="action-btn">
-
-🖼 مدیریت مدیا
-
-</button>
-
-
-
-
-<button
-onclick="location.href='books.html'"
-class="action-btn">
-
-📚 کتاب‌ها
-
-</button>
 
 
 
 </div>
 
 
-</section>
 
 
 
@@ -456,41 +429,62 @@ class="action-btn">
 
 
 
+<!-- ==========================
+MAIN GRID
+========================== -->
 
 
-<!-- Recent Podcasts -->
+<div style="
+margin-top:25px;
+display:grid;
+grid-template-columns:2fr 1fr;
+gap:20px;
+">
 
 
-<section class="card">
 
 
-<div class="section-header">
 
 
-<h2>
+
+<!-- RECENT PODCASTS -->
+
+
+<div class="card">
+
+
+<div class="card-header">
+
+
+<div class="card-title">
 
 آخرین پادکست‌ها
 
-</h2>
+</div>
 
 
-<a href="podcasts.html">
+
+<a href="podcasts.html" class="btn btn-primary">
 
 مشاهده همه
 
 </a>
 
 
+
 </div>
 
 
 
 
 
-<div class="table-wrapper">
+
+<div class="table-container">
+
 
 
 <table>
+
 
 
 <thead>
@@ -499,11 +493,6 @@ class="action-btn">
 
 <th>
 عنوان
-</th>
-
-
-<th>
-قسمت
 </th>
 
 
@@ -519,6 +508,7 @@ class="action-btn">
 
 </tr>
 
+
 </thead>
 
 
@@ -529,7 +519,7 @@ class="action-btn">
 
 <tr>
 
-<td colspan="4">
+<td colspan="3">
 
 در حال دریافت اطلاعات...
 
@@ -543,14 +533,16 @@ class="action-btn">
 
 
 
+
 </table>
 
 
+
 </div>
 
 
 
-</section>
+</div>
 
 
 
@@ -560,33 +552,42 @@ class="action-btn">
 
 
 
-<!-- System Status -->
+<!-- SYSTEM STATUS -->
 
 
-<section class="card">
+<div class="card">
 
 
-<h2>
+<div class="card-header">
+
+
+<div class="card-title">
 
 وضعیت سیستم
 
-</h2>
+</div>
+
+
+</div>
 
 
 
-<div class="status-list">
 
 
-<div>
+
+<div class="system-item">
+
 
 <span>
-API
+
+API Worker
+
 </span>
 
 
-<span id="apiStatus">
+<span class="badge badge-success">
 
-بررسی...
+Online
 
 </span>
 
@@ -596,16 +597,20 @@ API
 
 
 
-<div>
+
+<div class="system-item">
+
 
 <span>
+
 Database
+
 </span>
 
 
-<span id="databaseStatus">
+<span class="badge badge-success">
 
-بررسی...
+Connected
 
 </span>
 
@@ -616,16 +621,20 @@ Database
 
 
 
-<div>
+
+<div class="system-item">
+
 
 <span>
-Storage
+
+Media Storage
+
 </span>
 
 
-<span id="storageStatus">
+<span class="badge badge-success">
 
-بررسی...
+GitHub
 
 </span>
 
@@ -634,11 +643,83 @@ Storage
 
 
 
+
+
+
 </div>
 
 
+
+
+
+
+</div>
+
+  <!-- ==========================
+ACTIVITY
+========================== -->
+
+
+<div class="card" style="margin-top:20px;">
+
+
+<div class="card-header">
+
+
+<div class="card-title">
+
+آخرین فعالیت‌ها
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div id="activityList">
+
+
+
+<div class="empty-state">
+
+هنوز فعالیتی ثبت نشده است
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
 </section>
 
+<!-- END CONTENT -->
+
+
+
+
+
+</div>
+
+<!-- END MAIN AREA -->
+
+
+
+</div>
+
+<!-- END APP LAYOUT -->
 
 
 
@@ -646,16 +727,45 @@ Storage
 
 
 
-</main>
+<!-- ==========================
+GLOBAL LOADER
+========================== -->
+
+
+<div id="globalLoader" class="loader-overlay">
+
+
+<div class="loader-box">
+
+
+<div class="loader-circle"></div>
+
+
+<p>
+
+در حال پردازش...
+
+</p>
+
+
+</div>
+
+
+</div>
 
 
 
-</section>
 
 
 
 
 
+<!-- ==========================
+TOAST CONTAINER
+========================== -->
+
+
+<div id="toastContainer">
 
 
 </div>
@@ -680,6 +790,8 @@ Storage
 
 
 
+
 </body>
 
-  </html>
+</html>
+

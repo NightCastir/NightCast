@@ -1362,3 +1362,143 @@ NOTIFICATION
 }
 
 
+/*
+=========================
+LOGIN PAGE
+=========================
+*/
+
+
+.login-container {
+
+    min-height:100vh;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:var(--background);
+
+    padding:20px;
+
+}
+
+
+
+.login-card {
+
+    width:100%;
+
+    max-width:420px;
+
+    background:var(--surface);
+
+    padding:35px;
+
+    border-radius:20px;
+
+    box-shadow:var(--shadow);
+
+}
+
+
+
+.login-card h2 {
+
+    text-align:center;
+
+    margin-bottom:30px;
+
+    color:var(--dark);
+
+}
+
+
+
+.login-card label {
+
+    display:block;
+
+    margin-bottom:8px;
+
+    color:var(--muted);
+
+    font-size:14px;
+
+}
+
+
+
+.login-card input {
+
+
+    width:100%;
+
+    padding:14px;
+
+    margin-bottom:20px;
+
+    border:
+
+    1px solid var(--border);
+
+    border-radius:12px;
+
+    outline:none;
+
+    font-family:inherit;
+
+}
+
+
+
+.login-card input:focus {
+
+    border-color:var(--primary);
+
+}
+
+
+
+.login-button {
+
+
+    width:100%;
+
+    padding:14px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:var(--primary);
+
+    color:white;
+
+    cursor:pointer;
+
+    font-size:16px;
+
+    font-weight:700;
+
+}
+
+
+
+.login-button:hover {
+
+    opacity:.9;
+
+}
+
+
+
+#message {
+
+    margin-top:20px;
+
+    text-align:center;
+
+}

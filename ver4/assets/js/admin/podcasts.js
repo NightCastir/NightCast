@@ -1,19 +1,22 @@
+
 /*
 =================================================
 
-NightCast Ver5
+NightCast Ver6
 Admin Podcasts Manager
 
-Professional Version
+Professional Stable Version
 
 Responsible for:
 - Podcast List
 - Create Podcast
 - Edit Podcast
 - Delete Podcast
+- Upload Cover
 - Upload Audio
 - Search
 - Filter
+- Messages
 
 =================================================
 */
@@ -29,497 +32,19 @@ class PodcastsManager {
 
 
 
-    constructor(){
+constructor(){
 
 
-        this.podcasts = [];
+    this.podcasts = [];
 
-        this.currentPage = 1;
+    this.currentPage = 1;
 
-        this.limit = 20;
+    this.limit = 20;
 
-        this.total = 0;
+    this.editingId = null;
 
-        this.editingId = null;
 
-
-        this.init();
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-    /*
-    ==========================
-    INIT
-    ==========================
-    */
-
-
-    async init(){
-
-
-
-        try{
-
-
-
-            if(
-
-                window.Auth &&
-
-                !Auth.requireAuth()
-
-            ){
-
-
-                return;
-
-
-            }
-
-
-
-
-
-
-
-            this.bindEvents();
-
-
-
-
-            await this.load();
-
-
-
-
-        }
-
-        catch(error){
-
-
-
-            console.error(
-
-                "PODCAST INIT ERROR:",
-
-                error
-
-            );
-
-
-
-            Toast.error(
-
-                "خطا در راه‌اندازی مدیریت پادکست‌ها"
-
-            );
-
-
-
-        }
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-    /*
-    ==========================
-    EVENTS
-    ==========================
-    */
-
-
-    bindEvents(){
-
-
-
-        /*
-        New Podcast
-        */
-
-
-        document
-
-        .getElementById(
-
-            "btnNewPodcast"
-
-        )
-
-        ?.addEventListener(
-
-            "click",
-
-            ()=>{
-
-                this.openCreate();
-
-            }
-
-        );
-
-
-
-
-
-
-
-
-        /*
-        Save
-        */
-
-
-        document
-
-        .getElementById(
-
-            "btnSavePodcast"
-
-        )
-
-        ?.addEventListener(
-
-            "click",
-
-            ()=>{
-
-                this.save();
-
-            }
-
-        );
-
-
-
-
-
-
-
-
-        /*
-        Cancel Modal
-        */
-
-
-        document
-
-        .getElementById(
-
-            "btnCancel"
-
-        )
-
-        ?.addEventListener(
-
-            "click",
-
-            ()=>{
-
-                this.closeModal();
-
-            }
-
-        );
-
-
-
-
-
-
-
-
-        /*
-        Close Modal X
-        */
-
-
-        document
-
-        .getElementById(
-
-            "closeModal"
-
-        )
-
-        ?.addEventListener(
-
-            "click",
-
-            ()=>{
-
-                this.closeModal();
-
-            }
-
-        );
-
-
-
-
-
-
-
-
-        /*
-        Refresh
-        */
-
-
-        document
-
-        .getElementById(
-
-            "btnRefresh"
-
-        )
-
-        ?.addEventListener(
-
-            "click",
-
-            ()=>{
-
-                this.load();
-
-            }
-
-        );
-
-
-
-
-
-
-
-
-        /*
-        Search
-
-        */
-
-
-        document
-
-        .getElementById(
-
-            "searchInput"
-
-        )
-
-        ?.addEventListener(
-
-            "input",
-
-            ()=>{
-
-
-                this.render(
-
-                    this.filterData()
-
-                );
-
-
-            }
-
-        );
-
-
-
-
-
-
-
-
-        /*
-        Status Filter
-        */
-
-
-        document
-
-        .getElementById(
-
-            "statusFilter"
-
-        )
-
-        ?.addEventListener(
-
-            "change",
-
-            ()=>{
-
-
-                this.render(
-
-                    this.filterData()
-
-                );
-
-
-            }
-
-        );
-
-
-
-
-
-
-
-
-        /*
-        Sort
-
-        */
-
-
-        document
-
-        .getElementById(
-
-            "sortBy"
-
-        )
-
-        ?.addEventListener(
-
-            "change",
-
-            ()=>{
-
-
-                this.render(
-
-                    this.filterData()
-
-                );
-
-
-            }
-
-        );
-
-
-
-    }
-    /*
-=================================================
-
-NightCast Ver5
-Admin Podcasts Manager
-
-Part 2
-
-Responsible for:
-- Load Podcasts
-- Render Table
-- Search
-- Filter
-- Sort
-
-=================================================
-*/
-
-
-/*
-==========================
-LOAD PODCASTS
-==========================
-*/
-
-
-async load(){
-
-
-    try{
-
-
-        Loader.show(
-            "در حال دریافت پادکست‌ها..."
-        );
-
-
-
-        const result = await API.get(
-            "/dashboard/latest"
-        );
-
-
-
-        if(
-            !result ||
-            !result.success
-        ){
-
-            throw new Error(
-                result.message ||
-                "خطا در دریافت پادکست‌ها"
-            );
-
-        }
-
-
-
-        this.podcasts =
-
-        result.podcasts || [];
-
-
-
-        this.applyFilters();
-
-
-
-    }
-
-
-    catch(error){
-
-
-        console.error(
-
-            "LOAD PODCAST ERROR:",
-            error
-
-        );
-
-
-        Toast.error(
-            error.message
-        );
-
-
-    }
-
-
-    finally{
-
-
-        Loader.hide();
-
-
-    }
+    this.init();
 
 
 }
@@ -530,10 +55,577 @@ async load(){
 
 
 
+
 /*
-==========================
-FILTER PROCESS
-==========================
+=================================================
+INIT
+=================================================
+*/
+
+
+async init(){
+
+
+try{
+
+
+    if(
+        window.Auth &&
+        !Auth.requireAuth()
+    ){
+
+        return;
+
+    }
+
+
+
+
+    this.bindEvents();
+
+
+
+    await this.load();
+
+
+
+}
+
+catch(error){
+
+
+    console.error(
+        "PODCAST INIT ERROR:",
+        error
+    );
+
+
+    this.showError(
+        "خطا در راه‌اندازی مدیریت پادکست‌ها"
+    );
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+=================================================
+EVENTS
+=================================================
+*/
+
+
+bindEvents(){
+
+
+
+/*
+---------------------------------
+NEW PODCAST
+---------------------------------
+*/
+
+
+document
+.getElementById("btnNewPodcast")
+?.addEventListener(
+"click",
+()=>{
+
+    this.openCreate();
+
+}
+
+);
+
+
+
+
+
+
+
+
+/*
+---------------------------------
+SAVE
+---------------------------------
+*/
+
+
+document
+.getElementById("btnSavePodcast")
+?.addEventListener(
+"click",
+()=>{
+
+    this.save();
+
+}
+
+);
+
+
+
+
+
+
+
+
+/*
+---------------------------------
+CANCEL
+---------------------------------
+*/
+
+
+document
+.getElementById("btnCancel")
+?.addEventListener(
+"click",
+()=>{
+
+    this.closeModal();
+
+}
+
+);
+
+
+
+
+
+
+
+
+/*
+---------------------------------
+CLOSE MODAL
+---------------------------------
+*/
+
+
+document
+.getElementById("closeModal")
+?.addEventListener(
+"click",
+()=>{
+
+    this.closeModal();
+
+}
+
+);
+
+
+
+
+
+
+
+
+/*
+---------------------------------
+REFRESH
+---------------------------------
+*/
+
+
+document
+.getElementById("btnRefresh")
+?.addEventListener(
+"click",
+()=>{
+
+    this.load();
+
+}
+
+);
+
+
+
+
+
+
+
+
+/*
+---------------------------------
+SEARCH
+---------------------------------
+*/
+
+
+document
+.getElementById("searchInput")
+?.addEventListener(
+"input",
+()=>{
+
+    this.applyFilters();
+
+}
+
+);
+
+
+
+
+
+
+
+
+/*
+---------------------------------
+STATUS FILTER
+---------------------------------
+*/
+
+
+document
+.getElementById("statusFilter")
+?.addEventListener(
+"change",
+()=>{
+
+    this.applyFilters();
+
+}
+
+);
+
+
+
+
+
+
+
+
+/*
+---------------------------------
+SORT
+---------------------------------
+*/
+
+
+document
+.getElementById("sortBy")
+?.addEventListener(
+"change",
+()=>{
+
+    this.applyFilters();
+
+}
+
+);
+
+
+
+
+
+
+
+
+/*
+---------------------------------
+UPLOAD COVER
+---------------------------------
+*/
+
+
+document
+.getElementById("btnUploadCover")
+?.addEventListener(
+"click",
+()=>{
+
+    this.uploadCover();
+
+}
+
+);
+
+
+
+
+
+
+
+
+/*
+---------------------------------
+UPLOAD AUDIO
+---------------------------------
+*/
+
+
+document
+.getElementById("btnUploadAudio")
+?.addEventListener(
+"click",
+()=>{
+
+    this.uploadAudio();
+
+}
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+=================================================
+OPEN CREATE
+=================================================
+*/
+
+
+openCreate(){
+
+
+
+this.resetForm();
+
+
+
+
+this.openModal();
+
+
+
+
+this.showSuccess(
+"فرم ثبت پادکست آماده است"
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+/*
+=================================================
+OPEN MODAL
+=================================================
+*/
+
+
+openModal(){
+
+
+
+const modal =
+
+document.getElementById(
+"podcastModal"
+);
+
+
+
+
+if(modal){
+
+
+    modal.classList.add(
+        "show"
+    );
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+=================================================
+CLOSE MODAL
+=================================================
+*/
+
+
+closeModal(){
+
+
+
+const modal =
+
+document.getElementById(
+"podcastModal"
+);
+
+
+
+
+if(modal){
+
+
+    modal.classList.remove(
+        "show"
+    );
+
+
+}
+
+
+
+}
+
+/*
+=================================================
+LOAD PODCASTS
+=================================================
+*/
+
+
+async load(){
+
+
+try{
+
+
+    if(window.Loader){
+
+        Loader.show(
+            "در حال دریافت پادکست‌ها..."
+        );
+
+    }
+
+
+
+
+
+    const result = await API.get(
+        "/dashboard/latest"
+    );
+
+
+
+
+
+
+    if(
+        !result ||
+        !result.success
+    ){
+
+
+        throw new Error(
+
+            result?.message ||
+
+            "دریافت پادکست‌ها ناموفق بود"
+
+        );
+
+
+    }
+
+
+
+
+
+
+    this.podcasts =
+
+    result.podcasts || [];
+
+
+
+
+
+
+    this.applyFilters();
+
+
+
+
+
+}
+
+catch(error){
+
+
+    console.error(
+        "LOAD PODCAST ERROR:",
+        error
+    );
+
+
+
+    this.showError(
+        error.message
+    );
+
+
+
+}
+
+finally{
+
+
+    if(window.Loader){
+
+        Loader.hide();
+
+    }
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+=================================================
+FILTER
+=================================================
 */
 
 
@@ -541,23 +633,26 @@ applyFilters(){
 
 
 
-    let list = [
+let list = [
 
-        ...this.podcasts
+    ...this.podcasts
 
-    ];
+];
 
 
 
 
 
-    const search =
 
-    document.getElementById(
 
-        "searchInput"
+const search =
 
-    )?.value.trim();
+document
+.getElementById(
+"searchInput"
+)
+?.value
+.trim();
 
 
 
@@ -565,36 +660,38 @@ applyFilters(){
 
 
 
-    const status =
+const status =
 
-    document.getElementById(
+document
+.getElementById(
+"statusFilter"
+)
+?.value;
 
-        "statusFilter"
 
-    )?.value;
 
 
 
 
 
 
+if(search){
 
 
-    if(search){
 
+list = list.filter(
 
-        list = list.filter(
+item =>
 
-            item =>
+item.title &&
 
-            item.title &&
+item.title.includes(search)
 
-            item.title.includes(search)
+);
 
-        );
 
 
-    }
+}
 
 
 
@@ -603,35 +700,37 @@ applyFilters(){
 
 
 
-    if(status){
+if(status){
 
 
-        list = list.filter(
 
-            item =>
+list = list.filter(
 
-            item.status === status
+item =>
 
-        );
+item.status === status
 
+);
 
-    }
 
 
+}
 
 
 
 
 
 
-    const sort =
 
-    document.getElementById(
 
-        "sortBy"
 
-    )?.value;
+const sort =
 
+document
+.getElementById(
+"sortBy"
+)
+?.value;
 
 
 
@@ -639,81 +738,83 @@ applyFilters(){
 
 
 
-    if(sort==="newest"){
+if(sort === "newest"){
 
 
 
-        list.sort(
+list.sort(
 
-            (a,b)=>
+(a,b)=>
 
-            new Date(b.created_at)
+new Date(b.created_at)
 
-            -
+-
 
-            new Date(a.created_at)
+new Date(a.created_at)
 
-        );
+);
 
 
-    }
 
+}
 
 
 
 
 
-    else if(sort==="oldest"){
 
 
+if(sort === "oldest"){
 
-        list.sort(
 
-            (a,b)=>
 
-            new Date(a.created_at)
+list.sort(
 
-            -
+(a,b)=>
 
-            new Date(b.created_at)
+new Date(a.created_at)
 
-        );
+-
 
+new Date(b.created_at)
 
-    }
+);
 
 
 
+}
 
 
 
-    else if(sort==="title"){
 
 
 
-        list.sort(
 
-            (a,b)=>
+if(sort === "title"){
 
-            a.title.localeCompare(
 
-                b.title
 
-            )
+list.sort(
 
-        );
+(a,b)=>
 
+(a.title || "")
+.localeCompare(
+(b.title || "")
+)
 
-    }
+);
 
 
 
+}
 
 
 
 
 
-    this.render(list);
+
+this.render(list);
 
 
 
@@ -728,9 +829,9 @@ applyFilters(){
 
 
 /*
-==========================
+=================================================
 RENDER TABLE
-==========================
+=================================================
 */
 
 
@@ -738,29 +839,29 @@ render(list){
 
 
 
-    const tbody =
+const tbody =
 
-    document.getElementById(
+document.getElementById(
+"podcastsTable"
+);
 
-        "podcastsTable"
 
-    );
 
 
 
 
-    if(!tbody){
+if(!tbody){
 
-        return;
+    return;
 
-    }
+}
 
 
 
 
 
 
-    tbody.innerHTML="";
+tbody.innerHTML = "";
 
 
 
@@ -768,278 +869,25 @@ render(list){
 
 
 
-    const count =
 
-    document.getElementById(
+const count =
 
-        "podcastCount"
+document.getElementById(
+"podcastCount"
+);
 
-    );
 
 
 
-    if(count){
 
 
-        count.innerHTML =
+if(count){
 
-        `${list.length} پادکست`;
 
 
-    }
+count.innerHTML =
 
-
-
-
-
-
-
-
-
-    if(list.length===0){
-
-
-
-        tbody.innerHTML = `
-
-
-        <tr>
-
-            <td colspan="7"
-
-            class="empty-state">
-
-
-            پادکستی یافت نشد
-
-
-            </td>
-
-        </tr>
-
-
-        `;
-
-
-
-        return;
-
-
-    }
-
-
-
-
-
-
-
-
-    list.forEach(
-
-        (podcast,index)=>{
-
-
-
-
-
-            tbody.innerHTML += `
-
-
-            <tr>
-
-
-            <td>
-
-            ${index+1}
-
-            </td>
-
-
-
-
-            <td>
-
-
-            ${
-
-            this.escapeHTML(
-
-                podcast.title ||
-
-                "-"
-
-            )
-
-            }
-
-
-            </td>
-
-
-
-
-
-
-            <td>
-
-
-            ${
-
-            podcast.book_name ||
-
-            "-"
-
-            }
-
-
-            </td>
-
-
-
-
-
-
-            <td>
-
-
-            ${
-
-            podcast.episode_number ||
-
-            1
-
-            }
-
-
-            </td>
-
-
-
-
-
-
-            <td>
-
-
-            <span class="badge ${
-            
-            podcast.status==="active"
-
-            ?
-
-            "badge-success"
-
-            :
-
-            "badge-secondary"
-
-            }">
-
-
-            ${
-
-            podcast.status==="active"
-
-            ?
-
-            "منتشر شده"
-
-            :
-
-            "پیش‌نویس"
-
-            }
-
-
-            </span>
-
-
-            </td>
-
-
-
-
-
-
-
-            <td>
-
-
-            ${
-
-            this.formatDate(
-
-                podcast.created_at
-
-            )
-
-            }
-
-
-            </td>
-
-
-
-
-
-
-
-            <td>
-
-
-            <div class="action-group">
-
-
-
-            <button
-
-            class="action-btn action-edit"
-
-            onclick="podcastsManager.edit(${podcast.id})"
-
-            >
-
-            ✏️
-
-            </button>
-
-
-
-
-
-            <button
-
-            class="action-btn action-delete"
-
-            onclick="podcastsManager.remove(${podcast.id})"
-
-            >
-
-            🗑️
-
-            </button>
-
-
-
-            </div>
-
-
-
-            </td>
-
-
-
-            </tr>
-
-
-            `;
-
-
-
-
-        }
-
-    );
+`${list.length} پادکست`;
 
 
 
@@ -1050,203 +898,33 @@ render(list){
 
 
 
-/*
-==========================
-DATE FORMAT
-==========================
-*/
 
 
-formatDate(date){
+if(list.length === 0){
 
 
 
-    if(!date){
+tbody.innerHTML = `
 
-        return "-";
 
-    }
+<tr>
 
+<td colspan="7"
 
+class="empty-state">
 
 
-    if(
+پادکستی یافت نشد
 
-        window.UI &&
 
-        UI.formatDate
+</td>
 
-    ){
 
-        return UI.formatDate(date);
+</tr>
 
-    }
 
+`;
 
-
-
-    return date;
-
-
-
-    }
-    /*
-=================================================
-SAVE PODCAST
-=================================================
-*/
-
-
-async save(){
-
-
-try{
-
-
-const id =
-
-document.getElementById(
-"podcastId"
-).value;
-
-
-
-
-
-const data = {
-
-
-title:
-
-document.getElementById(
-"title"
-).value.trim(),
-
-
-
-book_name:
-
-document.getElementById(
-"book_name"
-).value.trim(),
-
-
-
-author_name:
-
-document.getElementById(
-"author_name"
-).value.trim(),
-
-
-
-category_name:
-
-document.getElementById(
-"category_name"
-).value.trim(),
-
-
-
-episode_number:
-
-Number(
-
-document.getElementById(
-"episode_number"
-).value
-
-|| 1
-
-),
-
-
-
-status:
-
-document.getElementById(
-"status"
-).value,
-
-
-
-description:
-
-document.getElementById(
-"description"
-).value.trim(),
-
-
-
-summary:
-
-document.getElementById(
-"summary"
-).value.trim(),
-
-
-
-transcript:
-
-document.getElementById(
-"transcript"
-).value.trim(),
-
-
-
-duration_seconds:
-
-Number(
-
-document.getElementById(
-"duration_seconds"
-).value
-
-|| 0
-
-),
-
-
-
-tags:
-
-document.getElementById(
-"tags"
-).value.trim(),
-
-
-
-cover_url:
-
-document.getElementById(
-"cover_url"
-).value,
-
-
-
-audio_url:
-
-document.getElementById(
-"audio_url"
-).value
-
-
-
-};
-
-
-
-
-
-
-if(!data.title){
-
-
-Toast.error(
-
-"عنوان پادکست الزامی است"
-
-);
 
 
 return;
@@ -1259,11 +937,478 @@ return;
 
 
 
+
+
+
+list.forEach(
+
+(podcast,index)=>{
+
+
+
+tbody.innerHTML += `
+
+
+<tr>
+
+
+<td>
+
+${index + 1}
+
+</td>
+
+
+
+
+
+<td>
+
+${
+
+this.escapeHTML(
+
+podcast.title || "-"
+
+)
+
+}
+
+</td>
+
+
+
+
+
+
+<td>
+
+${
+
+podcast.book_name || "-"
+
+}
+
+</td>
+
+
+
+
+
+
+<td>
+
+${
+
+podcast.episode_number || 1
+
+}
+
+</td>
+
+
+
+
+
+
+<td>
+
+
+<span class="badge
+
+${
+
+podcast.status === "active"
+
+?
+
+"badge-success"
+
+:
+
+"badge-secondary"
+
+}
+
+">
+
+
+${
+
+podcast.status === "active"
+
+?
+
+"منتشر شده"
+
+:
+
+"پیش‌نویس"
+
+}
+
+
+</span>
+
+
+</td>
+
+
+
+
+
+
+
+
+<td>
+
+
+${
+
+this.formatDate(
+
+podcast.created_at
+
+)
+
+}
+
+
+</td>
+
+
+
+
+
+
+
+
+<td>
+
+
+<div class="action-group">
+
+
+
+<button
+
+class="action-btn action-edit"
+
+onclick="podcastsManager.edit(${podcast.id})"
+
+>
+
+✏️
+
+</button>
+
+
+
+
+
+
+<button
+
+class="action-btn action-delete"
+
+onclick="podcastsManager.remove(${podcast.id})"
+
+>
+
+🗑️
+
+</button>
+
+
+
+</div>
+
+
+</td>
+
+
+
+
+</tr>
+
+
+`;
+
+
+
+
+}
+
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+/*
+=================================================
+DATE FORMAT
+=================================================
+*/
+
+
+formatDate(date){
+
+
+
+if(!date){
+
+return "-";
+
+}
+
+
+
+if(
+window.UI &&
+UI.formatDate
+){
+
+return UI.formatDate(date);
+
+
+}
+
+
+
+return date;
+
+
+
+    }
+
+
+
+/*
+=================================================
+SAVE PODCAST
+=================================================
+*/
+
+
+async save(){
+
+
+
+try{
+
+
+
+const id =
+
+document
+.getElementById(
+"podcastId"
+)
+?.value;
+
+
+
+
+
+
+
+const data = {
+
+
+
+title:
+
+document
+.getElementById("title")
+.value
+.trim(),
+
+
+
+
+book_name:
+
+document
+.getElementById("book_name")
+.value
+.trim(),
+
+
+
+
+author_name:
+
+document
+.getElementById("author_name")
+.value
+.trim(),
+
+
+
+
+category_name:
+
+document
+.getElementById("category_name")
+.value
+.trim(),
+
+
+
+
+episode_number:
+
+Number(
+
+document
+.getElementById("episode_number")
+.value
+
+|| 1
+
+),
+
+
+
+
+status:
+
+document
+.getElementById("status")
+.value,
+
+
+
+
+
+
+description:
+
+document
+.getElementById("description")
+.value
+.trim(),
+
+
+
+
+summary:
+
+document
+.getElementById("summary")
+.value
+.trim(),
+
+
+
+
+transcript:
+
+document
+.getElementById("transcript")
+.value
+.trim(),
+
+
+
+
+duration_seconds:
+
+Number(
+
+document
+.getElementById("duration_seconds")
+.value
+
+|| 0
+
+),
+
+
+
+
+tags:
+
+document
+.getElementById("tags")
+.value
+.trim(),
+
+
+
+
+cover_url:
+
+document
+.getElementById("cover_url")
+.value,
+
+
+
+
+audio_url:
+
+document
+.getElementById("audio_url")
+.value
+
+
+
+};
+
+
+
+
+
+
+
+
+if(!data.title){
+
+
+
+this.showError(
+
+"عنوان پادکست الزامی است"
+
+);
+
+
+
+return;
+
+
+}
+
+
+
+
+
+
+
+
+if(window.Loader){
+
+
 Loader.show(
 
 "در حال ذخیره پادکست..."
 
 );
+
+
+}
+
+
 
 
 
@@ -1277,22 +1422,15 @@ let result;
 
 
 
-/*
-==========================
-EDIT
-==========================
-*/
 
 
 if(id){
 
 
 
-result =
+result = await API.put(
 
-await API.put(
-
-"/podcasts/"+id,
+"/podcasts/" + id,
 
 data
 
@@ -1302,20 +1440,11 @@ data
 
 }
 
-
-/*
-==========================
-CREATE
-==========================
-*/
-
 else{
 
 
 
-result =
-
-await API.post(
+result = await API.post(
 
 "/podcasts",
 
@@ -1348,7 +1477,7 @@ throw new Error(
 
 result?.message ||
 
-"ذخیره پادکست انجام نشد"
+"ثبت پادکست انجام نشد"
 
 );
 
@@ -1363,9 +1492,17 @@ result?.message ||
 
 
 
-Toast.success(
+this.showSuccess(
 
-"پادکست با موفقیت ذخیره شد"
+id
+
+?
+
+"پادکست با موفقیت ویرایش شد"
+
+:
+
+"پادکست با موفقیت ثبت شد"
 
 );
 
@@ -1375,7 +1512,22 @@ Toast.success(
 
 
 
+
 this.closeModal();
+
+
+
+
+
+
+
+
+this.resetForm();
+
+
+
+
+
 
 
 
@@ -1395,7 +1547,7 @@ catch(error){
 
 console.error(
 
-"SAVE PODCAST ERROR:",
+"SAVE ERROR:",
 
 error
 
@@ -1403,7 +1555,9 @@ error
 
 
 
-Toast.error(
+
+
+this.showError(
 
 error.message
 
@@ -1416,7 +1570,13 @@ error.message
 finally{
 
 
+
+if(window.Loader){
+
 Loader.hide();
+
+}
+
 
 
 }
@@ -1448,6 +1608,9 @@ try{
 
 
 
+if(window.Loader){
+
+
 Loader.show(
 
 "در حال دریافت اطلاعات..."
@@ -1455,16 +1618,18 @@ Loader.show(
 );
 
 
+}
 
 
 
 
 
-const result =
 
-await API.get(
 
-"/podcasts/"+id
+
+const result = await API.get(
+
+"/podcasts/" + id
 
 );
 
@@ -1504,9 +1669,11 @@ throw new Error(
 
 const item =
 
+result.data ||
+
 result.podcast ||
 
-result.data;
+result;
 
 
 
@@ -1515,24 +1682,22 @@ result.data;
 
 
 
-document.getElementById(
+document
+.getElementById("podcastId")
+.value =
 
-"podcastId"
-
-).value =
-
-item.id;
+item.id || "";
 
 
 
 
 
 
-document.getElementById(
 
-"title"
 
-).value =
+document
+.getElementById("title")
+.value =
 
 item.title || "";
 
@@ -1541,11 +1706,11 @@ item.title || "";
 
 
 
-document.getElementById(
 
-"book_name"
 
-).value =
+document
+.getElementById("book_name")
+.value =
 
 item.book_name || "";
 
@@ -1554,11 +1719,11 @@ item.book_name || "";
 
 
 
-document.getElementById(
 
-"author_name"
 
-).value =
+document
+.getElementById("author_name")
+.value =
 
 item.author_name || "";
 
@@ -1567,11 +1732,11 @@ item.author_name || "";
 
 
 
-document.getElementById(
 
-"category_name"
 
-).value =
+document
+.getElementById("category_name")
+.value =
 
 item.category_name || "";
 
@@ -1580,11 +1745,11 @@ item.category_name || "";
 
 
 
-document.getElementById(
 
-"episode_number"
 
-).value =
+document
+.getElementById("episode_number")
+.value =
 
 item.episode_number || 1;
 
@@ -1593,11 +1758,11 @@ item.episode_number || 1;
 
 
 
-document.getElementById(
 
-"status"
 
-).value =
+document
+.getElementById("status")
+.value =
 
 item.status || "inactive";
 
@@ -1606,11 +1771,11 @@ item.status || "inactive";
 
 
 
-document.getElementById(
 
-"description"
 
-).value =
+document
+.getElementById("description")
+.value =
 
 item.description || "";
 
@@ -1619,11 +1784,11 @@ item.description || "";
 
 
 
-document.getElementById(
 
-"summary"
 
-).value =
+document
+.getElementById("summary")
+.value =
 
 item.summary || "";
 
@@ -1632,11 +1797,11 @@ item.summary || "";
 
 
 
-document.getElementById(
 
-"transcript"
 
-).value =
+document
+.getElementById("transcript")
+.value =
 
 item.transcript || "";
 
@@ -1645,11 +1810,11 @@ item.transcript || "";
 
 
 
-document.getElementById(
 
-"duration_seconds"
 
-).value =
+document
+.getElementById("duration_seconds")
+.value =
 
 item.duration_seconds || 0;
 
@@ -1658,11 +1823,11 @@ item.duration_seconds || 0;
 
 
 
-document.getElementById(
 
-"tags"
 
-).value =
+document
+.getElementById("tags")
+.value =
 
 item.tags || "";
 
@@ -1671,11 +1836,11 @@ item.tags || "";
 
 
 
-document.getElementById(
 
-"cover_url"
 
-).value =
+document
+.getElementById("cover_url")
+.value =
 
 item.cover_url || "";
 
@@ -1684,13 +1849,14 @@ item.cover_url || "";
 
 
 
-document.getElementById(
 
-"audio_url"
 
-).value =
+document
+.getElementById("audio_url")
+.value =
 
 item.audio_url || "";
+
 
 
 
@@ -1702,6 +1868,7 @@ item.audio_url || "";
 if(item.cover_url){
 
 
+
 const img =
 
 document.getElementById(
@@ -1711,10 +1878,19 @@ document.getElementById(
 );
 
 
+
+if(img){
+
+
+
 img.src = item.cover_url;
 
-
 img.style.display="block";
+
+
+
+}
+
 
 
 }
@@ -1729,6 +1905,7 @@ img.style.display="block";
 if(item.audio_url){
 
 
+
 const audio =
 
 document.getElementById(
@@ -1738,10 +1915,19 @@ document.getElementById(
 );
 
 
+
+if(audio){
+
+
+
 audio.src = item.audio_url;
 
-
 audio.style.display="block";
+
+
+
+}
+
 
 
 }
@@ -1766,7 +1952,7 @@ catch(error){
 
 
 
-Toast.error(
+this.showError(
 
 error.message
 
@@ -1779,15 +1965,23 @@ error.message
 finally{
 
 
+
+if(window.Loader){
+
 Loader.hide();
 
+}
+
 
 }
 
 
 
-}
-    /*
+    }
+
+
+
+/*
 =================================================
 DELETE PODCAST
 =================================================
@@ -1802,28 +1996,9 @@ try{
 
 
 
-if(
-
-!confirm(
+const confirmDelete = confirm(
 
 "آیا از حذف این پادکست مطمئن هستید؟"
-
-)
-
-){
-
-return;
-
-}
-
-
-
-
-
-
-Loader.show(
-
-"در حال حذف پادکست..."
 
 );
 
@@ -1833,11 +2008,41 @@ Loader.show(
 
 
 
-const result =
+if(!confirmDelete){
 
-await API.delete(
+    return;
 
-"/podcasts/"+id
+}
+
+
+
+
+
+
+
+
+if(window.Loader){
+
+
+Loader.show(
+
+"در حال حذف پادکست..."
+
+);
+
+
+}
+
+
+
+
+
+
+
+
+const result = await API.delete(
+
+"/podcasts/" + id
 
 );
 
@@ -1862,7 +2067,7 @@ throw new Error(
 
 result?.message ||
 
-"حذف پادکست ناموفق بود"
+"حذف پادکست انجام نشد"
 
 );
 
@@ -1877,11 +2082,12 @@ result?.message ||
 
 
 
-Toast.success(
+this.showSuccess(
 
-"پادکست حذف شد"
+"پادکست با موفقیت حذف شد"
 
 );
+
 
 
 
@@ -1904,7 +2110,7 @@ catch(error){
 
 console.error(
 
-"DELETE PODCAST ERROR:",
+"DELETE ERROR:",
 
 error
 
@@ -1912,7 +2118,7 @@ error
 
 
 
-Toast.error(
+this.showError(
 
 error.message
 
@@ -1925,7 +2131,13 @@ error.message
 finally{
 
 
+
+if(window.Loader){
+
 Loader.hide();
+
+}
+
 
 
 }
@@ -1953,7 +2165,11 @@ async uploadCover(){
 
 
 
-const fileInput =
+try{
+
+
+
+const input =
 
 document.getElementById(
 
@@ -1967,18 +2183,23 @@ document.getElementById(
 
 
 
+
 if(
 
-!fileInput.files.length
+!input ||
+
+!input.files.length
 
 ){
 
 
-Toast.error(
+
+this.showError(
 
 "ابتدا فایل کاور را انتخاب کنید"
 
 );
+
 
 
 return;
@@ -1990,9 +2211,6 @@ return;
 
 
 
-
-
-try{
 
 
 
@@ -2010,13 +2228,18 @@ formData.append(
 
 "file",
 
-fileInput.files[0]
+input.files[0]
 
 );
 
 
 
 
+
+
+
+
+if(window.Loader){
 
 
 
@@ -2028,13 +2251,16 @@ Loader.show(
 
 
 
+}
 
 
 
 
-const result =
 
-await API.upload(
+
+
+
+const result = await API.upload(
 
 "/upload/image",
 
@@ -2063,13 +2289,14 @@ throw new Error(
 
 result?.message ||
 
-"آپلود کاور انجام نشد"
+"آپلود کاور ناموفق بود"
 
 );
 
 
 
 }
+
 
 
 
@@ -2090,13 +2317,14 @@ result.data?.url;
 
 
 
-document.getElementById(
-
+document
+.getElementById(
 "cover_url"
-
-).value =
+)
+.value =
 
 url;
+
 
 
 
@@ -2114,23 +2342,35 @@ document.getElementById(
 
 
 
-preview.src = url;
 
+
+
+
+
+if(preview){
+
+
+
+preview.src = url;
 
 preview.style.display="block";
 
 
 
+}
 
 
 
 
-Toast.success(
 
-"کاور آپلود شد"
+
+
+
+this.showSuccess(
+
+"کاور با موفقیت آپلود شد"
 
 );
-
 
 
 
@@ -2143,7 +2383,17 @@ catch(error){
 
 
 
-Toast.error(
+console.error(
+
+"COVER UPLOAD ERROR:",
+
+error
+
+);
+
+
+
+this.showError(
 
 error.message
 
@@ -2156,7 +2406,13 @@ error.message
 finally{
 
 
+
+if(window.Loader){
+
 Loader.hide();
+
+}
+
 
 
 }
@@ -2184,7 +2440,11 @@ async uploadAudio(){
 
 
 
-const fileInput =
+try{
+
+
+
+const input =
 
 document.getElementById(
 
@@ -2198,18 +2458,23 @@ document.getElementById(
 
 
 
+
 if(
 
-!fileInput.files.length
+!input ||
+
+!input.files.length
 
 ){
 
 
-Toast.error(
+
+this.showError(
 
 "ابتدا فایل صوتی را انتخاب کنید"
 
 );
+
 
 
 return;
@@ -2223,9 +2488,6 @@ return;
 
 
 
-try{
-
-
 
 const formData =
 
@@ -2237,17 +2499,23 @@ new FormData();
 
 
 
+
 formData.append(
 
 "file",
 
-fileInput.files[0]
+input.files[0]
 
 );
 
 
 
 
+
+
+
+
+if(window.Loader){
 
 
 
@@ -2259,13 +2527,16 @@ Loader.show(
 
 
 
+}
 
 
 
 
-const result =
 
-await API.upload(
+
+
+
+const result = await API.upload(
 
 "/upload/audio",
 
@@ -2294,7 +2565,7 @@ throw new Error(
 
 result?.message ||
 
-"آپلود فایل صوتی انجام نشد"
+"آپلود فایل صوتی ناموفق بود"
 
 );
 
@@ -2322,11 +2593,11 @@ result.data?.url;
 
 
 
-document.getElementById(
-
+document
+.getElementById(
 "audio_url"
-
-).value =
+)
+.value =
 
 url;
 
@@ -2347,23 +2618,35 @@ document.getElementById(
 
 
 
-audio.src=url;
 
+
+
+
+
+if(audio){
+
+
+
+audio.src = url;
 
 audio.style.display="block";
 
 
 
+}
 
 
 
 
-Toast.success(
 
-"فایل صوتی آپلود شد"
+
+
+
+this.showSuccess(
+
+"فایل صوتی با موفقیت آپلود شد"
 
 );
-
 
 
 
@@ -2376,7 +2659,17 @@ catch(error){
 
 
 
-Toast.error(
+console.error(
+
+"AUDIO UPLOAD ERROR:",
+
+error
+
+);
+
+
+
+this.showError(
 
 error.message
 
@@ -2389,15 +2682,20 @@ error.message
 finally{
 
 
+
+if(window.Loader){
+
 Loader.hide();
 
-
 }
 
 
 
 }
 
+
+
+}
 
 
 
@@ -2408,93 +2706,9 @@ Loader.hide();
 
 /*
 =================================================
-MODAL
+RESET FORM
 =================================================
 */
-
-
-openModal(){
-
-
-
-const modal =
-
-document.getElementById(
-
-"podcastModal"
-
-);
-
-
-
-
-
-
-
-if(modal){
-
-
-modal.classList.add(
-
-"show"
-
-);
-
-
-}
-
-
-
-}
-
-
-
-
-
-
-
-
-
-closeModal(){
-
-
-
-const modal =
-
-document.getElementById(
-
-"podcastModal"
-
-);
-
-
-
-
-
-
-
-if(modal){
-
-
-modal.classList.remove(
-
-"show"
-
-);
-
-
-}
-
-
-
-}
-
-
-
-
-
-
-
 
 
 resetForm(){
@@ -2515,12 +2729,15 @@ document.getElementById(
 
 
 
+
 if(form){
+
 
 
 form.reset();
 
 
+
 }
 
 
@@ -2528,12 +2745,15 @@ form.reset();
 
 
 
+
+
+const id =
 
 document.getElementById(
 
 "podcastId"
 
-).value="";
+);
 
 
 
@@ -2541,47 +2761,12 @@ document.getElementById(
 
 
 
-document.getElementById(
 
-"coverPreview"
-
-).style.display="none";
+if(id){
 
 
 
-
-
-
-
-document.getElementById(
-
-"audioPreview"
-
-).style.display="none";
-
-
-
-
-
-
-
-document.getElementById(
-
-"cover_url"
-
-).value="";
-
-
-
-
-
-
-
-document.getElementById(
-
-"audio_url"
-
-).value="";
+id.value="";
 
 
 
@@ -2592,6 +2777,136 @@ document.getElementById(
 
 
 
+
+
+const cover =
+
+document.getElementById(
+
+"coverPreview"
+
+);
+
+
+
+
+
+
+
+
+if(cover){
+
+
+
+cover.src="";
+
+cover.style.display="none";
+
+
+
+}
+
+
+
+
+
+
+
+
+const audio =
+
+document.getElementById(
+
+"audioPreview"
+
+);
+
+
+
+
+
+
+
+
+if(audio){
+
+
+
+audio.src="";
+
+audio.style.display="none";
+
+
+
+}
+
+
+
+
+
+
+
+
+const coverUrl =
+
+document.getElementById(
+
+"cover_url"
+
+);
+
+
+
+
+
+
+
+
+if(coverUrl){
+
+
+
+coverUrl.value="";
+
+
+
+}
+
+
+
+
+
+
+
+
+const audioUrl =
+
+document.getElementById(
+
+"audio_url"
+
+);
+
+
+
+
+
+
+
+
+if(audioUrl){
+
+
+
+audioUrl.value="";
+
+
+
+}
+
+
+
+}
 
 
 
@@ -2606,56 +2921,31 @@ escapeHTML(value){
 
 
 
-return String(value)
-
-
+return String(value || "")
 
 .replace(
-
 /&/g,
-
 "&amp;"
-
 )
 
-
-
 .replace(
-
 /</g,
-
 "&lt;"
-
 )
 
-
-
 .replace(
-
 />/g,
-
 "&gt;"
-
 )
 
-
-
 .replace(
-
 /"/g,
-
 "&quot;"
-
 )
 
-
-
 .replace(
-
 /'/g,
-
 "&#039;"
-
 );
 
 
@@ -2670,33 +2960,77 @@ return String(value)
 
 
 
-formatDate(date){
+/*
+=================================================
+TOAST SUCCESS
+=================================================
+*/
+
+
+showSuccess(message){
 
 
 
 if(
-
-!date
-
+window.Toast &&
+Toast.success
 ){
 
-return "-";
+
+Toast.success(message);
+
 
 }
+
+else{
+
+
+alert(message);
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+=================================================
+TOAST ERROR
+=================================================
+*/
+
+
+showError(message){
 
 
 
 if(
-
-window.UI &&
-
-UI.formatDate
-
+window.Toast &&
+Toast.error
 ){
 
 
+Toast.error(message);
 
-return UI.formatDate(date);
+
+}
+
+else{
+
+
+alert(message);
+
+
+}
 
 
 
@@ -2704,21 +3038,9 @@ return UI.formatDate(date);
 
 
 
-return date;
 
 
 
-}
-
-
-
-
-
-
-
-
-
-}
 
 
 
@@ -2729,7 +3051,14 @@ GLOBAL INSTANCE
 */
 
 
+}
+
+
+
+
+
 let podcastsManager = null;
+
 
 
 
@@ -2744,13 +3073,9 @@ document.addEventListener(
 ()=>{
 
 
+    podcastsManager =
 
-podcastsManager =
-
-new PodcastsManager();
-
-
-
+    new PodcastsManager();
 
 
 

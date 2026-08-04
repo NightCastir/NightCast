@@ -1,1 +1,937 @@
+<!DOCTYPE html>
 
+<html lang="fa" dir="rtl">
+
+
+<head>
+
+
+<meta charset="UTF-8">
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<title>
+NightCast - Settings
+</title>
+
+
+
+
+
+<link rel="stylesheet" href="../assets/css/core.css">
+
+<link rel="stylesheet" href="../assets/css/layout.css">
+
+<link rel="stylesheet" href="../assets/css/components.css">
+
+<link rel="stylesheet" href="../assets/css/responsive.css">
+
+
+
+</head>
+
+
+
+
+
+<body>
+
+
+
+
+<div class="app-layout">
+
+
+
+
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar" id="sidebar">
+
+
+
+<div class="sidebar-logo">
+
+
+<span>
+
+◉
+
+</span>
+
+
+NightCast
+
+
+</div>
+
+
+
+
+
+
+
+<nav class="sidebar-menu">
+
+
+
+<a href="dashboard.html">
+
+
+🏠
+
+داشبورد
+
+
+</a>
+
+
+
+
+
+
+<a href="podcasts.html">
+
+
+🎙
+
+پادکست‌ها
+
+
+</a>
+
+
+
+
+
+
+
+<a href="media.html">
+
+
+🖼
+
+رسانه‌ها
+
+
+</a>
+
+
+
+
+
+
+
+<a href="books.html">
+
+
+📚
+
+کتاب‌ها
+
+
+</a>
+
+
+
+
+
+
+
+<a href="users.html">
+
+
+👥
+
+کاربران
+
+
+</a>
+
+
+
+
+
+
+
+<a href="settings.html" class="active">
+
+
+⚙
+
+تنظیمات
+
+
+</a>
+
+
+
+
+
+
+</nav>
+
+
+
+</aside>
+
+
+
+
+
+
+
+
+<div class="overlay" id="overlay"></div>
+
+
+
+
+
+
+
+
+
+<div class="main-area">
+
+
+
+
+
+
+<header class="app-header">
+
+
+
+<div class="header-right">
+
+
+
+<button
+
+class="menu-toggle"
+
+id="menuToggle">
+
+
+☰
+
+
+</button>
+
+
+
+
+
+
+<h3>
+
+تنظیمات سیستم
+
+</h3>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="header-left">
+
+
+
+<div class="user-box">
+
+
+
+<div class="avatar">
+
+A
+
+</div>
+
+
+
+
+<span id="username">
+
+Admin
+
+</span>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+</header>
+
+
+
+  <!-- ==========================
+CONTENT
+========================== -->
+
+
+<section class="content-area">
+
+
+
+
+
+<div class="page-header">
+
+
+
+<div>
+
+
+<h1 class="page-title">
+
+تنظیمات سیستم
+
+</h1>
+
+
+
+<p class="page-subtitle">
+
+مدیریت تنظیمات اصلی NightCast
+
+</p>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+GENERAL SETTINGS
+========================== -->
+
+
+<div class="card">
+
+
+
+<div class="card-header">
+
+
+<div class="card-title">
+
+تنظیمات عمومی
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<div class="form-grid">
+
+
+
+
+
+
+<div class="form-group">
+
+
+<label>
+
+نام سایت
+
+</label>
+
+
+
+<input
+
+type="text"
+
+id="siteName"
+
+value="NightCast">
+
+
+</div>
+
+
+
+
+
+
+
+<div class="form-group">
+
+
+<label>
+
+شعار سایت
+
+</label>
+
+
+
+<input
+
+type="text"
+
+id="siteSlogan"
+
+value="پلی به سوی آینده">
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="form-group full">
+
+
+<label>
+
+توضیحات سایت
+
+</label>
+
+
+
+<textarea
+
+id="siteDescription"
+
+rows="4">
+
+رادیو NightCast، پادکست‌های آموزشی و خلاصه کتاب‌ها
+
+</textarea>
+
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+PODCAST SETTINGS
+========================== -->
+
+
+<div class="card">
+
+
+
+<div class="card-header">
+
+
+<div class="card-title">
+
+تنظیمات پادکست
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="form-grid">
+
+
+
+
+
+
+<div class="form-group">
+
+
+<label>
+
+حداکثر حجم فایل صوتی (MB)
+
+</label>
+
+
+
+<input
+
+type="number"
+
+id="maxAudioSize"
+
+value="100">
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="form-group">
+
+
+<label>
+
+فرمت مجاز صوتی
+
+</label>
+
+
+
+<input
+
+type="text"
+
+id="audioFormats"
+
+value="mp3,wav">
+
+
+</div>
+
+
+
+
+
+
+
+<div class="form-group">
+
+
+<label>
+
+فعال بودن انتشار خودکار
+
+</label>
+
+
+
+<select id="autoPublish">
+
+
+
+<option value="yes">
+
+فعال
+
+</option>
+
+
+
+<option value="no">
+
+غیرفعال
+
+</option>
+
+
+
+</select>
+
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+</div>
+
+
+  <!-- ==========================
+SECURITY SETTINGS
+========================== -->
+
+
+<div class="card">
+
+
+
+<div class="card-header">
+
+
+<div class="card-title">
+
+تنظیمات امنیتی
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="form-grid">
+
+
+
+
+
+
+<div class="form-group">
+
+
+<label>
+
+فعال بودن ثبت‌نام کاربران
+
+</label>
+
+
+
+<select id="allowRegister">
+
+
+
+<option value="yes">
+
+فعال
+
+</option>
+
+
+
+<option value="no">
+
+غیرفعال
+
+</option>
+
+
+
+</select>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="form-group">
+
+
+<label>
+
+تایم انقضای Token (روز)
+
+</label>
+
+
+
+<input
+
+type="number"
+
+id="tokenExpire"
+
+value="30">
+
+
+</div>
+
+
+
+
+
+
+
+<div class="form-group full">
+
+
+<label>
+
+کلید API
+
+</label>
+
+
+
+<input
+
+type="text"
+
+id="apiKey"
+
+readonly>
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+ADMIN PROFILE
+========================== -->
+
+
+<div class="card">
+
+
+
+<div class="card-header">
+
+
+<div class="card-title">
+
+پروفایل مدیر
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="form-grid">
+
+
+
+
+
+
+<div class="form-group">
+
+
+<label>
+
+نام مدیر
+
+</label>
+
+
+
+<input
+
+type="text"
+
+id="adminName">
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="form-group">
+
+
+<label>
+
+ایمیل مدیر
+
+</label>
+
+
+
+<input
+
+type="email"
+
+id="adminEmail">
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div class="page-actions">
+
+
+
+<button
+
+class="btn btn-primary"
+
+id="saveSettings">
+
+
+ذخیره تنظیمات
+
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<div id="toastContainer"></div>
+
+
+<div id="globalLoader"></div>
+
+
+
+
+
+
+
+
+<script src="../assets/js/core/api.js"></script>
+
+<script src="../assets/js/core/auth.js"></script>
+
+<script src="../assets/js/core/toast.js"></script>
+
+<script src="../assets/js/core/loader.js"></script>
+
+<script src="../assets/js/admin/settings.js"></script>
+
+
+
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+</body>
+
+
+</html>

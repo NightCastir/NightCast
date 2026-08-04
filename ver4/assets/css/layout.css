@@ -2,13 +2,13 @@
 =================================================
 
 NightCast Ver4
-Layout System
+Layout CSS
 
-Sidebar
-Header
-Main Content
-
-App First Architecture
+Responsible for:
+- App Structure
+- Sidebar
+- Header
+- Main Area
 
 =================================================
 */
@@ -17,21 +17,22 @@ App First Architecture
 
 
 
-/* ==========================
-APP WRAPPER
-========================== */
 
 
-.app-layout{
+/*
+=========================
+APP LAYOUT
+=========================
+*/
+
+
+.app-layout {
 
 
     min-height:100vh;
 
+
     display:flex;
-
-    background:
-
-    var(--bg);
 
 
 }
@@ -44,20 +45,14 @@ APP WRAPPER
 
 
 
-/* ==========================
+/*
+=========================
 SIDEBAR
-========================== */
+=========================
+*/
 
 
-.sidebar{
-
-
-    position:fixed;
-
-
-    top:0;
-
-    right:0;
+.sidebar {
 
 
     width:
@@ -65,37 +60,45 @@ SIDEBAR
     var(--sidebar-width);
 
 
-
-    height:100vh;
-
-
-
     background:
 
-    var(--surface);
+    linear-gradient(
+
+        180deg,
+
+        #1e272e,
+
+        #2d3436
+
+    );
 
 
-
-    border-left:
-
-    1px solid var(--border);
+    color:white;
 
 
-
-    display:flex;
-
-    flex-direction:column;
+    position:fixed;
 
 
+    top:0;
 
-    z-index:1000;
 
+    right:0;
+
+
+    bottom:0;
+
+
+    z-index:900;
+
+
+    padding:
+
+    25px 18px;
 
 
     transition:
 
-    var(--normal);
-
+    var(--transition);
 
 
 }
@@ -106,16 +109,12 @@ SIDEBAR
 
 
 
-/* LOGO */
-
-
-.sidebar-logo{
+.sidebar-logo {
 
 
     height:
 
-    var(--header-height);
-
+    70px;
 
 
     display:flex;
@@ -127,29 +126,22 @@ SIDEBAR
     gap:12px;
 
 
+    font-size:
 
-    padding:0 24px;
-
-
-
-    font-size:22px;
-
+    24px;
 
 
     font-weight:800;
 
 
+    padding:
 
-    color:
-
-    var(--primary);
-
+    0 15px;
 
 
-    border-bottom:
+    margin-bottom:
 
-    1px solid var(--border);
-
+    30px;
 
 
 }
@@ -160,92 +152,110 @@ SIDEBAR
 
 
 
-
-.sidebar-logo span{
-
-
-    font-size:32px;
+.sidebar-logo span {
 
 
-}
+    width:
+
+    42px;
 
 
+    height:
 
-
-
-
-
-
-
-/* MENU */
-
-
-.sidebar-menu{
-
-
-    flex:1;
-
-
-    padding:20px 14px;
-
-
-
-    overflow-y:auto;
-
-
-}
-
-
-
-
-
-
-
-.sidebar-menu a{
+    42px;
 
 
     display:flex;
 
 
-
     align-items:center;
 
+
+    justify-content:center;
+
+
+    background:
+
+    var(--primary);
+
+
+    border-radius:
+
+    12px;
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+=========================
+MENU
+=========================
+*/
+
+
+.sidebar-menu {
+
+
+    display:flex;
+
+
+    flex-direction:column;
+
+
+    gap:8px;
+
+
+}
+
+
+
+
+
+
+
+.sidebar-menu a {
+
+
+    display:flex;
+
+
+    align-items:center;
 
 
     gap:14px;
 
 
-
     padding:
 
-    14px 16px;
-
-
-
-    margin-bottom:8px;
-
+    14px 18px;
 
 
     border-radius:
 
-    var(--radius);
-
+    12px;
 
 
     color:
 
-    var(--text-soft);
-
+    rgba(255,255,255,.75);
 
 
     transition:
 
-    var(--fast);
+    var(--transition);
 
 
+    font-size:
 
-    font-size:15px;
-
+    15px;
 
 
 }
@@ -256,18 +266,15 @@ SIDEBAR
 
 
 
-.sidebar-menu a:hover{
+.sidebar-menu a:hover {
 
 
     background:
 
-    #f1f5f9;
+    rgba(255,255,255,.1);
 
 
-    color:
-
-    var(--primary);
-
+    color:white;
 
 
 }
@@ -278,44 +285,22 @@ SIDEBAR
 
 
 
-.sidebar-menu a.active{
+.sidebar-menu a.active {
 
 
     background:
 
-    rgba(108,92,231,.12);
-
-
-
-    color:
-
     var(--primary);
 
 
-
-    font-weight:700;
-
+    color:white;
 
 
-}
+    box-shadow:
 
+    0 8px 20px
 
-
-
-
-
-
-.sidebar-footer{
-
-
-    padding:18px;
-
-
-
-    border-top:
-
-    1px solid var(--border);
-
+    rgba(108,92,231,.35);
 
 
 }
@@ -328,18 +313,25 @@ SIDEBAR
 
 
 
-/* ==========================
+/*
+=========================
 MAIN AREA
-========================== */
+=========================
+*/
 
 
-.main-area{
+.main-area {
 
 
     width:
 
-    calc(100% - var(--sidebar-width));
+    calc(
 
+        100% -
+
+        var(--sidebar-width)
+
+    );
 
 
     margin-right:
@@ -347,9 +339,7 @@ MAIN AREA
     var(--sidebar-width);
 
 
-
     min-height:100vh;
-
 
 
 }
@@ -362,30 +352,24 @@ MAIN AREA
 
 
 
-/* ==========================
+/*
+=========================
 HEADER
-========================== */
+=========================
+*/
 
 
-.app-header{
+.app-header {
 
 
     height:
 
-    var(--header-height);
-
+    80px;
 
 
     background:
 
-    rgba(255,255,255,.85);
-
-
-
-    backdrop-filter:
-
-    blur(10px);
-
+    var(--surface);
 
 
     border-bottom:
@@ -393,39 +377,30 @@ HEADER
     1px solid var(--border);
 
 
-
     display:flex;
-
 
 
     align-items:center;
 
 
-
     justify-content:space-between;
-
 
 
     padding:
 
-    0 28px;
-
+    0 30px;
 
 
     position:sticky;
 
 
-
     top:0;
 
 
-
-    z-index:900;
-
+    z-index:800;
 
 
 }
-
 
 
 
@@ -434,19 +409,16 @@ HEADER
 
 
 .header-right,
-.header-left{
+.header-left {
 
 
     display:flex;
 
 
-
     align-items:center;
 
 
-
-    gap:16px;
-
+    gap:20px;
 
 
 }
@@ -457,46 +429,57 @@ HEADER
 
 
 
+.header-right h3 {
 
 
-.menu-toggle{
+    font-size:
+
+    20px;
 
 
-    width:42px;
+}
 
-    height:42px;
 
+
+
+
+
+
+.menu-toggle {
 
 
     display:none;
 
 
+    width:
 
-    align-items:center;
+    42px;
 
 
+    height:
 
-    justify-content:center;
-
+    42px;
 
 
     border:none;
 
 
+    border-radius:
+
+    10px;
+
 
     background:
 
-    var(--surface-soft);
+    var(--primary);
 
 
-
-    border-radius:
-
-    12px;
+    color:white;
 
 
+    font-size:
 
-    font-size:22px;
+    20px;
 
 
 }
@@ -508,7 +491,15 @@ HEADER
 
 
 
-.user-box{
+
+/*
+=========================
+USER BOX
+=========================
+*/
+
+
+.user-box {
 
 
     display:flex;
@@ -520,46 +511,28 @@ HEADER
     gap:12px;
 
 
-    padding:
-
-    8px 14px;
-
-
-
-    background:
-
-    var(--surface-soft);
-
-
-
-    border-radius:
-
-    14px;
-
-
-
 }
 
 
 
 
 
+.avatar {
 
 
+    width:
 
-.avatar{
-
-
-    width:38px;
+    42px;
 
 
+    height:
 
-    height:38px;
+    42px;
 
 
+    border-radius:
 
-    border-radius:50%;
-
+    50%;
 
 
     background:
@@ -567,25 +540,19 @@ HEADER
     var(--primary);
 
 
-
     color:white;
-
 
 
     display:flex;
 
 
-
     align-items:center;
-
 
 
     justify-content:center;
 
 
-
     font-weight:700;
-
 
 
 }
@@ -593,29 +560,19 @@ HEADER
 
 
 
+/*
+=========================
+CONTENT AREA
+=========================
+*/
 
 
-
-
-
-/* ==========================
-CONTENT
-========================== */
-
-
-.content-area{
+.content-area {
 
 
     padding:
 
-    28px;
-
-
-
-    animation:
-
-    fadeIn .3s ease;
-
+    30px;
 
 
 }
@@ -628,19 +585,43 @@ CONTENT
 
 
 
-.page-title{
+/*
+=========================
+PAGE HEADER
+=========================
+*/
 
 
-    font-size:26px;
+.page-header {
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    justify-content:space-between;
+
+
+    margin-bottom:
+
+    30px;
+
+
+}
 
 
 
-    font-weight:800;
 
 
+.page-actions {
 
-    margin-bottom:24px;
 
+    display:flex;
+
+
+    gap:12px;
 
 
 }
@@ -653,12 +634,225 @@ CONTENT
 
 
 
-/* ==========================
-MOBILE DRAWER SUPPORT
-========================== */
+/*
+=========================
+TABLE LAYOUT
+=========================
+*/
 
 
-.overlay{
+.table-container {
+
+
+    width:100%;
+
+
+    overflow-x:auto;
+
+
+}
+
+
+
+
+
+table {
+
+
+    width:100%;
+
+
+    border-collapse:collapse;
+
+
+    min-width:700px;
+
+
+}
+
+
+
+
+
+
+
+thead {
+
+
+    background:
+
+    #f8f9fa;
+
+
+}
+
+
+
+
+
+
+
+th {
+
+
+    padding:
+
+    16px;
+
+
+    text-align:right;
+
+
+    color:
+
+    var(--dark);
+
+
+    font-size:
+
+    14px;
+
+
+    font-weight:700;
+
+
+    border-bottom:
+
+    1px solid var(--border);
+
+
+}
+
+
+
+
+
+
+
+td {
+
+
+    padding:
+
+    15px 16px;
+
+
+    border-bottom:
+
+    1px solid var(--border);
+
+
+    color:
+
+    var(--text);
+
+
+    font-size:
+
+    14px;
+
+
+}
+
+
+
+
+
+
+
+tbody tr {
+
+
+    transition:
+
+    var(--transition);
+
+
+}
+
+
+
+
+
+
+
+tbody tr:hover {
+
+
+    background:
+
+    #fafafa;
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+=========================
+FILTER ROW
+=========================
+*/
+
+
+.filter-row {
+
+
+    display:grid;
+
+
+    grid-template-columns:
+
+    repeat(4,1fr);
+
+
+    gap:20px;
+
+
+    align-items:end;
+
+
+}
+
+
+
+
+
+
+
+.filter-buttons {
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+=========================
+OVERLAY MOBILE
+=========================
+*/
+
+
+.overlay {
 
 
     position:fixed;
@@ -667,28 +861,152 @@ MOBILE DRAWER SUPPORT
     inset:0;
 
 
-
     background:
 
-    rgba(0,0,0,.35);
+    rgba(0,0,0,.45);
+
+
+    z-index:850;
+
+
+    display:none;
+
+
+}
 
 
 
-    opacity:0;
+
+
+.overlay.show {
+
+
+    display:block;
+
+
+}
 
 
 
-    visibility:hidden;
 
 
 
-    transition:
-
-    var(--normal);
 
 
 
-    z-index:950;
+/*
+=========================
+EMPTY STATES
+=========================
+*/
+
+
+.empty-state {
+
+
+    padding:
+
+    50px;
+
+
+    text-align:center;
+
+
+    color:
+
+    var(--muted);
+
+
+}
+
+
+
+
+
+.empty-state-icon {
+
+
+    font-size:
+
+    50px;
+
+
+    margin-bottom:
+
+    15px;
+
+
+           }
+
+
+
+
+
+
+
+/*
+=========================
+TABLET LAYOUT
+=========================
+*/
+
+
+@media (max-width:1100px){
+
+
+
+    .sidebar {
+
+
+        width:
+
+        240px;
+
+
+    }
+
+
+
+
+
+
+
+    .main-area {
+
+
+        width:
+
+        calc(
+
+            100% -
+
+            240px
+
+        );
+
+
+        margin-right:
+
+        240px;
+
+
+    }
+
+
+
+
+
+
+
+    .filter-row {
+
+
+        grid-template-columns:
+
+        repeat(2,1fr);
+
+
+    }
 
 
 
@@ -696,14 +1014,257 @@ MOBILE DRAWER SUPPORT
 
 
 
-.overlay.active{
-
-
-    opacity:1;
-
-
-    visibility:visible;
 
 
 
-}
+
+
+
+/*
+=========================
+MOBILE LAYOUT
+=========================
+*/
+
+
+@media (max-width:768px){
+
+
+
+    .sidebar {
+
+
+        transform:
+
+        translateX(100%);
+
+
+        width:
+
+        280px;
+
+
+        box-shadow:
+
+        0 0 40px rgba(0,0,0,.25);
+
+
+    }
+
+
+
+
+
+
+
+    .sidebar.open {
+
+
+        transform:
+
+        translateX(0);
+
+
+    }
+
+
+
+
+
+
+
+    .main-area {
+
+
+        width:100%;
+
+
+        margin-right:0;
+
+
+    }
+
+
+
+
+
+
+
+    .menu-toggle {
+
+
+        display:flex;
+
+
+        align-items:center;
+
+
+        justify-content:center;
+
+
+    }
+
+
+
+
+
+
+
+    .app-header {
+
+
+        padding:
+
+        0 15px;
+
+
+        height:
+
+        70px;
+
+
+    }
+
+
+
+
+
+
+
+    .header-right h3 {
+
+
+        font-size:
+
+        16px;
+
+
+    }
+
+
+
+
+
+
+
+    .user-box span {
+
+
+        display:none;
+
+
+    }
+
+
+
+
+
+
+
+    .content-area {
+
+
+        padding:
+
+        18px;
+
+
+    }
+
+
+
+
+
+
+
+    .page-header {
+
+
+        flex-direction:column;
+
+
+        align-items:flex-start;
+
+
+        gap:20px;
+
+
+    }
+
+
+
+
+
+
+
+    .page-title {
+
+
+        font-size:
+
+        22px;
+
+
+    }
+
+
+
+
+
+
+
+    .filter-row {
+
+
+        grid-template-columns:
+
+        1fr;
+
+
+    }
+
+
+
+
+
+
+
+    .form-grid {
+
+
+        grid-template-columns:
+
+        1fr;
+
+
+    }
+
+
+
+
+
+    .card {
+
+
+        padding:
+
+        18px;
+
+
+        border-radius:
+
+        12px;
+
+
+    }
+
+
+
+
+        }
+
+
+
+
+
+

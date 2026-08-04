@@ -7,11 +7,35 @@ Responsive CSS
 Responsible for:
 - Mobile
 - Tablet
-- Small Desktop
-- PWA / APK Layout
+- Desktop
+- PWA
+- APK Layout
 
 =================================================
 */
+
+
+
+
+
+/*
+=========================
+LARGE DESKTOP
+=========================
+*/
+
+
+@media (max-width:1400px){
+
+
+    .content-area{
+
+        padding:25px;
+
+    }
+
+
+}
 
 
 
@@ -44,6 +68,19 @@ LARGE TABLET
 
 
 
+    .dashboard-grid{
+
+
+        grid-template-columns:
+
+        1fr;
+
+
+
+    }
+
+
+
 
 
     .filter-row {
@@ -60,8 +97,6 @@ LARGE TABLET
 
 
 
-
-
     .page-title {
 
 
@@ -72,6 +107,18 @@ LARGE TABLET
 
     }
 
+
+
+
+    .sidebar{
+
+
+        width:
+
+        240px;
+
+
+    }
 
 
 
@@ -96,6 +143,19 @@ TABLET
 
 
 
+    .app-layout{
+
+
+        overflow-x:hidden;
+
+
+    }
+
+
+
+
+
+
     .stats-grid {
 
 
@@ -106,6 +166,20 @@ TABLET
 
     }
 
+
+
+
+
+
+    .dashboard-grid{
+
+
+        grid-template-columns:
+
+        1fr;
+
+
+    }
 
 
 
@@ -132,7 +206,6 @@ TABLET
 
 
 
-
     .modal-dialog {
 
 
@@ -146,31 +219,11 @@ TABLET
 
 
 
-}
+
+    .table-container{
 
 
-
-
-
-
-
-
-
-/*
-=========================
-MOBILE
-=========================
-*/
-
-
-@media (max-width:768px){
-
-
-
-    body {
-
-
-        overflow-x:hidden;
+        overflow-x:auto;
 
 
     }
@@ -178,515 +231,6 @@ MOBILE
 
 
 
-
-
-
-    .stats-grid {
-
-
-        grid-template-columns:
-
-        1fr;
-
-
-    }
-
-
-
-
-
-
-
-    .page-header {
-
-
-        gap:
-
-        15px;
-
-
-    }
-
-
-
-
-
-
-
-    .page-actions {
-
-
-        width:100%;
-
-
-    }
-
-
-
-
-
-
-
-    .page-actions .btn {
-
-
-        width:100%;
-
-
-    }
-
-
-
-
-
-
-
-    .table-container {
-
-
-        border-radius:
-
-        12px;
-
-
-    }
-
-
-
-
-
-
-
-    table {
-
-
-        min-width:
-
-        650px;
-
-
-    }
-
-
-
-
-
-
-
-    .modal {
-
-
-        padding:
-
-        10px;
-
-
-    }
-
-
-
-
-
-
-
-    .modal-body {
-
-
-        padding:
-
-        18px;
-
-
-    }
-
-
-
-
-
-
-
-    .modal-footer {
-
-
-        flex-direction:
-
-        column;
-
-
-    }
-
-
-
-
-
-
-
-    .modal-footer .btn {
-
-
-        width:100%;
-
-
-    }
-
-
-
-
-}
-
-
-
-/*
-=========================
-SMALL MOBILE
-=========================
-*/
-
-
-@media (max-width:480px){
-
-
-
-    .app-header {
-
-
-        height:
-
-        64px;
-
-
-        padding:
-
-        0 12px;
-
-
-    }
-
-
-
-
-
-
-
-    .header-right h3 {
-
-
-        font-size:
-
-        14px;
-
-
-    }
-
-
-
-
-
-
-
-    .content-area {
-
-
-        padding:
-
-        12px;
-
-
-    }
-
-
-
-
-
-
-
-    .card {
-
-
-        padding:
-
-        15px;
-
-
-    }
-
-
-
-
-
-
-
-    .page-title {
-
-
-        font-size:
-
-        20px;
-
-
-    }
-
-
-
-
-
-
-
-    .page-subtitle {
-
-
-        font-size:
-
-        12px;
-
-
-    }
-
-
-
-
-
-
-
-    .stat-card {
-
-
-        padding:
-
-        18px;
-
-
-    }
-
-
-
-
-
-
-
-    .stat-value {
-
-
-        font-size:
-
-        24px;
-
-
-    }
-
-
-
-
-
-
-
-    .btn {
-
-
-        padding:
-
-        11px 15px;
-
-
-        font-size:
-
-        13px;
-
-
-    }
-
-
-
-
-
-
-
-    .upload-box {
-
-
-        padding:
-
-        25px 15px;
-
-
-    }
-
-
-
-
-
-
-
-    .audio-play-btn {
-
-
-        width:
-
-        48px;
-
-
-        height:
-
-        48px;
-
-
-    }
-
-
-
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/*
-=========================
-LANDSCAPE MOBILE
-=========================
-*/
-
-
-@media (max-height:500px) and (orientation:landscape){
-
-
-
-    .sidebar {
-
-
-        overflow-y:auto;
-
-
-    }
-
-
-
-
-
-
-
-    .sidebar-menu a {
-
-
-        padding:
-
-        10px 15px;
-
-
-    }
-
-
-
-
-
-
-
-    .app-header {
-
-
-        height:
-
-        60px;
-
-
-    }
-
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/*
-=========================
-PWA / APK SAFE AREA
-=========================
-*/
-
-
-@supports(padding:max(0px)){
-
-
-
-    .app-header {
-
-
-        padding-top:
-
-        max(
-
-            0px,
-
-            env(safe-area-inset-top)
-
-        );
-
-
-    }
-
-
-
-
-
-
-
-    .content-area {
-
-
-        padding-bottom:
-
-        max(
-
-            30px,
-
-            env(safe-area-inset-bottom)
-
-        );
-
-
-    }
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/*
-=========================
-DARK MODE READY
-=========================
-*/
-
-
-@media(prefers-color-scheme:dark){
-
-
-
-    /*
-    در نسخه فعلی فعال نیست
-    برای آینده APK نگهداری شده
-    */
 
 
 }

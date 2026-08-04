@@ -1,1 +1,256 @@
-API.get("/dashboard")
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>
+NightCast Dashboard API Test
+</title>
+
+
+<style>
+
+body{
+
+font-family:tahoma;
+background:#f5f6fa;
+padding:30px;
+
+}
+
+
+h2{
+
+color:#333;
+
+}
+
+
+.box{
+
+background:#111;
+color:#00ff88;
+padding:20px;
+border-radius:10px;
+direction:ltr;
+text-align:left;
+white-space:pre-wrap;
+overflow:auto;
+
+}
+
+
+button{
+
+padding:12px 25px;
+font-size:16px;
+cursor:pointer;
+
+}
+
+
+</style>
+
+
+</head>
+
+
+
+<body>
+
+
+<h2>
+🧪 NightCast Dashboard API Test
+</h2>
+
+
+<button onclick="testDashboard()">
+Run Test
+</button>
+
+
+
+<br><br>
+
+
+<div class="box" id="result">
+
+Waiting...
+
+</div>
+
+
+
+
+
+
+<script src="../assets/js/core/api.js"></script>
+
+
+
+<script>
+
+
+async function testDashboard(){
+
+
+const box =
+
+document.getElementById(
+"result"
+);
+
+
+
+let output = "";
+
+
+
+try{
+
+
+
+output += "=== DASHBOARD API ===\n\n";
+
+
+
+
+const dashboard =
+
+await API.get(
+
+"/dashboard"
+
+);
+
+
+
+
+output +=
+
+JSON.stringify(
+
+dashboard,
+
+null,
+
+2
+
+);
+
+
+
+
+
+
+
+output += "\n\n\n=== DASHBOARD LATEST ===\n\n";
+
+
+
+
+
+const latest =
+
+await API.get(
+
+"/dashboard/latest"
+
+);
+
+
+
+
+output +=
+
+JSON.stringify(
+
+latest,
+
+null,
+
+2
+
+);
+
+
+
+
+
+
+
+output += "\n\n\n=== ACTIVITY ===\n\n";
+
+
+
+
+
+
+const activity =
+
+await API.get(
+
+"/activity"
+
+);
+
+
+
+
+output +=
+
+JSON.stringify(
+
+activity,
+
+null,
+
+2
+
+);
+
+
+
+
+
+}
+
+catch(error){
+
+
+
+output +=
+
+"\nERROR:\n"
+
++
+
+error.message;
+
+
+
+}
+
+
+
+
+
+box.innerHTML = output;
+
+
+
+}
+
+
+
+</script>
+
+
+
+</body>
+
+  </html>

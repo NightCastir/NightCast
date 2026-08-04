@@ -1,356 +1,350 @@
 /*
+=================================================
 
-NightCast Ver4
+NightCast Ver5
 Admin Dashboard Manager
 
-Professional Version
+Final Compatible Version
 
-Responsible for:
+Compatible APIs:
 
-Dashboard Statistics
+GET  /dashboard
+GET  /dashboard/latest
+GET  /activity
 
-Podcast Overview
+Compatible HTML:
 
-Latest Podcasts
-
-Activity Feed
-
-API Compatible Version
-
+totalPodcasts
+totalBooks
+totalUsers
+totalPlays
+recentPodcasts
+activityList
 
 =================================================
 */
 
+
 "use strict";
+
+
+
+
 
 class DashboardManager {
 
-constructor(){  
 
 
-    this.podcasts = [];  
+    constructor(){
 
 
-    this.initialized = false;  
 
+        this.statistics = {
 
-    this.init();  
 
+            podcasts:0,
 
+            books:0,
 
-}  
+            users:0,
 
+            plays:0
 
 
+        };
 
 
 
 
+        this.podcasts = [];
 
 
-/*  
-==========================  
-INIT  
-==========================  
-*/  
 
+        this.activities = [];
 
-async init(){  
 
 
+        this.initialized = false;
 
-    try{  
 
 
+        this.init();
 
-        // بررسی ورود کاربر  
 
-        if(  
-            window.Auth &&  
-            !Auth.requireAuth()  
-        ){  
 
-            return;  
+    }
 
-        }  
 
 
 
 
 
 
-        await this.loadData();  
 
 
+    /*
+    ==========================
+    INIT
+    ==========================
+    */
 
-        this.initialized = true;  
 
+    async init(){
 
 
-    }  
 
-    catch(error){  
+        try{
 
 
 
-        console.error(  
+            if(
 
-            "Dashboard Init Error:",  
+                window.Auth &&
 
-            error  
+                !Auth.requireAuth()
 
-        );  
+            ){
 
 
+                return;
 
-        if(window.UI){  
 
+            }
 
-            UI.error(  
 
-                "خطا در راه‌اندازی داشبورد"  
 
-            );  
 
 
-        }  
 
 
+            await this.loadDashboard();
 
-    }  
 
 
 
-}  
+            this.initialized = true;
 
 
 
+        }
 
+        catch(error){
 
 
 
+            console.error(
 
+                "Dashboard Init Error:",
 
-/*  
-==========================  
-LOAD DATA  
-==========================  
-  
-فقط بر اساس API واقعی فعلی:  
-  
-GET /podcasts  
-  
-==========================  
-*/  
+                error
 
+            );
 
-async loadData(){  
 
 
+            this.showError(
 
-    try{  
+                "خطا در راه‌اندازی داشبورد"
 
+            );
 
 
-        this.showLoading();  
 
+        }
 
 
 
+    }
 
 
 
 
-        const result =  
 
-        await API.get(  
 
-            "/podcasts"  
 
-        );  
 
 
+    /*
+    ==========================
+    LOAD DASHBOARD
+    ==========================
+    */
 
 
+    async loadDashboard(){
 
 
 
+        try{
 
-        if(  
 
-            !result ||  
 
-            !result.success  
+            this.showLoading();
 
-        ){  
 
 
 
-            throw new Error(  
 
-                result.message ||  
 
-                "دریافت اطلاعات ناموفق بود"  
 
-            );  
+            await Promise.all([
 
 
-        }  
 
+                this.loadSummary(),
 
 
 
+                this.loadLatest(),
 
 
 
+                this.loadActivity()
 
-        this.podcasts =  
 
-        Array.isArray(  
 
-            result.podcasts  
+            ]);
 
-        )  
 
-        ?  
 
-        result.podcasts  
 
-        :  
 
-        [];  
 
 
+            this.renderStatistics();
 
 
 
+            this.renderLatestPodcasts();
 
 
 
-        this.renderStatistics();  
+            this.renderActivities();
 
 
 
-        this.renderLatestPodcasts();  
 
+        }
 
+        catch(error){
 
-        this.renderActivities();  
 
 
+            console.error(
 
-    }  
+                "Dashboard Load Error:",
 
-    catch(error){  
+                error
 
+            );
 
 
-        console.error(  
 
-            "Dashboard Load Error:",  
+            this.showError(
 
-            error  
+                error.message
 
-        );  
+            );
 
 
 
-        this.showError(  
+        }
 
-            error.message  
+        finally{
 
-        );  
 
 
+            this.hideLoading();
 
-    }  
 
-    finally{  
 
+        }
 
 
-        this.hideLoading();  
 
+    }
 
 
-    }  
 
 
 
-}  
 
 
 
 
+    /*
+    ==========================
+    LOAD SUMMARY
+    ==========================
+    */
 
 
+    async loadSummary(){
 
 
 
-/*  
-==========================  
-LOADING  
-==========================  
-*/  
+        try{
 
 
-showLoading(){  
 
+            const result =
 
+            await API.get(
 
-    if(  
+                "/dashboard"
 
-        window.UI &&  
+            );
 
-        UI.showLoader  
 
-    ){  
 
 
 
-        UI.showLoader(  
 
-            "در حال دریافت اطلاعات داشبورد..."  
 
-        );  
+            if(
 
+                result &&
 
-    }  
+                result.success
 
+            ){
 
 
-}  
 
+                this.statistics =
 
+                result.statistics ||
 
+                this.statistics;
 
 
 
+            }
 
 
 
-hideLoading(){  
+        }
 
+        catch(error){
 
 
-    if(  
 
-        window.UI &&  
+            console.warn(
 
-        UI.hideLoader  
+                "Dashboard Summary Error:",
 
-    ){  
+                error
 
+            );
 
 
-        UI.hideLoader();  
 
+        }
 
-    }  
 
 
+    }
 
-}  
 
 
 
@@ -359,234 +353,259 @@ hideLoading(){
 
 
 
+    /*
+    ==========================
+    LOAD LATEST PODCASTS
+    ==========================
+    */
 
-showError(message){  
 
+    async loadLatest(){
 
 
-    if(  
 
-        window.UI &&  
+        try{
 
-        UI.error  
 
-    ){  
 
+            const result =
 
+            await API.get(
 
-        UI.error(  
+                "/dashboard/latest"
 
-            message  
+            );
 
-        );  
 
 
-    }  
 
-    else{  
 
 
-        console.error(  
 
-            message  
+            if(
 
-        );  
+                result &&
 
+                result.success
 
-    }  
+            ){
 
 
 
-}  
+                this.podcasts =
 
+                Array.isArray(
 
+                    result.podcasts
 
+                )
 
+                ?
 
+                result.podcasts
 
+                :
 
+                [];
 
 
-/*  
-==========================  
-STATISTICS  
-==========================  
-*/  
 
+            }
 
-renderStatistics(){  
 
 
+        }
 
-    const totalPodcasts =  
+        catch(error){
 
-    document.getElementById(  
 
-        "totalPodcasts"  
 
-    );  
+            console.warn(
 
+                "Dashboard Latest Error:",
 
+                error
 
+            );
 
 
-    const totalBooks =  
 
-    document.getElementById(  
+            this.podcasts = [];
 
-        "totalBooks"  
 
-    );  
 
+        }
 
 
 
+    }
 
-    const totalUsers =  
 
-    document.getElementById(  
 
-        "totalUsers"  
 
-    );  
 
 
 
 
 
-    const totalPlays =  
+    /*
+    ==========================
+    LOAD ACTIVITY
+    ==========================
+    */
 
-    document.getElementById(  
 
-        "totalPlays"  
+    async loadActivity(){
 
-    );  
 
 
+        try{
 
 
 
+            const result =
 
+            await API.get(
 
+                "/activity"
 
-    // تعداد پادکست‌ها  
+            );
 
 
-    if(totalPodcasts){  
 
 
 
-        totalPodcasts.textContent =  
 
-        this.podcasts.length;  
 
+            if(
 
+                result &&
 
-    }  
+                result.success
 
+            ){
 
 
 
+                this.activities =
 
+                Array.isArray(
 
+                    result.activities
 
+                )
 
-    // فعلا API کتاب نداریم  
+                ?
 
+                result.activities
 
-    if(totalBooks){  
+                :
 
+                [];
 
 
-        totalBooks.textContent =  
 
-        "0";  
+            }
 
 
 
-    }  
+        }
 
+        catch(error){
 
 
 
+            console.warn(
 
+                "Activity Load Error:",
 
+                error
 
+            );
 
-    // فعلا API کاربران نداریم  
 
 
-    if(totalUsers){  
+            this.activities = [];
 
 
 
-        totalUsers.textContent =  
+        }
 
-        "0";  
 
 
+    }
+        /*
+    ==========================
+    RENDER STATISTICS
+    ==========================
+    */
 
-    }  
 
+    renderStatistics(){
 
 
 
+        const totalPodcasts =
 
+        document.getElementById(
 
+            "totalPodcasts"
 
+        );
 
-    // مجموع شنیده‌ها  
 
 
-    let plays = 0;  
 
 
+        const totalBooks =
 
-    this.podcasts.forEach(  
+        document.getElementById(
 
-        item=>{  
+            "totalBooks"
 
+        );
 
-            plays += Number(  
 
-                item.listen_count ||  
 
-                0  
 
-            );  
 
+        const totalUsers =
 
-        }  
+        document.getElementById(
 
-    );  
+            "totalUsers"
 
+        );
 
 
 
 
 
+        const totalPlays =
 
+        document.getElementById(
 
-    if(totalPlays){  
+            "totalPlays"
 
+        );
 
 
-        totalPlays.textContent =  
 
-        plays;  
 
 
 
-    }  
 
 
 
-}  
+        if(totalPodcasts){
 
 
+            totalPodcasts.textContent =
 
+            this.statistics.podcasts || 0;
 
 
+        }
 
 
 
@@ -594,57 +613,53 @@ renderStatistics(){
 
 
 
-/*  
-==========================  
-LATEST PODCASTS TABLE  
-==========================  
-*/  
+        if(totalBooks){
 
 
-renderLatestPodcasts(){  
+            totalBooks.textContent =
 
+            this.statistics.books || 0;
 
 
-    const table =  
+        }
 
-    document.getElementById(  
 
-        "recentPodcasts"  
 
-    );  
 
 
 
 
+        if(totalUsers){
 
 
+            totalUsers.textContent =
 
+            this.statistics.users || 0;
 
-    if(!table){  
 
+        }
 
 
-        console.warn(  
 
-            "recentPodcasts element not found"  
 
-        );  
 
 
 
-        return;  
+        if(totalPlays){
 
 
-    }  
+            totalPlays.textContent =
 
+            this.statistics.plays || 0;
 
 
+        }
 
 
 
 
 
-    table.innerHTML = "";  
+    }
 
 
 
@@ -653,56 +668,56 @@ renderLatestPodcasts(){
 
 
 
-    if(  
 
-        this.podcasts.length === 0  
+    /*
+    ==========================
+    RENDER LATEST PODCASTS
+    ==========================
+    */
 
-    ){  
 
+    renderLatestPodcasts(){
 
 
-        table.innerHTML = `  
 
-        <tr>  
+        const table =
 
-            <td colspan="3">  
+        document.getElementById(
 
-                پادکستی ثبت نشده است  
+            "recentPodcasts"
 
-            </td>  
+        );
 
-        </tr>  
 
-        `;  
 
 
 
-        return;  
 
 
+        if(!table){
 
-    }  
 
 
+            console.warn(
 
+                "recentPodcasts not found"
 
+            );
 
 
 
+            return;
 
-    this.podcasts  
 
-    .slice(0,5)  
+        }
 
-    .forEach(  
 
-        podcast=>{  
 
 
 
 
 
-            let date = "-";  
+        table.innerHTML = "";
 
 
 
@@ -711,524 +726,896 @@ renderLatestPodcasts(){
 
 
 
-            if(  
+        if(
 
-                podcast.created_at  
+            this.podcasts.length === 0
 
-            ){  
+        ){
 
 
 
-                if(  
+            table.innerHTML = `
 
-                    window.UI &&  
 
-                    UI.formatDate  
+            <tr>
 
-                ){  
+                <td colspan="3">
 
+                    پادکستی ثبت نشده است
 
+                </td>
 
-                    date =  
+            </tr>
 
-                    UI.formatDate(  
 
-                        podcast.created_at  
+            `;
 
-                    );  
 
 
+            return;
 
-                }  
 
-                else{  
+        }
 
 
 
-                    date =  
 
-                    podcast.created_at;  
 
 
 
-                }  
 
+        this.podcasts
 
+        .slice(0,5)
 
-            }  
+        .forEach(
 
+            podcast=>{
 
 
 
 
 
+                const title =
 
+                this.escapeHTML(
 
-            const status =  
+                    podcast.title ||
 
-            podcast.status === "active"  
+                    "بدون عنوان"
 
-            ?  
+                );
 
-            "فعال"  
 
-            :  
 
-            "غیرفعال";  
 
 
 
 
 
+                const status =
 
+                podcast.status === "active"
 
+                ?
 
-            table.innerHTML += `  
+                "فعال"
 
+                :
 
-            <tr>  
+                "غیرفعال";
 
 
-                <td>  
 
-                    ${  
 
-                    this.escapeHTML(  
 
-                        podcast.title ||  
 
-                        "بدون عنوان"  
 
-                    )  
 
-                    }  
+                let date = "-";
 
-                </td>  
 
 
 
-                <td>  
 
-                    <span class="badge badge-success">  
 
-                        ${status}  
 
-                    </span>  
 
-                </td>  
+                if(
 
+                    podcast.created_at
 
+                ){
 
-                <td>  
 
-                    ${date}  
 
-                </td>  
+                    if(
 
+                        window.UI &&
 
-            </tr>  
+                        UI.formatDate
 
+                    ){
 
-            `;  
 
 
+                        date =
 
-        }  
+                        UI.formatDate(
 
-    );  
+                            podcast.created_at
 
+                        );
 
 
-}  
 
+                    }
 
+                    else{
 
 
 
+                        date =
 
+                        podcast.created_at;
 
 
 
-/*  
-==========================  
-ACTIVITY FEED  
-==========================  
-*/  
+                    }
 
 
-renderActivities(){  
 
+                }
 
 
-    const container =  
 
-    document.getElementById(  
 
-        "activityList"  
 
-    );  
 
 
 
+                const badgeClass =
 
+                podcast.status === "active"
 
+                ?
 
+                "badge-success"
 
+                :
 
-    if(!container){  
+                "badge-secondary";
 
 
 
-        return;  
 
 
 
-    }  
 
 
 
+                table.innerHTML += `
 
 
+                <tr>
 
 
+                    <td>
 
-    if(  
+                        ${title}
 
-        this.podcasts.length === 0  
+                    </td>
 
-    ){  
 
 
+                    <td>
 
-        container.innerHTML = `  
 
+                        <span class="badge ${badgeClass}">
 
-        <div class="empty-state">  
+                            ${status}
 
-            هنوز فعالیتی ثبت نشده است  
+                        </span>
 
-        </div>  
 
+                    </td>
 
-        `;  
 
 
+                    <td>
 
-        return;  
+                        ${date}
 
+                    </td>
 
 
-    }  
 
+                </tr>
 
 
+                `;
 
 
 
 
 
-    container.innerHTML = "";  
+            }
 
+        );
 
 
 
+        }
 
+    /*
+    ==========================
+    RENDER ACTIVITIES
+    ==========================
+    */
 
 
+    renderActivities(){
 
-    this.podcasts  
 
-    .slice(0,5)  
 
-    .forEach(  
+        const container =
 
-        item=>{  
+        document.getElementById(
 
+            "activityList"
 
+        );
 
-            container.innerHTML += `  
 
 
-            <div class="notification">  
 
 
-                <div class="notification-icon">  
 
-                    🎙  
 
-                </div>  
+        if(!container){
 
 
 
-                <div>  
+            return;
 
 
-                    <strong>  
+        }
 
-                    ${  
 
-                    this.escapeHTML(  
 
-                        item.title ||  
 
-                        "پادکست"  
 
-                    )  
 
-                    }  
 
-                    </strong>  
 
+        if(
 
+            this.activities.length === 0
 
-                    <br>  
+        ){
 
 
 
-                    <small>  
+            container.innerHTML = `
 
-                    پادکست ثبت شده در سیستم  
 
-                    </small>  
+            <div class="empty-state">
 
 
-                </div>  
+                هنوز فعالیتی ثبت نشده است
 
 
+            </div>
 
-            </div>  
 
+            `;
 
-            `;  
 
 
+            return;
 
-        }  
 
-    );  
+        }
 
 
 
-}  
 
 
 
 
 
+        container.innerHTML = "";
 
 
 
 
-/*  
-==========================  
-SAFE HTML  
-==========================  
-*/  
 
 
-escapeHTML(value){  
 
 
+        this.activities
 
-    return String(value)  
+        .slice(0,5)
 
-    .replace(  
+        .forEach(
 
-        /&/g,  
+            item=>{
 
-        "&amp;"  
 
-    )  
 
-    .replace(  
+                const action =
 
-        /</g,  
+                this.escapeHTML(
 
-        "&lt;"  
+                    item.action ||
 
-    )  
+                    "فعالیت جدید"
 
-    .replace(  
+                );
 
-        />/g,  
 
-        "&gt;"  
 
-    )  
 
-    .replace(  
 
-        /"/g,  
 
-        "&quot;"  
 
-    )  
+                const description =
 
-    .replace(  
+                this.escapeHTML(
 
-        /'/g,  
+                    item.description ||
 
-        "&#039;"  
+                    ""
 
-    );  
+                );
 
 
 
-}  
 
 
 
 
 
+                let date = "";
 
 
 
 
-/*  
-==========================  
-REFRESH  
-==========================  
-*/  
 
 
-async refresh(){  
 
 
+                if(
 
-    await this.loadData();  
+                    item.created_at
+
+                ){
+
+
+
+                    date =
+
+                    window.UI && UI.formatDate
+
+                    ?
+
+                    UI.formatDate(
+
+                        item.created_at
+
+                    )
+
+                    :
+
+                    item.created_at;
+
+
+
+                }
+
+
+
+
+
+
+
+
+                container.innerHTML += `
+
+
+
+                <div class="notification">
+
+
+
+                    <div class="notification-icon">
+
+
+                        🔔
+
+
+                    </div>
+
+
+
+                    <div>
+
+
+
+                        <strong>
+
+                            ${action}
+
+                        </strong>
+
+
+
+                        <br>
+
+
+
+                        <small>
+
+                            ${description}
+
+                            <br>
+
+                            ${date}
+
+                        </small>
+
+
+
+                    </div>
+
+
+
+                </div>
+
+
+
+                `;
+
+
+
+            }
+
+        );
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    /*
+    ==========================
+    LOADING
+    ==========================
+    */
+
+
+    showLoading(){
+
+
+
+        if(
+
+            window.UI &&
+
+            UI.showLoader
+
+        ){
+
+
+
+            UI.showLoader(
+
+                "در حال دریافت اطلاعات داشبورد..."
+
+            );
+
+
+
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    hideLoading(){
+
+
+
+        if(
+
+            window.UI &&
+
+            UI.hideLoader
+
+        ){
+
+
+
+            UI.hideLoader();
+
+
+
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    /*
+    ==========================
+    ERROR
+    ==========================
+    */
+
+
+    showError(message){
+
+
+
+        if(
+
+            window.UI &&
+
+            UI.error
+
+        ){
+
+
+
+            UI.error(
+
+                message
+
+            );
+
+
+
+        }
+
+        else{
+
+
+
+            console.error(
+
+                message
+
+            );
+
+
+
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    /*
+    ==========================
+    SAFE HTML
+    ==========================
+    */
+
+
+    escapeHTML(value){
+
+
+
+        return String(value)
+
+
+
+        .replace(
+
+            /&/g,
+
+            "&amp;"
+
+        )
+
+
+
+        .replace(
+
+            /</g,
+
+            "&lt;"
+
+        )
+
+
+
+        .replace(
+
+            />/g,
+
+            "&gt;"
+
+        )
+
+
+
+        .replace(
+
+            /"/g,
+
+            "&quot;"
+
+        )
+
+
+
+        .replace(
+
+            /'/g,
+
+            "&#039;"
+
+        );
+
+
+
+    }
+        /*
+    ==========================
+    REFRESH
+    ==========================
+    */
+
+
+    async refresh(){
+
+
+
+        await this.loadDashboard();
+
+
+
+    }
 
 
 
 }
 
-}
+
+
+
+
+
+
+
 
 /*
+=================================================
 
 START DASHBOARD
 
 =================================================
 */
 
+
+
+
+
 let dashboardManager = null;
+
+
+
+
+
+
+
 
 document.addEventListener(
 
-"DOMContentLoaded",  
+    "DOMContentLoaded",
 
-()=>{  
+    ()=>{
 
 
 
-    dashboardManager =  
 
-    new DashboardManager();  
 
+        dashboardManager =
 
+        new DashboardManager();
 
 
 
 
 
 
-    /*  
-    ==========================  
-    LOGOUT  
-    ==========================  
-    */  
 
 
-    const logoutBtn =  
 
-    document.getElementById(  
+        /*
+        ==========================
+        LOGOUT BUTTON
+        ==========================
+        */
 
-        "logoutBtn"  
 
-    );  
 
 
 
+        const logoutBtn =
 
+        document.getElementById(
 
+            "logoutBtn"
 
+        );
 
 
-    if(logoutBtn){  
 
 
 
-        logoutBtn.addEventListener(  
 
-            "click",  
 
-            ()=>{  
 
+        if(logoutBtn){
 
 
-                if(  
 
-                    window.Auth &&  
+            logoutBtn.addEventListener(
 
-                    Auth.logout  
+                "click",
 
-                ){  
+                async ()=>{
 
 
 
-                    Auth.logout();  
 
 
+                    try{
 
-                }  
 
-                else{  
 
+                        if(
 
+                            window.Auth &&
 
-                    localStorage.removeItem(  
+                            Auth.logout
 
-                        "NightCastToken"  
+                        ){
 
-                    );  
 
 
+                            await Auth.logout();
 
-                    window.location.href =  
 
-                    "login.html";  
 
+                        }
 
+                        else{
 
-                }  
 
 
+                            localStorage.removeItem(
 
-            }  
+                                "NightCastToken"
 
-        );  
+                            );
 
 
 
-    }  
+                            window.location.href =
 
+                            "login.html";
 
 
 
+                        }
 
 
 
+                    }
 
-}
+                    catch(error){
+
+
+
+                        console.error(
+
+                            "Logout Error:",
+
+                            error
+
+                        );
+
+
+
+                    }
+
+
+
+
+
+                }
+
+            );
+
+
+
+        }
+
+
+
+
+
+    }
 
 );
 
+
+
+
+
+
+
+
+
 /*
+=================================================
 
 GLOBAL EXPORT
 
 =================================================
 */
 
+
+
+
+
 window.DashboardManager =
 
 DashboardManager;
+
+
+
+
+
+
+
+window.dashboardManager =
+
+dashboardManager;

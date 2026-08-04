@@ -42,7 +42,7 @@ const API = {
 
     localStorage.getItem(
 
-        "nightcast_token"
+        "NightCastToken"
 
     ),
 
@@ -95,7 +95,7 @@ const API = {
 
             localStorage.getItem(
 
-                "nightcast_token"
+                "NightCastToken"
 
             );
 
@@ -447,7 +447,7 @@ const API = {
 
             localStorage.getItem(
 
-                "nightcast_token"
+                "NightCastToken"
 
             );
 

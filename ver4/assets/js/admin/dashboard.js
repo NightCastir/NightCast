@@ -6,9 +6,12 @@ Admin Dashboard Manager
 
 Responsible for:
 - Dashboard Statistics
+- Podcast Statistics
 - Latest Podcasts
 - Activity Feed
 - Dashboard Refresh
+
+Worker Compatible Version
 
 =================================================
 */
@@ -24,7 +27,12 @@ class DashboardManager {
 
 
 
+
+
     constructor(){
+
+
+        this.podcasts = [];
 
 
         this.init();
@@ -51,11 +59,60 @@ class DashboardManager {
 
 
 
-        await this.loadStats();
+        try{
 
 
 
-        await this.loadLatest();
+            if(window.Auth){
+
+
+
+                if(!Auth.isLoggedIn()){
+
+
+                    return;
+
+
+                }
+
+
+            }
+
+
+
+
+
+
+
+            await this.loadDashboard();
+
+
+
+
+        }
+
+
+        catch(error){
+
+
+
+            console.error(
+
+                "Dashboard Init Error:",
+
+                error
+
+            );
+
+
+            UI.error(
+
+                error.message
+
+            );
+
+
+        }
 
 
 
@@ -71,12 +128,12 @@ class DashboardManager {
 
     /*
     ==========================
-    LOAD STATISTICS
+    LOAD DASHBOARD DATA
     ==========================
     */
 
 
-    async loadStats(){
+    async loadDashboard(){
 
 
 
@@ -86,7 +143,7 @@ class DashboardManager {
 
             UI.showLoader(
 
-                "در حال دریافت آمار..."
+                "در حال دریافت اطلاعات..."
 
             );
 
@@ -96,14 +153,7 @@ class DashboardManager {
 
 
 
-
-            const result =
-
-            await API.get(
-
-                "/admin/dashboard"
-
-            );
+            await this.loadPodcasts();
 
 
 
@@ -111,25 +161,7 @@ class DashboardManager {
 
 
 
-
-            if(
-
-                !result.success
-
-            ){
-
-
-
-                throw new Error(
-
-                    result.message ||
-
-                    "خطا در دریافت آمار"
-
-                );
-
-
-            }
+            this.renderStats();
 
 
 
@@ -137,16 +169,14 @@ class DashboardManager {
 
 
 
+            this.renderLatestPodcasts();
 
-            this.renderStats(
 
-                result.data
-
-            );
 
 
 
         }
+
 
         catch(error){
 
@@ -154,7 +184,7 @@ class DashboardManager {
 
             console.error(
 
-                "Dashboard Stats Error:",
+                "Dashboard Load Error:",
 
                 error
 
@@ -169,15 +199,14 @@ class DashboardManager {
             );
 
 
-
         }
+
 
         finally{
 
 
 
             UI.hideLoader();
-
 
 
         }
@@ -190,6 +219,68 @@ class DashboardManager {
 
 
 
+
+
+
+
+    /*
+    ==========================
+    LOAD PODCASTS
+    ==========================
+    */
+
+
+    async loadPodcasts(){
+
+
+
+        const result =
+
+        await API.get(
+
+            "/podcasts"
+
+        );
+
+
+
+
+
+
+
+
+        if(
+
+            !result.success
+
+        ){
+
+
+            throw new Error(
+
+                result.message ||
+
+                "خطا در دریافت پادکست‌ها"
+
+            );
+
+
+        }
+
+
+
+
+
+
+
+
+        this.podcasts =
+
+        result.podcasts || [];
+
+
+
+    }
 
 
 
@@ -201,30 +292,13 @@ class DashboardManager {
     */
 
 
-    renderStats(data){
+    renderStats(){
 
 
 
-        if(!data){
+        const totalPodcasts =
 
-            return;
-
-        }
-
-
-
-
-
-
-
-
-        const podcasts =
-
-        document.getElementById(
-
-            "totalPodcasts"
-
-        );
+        this.podcasts.length;
 
 
 
@@ -233,13 +307,9 @@ class DashboardManager {
 
 
 
-        const books =
+        const totalBooks =
 
-        document.getElementById(
-
-            "totalBooks"
-
-        );
+        0;
 
 
 
@@ -248,13 +318,9 @@ class DashboardManager {
 
 
 
-        const users =
+        const totalUsers =
 
-        document.getElementById(
-
-            "totalUsers"
-
-        );
+        0;
 
 
 
@@ -263,11 +329,25 @@ class DashboardManager {
 
 
 
-        const plays =
+        const totalPlays =
 
-        document.getElementById(
+        this.podcasts.reduce(
 
-            "totalPlays"
+            (sum,item)=>{
+
+
+                return sum +
+
+                Number(
+
+                    item.listen_count || 0
+
+                );
+
+
+            },
+
+            0
 
         );
 
@@ -278,19 +358,14 @@ class DashboardManager {
 
 
 
-        if(podcasts){
 
+        this.updateElement(
 
+            "totalPodcasts",
 
-            podcasts.textContent =
+            totalPodcasts
 
-            data.podcasts ||
-
-            0;
-
-
-
-        }
+        );
 
 
 
@@ -299,19 +374,13 @@ class DashboardManager {
 
 
 
-        if(books){
+        this.updateElement(
 
+            "totalBooks",
 
+            totalBooks
 
-            books.textContent =
-
-            data.books ||
-
-            0;
-
-
-
-        }
+        );
 
 
 
@@ -320,19 +389,13 @@ class DashboardManager {
 
 
 
-        if(users){
+        this.updateElement(
 
+            "totalUsers",
 
+            totalUsers
 
-            users.textContent =
-
-            data.users ||
-
-            0;
-
-
-
-        }
+        );
 
 
 
@@ -341,21 +404,13 @@ class DashboardManager {
 
 
 
-        if(plays){
+        this.updateElement(
 
+            "totalPlays",
 
+            totalPlays
 
-            plays.textContent =
-
-            data.plays ||
-
-            data.views ||
-
-            0;
-
-
-
-        }
+        );
 
 
 
@@ -363,49 +418,36 @@ class DashboardManager {
 
 
 
+
+
+
+
+
+
     /*
     ==========================
-    LOAD LATEST DATA
+    UPDATE ELEMENT
     ==========================
     */
 
 
-    async loadLatest(){
+    updateElement(
+
+        id,
+
+        value
+
+    ){
 
 
 
-        try{
+        const element =
 
+        document.getElementById(
 
+            id
 
-            const result =
-
-            await API.get(
-
-                "/admin/dashboard/latest"
-
-            );
-
-
-
-
-
-
-
-
-            if(
-
-                !result.success
-
-            ){
-
-
-
-                return;
-
-
-
-            }
+        );
 
 
 
@@ -413,28 +455,13 @@ class DashboardManager {
 
 
 
-
-            this.renderLatest(
-
-                result.data
-
-            );
+        if(element){
 
 
 
-        }
+            element.textContent =
 
-        catch(error){
-
-
-
-            console.error(
-
-                "Latest Data Error:",
-
-                error
-
-            );
+            value;
 
 
 
@@ -459,7 +486,7 @@ class DashboardManager {
     */
 
 
-    renderLatest(data){
+    renderLatestPodcasts(){
 
 
 
@@ -478,13 +505,12 @@ class DashboardManager {
 
 
 
-        if(
+        if(!container){
 
-            !container
 
-        ){
 
             return;
+
 
         }
 
@@ -506,9 +532,7 @@ class DashboardManager {
 
         if(
 
-            !data ||
-
-            data.length === 0
+            this.podcasts.length === 0
 
         ){
 
@@ -529,9 +553,7 @@ class DashboardManager {
             `;
 
 
-
             return;
-
 
 
         }
@@ -543,15 +565,19 @@ class DashboardManager {
 
 
 
-        data.forEach(
+        this.podcasts
 
-            item=>{
+        .slice(0,5)
+
+        .forEach(
+
+            podcast=>{
 
 
 
                 const title =
 
-                item.title ||
+                podcast.title ||
 
                 "بدون عنوان";
 
@@ -564,9 +590,15 @@ class DashboardManager {
 
                 const status =
 
-                item.status ||
+                podcast.status === "active"
 
-                "منتشر نشده";
+                ?
+
+                "فعال"
+
+                :
+
+                "غیرفعال";
 
 
 
@@ -577,13 +609,13 @@ class DashboardManager {
 
                 const date =
 
-                item.created_at
+                podcast.created_at
 
                 ?
 
                 UI.formatDate(
 
-                    item.created_at
+                    podcast.created_at
 
                 )
 
@@ -600,7 +632,6 @@ class DashboardManager {
 
                 container.innerHTML += `
 
-                
                 <tr>
 
 
@@ -631,9 +662,7 @@ class DashboardManager {
                     </td>
 
 
-
                 </tr>
-
 
                 `;
 
@@ -642,13 +671,34 @@ class DashboardManager {
             }
 
 
-
         );
 
 
 
-    }
+}
 
+
+
+
+
+
+
+    /*
+    ==========================
+    REFRESH DASHBOARD
+    ==========================
+    */
+
+
+    async refresh(){
+
+
+
+        await this.loadDashboard();
+
+
+
+    }
 
 
 
@@ -659,20 +709,61 @@ class DashboardManager {
 
     /*
     ==========================
-    REFRESH
+    LOGOUT
     ==========================
     */
 
 
-    async refresh(){
+    bindEvents(){
 
 
 
-        await this.loadStats();
+        const logoutBtn =
+
+        document.getElementById(
+
+            "logoutBtn"
+
+        );
 
 
 
-        await this.loadLatest();
+
+
+
+
+
+        if(logoutBtn){
+
+
+
+            logoutBtn.addEventListener(
+
+                "click",
+
+                ()=>{
+
+
+
+                    if(window.Auth){
+
+
+
+                        Auth.logout();
+
+
+
+                    }
+
+
+                }
+
+
+            );
+
+
+
+        }
 
 
 
@@ -682,8 +773,7 @@ class DashboardManager {
 
 
 
-    
-    }
+}
 
 
 
@@ -711,6 +801,7 @@ let dashboardManager = null;
 
 
 
+
 document.addEventListener(
 
 "DOMContentLoaded",
@@ -727,53 +818,14 @@ document.addEventListener(
 
 
 
+    dashboardManager.bindEvents();
 
-
-
-    const logoutBtn =
-
-    document.getElementById(
-
-        "logoutBtn"
-
-    );
-
-
-
-
-
-
-
-
-    if(logoutBtn){
-
-
-
-        logoutBtn.addEventListener(
-
-            "click",
-
-            ()=>{
-
-
-
-                Auth.logout();
-
-
-
-            }
-
-
-
-        );
-
-
-
-    }
 
 
 
 });
+
+
 
 
 

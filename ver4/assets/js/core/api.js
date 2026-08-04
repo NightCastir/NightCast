@@ -32,12 +32,7 @@ const API = {
 
 
     baseURL:
-
-
-    "https://YOUR-WORKER-DOMAIN.workers.dev/api",
-
-
-
+"https://nightcast-api.tomasgermany2580.workers.dev/api/v1",
 
 
 

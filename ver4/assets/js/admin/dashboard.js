@@ -1932,3 +1932,285 @@ return String(value)
 
     }
     
+
+
+
+    /*
+    ==========================
+    LOADING
+    ==========================
+    */
+
+
+    loading(){
+
+
+
+        if(
+
+            window.UI &&
+
+            UI.showLoader
+
+        ){
+
+
+            UI.showLoader(
+
+                "در حال دریافت اطلاعات داشبورد..."
+
+            );
+
+
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+
+    loaded(){
+
+
+
+        if(
+
+            window.UI &&
+
+            UI.hideLoader
+
+        ){
+
+
+            UI.hideLoader();
+
+
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+
+    error(message){
+
+
+
+        if(
+
+            window.UI &&
+
+            UI.error
+
+        ){
+
+
+            UI.error(
+
+                message
+
+            );
+
+
+        }
+
+        else{
+
+
+            console.error(
+
+                message
+
+            );
+
+
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+
+    /*
+    ==========================
+    REFRESH
+    ==========================
+    */
+
+
+    async refresh(){
+
+
+
+        await this.loadDashboard();
+
+
+
+    }
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+=================================================
+
+START DASHBOARD
+
+=================================================
+*/
+
+
+
+let dashboardManager = null;
+
+
+
+
+
+
+
+document.addEventListener(
+
+"DOMContentLoaded",
+
+()=>{
+
+
+
+    dashboardManager =
+
+    new DashboardManager();
+
+
+
+
+
+
+
+    /*
+    ==========================
+    LOGOUT
+    ==========================
+    */
+
+
+    const logoutBtn =
+
+    document.getElementById(
+
+        "logoutBtn"
+
+    );
+
+
+
+
+
+
+
+    if(logoutBtn){
+
+
+
+        logoutBtn.addEventListener(
+
+            "click",
+
+            ()=>{
+
+
+
+                if(
+
+                    window.Auth &&
+
+                    Auth.logout
+
+                ){
+
+
+                    Auth.logout();
+
+
+                }
+
+                else{
+
+
+                    localStorage.removeItem(
+
+                        "NightCastToken"
+
+                    );
+
+
+                    window.location.href =
+
+                    "login.html";
+
+
+                }
+
+
+
+            }
+
+
+        );
+
+
+
+    }
+
+
+
+
+
+});
+/*
+=================================================
+
+GLOBAL EXPORT
+
+=================================================
+*/
+
+
+window.DashboardManager =
+
+DashboardManager;
+
+
+
+window.dashboardManager =
+
+dashboardManager;

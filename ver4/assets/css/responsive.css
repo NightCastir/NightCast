@@ -2,52 +2,77 @@
 =================================================
 
 NightCast Ver4
-Responsive System
+Responsive CSS
 
-Mobile First
-Tablet
-Desktop
-APK Ready
+Responsible for:
+- Mobile
+- Tablet
+- Small Desktop
+- PWA / APK Layout
 
 =================================================
 */
 
 
-/* ==========================
-TABLET
-========================== */
-
-@media (max-width:1100px){
 
 
-    .stats-grid{
+
+
+
+/*
+=========================
+LARGE TABLET
+=========================
+*/
+
+
+@media (max-width:1200px){
+
+
+
+    .stats-grid {
+
 
         grid-template-columns:
 
         repeat(2,1fr);
 
-    }
-
-
-
-    .sidebar{
-
-        width:260px;
 
     }
 
 
 
-    .main-area{
-
-        width:
-
-        calc(100% - 260px);
 
 
-        margin-right:260px;
+
+
+    .filter-row {
+
+
+        grid-template-columns:
+
+        repeat(2,1fr);
+
 
     }
+
+
+
+
+
+
+
+    .page-title {
+
+
+        font-size:
+
+        24px;
+
+
+    }
+
+
 
 
 }
@@ -58,83 +83,95 @@ TABLET
 
 
 
-/* ==========================
+
+
+/*
+=========================
+TABLET
+=========================
+*/
+
+
+@media (max-width:992px){
+
+
+
+    .stats-grid {
+
+
+        grid-template-columns:
+
+        repeat(2,1fr);
+
+
+    }
+
+
+
+
+
+
+
+    .audio-player {
+
+
+        flex-direction:
+
+        column;
+
+
+        align-items:
+
+        stretch;
+
+
+    }
+
+
+
+
+
+
+
+    .modal-dialog {
+
+
+        max-width:
+
+        95%;
+
+
+    }
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+=========================
 MOBILE
-========================== */
+=========================
+*/
 
 
 @media (max-width:768px){
 
 
 
-    html,
-    body{
+    body {
+
 
         overflow-x:hidden;
 
-        touch-action:manipulation;
-
-    }
-
-
-
-
-
-
-    .menu-toggle{
-
-        display:flex;
-
-    }
-
-
-
-
-
-
-    .sidebar{
-
-
-        transform:
-
-        translateX(100%);
-
-
-        box-shadow:
-
-        var(--shadow-lg);
-
-
-    }
-
-
-
-
-
-
-    .sidebar.open{
-
-
-        transform:
-
-        translateX(0);
-
-
-    }
-
-
-
-
-
-
-    .main-area{
-
-
-        width:100%;
-
-
-        margin-right:0;
-
 
     }
 
@@ -144,67 +181,7 @@ MOBILE
 
 
 
-    .app-header{
-
-
-        padding:
-
-        0 15px;
-
-
-    }
-
-
-
-
-
-
-
-    .user-box span{
-
-
-        display:none;
-
-
-    }
-
-
-
-
-
-
-
-    .content-area{
-
-
-        padding:
-
-        16px;
-
-
-    }
-
-
-
-
-
-
-    .page-title{
-
-
-        font-size:22px;
-
-
-    }
-
-
-
-
-
-
-
-
-    .stats-grid{
+    .stats-grid {
 
 
         grid-template-columns:
@@ -212,7 +189,20 @@ MOBILE
         1fr;
 
 
-        gap:14px;
+    }
+
+
+
+
+
+
+
+    .page-header {
+
+
+        gap:
+
+        15px;
 
 
     }
@@ -223,27 +213,10 @@ MOBILE
 
 
 
-    .stat-card{
+    .page-actions {
 
 
-        padding:18px;
-
-
-    }
-
-
-
-
-
-
-
-    .card{
-
-
-        padding:18px;
-
-
-        border-radius:18px;
+        width:100%;
 
 
     }
@@ -254,27 +227,10 @@ MOBILE
 
 
 
-
-    table{
-
-
-        min-width:700px;
+    .page-actions .btn {
 
 
-    }
-
-
-
-
-
-
-    .table-container{
-
-
-        overflow-x:auto;
-
-
-        -webkit-overflow-scrolling:touch;
+        width:100%;
 
 
     }
@@ -285,16 +241,44 @@ MOBILE
 
 
 
+    .table-container {
 
-    .btn{
+
+        border-radius:
+
+        12px;
 
 
-        min-height:44px;
+    }
+
+
+
+
+
+
+
+    table {
+
+
+        min-width:
+
+        650px;
+
+
+    }
+
+
+
+
+
+
+
+    .modal {
 
 
         padding:
 
-        12px 18px;
+        10px;
 
 
     }
@@ -304,16 +288,46 @@ MOBILE
 
 
 
-    input,
-    textarea,
-    select{
+
+    .modal-body {
 
 
-        font-size:16px;
+        padding:
+
+        18px;
 
 
     }
 
+
+
+
+
+
+
+    .modal-footer {
+
+
+        flex-direction:
+
+        column;
+
+
+    }
+
+
+
+
+
+
+
+    .modal-footer .btn {
+
+
+        width:100%;
+
+
+    }
 
 
 
@@ -322,38 +336,28 @@ MOBILE
 
 
 
-
-
-
-
-
-
-/* ==========================
+/*
+=========================
 SMALL MOBILE
-========================== */
+=========================
+*/
 
 
-@media (max-width:420px){
-
-
-
-    .app-header{
-
-
-        height:60px;
-
-
-    }
+@media (max-width:480px){
 
 
 
+    .app-header {
 
 
+        height:
 
-    .sidebar{
+        64px;
 
 
-        width:280px;
+        padding:
+
+        0 12px;
 
 
     }
@@ -364,10 +368,28 @@ SMALL MOBILE
 
 
 
-    .stat-number{
+    .header-right h3 {
 
 
-        font-size:24px;
+        font-size:
+
+        14px;
+
+
+    }
+
+
+
+
+
+
+
+    .content-area {
+
+
+        padding:
+
+        12px;
 
 
     }
@@ -377,13 +399,141 @@ SMALL MOBILE
 
 
 
-    .card{
+
+    .card {
 
 
-        padding:15px;
+        padding:
+
+        15px;
 
 
     }
+
+
+
+
+
+
+
+    .page-title {
+
+
+        font-size:
+
+        20px;
+
+
+    }
+
+
+
+
+
+
+
+    .page-subtitle {
+
+
+        font-size:
+
+        12px;
+
+
+    }
+
+
+
+
+
+
+
+    .stat-card {
+
+
+        padding:
+
+        18px;
+
+
+    }
+
+
+
+
+
+
+
+    .stat-value {
+
+
+        font-size:
+
+        24px;
+
+
+    }
+
+
+
+
+
+
+
+    .btn {
+
+
+        padding:
+
+        11px 15px;
+
+
+        font-size:
+
+        13px;
+
+
+    }
+
+
+
+
+
+
+
+    .upload-box {
+
+
+        padding:
+
+        25px 15px;
+
+
+    }
+
+
+
+
+
+
+
+    .audio-play-btn {
+
+
+        width:
+
+        48px;
+
+
+        height:
+
+        48px;
+
+
+    }
+
+
+
 
 
 
@@ -397,21 +547,115 @@ SMALL MOBILE
 
 
 
-/* ==========================
+/*
+=========================
 LANDSCAPE MOBILE
-========================== */
+=========================
+*/
 
 
-@media (max-height:500px)
-and
-(max-width:900px){
+@media (max-height:500px) and (orientation:landscape){
 
 
 
-    .sidebar-menu{
+    .sidebar {
 
 
-        padding-bottom:60px;
+        overflow-y:auto;
+
+
+    }
+
+
+
+
+
+
+
+    .sidebar-menu a {
+
+
+        padding:
+
+        10px 15px;
+
+
+    }
+
+
+
+
+
+
+
+    .app-header {
+
+
+        height:
+
+        60px;
+
+
+    }
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+=========================
+PWA / APK SAFE AREA
+=========================
+*/
+
+
+@supports(padding:max(0px)){
+
+
+
+    .app-header {
+
+
+        padding-top:
+
+        max(
+
+            0px,
+
+            env(safe-area-inset-top)
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+    .content-area {
+
+
+        padding-bottom:
+
+        max(
+
+            30px,
+
+            env(safe-area-inset-bottom)
+
+        );
 
 
     }
@@ -428,28 +672,26 @@ and
 
 
 
-/* ==========================
-LARGE DESKTOP
-========================== */
+/*
+=========================
+DARK MODE READY
+=========================
+*/
 
 
-@media (min-width:1400px){
-
-
-
-    .content-area{
-
-
-        max-width:1600px;
-
-
-        margin:auto;
-
-
-    }
+@media(prefers-color-scheme:dark){
 
 
 
+    /*
+    در نسخه فعلی فعال نیست
+    برای آینده APK نگهداری شده
+    */
 
 
 }
+
+
+
+
+

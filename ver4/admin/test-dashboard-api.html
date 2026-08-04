@@ -5,12 +5,11 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width,initial-scale=1">
-
 <title>
 NightCast Dashboard API Test
 </title>
 
+<link rel="stylesheet" href="../assets/css/core.css">
 
 <style>
 
@@ -23,13 +22,6 @@ padding:30px;
 }
 
 
-h2{
-
-color:#333;
-
-}
-
-
 .box{
 
 background:#111;
@@ -37,27 +29,23 @@ color:#00ff88;
 padding:20px;
 border-radius:10px;
 direction:ltr;
-text-align:left;
 white-space:pre-wrap;
-overflow:auto;
 
 }
 
+.card{
 
-button{
-
-padding:12px 25px;
-font-size:16px;
-cursor:pointer;
+background:white;
+padding:20px;
+margin-bottom:20px;
+border-radius:10px;
 
 }
 
 
 </style>
 
-
 </head>
-
 
 
 <body>
@@ -68,18 +56,73 @@ cursor:pointer;
 </h2>
 
 
-<button onclick="testDashboard()">
-Run Test
-</button>
+
+<div class="card">
+
+<h3>
+Statistics
+</h3>
+
+<div id="stats">
+
+Loading...
+
+</div>
+
+</div>
 
 
 
-<br><br>
 
 
-<div class="box" id="result">
+<div class="card">
 
-Waiting...
+<h3>
+Latest Podcasts
+</h3>
+
+<table border="1" width="100%">
+
+<thead>
+
+<tr>
+
+<th>
+Title
+</th>
+
+<th>
+Status
+</th>
+
+<th>
+Date
+</th>
+
+
+</tr>
+
+
+</thead>
+
+
+<tbody id="podcasts">
+
+</tbody>
+
+
+</table>
+
+
+</div>
+
+
+
+
+
+<div class="box" id="debug">
+
+Starting...
 
 </div>
 
@@ -91,31 +134,18 @@ Waiting...
 <script src="../assets/js/core/api.js"></script>
 
 
-
 <script>
 
 
-async function testDashboard(){
-
-
-const box =
-
-document.getElementById(
-"result"
-);
+async function runTest(){
 
 
 
-let output = "";
+let debug=[];
 
 
 
 try{
-
-
-
-output += "=== DASHBOARD API ===\n\n";
-
 
 
 
@@ -129,16 +159,9 @@ await API.get(
 
 
 
+debug.push(
 
-output +=
-
-JSON.stringify(
-
-dashboard,
-
-null,
-
-2
+"Dashboard API OK"
 
 );
 
@@ -146,11 +169,64 @@ null,
 
 
 
+document.getElementById(
+
+"stats"
+
+).innerHTML = `
 
 
-output += "\n\n\n=== DASHBOARD LATEST ===\n\n";
+Podcast :
+
+${dashboard.statistics.podcasts}
+
+<br>
+
+Books :
+
+${dashboard.statistics.books}
+
+<br>
+
+Users :
+
+${dashboard.statistics.users}
+
+<br>
+
+Plays :
+
+${dashboard.statistics.plays}
 
 
+`;
+
+
+
+
+
+}
+
+catch(e){
+
+
+debug.push(
+
+"Dashboard ERROR : "
+
++e.message
+
+);
+
+
+}
+
+
+
+
+
+
+try{
 
 
 
@@ -164,30 +240,95 @@ await API.get(
 
 
 
+debug.push(
 
-output +=
-
-JSON.stringify(
-
-latest,
-
-null,
-
-2
+"Latest API OK"
 
 );
 
 
 
 
+let html="";
 
 
 
-output += "\n\n\n=== ACTIVITY ===\n\n";
+latest.podcasts.forEach(
+
+p=>{
+
+
+html += `
+
+
+<tr>
+
+<td>
+
+${p.title}
+
+</td>
+
+
+<td>
+
+${p.status}
+
+</td>
+
+
+<td>
+
+${p.created_at}
+
+</td>
+
+
+</tr>
+
+
+`;
+
+
+}
+
+);
+
+
+
+document.getElementById(
+
+"podcasts"
+
+).innerHTML=html;
+
+
+
+}
+
+catch(e){
+
+
+
+debug.push(
+
+"Latest ERROR : "
+
++e.message
+
+);
+
+
+
+}
 
 
 
 
+
+
+
+try{
 
 
 const activity =
@@ -200,37 +341,25 @@ await API.get(
 
 
 
+debug.push(
 
-output +=
-
-JSON.stringify(
-
-activity,
-
-null,
-
-2
+"Activity API OK"
 
 );
 
 
-
-
-
 }
 
-catch(error){
+catch(e){
 
 
+debug.push(
 
-output +=
+"Activity ERROR : "
 
-"\nERROR:\n"
++e.message
 
-+
-
-error.message;
-
+);
 
 
 }
@@ -239,11 +368,31 @@ error.message;
 
 
 
-box.innerHTML = output;
+
+document.getElementById(
+
+"debug"
+
+).innerHTML =
+
+debug.join("\n");
+
 
 
 
 }
+
+
+
+
+
+document.addEventListener(
+
+"DOMContentLoaded",
+
+runTest
+
+);
 
 
 
@@ -253,4 +402,4 @@ box.innerHTML = output;
 
 </body>
 
-  </html>
+</html>

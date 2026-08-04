@@ -2,14 +2,14 @@
 =================================================
 
 NightCast Ver4
-UI Components
+Components CSS
 
-Cards
-Buttons
-Forms
-Tables
-Upload
-Feedback
+Responsible for:
+- UI Components
+- Cards
+- Tables
+- Dashboard Elements
+- Advanced Controls
 
 =================================================
 */
@@ -18,118 +18,16 @@ Feedback
 
 
 
-/* ==========================
-CARDS
-========================== */
 
 
-.card{
+/*
+=========================
+DASHBOARD CARDS
+=========================
+*/
 
 
-    background:
-
-    var(--surface);
-
-
-    border:
-
-    1px solid var(--border);
-
-
-    border-radius:
-
-    var(--radius-lg);
-
-
-    padding:
-
-    24px;
-
-
-    box-shadow:
-
-    var(--shadow-sm);
-
-
-    transition:
-
-    var(--normal);
-
-
-
-}
-
-
-
-
-.card:hover{
-
-
-    box-shadow:
-
-    var(--shadow);
-
-
-
-}
-
-
-
-
-
-
-
-.card-header{
-
-
-    display:flex;
-
-
-    align-items:center;
-
-
-    justify-content:space-between;
-
-
-
-    margin-bottom:20px;
-
-
-
-}
-
-
-
-
-
-
-
-.card-title{
-
-
-    font-size:18px;
-
-
-    font-weight:800;
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/* ==========================
-STAT CARDS
-========================== */
-
-
-.stats-grid{
+.stats-grid {
 
 
     display:grid;
@@ -143,6 +41,10 @@ STAT CARDS
     gap:20px;
 
 
+    margin-bottom:
+
+    30px;
+
 
 }
 
@@ -150,7 +52,9 @@ STAT CARDS
 
 
 
-.stat-card{
+
+
+.stat-card {
 
 
     background:
@@ -160,48 +64,12 @@ STAT CARDS
 
     border-radius:
 
-    var(--radius-lg);
+    var(--radius);
 
 
-    padding:22px;
+    padding:
 
-
-
-    display:flex;
-
-
-    align-items:center;
-
-
-    gap:18px;
-
-
-
-    border:
-
-    1px solid var(--border);
-
-
-
-    transition:
-
-    var(--normal);
-
-
-
-}
-
-
-
-
-
-.stat-card:hover{
-
-
-    transform:
-
-    translateY(-5px);
-
+    24px;
 
 
     box-shadow:
@@ -209,6 +77,16 @@ STAT CARDS
     var(--shadow);
 
 
+    position:relative;
+
+
+    overflow:hidden;
+
+
+    transition:
+
+    var(--transition);
+
 
 }
 
@@ -218,22 +96,80 @@ STAT CARDS
 
 
 
-.stat-icon{
+.stat-card:hover {
 
 
-    width:58px;
+    transform:
+
+    translateY(-5px);
 
 
-    height:58px;
+}
 
 
-    border-radius:18px;
+
+
+
+
+
+.stat-card::after {
+
+
+    content:"";
+
+
+    position:absolute;
+
+
+    width:
+
+    120px;
+
+
+    height:
+
+    120px;
+
+
+    left:
+
+    -30px;
+
+
+    bottom:
+
+    -30px;
+
+
+    border-radius:
+
+    50%;
 
 
     background:
 
-    rgba(108,92,231,.12);
+    rgba(108,92,231,.08);
 
+
+}
+
+
+
+
+
+
+
+.stat-icon {
+
+
+    width:
+
+    50px;
+
+
+    height:
+
+    50px;
 
 
     display:flex;
@@ -245,42 +181,81 @@ STAT CARDS
     justify-content:center;
 
 
-    font-size:28px;
+    border-radius:
+
+    14px;
 
 
+    background:
 
-}
-
-
-
-
-
-.stat-number{
-
-
-    font-size:28px;
-
-
-    font-weight:900;
-
-
-
-}
-
-
-
-
-.stat-label{
+    rgba(108,92,231,.12);
 
 
     color:
 
-    var(--text-soft);
+    var(--primary);
+
+
+    font-size:
+
+    22px;
+
+
+    margin-bottom:
+
+    15px;
+
+
+}
 
 
 
-    margin-top:5px;
 
+
+
+
+.stat-value {
+
+
+    font-size:
+
+    30px;
+
+
+    font-weight:
+
+    800;
+
+
+    color:
+
+    var(--dark);
+
+
+}
+
+
+
+
+
+
+
+.stat-title {
+
+
+    color:
+
+    var(--muted);
+
+
+    margin-top:
+
+    5px;
+
+
+    font-size:
+
+    14px;
 
 
 }
@@ -293,12 +268,44 @@ STAT CARDS
 
 
 
-/* ==========================
-BUTTONS
-========================== */
+/*
+=========================
+ACTION BUTTON GROUP
+=========================
+*/
 
 
-.btn{
+.action-group {
+
+
+    display:flex;
+
+
+    gap:8px;
+
+
+    align-items:center;
+
+
+}
+
+
+
+
+
+
+
+.action-btn {
+
+
+    width:
+
+    36px;
+
+
+    height:
+
+    36px;
 
 
     border:none;
@@ -306,21 +313,489 @@ BUTTONS
 
     border-radius:
 
-    12px;
+    10px;
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    justify-content:center;
+
+
+    transition:
+
+    var(--transition);
+
+
+}
+
+
+
+
+
+
+
+.action-btn:hover {
+
+
+    transform:
+
+    scale(1.08);
+
+
+}
+
+
+
+
+
+
+
+.action-edit {
+
+
+    background:
+
+    rgba(108,92,231,.12);
+
+
+    color:
+
+    var(--primary);
+
+
+}
+
+
+
+
+
+
+
+.action-delete {
+
+
+    background:
+
+    rgba(214,48,49,.12);
+
+
+    color:
+
+    var(--danger);
+
+
+}
+
+
+
+
+
+/*
+=========================
+AUDIO PLAYER
+=========================
+*/
+
+
+.audio-player {
+
+
+    background:
+
+    var(--dark);
+
+
+    color:white;
+
+
+    border-radius:
+
+    18px;
 
 
     padding:
 
-    12px 20px;
+    20px;
 
 
-    font-size:14px;
+    display:flex;
+
+
+    align-items:center;
+
+
+    gap:20px;
+
+
+}
+
+
+
+
+
+
+
+.audio-play-btn {
+
+
+    width:
+
+    55px;
+
+
+    height:
+
+    55px;
+
+
+    border-radius:
+
+    50%;
+
+
+    border:none;
+
+
+    background:
+
+    var(--primary);
+
+
+    color:white;
+
+
+    font-size:
+
+    20px;
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    justify-content:center;
+
+
+}
+
+
+
+
+
+
+
+.audio-info {
+
+
+    flex:1;
+
+
+}
+
+
+
+
+
+
+
+.audio-title {
+
+
+    font-size:
+
+    16px;
 
 
     font-weight:700;
 
 
-    display:inline-flex;
+}
+
+
+
+
+
+
+
+.audio-meta {
+
+
+    font-size:
+
+    13px;
+
+
+    opacity:.7;
+
+
+    margin-top:
+
+    5px;
+
+
+}
+
+
+
+
+
+
+
+
+
+.audio-progress {
+
+
+    width:100%;
+
+
+    height:
+
+    6px;
+
+
+    background:
+
+    rgba(255,255,255,.2);
+
+
+    border-radius:
+
+    10px;
+
+
+    overflow:hidden;
+
+
+    margin-top:
+
+    15px;
+
+
+}
+
+
+
+
+
+
+
+.audio-progress-bar {
+
+
+    height:100%;
+
+
+    width:35%;
+
+
+    background:
+
+    var(--primary);
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+=========================
+UPLOAD BOX
+=========================
+*/
+
+
+.upload-box {
+
+
+    border:
+
+    2px dashed var(--border);
+
+
+    border-radius:
+
+    18px;
+
+
+    padding:
+
+    40px;
+
+
+    text-align:center;
+
+
+    transition:
+
+    var(--transition);
+
+
+    background:
+
+    #fafafa;
+
+
+}
+
+
+
+
+
+
+
+.upload-box:hover {
+
+
+    border-color:
+
+    var(--primary);
+
+
+    background:
+
+    rgba(108,92,231,.03);
+
+
+}
+
+
+
+
+
+
+
+.upload-icon {
+
+
+    font-size:
+
+    45px;
+
+
+    margin-bottom:
+
+    15px;
+
+
+}
+
+
+
+
+
+
+
+.upload-input {
+
+
+    display:none;
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+=========================
+PROGRESS BAR
+=========================
+*/
+
+
+.progress {
+
+
+    height:
+
+    10px;
+
+
+    width:100%;
+
+
+    background:
+
+    #eee;
+
+
+    border-radius:
+
+    20px;
+
+
+    overflow:hidden;
+
+
+    margin-top:
+
+    15px;
+
+
+}
+
+
+
+
+
+
+
+.progress-bar {
+
+
+    height:100%;
+
+
+    width:0;
+
+
+    background:
+
+    var(--primary);
+
+
+    transition:
+
+    .3s ease;
+
+
+}
+
+
+
+
+
+
+
+/*
+=========================
+PAGINATION
+=========================
+*/
+
+
+.pagination {
+
+
+    display:flex;
 
 
     align-items:center;
@@ -332,27 +807,9 @@ BUTTONS
     gap:8px;
 
 
-    transition:
+    margin-top:
 
-    var(--fast);
-
-
-
-}
-
-
-
-
-
-
-
-.btn:hover{
-
-
-    transform:
-
-    translateY(-2px);
-
+    25px;
 
 
 }
@@ -363,362 +820,25 @@ BUTTONS
 
 
 
-.btn-primary{
+.pagination button {
 
 
-    background:
+    width:
 
-    var(--primary);
+    38px;
 
 
-    color:white;
+    height:
 
+    38px;
 
 
-}
+    border:none;
 
 
+    border-radius:
 
-
-
-.btn-primary:hover{
-
-
-    background:
-
-    var(--primary-dark);
-
-
-
-}
-
-
-
-
-
-
-.btn-success{
-
-
-    background:
-
-    var(--secondary);
-
-
-    color:white;
-
-
-
-}
-
-
-
-
-
-
-
-.btn-danger{
-
-
-    background:
-
-    var(--danger);
-
-
-    color:white;
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/* ==========================
-BADGES
-========================== */
-
-
-.badge{
-
-
-    display:inline-flex;
-
-
-    align-items:center;
-
-
-    padding:
-
-    6px 12px;
-
-
-    border-radius:20px;
-
-
-    font-size:12px;
-
-
-    font-weight:700;
-
-
-
-}
-
-
-
-
-.badge-success{
-
-
-    background:
-
-    rgba(0,184,148,.15);
-
-
-    color:
-
-    #009b7d;
-
-
-
-}
-
-
-
-
-
-.badge-warning{
-
-
-    background:
-
-    rgba(243,156,18,.15);
-
-
-    color:
-
-    #d68910;
-
-
-
-}
-
-
-
-
-
-.badge-danger{
-
-
-    background:
-
-    rgba(231,76,60,.15);
-
-
-    color:
-
-    #c0392b;
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/* ==========================
-TABLE
-========================== */
-
-
-.table-container{
-
-
-    width:100%;
-
-
-    overflow-x:auto;
-
-
-
-}
-
-
-
-
-
-
-table{
-
-
-    width:100%;
-
-
-    border-collapse:collapse;
-
-
-
-}
-
-
-
-
-
-thead{
-
-
-    background:
-
-    #f8fafc;
-
-
-
-}
-
-
-
-
-
-th{
-
-
-    padding:
-
-    16px;
-
-
-    text-align:right;
-
-
-    color:
-
-    var(--text-soft);
-
-
-    font-size:13px;
-
-
-
-}
-
-
-
-
-
-td{
-
-
-    padding:
-
-    16px;
-
-
-    border-bottom:
-
-    1px solid var(--border);
-
-
-
-}
-
-
-
-
-
-tbody tr{
-
-
-    transition:
-
-    var(--fast);
-
-
-
-}
-
-
-
-
-
-tbody tr:hover{
-
-
-    background:
-
-    #fafafa;
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/* ==========================
-FORMS
-========================== */
-
-
-.form-group{
-
-
-    margin-bottom:20px;
-
-
-
-}
-
-
-
-
-
-label{
-
-
-    display:block;
-
-
-    margin-bottom:8px;
-
-
-    font-weight:700;
-
-
-
-}
-
-
-
-
-
-input,
-textarea,
-select{
-
-
-    width:100%;
-
-
-    border:
-
-    1px solid var(--border);
-
+    10px;
 
 
     background:
@@ -726,140 +846,19 @@ select{
     var(--surface);
 
 
+    color:
 
-    border-radius:
-
-    12px;
-
-
-
-    padding:
-
-    13px 15px;
-
-
-
-    outline:none;
-
-
-
-    transition:
-
-    var(--fast);
-
-
-
-}
-
-
-
-
-
-
-
-input:focus,
-textarea:focus,
-select:focus{
-
-
-    border-color:
-
-    var(--primary);
-
+    var(--dark);
 
 
     box-shadow:
 
-    0 0 0 4px rgba(108,92,231,.12);
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/* ==========================
-UPLOAD BOX
-========================== */
-
-
-.upload-box{
-
-
-    border:
-
-    2px dashed #cbd5e1;
-
-
-
-    border-radius:
-
-    var(--radius-lg);
-
-
-
-    padding:
-
-    35px;
-
-
-
-    text-align:center;
-
-
-
-    background:
-
-    #fafafa;
-
+    0 3px 10px rgba(0,0,0,.06);
 
 
     transition:
 
-    var(--normal);
-
-
-
-}
-
-
-
-
-.upload-box:hover{
-
-
-    border-color:
-
-    var(--primary);
-
-
-
-    background:
-
-    rgba(108,92,231,.04);
-
-
-
-}
-
-
-
-
-
-.upload-icon{
-
-
-    font-size:45px;
-
-
-    margin-bottom:15px;
-
+    var(--transition);
 
 
 }
@@ -870,55 +869,218 @@ UPLOAD BOX
 
 
 
-
-
-/* ==========================
-PROGRESS
-========================== */
-
-
-.progress{
-
-
-    width:100%;
-
-
-    height:10px;
-
-
-    background:
-
-    #e5e7eb;
-
-
-
-    border-radius:20px;
-
-
-    overflow:hidden;
-
-
-
-}
-
-
-
-
-
-.progress-bar{
-
-
-    height:100%;
-
-
-    width:0;
-
+.pagination button:hover,
+.pagination button.active {
 
 
     background:
 
     var(--primary);
 
+
+    color:white;
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+=========================
+TABS
+=========================
+*/
+
+
+.tabs {
+
+
+    display:flex;
+
+
+    gap:10px;
+
+
+    border-bottom:
+
+    1px solid var(--border);
+
+
+    margin-bottom:
+
+    20px;
+
+
+}
+
+
+
+
+
+
+
+.tab {
+
+
+    padding:
+
+    12px 20px;
+
+
+    cursor:pointer;
+
+
+    color:
+
+    var(--muted);
+
+
+    position:relative;
+
+
+}
+
+
+
+
+
+
+
+.tab.active {
+
+
+    color:
+
+    var(--primary);
+
+
+    font-weight:700;
+
+
+}
+
+
+
+
+
+
+
+.tab.active::after {
+
+
+    content:"";
+
+
+    position:absolute;
+
+
+    bottom:
+
+    -1px;
+
+
+    right:0;
+
+
+    left:0;
+
+
+    height:
+
+    3px;
+
+
+    background:
+
+    var(--primary);
+
+
+    border-radius:
+
+    10px;
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+=========================
+SWITCH
+=========================
+*/
+
+
+.switch {
+
+
+    position:relative;
+
+
+    width:
+
+    52px;
+
+
+    height:
+
+    28px;
+
+
+}
+
+
+
+
+
+
+
+.switch input {
+
+
+    display:none;
+
+
+}
+
+
+
+
+
+
+
+.slider {
+
+
+    position:absolute;
+
+
+    inset:0;
+
+
+    background:
+
+    #ccc;
+
+
+    border-radius:
+
+    30px;
+
+
+    cursor:pointer;
 
 
     transition:
@@ -926,6 +1088,87 @@ PROGRESS
     .3s;
 
 
+}
+
+
+
+
+
+
+
+.slider::before {
+
+
+    content:"";
+
+
+    position:absolute;
+
+
+    width:
+
+    22px;
+
+
+    height:
+
+    22px;
+
+
+    right:
+
+    3px;
+
+
+    top:
+
+    3px;
+
+
+    background:white;
+
+
+    border-radius:
+
+    50%;
+
+
+    transition:
+
+    .3s;
+
+
+}
+
+
+
+
+
+
+
+.switch input:checked + .slider {
+
+
+    background:
+
+    var(--primary);
+
+
+}
+
+
+
+
+
+
+
+.switch input:checked + .slider::before {
+
+
+    transform:
+
+    translateX(-24px);
+
 
 }
 
@@ -937,68 +1180,143 @@ PROGRESS
 
 
 
-/* ==========================
-TOAST
-========================== */
+/*
+=========================
+PROFILE BOX
+=========================
+*/
 
 
-.toast{
+.profile-box {
 
 
-    position:fixed;
+    display:flex;
 
 
-    bottom:30px;
+    align-items:center;
 
 
-    left:30px;
-
-
-    min-width:280px;
+    gap:20px;
 
 
     padding:
 
-    16px 20px;
+    20px;
 
 
     background:
 
-    #1f2937;
+    var(--surface);
+
+
+    border-radius:
+
+    16px;
+
+
+    box-shadow:
+
+    var(--shadow);
+
+
+}
+
+
+
+
+
+
+
+.profile-avatar {
+
+
+    width:
+
+    80px;
+
+
+    height:
+
+    80px;
+
+
+    border-radius:
+
+    50%;
+
+
+    background:
+
+    var(--primary);
 
 
     color:white;
 
 
+    display:flex;
+
+
+    align-items:center;
+
+
+    justify-content:center;
+
+
+    font-size:
+
+    30px;
+
+
+    font-weight:800;
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+=========================
+NOTIFICATION
+=========================
+*/
+
+
+.notification {
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    gap:15px;
+
+
+    padding:
+
+    16px;
+
+
     border-radius:
 
-    14px;
+    12px;
 
+
+    background:
+
+    var(--surface);
 
 
     box-shadow:
 
-    var(--shadow-lg);
-
-
-
-    transform:
-
-    translateY(120px);
-
-
-
-    opacity:0;
-
-
-    transition:
-
-    var(--normal);
-
-
-
-    z-index:3000;
-
+    var(--shadow);
 
 
 }
@@ -1007,14 +1325,40 @@ TOAST
 
 
 
-.toast.show{
 
 
-    transform:none;
+.notification-icon {
 
 
-    opacity:1;
+    width:
 
+    40px;
+
+
+    height:
+
+    40px;
+
+
+    border-radius:
+
+    12px;
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    justify-content:center;
+
+
+    background:
+
+    rgba(108,92,231,.12);
 
 
 }
+
+

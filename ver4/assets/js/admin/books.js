@@ -1,21 +1,25 @@
-
 /*
 =================================================
 
 NightCast Ver4
-Books Manager
+Admin Books Manager
 
 Responsible for:
-- Manage Books
-- Create / Update / Delete
-- Search & Filter
-- Worker Communication
+- Books List
+- Create Book
+- Edit Book
+- Delete Book
+- Cover Upload
 
 =================================================
 */
 
 
 "use strict";
+
+
+
+
 
 
 
@@ -26,18 +30,17 @@ class BooksManager {
     constructor(){
 
 
-        this.books = [];
+
+        this.currentPage = 1;
 
 
-        this.filteredBooks = [];
-
-
-        this.currentBook = null;
+        this.limit = 20;
 
 
         this.init();
 
 
+
     }
 
 
@@ -46,175 +49,34 @@ class BooksManager {
 
 
 
-
-
-    /*
-    ========================================
-    INIT
-    ========================================
-    */
 
 
     async init(){
 
 
-        this.cacheDOM();
+
+        if(
+
+            !Auth.requireAuth()
+
+        ){
+
+            return;
+
+        }
+
+
+
+
+
+
 
 
         this.bindEvents();
 
 
-        await this.loadBooks();
 
-
-    }
-
-
-
-
-
-
-
-
-
-    /*
-    ========================================
-    CACHE DOM
-    ========================================
-    */
-
-
-    cacheDOM(){
-
-
-
-        this.table =
-
-        document.getElementById(
-
-            "booksTable"
-
-        );
-
-
-
-
-
-        this.counter =
-
-        document.getElementById(
-
-            "bookCount"
-
-        );
-
-
-
-
-
-        this.modal =
-
-        document.getElementById(
-
-            "bookModal"
-
-        );
-
-
-
-
-
-        this.form =
-
-        document.getElementById(
-
-            "bookForm"
-
-        );
-
-
-
-
-
-        this.search =
-
-        document.getElementById(
-
-            "bookSearch"
-
-        );
-
-
-
-
-
-        this.status =
-
-        document.getElementById(
-
-            "bookStatus"
-
-        );
-
-
-
-
-
-        this.btnNew =
-
-        document.getElementById(
-
-            "btnNewBook"
-
-        );
-
-
-
-
-
-        this.btnSave =
-
-        document.getElementById(
-
-            "saveBook"
-
-        );
-
-
-
-
-
-        this.btnCancel =
-
-        document.getElementById(
-
-            "cancelBook"
-
-        );
-
-
-
-
-
-        this.btnClose =
-
-        document.getElementById(
-
-            "closeBookModal"
-
-        );
-
-
-
-
-
-        this.btnRefresh =
-
-        document.getElementById(
-
-            "btnRefreshBooks"
-
-        );
+        await this.load();
 
 
 
@@ -229,9 +91,9 @@ class BooksManager {
 
 
     /*
-    ========================================
+    ==========================
     EVENTS
-    ========================================
+    ==========================
     */
 
 
@@ -239,7 +101,15 @@ class BooksManager {
 
 
 
-        this.btnNew?.addEventListener(
+        document
+
+        .getElementById(
+
+            "addBook"
+
+        )
+
+        ?.addEventListener(
 
             "click",
 
@@ -251,7 +121,18 @@ class BooksManager {
 
 
 
-        this.btnSave?.addEventListener(
+
+
+
+        document
+
+        .getElementById(
+
+            "saveBook"
+
+        )
+
+        ?.addEventListener(
 
             "click",
 
@@ -261,92 +142,29 @@ class BooksManager {
 
 
 
-
-
-        this.btnCancel?.addEventListener(
-
-            "click",
-
-            ()=>this.close()
-
-        );
+    }
 
 
 
 
 
-        this.btnClose?.addEventListener(
-
-            "click",
-
-            ()=>this.close()
-
-        );
 
 
-
-
-
-        this.btnRefresh?.addEventListener(
-
-            "click",
-
-            ()=>this.loadBooks()
-
-        );
-
-
-
-
-
-        this.search?.addEventListener(
-
-            "input",
-
-            ()=>this.filter()
-
-        );
-
-
-
-
-
-        this.status?.addEventListener(
-
-            "change",
-
-            ()=>this.filter()
-
-        );
-
-
-
-
-
-        this.table?.addEventListener(
-
-            "click",
-
-            (e)=>this.tableEvents(e)
-
-        );
-
-
-
-          }
 
 
     /*
-    ========================================
+    ==========================
     LOAD BOOKS
-    ========================================
+    ==========================
     */
 
 
-    async loadBooks(){
+    async load(){
+
 
 
         try{
+
 
 
             Loader.show(
@@ -358,11 +176,15 @@ class BooksManager {
 
 
 
+
+
+
+
             const result =
 
             await API.get(
 
-                "/books"
+                `/admin/books?page=${this.currentPage}&limit=${this.limit}`
 
             );
 
@@ -370,7 +192,14 @@ class BooksManager {
 
 
 
-            if(!result.success){
+
+
+
+            if(
+
+                !result.success
+
+            ){
 
 
 
@@ -378,7 +207,7 @@ class BooksManager {
 
                     result.message ||
 
-                    "دریافت کتاب‌ها ناموفق بود"
+                    "خطا در دریافت کتاب‌ها"
 
                 );
 
@@ -392,35 +221,12 @@ class BooksManager {
 
 
 
-            this.books =
 
-            result.books || [];
+            this.render(
 
+                result.data
 
-
-
-
-            this.filteredBooks =
-
-            [
-
-                ...this.books
-
-            ];
-
-
-
-
-
-
-
-            this.render();
-
-
-
-
-
-            this.updateCounter();
+            );
 
 
 
@@ -428,13 +234,7 @@ class BooksManager {
 
         }
 
-
-
         catch(error){
-
-
-
-            console.error(error);
 
 
 
@@ -448,8 +248,6 @@ class BooksManager {
 
         }
 
-
-
         finally{
 
 
@@ -461,30 +259,31 @@ class BooksManager {
         }
 
 
+
     }
 
 
 
 
-
-
-
-
-
-    /*
-    ========================================
-    RENDER TABLE
-    ========================================
+        /*
+    ==========================
+    RENDER BOOK TABLE
+    ==========================
     */
 
 
-    render(){
+    render(data){
 
 
 
-        if(!this.table)
+        const tbody =
 
-        return;
+        document.querySelector(
+
+            "#bookTableBody"
+
+        );
+
 
 
 
@@ -494,33 +293,12 @@ class BooksManager {
 
         if(
 
-            this.filteredBooks.length===0
+            !tbody
 
         ){
 
-
-
-            this.table.innerHTML =
-
-            `
-
-            <tr>
-
-            <td colspan="6">
-
-            کتابی ثبت نشده است
-
-            </td>
-
-            </tr>
-
-            `;
-
-
-
             return;
 
-
         }
 
 
@@ -530,422 +308,212 @@ class BooksManager {
 
 
 
+        tbody.innerHTML = "";
 
-        this.table.innerHTML =
 
 
 
 
-        this.filteredBooks.map(
 
-        (book,index)=>`
 
 
+        const books =
 
-        <tr>
+        data.items ||
 
+        data;
 
 
-        <td>
 
-        ${index+1}
 
-        </td>
 
 
 
 
+        books.forEach(
 
-        <td>
+            book=>{
 
-        ${
 
-        book.title || "-"
 
-        }
+                tbody.innerHTML += `
 
-        </td>
+                <tr>
 
 
 
+                    <td>
 
+                        ${book.id}
 
-        <td>
+                    </td>
 
-        ${
 
-        book.author || "-"
 
-        }
 
-        </td>
 
+                    <td>
 
+                        <div class="book-info">
 
 
+                            <img
 
-        <td>
+                            src="${
 
-        ${
+                            book.cover ||
 
-        book.episodes_count || 0
+                            "/ver4/assets/images/book-default.png"
 
-        }
+                            }"
 
-        </td>
+                            class="book-cover"
 
+                            >
 
 
+                            <span>
 
+                            ${book.title}
 
+                            </span>
 
-        <td>
 
+                        </div>
 
-        <span class="badge
+                    </td>
 
-        ${
 
-        book.status==="active"
 
-        ?
 
-        "badge-success"
 
-        :
+                    <td>
 
-        "badge-warning"
+                        ${
 
-        }
+                        book.author ||
 
-        ">
+                        "-"
 
+                        }
 
+                    </td>
 
-        ${
 
-        book.status==="active"
 
-        ?
 
-        "فعال"
 
-        :
+                    <td>
 
-        "غیرفعال"
+                        ${
 
-        }
+                        book.category ||
 
+                        "-"
 
+                        }
 
-        </span>
+                    </td>
 
 
-        </td>
 
 
 
+                    <td>
 
+                        <span class="badge badge-success">
 
+                            ${
 
+                            book.status ||
 
-        <td>
+                            "published"
 
+                            }
 
+                        </span>
 
-        <button
+                    </td>
 
-        class="btn btn-sm"
 
-        data-action="edit"
 
-        data-id="${book.id}"
 
-        >
 
-        ویرایش
+                    <td>
 
-        </button>
+                        ${
 
+                        UI.formatDate(
 
+                            book.created_at
 
+                        )
 
+                        }
 
+                    </td>
 
 
-        <button
 
-        class="btn btn-danger btn-sm"
 
-        data-action="delete"
 
-        data-id="${book.id}"
+                    <td>
 
-        >
 
-        حذف
+                        <div class="action-group">
 
-        </button>
 
 
+                            <button
 
+                            class="action-btn action-edit"
 
+                            onclick="booksManager.edit(${book.id})"
 
-        </td>
+                            >
 
+                            ✏️
 
+                            </button>
 
 
 
-        </tr>
 
 
 
-        `)
+                            <button
 
-        .join("");
+                            class="action-btn action-delete"
 
+                            onclick="booksManager.remove(${book.id})"
 
+                            >
 
+                            🗑️
 
+                            </button>
 
-    }
 
 
+                        </div>
 
 
+                    </td>
 
 
 
+                </tr>
 
+                `;
 
-    /*
-    ========================================
-    COUNTER
-    ========================================
-    */
 
 
-    updateCounter(){
-
-
-
-        if(this.counter){
-
-
-
-            this.counter.innerText =
-
-
-            `${this.filteredBooks.length} کتاب`;
-
-
-
-        }
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-    /*
-    ========================================
-    FILTER
-    ========================================
-    */
-
-
-    filter(){
-
-
-
-        const keyword =
-
-        this.search.value
-
-        .trim()
-
-        .toLowerCase();
-
-
-
-
-
-
-        const status =
-
-        this.status.value;
-
-
-
-
-
-
-
-        this.filteredBooks =
-
-
-
-        this.books.filter(
-
-        book=>{
-
-
-            const title =
-
-            (
-
-            book.title || ""
-
-            )
-
-            .toLowerCase();
-
-
-
-
-
-
-            const searchMatch =
-
-            title.includes(
-
-                keyword
-
-            );
-
-
-
-
-
-
-            const statusMatch =
-
-
-            status===""
-
-            ||
-
-            book.status===status;
-
-
-
-
-
-
-
-            return (
-
-                searchMatch
-
-                &&
-
-                statusMatch
-
-            );
-
-
-
-        });
-
-
-
-        this.render();
-
-
-        this.updateCounter();
-
-
-
-    }
-
-
-
-
-
-
-      /*
-    ========================================
-    TABLE EVENTS
-    ========================================
-    */
-
-
-    tableEvents(event){
-
-
-
-        const button =
-
-        event.target.closest(
-
-            "button[data-action]"
+            }
 
         );
 
 
 
-
-
-        if(!button)
-
-        return;
-
-
-
-
-
-        const action =
-
-        button.dataset.action;
-
-
-
-
-
-        const id =
-
-        button.dataset.id;
-
-
-
-
-
-
-        if(action==="edit"){
-
-
-
-            this.edit(id);
-
-
-
-        }
-
-
-
-
-
-
-        if(action==="delete"){
-
-
-
-            this.delete(id);
-
-
-
-        }
-
-
-
     }
 
 
@@ -957,9 +525,9 @@ class BooksManager {
 
 
     /*
-    ========================================
-    OPEN CREATE
-    ========================================
+    ==========================
+    OPEN CREATE MODAL
+    ==========================
     */
 
 
@@ -967,117 +535,26 @@ class BooksManager {
 
 
 
-        this.currentBook = null;
+        const modal =
 
+        document.getElementById(
 
-
-        this.resetForm();
-
-
-
-
-
-        this.modal.classList.add(
-
-            "show"
+            "bookModal"
 
         );
 
 
 
-    }
 
 
 
 
 
+        if(modal){
 
 
 
-
-    /*
-    ========================================
-    EDIT BOOK
-    ========================================
-    */
-
-
-    async edit(id){
-
-
-
-        try{
-
-
-
-            Loader.show(
-
-                "در حال دریافت اطلاعات..."
-
-            );
-
-
-
-
-
-
-            const result =
-
-            await API.get(
-
-                "/books/" + id
-
-            );
-
-
-
-
-
-
-            if(!result.success){
-
-
-
-                throw new Error(
-
-                    result.message ||
-
-                    "کتاب پیدا نشد"
-
-                );
-
-
-            }
-
-
-
-
-
-
-
-
-            this.currentBook =
-
-            result.book;
-
-
-
-
-
-
-
-            this.fillForm(
-
-                result.book
-
-            );
-
-
-
-
-
-
-            this.modal.classList.add(
+            modal.classList.add(
 
                 "show"
 
@@ -1085,227 +562,12 @@ class BooksManager {
 
 
 
-
-
-
-        }
-
-
-
-        catch(error){
-
-
-
-            Toast.error(
-
-                error.message
-
-            );
-
-
-
         }
 
 
 
 
-        finally{
 
-
-            Loader.hide();
-
-
-        }
-
-
-    }
-
-
-
-
-
-
-
-
-
-    /*
-    ========================================
-    FILL FORM
-    ========================================
-    */
-
-
-    fillForm(book){
-
-
-
-
-
-        document.getElementById(
-
-            "bookId"
-
-        ).value =
-
-        book.id || "";
-
-
-
-
-
-
-
-        document.getElementById(
-
-            "bookTitle"
-
-        ).value =
-
-        book.title || "";
-
-
-
-
-
-
-
-
-        document.getElementById(
-
-            "bookAuthor"
-
-        ).value =
-
-        book.author || "";
-
-
-
-
-
-
-
-
-        document.getElementById(
-
-            "bookTranslator"
-
-        ).value =
-
-        book.translator || "";
-
-
-
-
-
-
-
-
-        document.getElementById(
-
-            "bookCategory"
-
-        ).value =
-
-        book.category || "";
-
-
-
-
-
-
-
-
-        document.getElementById(
-
-            "bookDescription"
-
-        ).value =
-
-        book.description || "";
-
-
-
-
-
-
-
-
-        document.getElementById(
-
-            "bookSummary"
-
-        ).value =
-
-        book.summary || "";
-
-
-
-
-
-
-
-
-        document.getElementById(
-
-            "bookActive"
-
-        ).value =
-
-        book.status || "active";
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-    /*
-    ========================================
-    CLOSE MODAL
-    ========================================
-    */
-
-
-    close(){
-
-
-
-        this.modal.classList.remove(
-
-            "show"
-
-        );
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-    /*
-    ========================================
-    RESET FORM
-    ========================================
-    */
-
-
-    resetForm(){
-
-
-
-        this.form.reset();
 
 
 
@@ -1317,14 +579,31 @@ class BooksManager {
 
 
 
+
+
+
+
+
+        document.getElementById(
+
+            "bookForm"
+
+        )?.reset();
+
+
+
     }
 
 
 
-      /*
-    ========================================
+
+
+
+
+        /*
+    ==========================
     SAVE BOOK
-    ========================================
+    ==========================
     */
 
 
@@ -1333,21 +612,6 @@ class BooksManager {
 
 
         try{
-
-
-
-            if(!this.validate()){
-
-
-                return;
-
-
-            }
-
-
-
-
-
 
 
 
@@ -1365,6 +629,7 @@ class BooksManager {
 
 
 
+
             const data = {
 
 
@@ -1375,7 +640,7 @@ class BooksManager {
 
                     "bookTitle"
 
-                ).value.trim(),
+                ).value,
 
 
 
@@ -1387,19 +652,19 @@ class BooksManager {
 
                     "bookAuthor"
 
-                ).value.trim(),
+                ).value,
 
 
 
 
 
-                translator:
+                description:
 
                 document.getElementById(
 
-                    "bookTranslator"
+                    "bookDescription"
 
-                ).value.trim(),
+                ).value,
 
 
 
@@ -1417,44 +682,17 @@ class BooksManager {
 
 
 
-                description:
-
-                document.getElementById(
-
-                    "bookDescription"
-
-                ).value.trim(),
-
-
-
-
-
-                summary:
-
-                document.getElementById(
-
-                    "bookSummary"
-
-                ).value.trim(),
-
-
-
-
-
                 status:
 
                 document.getElementById(
 
-                    "bookActive"
+                    "bookStatus"
 
                 ).value
 
 
 
-
-
             };
-
 
 
 
@@ -1476,8 +714,8 @@ class BooksManager {
 
 
 
-
             let result;
+
 
 
 
@@ -1493,7 +731,7 @@ class BooksManager {
 
                 await API.put(
 
-                    "/books/" + id,
+                    `/admin/books/${id}`,
 
                     data
 
@@ -1511,7 +749,7 @@ class BooksManager {
 
                 await API.post(
 
-                    "/books",
+                    "/admin/books",
 
                     data
 
@@ -1528,7 +766,11 @@ class BooksManager {
 
 
 
-            if(!result.success){
+            if(
+
+                !result.success
+
+            ){
 
 
 
@@ -1536,9 +778,10 @@ class BooksManager {
 
                     result.message ||
 
-                    "ذخیره انجام نشد"
+                    "ذخیره کتاب ناموفق بود"
 
                 );
+
 
 
             }
@@ -1549,17 +792,10 @@ class BooksManager {
 
 
 
+
             Toast.success(
 
-                id
-
-                ?
-
-                "کتاب ویرایش شد"
-
-                :
-
-                "کتاب جدید ثبت شد"
+                "کتاب با موفقیت ذخیره شد"
 
             );
 
@@ -1569,11 +805,12 @@ class BooksManager {
 
 
 
-            this.close();
+
+            this.closeModal();
 
 
 
-            await this.loadBooks();
+            await this.load();
 
 
 
@@ -1582,7 +819,6 @@ class BooksManager {
 
 
         }
-
 
         catch(error){
 
@@ -1598,14 +834,14 @@ class BooksManager {
 
         }
 
-
-
         finally{
+
 
 
             Loader.hide();
 
 
+
         }
 
 
@@ -1621,94 +857,13 @@ class BooksManager {
 
 
     /*
-    ========================================
-    VALIDATION
-    ========================================
+    ==========================
+    EDIT BOOK
+    ==========================
     */
 
 
-    validate(){
-
-
-
-        const title =
-
-        document.getElementById(
-
-            "bookTitle"
-
-        ).value.trim();
-
-
-
-
-
-
-
-        if(!title){
-
-
-
-            Toast.warning(
-
-                "عنوان کتاب الزامی است"
-
-            );
-
-
-
-            return false;
-
-
-
-        }
-
-
-
-
-
-
-
-        return true;
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-    /*
-    ========================================
-    DELETE BOOK
-    ========================================
-    */
-
-
-    async delete(id){
-
-
-
-        if(
-
-            !confirm(
-
-            "آیا از حذف این کتاب مطمئن هستید؟"
-
-            )
-
-        )
-
-        return;
-
-
-
-
+    async edit(id){
 
 
 
@@ -1716,23 +871,11 @@ class BooksManager {
 
 
 
-            Loader.show(
-
-                "در حال حذف کتاب..."
-
-            );
-
-
-
-
-
-
-
             const result =
 
-            await API.delete(
+            await API.get(
 
-                "/books/" + id
+                `/admin/books/${id}`
 
             );
 
@@ -1742,18 +885,14 @@ class BooksManager {
 
 
 
-            if(!result.success){
 
+            if(
 
+                !result.success
 
-                throw new Error(
+            ){
 
-                    result.message ||
-
-                    "حذف انجام نشد"
-
-                );
-
+                return;
 
             }
 
@@ -1763,27 +902,119 @@ class BooksManager {
 
 
 
-            Toast.success(
 
-                "کتاب حذف شد"
+            const book =
+
+            result.data;
+
+
+
+
+
+
+
+
+            document.getElementById(
+
+                "bookId"
+
+            ).value = book.id;
+
+
+
+
+
+
+
+
+            document.getElementById(
+
+                "bookTitle"
+
+            ).value = book.title;
+
+
+
+
+
+
+
+
+            document.getElementById(
+
+                "bookAuthor"
+
+            ).value =
+
+            book.author || "";
+
+
+
+
+
+
+
+
+            document.getElementById(
+
+                "bookDescription"
+
+            ).value =
+
+            book.description || "";
+
+
+
+
+
+
+
+
+            document.getElementById(
+
+                "bookCategory"
+
+            ).value =
+
+            book.category || "";
+
+
+
+
+
+
+
+
+            document.getElementById(
+
+                "bookStatus"
+
+            ).value =
+
+            book.status || "published";
+
+
+
+
+
+
+
+
+            document.getElementById(
+
+                "bookModal"
+
+            )
+
+            .classList.add(
+
+                "show"
 
             );
 
 
 
-
-
-
-
-            await this.loadBooks();
-
-
-
-
-
-
         }
-
 
         catch(error){
 
@@ -1801,22 +1032,159 @@ class BooksManager {
 
 
 
-        finally{
+    }
 
+
+
+
+
+
+
+
+
+
+    /*
+    ==========================
+    DELETE BOOK
+    ==========================
+    */
+
+    async remove(id){
+
+        if(
+            !UI.confirm(
+                "آیا از حذف این کتاب مطمئن هستید؟"
+            )
+        ){
+            return;
+        }
+
+        try{
+
+            Loader.show(
+                "در حال حذف کتاب..."
+            );
+
+            const result =
+            await API.delete(
+                `/admin/books/${id}`
+            );
+
+            if(
+                !result.success
+            ){
+                throw new Error(
+                    result.message ||
+                    "حذف کتاب ناموفق بود"
+                );
+            }
+
+            UI.success(
+                "کتاب حذف شد."
+            );
+
+            await this.load();
+
+        }
+        catch(error){
+
+            UI.error(
+                error.message
+            );
+
+        }
+        finally{
 
             Loader.hide();
 
-
         }
-
 
     }
 
 
 
+
+
+
+    /*
+    ==========================
+    UPLOAD COVER
+    ==========================
+    */
+
+    async uploadCover(file){
+
+        const formData =
+        new FormData();
+
+        formData.append(
+            "cover",
+            file
+        );
+
+        try{
+
+            Loader.show(
+                "در حال آپلود تصویر..."
+            );
+
+            const result =
+            await API.upload(
+                "/admin/books/upload-cover",
+                formData
+            );
+
+            Loader.hide();
+
+            if(!result.success){
+
+                throw new Error(
+                    result.message
+                );
+
+            }
+
+            return result.data;
+
+        }
+        catch(error){
+
+            Loader.hide();
+
+            UI.error(
+                error.message
+            );
+
+            return null;
+
+        }
+
+    }
+
+
+
+
+
+
+    /*
+    ==========================
+    CLOSE MODAL
+    ==========================
+    */
+
+    closeModal(){
+
+        document
+        .getElementById(
+            "bookModal"
+        )
+        ?.classList.remove(
+            "show"
+        );
+
+    }
+
 }
-
-
 
 
 
@@ -1827,28 +1195,19 @@ class BooksManager {
 /*
 =================================================
 
-START BOOK MANAGER
+START
 
 =================================================
 */
 
-
 let booksManager;
 
-
-
 document.addEventListener(
-
 "DOMContentLoaded",
-
 ()=>{
 
-
     booksManager =
-
     new BooksManager();
-
-
 
 });
 
@@ -1856,3 +1215,4 @@ document.addEventListener(
 
 
 
+    

@@ -122,10 +122,9 @@ document.getElementById(
 
 
 
-UI.loading(
+UI.showLoader(
 "در حال ورود..."
 );
-
 
 
 
@@ -172,10 +171,11 @@ result.token
 
 
 
+UI.hideLoader();
+
 UI.success(
 "ورود موفق"
 );
-
 
 
 setTimeout(()=>{

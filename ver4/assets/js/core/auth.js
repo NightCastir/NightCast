@@ -139,9 +139,7 @@ class AuthManager {
 
 
             window.location.href =
-
-            "/ver4/login.html";
-
+"/ver4/admin/login.html";
 
 
             return false;
@@ -415,9 +413,7 @@ class AuthManager {
 
 
         window.location.href =
-
-        "/ver4/login.html";
-
+"/ver4/admin/login.html";
 
 
     }

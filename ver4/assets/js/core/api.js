@@ -2,32 +2,19 @@
 =================================================
 
 NightCast Ver4
-Core API Manager
+API Connector
 
 Responsible for:
-- Workers API Communication
-- Authentication Token
-- Request Handling
-- Error Management
+- Worker Connection
+- HTTP Requests
+- Authentication Header
+- Error Handling
 
 =================================================
 */
 
 
-const API_CONFIG = {
-
-
-    BASE_URL:
-
-    "https://nightcast-api.tomasgermany2580.workers.dev/api/v1",
-
-
-    TOKEN_KEY:
-
-    "NightCastToken"
-
-
-};
+"use strict";
 
 
 
@@ -39,22 +26,30 @@ const API = {
 
     /*
     ==========================
-    GET TOKEN
+    CONFIG
     ==========================
     */
 
 
-    getToken(){
+    baseURL:
 
 
-        return localStorage.getItem(
-
-            API_CONFIG.TOKEN_KEY
-
-        );
+    "https://YOUR-WORKER-DOMAIN.workers.dev/api",
 
 
-    },
+
+
+
+
+
+    token:
+
+
+    localStorage.getItem(
+
+        "nightcast_token"
+
+    ),
 
 
 
@@ -64,69 +59,17 @@ const API = {
 
     /*
     ==========================
-    SAVE TOKEN
+    REQUEST
     ==========================
     */
 
-
-    setToken(token){
-
-
-        localStorage.setItem(
-
-            API_CONFIG.TOKEN_KEY,
-
-            token
-
-        );
-
-
-    },
-
-
-
-
-
-
-
-    /*
-    ==========================
-    REMOVE TOKEN
-    ==========================
-    */
-
-
-    removeToken(){
-
-
-        localStorage.removeItem(
-
-            API_CONFIG.TOKEN_KEY
-
-        );
-
-
-    },
-
-
-
-
-
-
-
-
-    /*
-    ==========================
-    MAIN REQUEST ENGINE
-    ==========================
-    */
 
 
     async request(
 
         endpoint,
 
-        options = {}
+        options={}
 
     ){
 
@@ -135,24 +78,14 @@ const API = {
         try{
 
 
-            const config = {
+
+            const headers = {
 
 
-                method:
 
-                options.method || "GET",
+                "Content-Type":
 
-
-                headers:{
-
-
-                    "Content-Type":
-
-                    "application/json"
-
-
-                }
-
+                "application/json"
 
             };
 
@@ -160,7 +93,20 @@ const API = {
 
 
 
-            const token = this.getToken();
+
+
+
+            const token =
+
+            localStorage.getItem(
+
+                "nightcast_token"
+
+            );
+
+
+
+
 
 
 
@@ -168,51 +114,15 @@ const API = {
             if(token){
 
 
-                config.headers.Authorization =
+
+                headers.Authorization =
 
                 "Bearer " + token;
 
 
-            }
-
-
-
-
-
-
-            /*
-            اگر ارسال فایل باشد
-            Content-Type نباید تنظیم شود
-            مرورگر خودش تعیین می‌کند
-            */
-
-
-            if(options.body instanceof FormData){
-
-
-                delete config.headers[
-                    "Content-Type"
-                ];
-
-
-                config.body = options.body;
-
 
             }
 
-            else if(options.body){
-
-
-                config.body =
-
-                JSON.stringify(
-
-                    options.body
-
-                );
-
-
-            }
 
 
 
@@ -224,14 +134,49 @@ const API = {
 
             await fetch(
 
+                this.baseURL + endpoint,
 
-                API_CONFIG.BASE_URL +
-
-                endpoint,
+                {
 
 
-                config
 
+                    method:
+
+                    options.method ||
+
+                    "GET",
+
+
+
+
+
+                    headers:
+
+                    headers,
+
+
+
+
+
+                    body:
+
+                    options.body
+
+                    ?
+
+                    JSON.stringify(
+
+                        options.body
+
+                    )
+
+                    :
+
+                    null
+
+
+
+                }
 
             );
 
@@ -242,33 +187,9 @@ const API = {
 
 
 
-            let data;
+            const data =
 
-
-
-            try{
-
-
-                data =
-
-                await response.json();
-
-
-            }
-
-            catch{
-
-
-                throw new Error(
-
-                    "پاسخ نامعتبر از سرور دریافت شد"
-
-                );
-
-
-            }
-
-
+            await response.json();
 
 
 
@@ -282,11 +203,9 @@ const API = {
 
                 throw new Error(
 
-
                     data.message ||
 
                     "خطا در ارتباط با سرور"
-
 
                 );
 
@@ -298,12 +217,13 @@ const API = {
 
 
 
+
+
             return data;
 
 
 
         }
-
 
         catch(error){
 
@@ -339,44 +259,15 @@ const API = {
 
     /*
     ==========================
-    SHORT METHODS
+    GET
     ==========================
     */
 
 
 
+    get(
 
-
-
-    async get(url){
-
-
-        return this.request(
-
-            url,
-
-            {
-
-                method:"GET"
-
-            }
-
-        );
-
-
-    },
-
-
-
-
-
-
-
-    async post(
-
-        url,
-
-        body
+        endpoint
 
     ){
 
@@ -384,16 +275,7 @@ const API = {
 
         return this.request(
 
-            url,
-
-            {
-
-                method:"POST",
-
-                body:body
-
-
-            }
+            endpoint
 
         );
 
@@ -402,33 +284,42 @@ const API = {
 
 
 
+      /*
+    ==========================
+    POST
+    ==========================
+    */
 
 
+    post(
 
+        endpoint,
 
-    async put(
-
-        url,
-
-        body
+        data
 
     ){
 
 
+
         return this.request(
 
-            url,
+            endpoint,
 
             {
 
 
-                method:"PUT",
+                method:
 
-                body:body
+                "POST",
+
+
+                body:
+
+                data
+
 
 
             }
-
 
         );
 
@@ -442,24 +333,264 @@ const API = {
 
 
 
-    async delete(url){
+
+    /*
+    ==========================
+    PUT
+    ==========================
+    */
+
+
+    put(
+
+        endpoint,
+
+        data
+
+    ){
 
 
 
         return this.request(
 
-            url,
+            endpoint,
 
             {
 
 
-                method:"DELETE"
+                method:
+
+                "PUT",
+
+
+                body:
+
+                data
+
+
+
+            }
+
+        );
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /*
+    ==========================
+    DELETE
+    ==========================
+    */
+
+
+    delete(
+
+        endpoint
+
+    ){
+
+
+
+        return this.request(
+
+            endpoint,
+
+            {
+
+
+                method:
+
+                "DELETE"
+
+
+
+            }
+
+        );
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /*
+    ==========================
+    FILE UPLOAD
+    ==========================
+    */
+
+
+    async upload(
+
+        endpoint,
+
+        formData
+
+    ){
+
+
+
+        try{
+
+
+
+            const token =
+
+            localStorage.getItem(
+
+                "nightcast_token"
+
+            );
+
+
+
+
+
+
+
+            const headers = {};
+
+
+
+
+
+
+
+            if(token){
+
+
+
+                headers.Authorization =
+
+                "Bearer " + token;
+
 
 
             }
 
 
-        );
+
+
+
+
+
+
+            const response =
+
+            await fetch(
+
+                this.baseURL + endpoint,
+
+                {
+
+
+                    method:
+
+                    "POST",
+
+
+
+
+                    headers:
+
+                    headers,
+
+
+
+
+                    body:
+
+                    formData
+
+
+
+                }
+
+            );
+
+
+
+
+
+
+
+
+            const data =
+
+            await response.json();
+
+
+
+
+
+
+
+
+            if(!response.ok){
+
+
+
+                throw new Error(
+
+                    data.message ||
+
+                    "آپلود فایل ناموفق بود"
+
+                );
+
+
+            }
+
+
+
+
+
+
+
+
+            return data;
+
+
+
+
+        }
+
+
+
+        catch(error){
+
+
+
+            console.error(
+
+                "UPLOAD ERROR:",
+
+                error
+
+            );
+
+
+
+            throw error;
+
+
+
+        }
+
 
 
     }
@@ -470,3 +601,27 @@ const API = {
 
 
 };
+
+
+
+
+
+
+
+
+
+/*
+=================================================
+
+GLOBAL API EXPORT
+
+=================================================
+*/
+
+
+window.API = API;
+
+
+
+
+

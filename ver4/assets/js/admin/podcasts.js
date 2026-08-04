@@ -1,429 +1,45 @@
-
 /*
-========================================================
+=================================================
 
 NightCast Ver4
-Podcast Manager
+Admin Podcasts Manager
 
-Author : NightCast
-Architecture : Modular
-Version : 4.0
+Responsible for:
+- Podcast List
+- Create Podcast
+- Edit Podcast
+- Delete Podcast
+- Upload Audio
 
-========================================================
+=================================================
 */
+
 
 "use strict";
 
-class PodcastManager {
 
-    constructor() {
 
-        this.podcasts = [];
 
-        this.filtered = [];
 
-        this.currentPodcast = null;
 
-        this.coverUrl = "";
 
-        this.audioUrl = "";
+class PodcastsManager {
 
-        this.coverUploading = false;
 
-        this.audioUploading = false;
+
+    constructor(){
+
+
+
+        this.currentPage = 1;
+
+
+        this.limit = 20;
+
 
         this.init();
 
-    }
 
-
-
-
-
-
-    /*
-    ========================================
-    START
-    ========================================
-    */
-
-    async init() {
-
-        this.cacheDOM();
-
-        this.bindEvents();
-
-        await this.loadCurrentUser();
-
-        await this.loadPodcasts();
-
-    }
-
-
-
-
-
-
-    /*
-    ========================================
-    CACHE DOM
-    ========================================
-    */
-
-    cacheDOM() {
-
-        this.table =
-        document.getElementById("podcastsTable");
-
-        this.counter =
-        document.getElementById("podcastCount");
-
-        this.modal =
-        document.getElementById("podcastModal");
-
-        this.form =
-        document.getElementById("podcastForm");
-
-        this.search =
-        document.getElementById("searchInput");
-
-        this.status =
-        document.getElementById("statusFilter");
-
-        this.sort =
-        document.getElementById("sortBy");
-
-        this.btnSave =
-        document.getElementById("btnSavePodcast");
-
-        this.btnNew =
-        document.getElementById("btnNewPodcast");
-
-        this.btnRefresh =
-        document.getElementById("btnRefresh");
-
-        this.btnCancel =
-        document.getElementById("btnCancel");
-
-        this.btnClose =
-        document.getElementById("closeModal");
-
-        this.btnUploadCover =
-        document.getElementById("btnUploadCover");
-
-        this.btnUploadAudio =
-        document.getElementById("btnUploadAudio");
-
-        this.coverFile =
-        document.getElementById("coverFile");
-
-        this.audioFile =
-        document.getElementById("audioFile");
-
-        this.coverPreview =
-        document.getElementById("coverPreview");
-
-        this.audioPreview =
-        document.getElementById("audioPreview");
-
-    }
-
-
-
-
-
-
-    /*
-    ========================================
-    EVENTS
-    ========================================
-    */
-
-    bindEvents() {
-
-        this.btnNew?.addEventListener(
-
-            "click",
-
-            () => this.openCreateModal()
-
-        );
-
-
-
-        this.btnRefresh?.addEventListener(
-
-            "click",
-
-            () => this.loadPodcasts()
-
-        );
-
-
-
-        this.btnSave?.addEventListener(
-
-            "click",
-
-            () => this.savePodcast()
-
-        );
-
-
-
-        this.btnCancel?.addEventListener(
-
-            "click",
-
-            () => this.closeModal()
-
-        );
-
-
-
-        this.btnClose?.addEventListener(
-
-            "click",
-
-            () => this.closeModal()
-
-        );
-
-
-
-        this.search?.addEventListener(
-
-            "input",
-
-            () => this.filter()
-
-        );
-
-
-
-        this.status?.addEventListener(
-
-            "change",
-
-            () => this.filter()
-
-        );
-
-
-
-        this.sort?.addEventListener(
-
-            "change",
-
-            () => this.filter()
-
-        );
-
-
-
-        this.btnUploadCover?.addEventListener(
-
-            "click",
-
-            () => this.uploadCover()
-
-        );
-
-
-
-        this.btnUploadAudio?.addEventListener(
-
-            "click",
-
-            () => this.uploadAudio()
-
-        );
-
-
-
-        this.table?.addEventListener(
-
-            "click",
-
-            (e)=>this.tableEvents(e)
-
-        );
-
-    }
-
-}
-
-
-
-
-
-    /*
-    ========================================
-    LOAD CURRENT USER
-    ========================================
-    */
-
-    async loadCurrentUser(){
-
-        try{
-
-            const result =
-
-            await API.get(
-
-                "/auth/me"
-
-            );
-
-
-            if(
-
-                result.success &&
-
-                result.user
-
-            ){
-
-                const username =
-
-                document.getElementById(
-
-                    "username"
-
-                );
-
-
-                if(username){
-
-                    username.innerText =
-
-                    result.user.full_name ||
-
-                    result.user.username;
-
-                }
-
-            }
-
-
-        }
-
-        catch(error){
-
-            console.error(
-
-                "User Load Error:",
-
-                error
-
-            );
-
-        }
-
-    }
-
-
-
-
-
-
-
-
-    /*
-    ========================================
-    LOAD PODCASTS
-    ========================================
-    */
-
-    async loadPodcasts(){
-
-        try{
-
-
-            Loader.show(
-
-                "در حال دریافت پادکست‌ها..."
-
-            );
-
-
-
-            const result =
-
-            await API.get(
-
-                "/podcasts"
-
-            );
-
-
-
-            if(!result.success){
-
-
-                throw new Error(
-
-                    result.message ||
-
-                    "خطا در دریافت اطلاعات"
-
-                );
-
-
-            }
-
-
-
-
-            this.podcasts =
-
-            result.podcasts || [];
-
-
-
-            this.filtered =
-
-            [...this.podcasts];
-
-
-
-            this.renderTable();
-
-
-            this.updateCounter();
-
-
-
-        }
-
-
-        catch(error){
-
-
-            console.error(
-
-                error
-
-            );
-
-
-            Toast.error(
-
-                error.message
-
-            );
-
-
-        }
-
-
-        finally{
-
-
-            Loader.hide();
-
-
-        }
 
     }
 
@@ -435,47 +51,15 @@ class PodcastManager {
 
 
 
-
-    /*
-    ========================================
-    RENDER TABLE
-    ========================================
-    */
-
-    renderTable(){
-
-
-        if(!this.table)
-
-        return;
-
-
+    async init(){
 
 
 
         if(
 
-            this.filtered.length === 0
+            !Auth.requireAuth()
 
         ){
-
-
-            this.table.innerHTML =
-
-            `
-
-            <tr>
-
-            <td colspan="7">
-
-            پادکستی موجود نیست
-
-            </td>
-
-            </tr>
-
-            `;
-
 
             return;
 
@@ -488,168 +72,11 @@ class PodcastManager {
 
 
 
-        this.table.innerHTML =
+        this.bindEvents();
 
 
-        this.filtered.map(
 
-        (item,index)=>{
-
-
-            return `
-
-            <tr>
-
-
-                <td>
-
-                    ${index + 1}
-
-                </td>
-
-
-
-                <td>
-
-                    ${
-
-                    item.title || "-"
-
-                    }
-
-                </td>
-
-
-
-                <td>
-
-                    ${
-
-                    item.book_name || "-"
-
-                    }
-
-                </td>
-
-
-
-                <td>
-
-                    ${
-
-                    item.episode_number || 1
-
-                    }
-
-                </td>
-
-
-
-
-                <td>
-
-                    <span class="badge 
-
-                    ${
-                    
-                    item.status==="active"
-
-                    ?
-
-                    "badge-success"
-
-                    :
-
-                    "badge-warning"
-
-                    }
-
-                    ">
-
-                    ${
-
-                    item.status==="active"
-
-                    ?
-
-                    "منتشر شده"
-
-                    :
-
-                    "پیش نویس"
-
-                    }
-
-
-                    </span>
-
-
-                </td>
-
-
-
-                <td>
-
-                    ${
-
-                    item.created_at || "-"
-
-                    }
-
-                </td>
-
-
-
-
-                <td>
-
-
-                <button
-
-                class="btn btn-sm"
-
-                data-action="edit"
-
-                data-id="${item.id}"
-
-                >
-
-                ویرایش
-
-                </button>
-
-
-
-
-
-                <button
-
-                class="btn btn-danger btn-sm"
-
-                data-action="delete"
-
-                data-id="${item.id}"
-
-                >
-
-                حذف
-
-                </button>
-
-
-
-                </td>
-
-
-
-            </tr>
-
-            `;
-
-
-        }
-
-        ).join("");
+        await this.load();
 
 
 
@@ -662,115 +89,31 @@ class PodcastManager {
 
 
 
-    /*
-    ========================================
-    COUNTER
-    ========================================
-    */
-
-    updateCounter(){
-
-
-        if(this.counter){
-
-
-            this.counter.innerText =
-
-
-            `${this.filtered.length} پادکست`;
-
-
-        }
-
-
-    }
-
-
-
 
     /*
-    ========================================
-    FILTER / SEARCH / SORT
-    ========================================
+    ==========================
+    EVENTS
+    ==========================
     */
 
-    filter(){
 
-
-        const keyword =
-
-        this.search?.value
-
-        .trim()
-
-        .toLowerCase()
-
-        || "";
+    bindEvents(){
 
 
 
-        const status =
+        document
 
-        this.status?.value
+        .getElementById(
 
-        || "";
+            "addPodcast"
 
+        )
 
+        ?.addEventListener(
 
+            "click",
 
-
-        this.filtered =
-
-
-        this.podcasts.filter(
-
-        item => {
-
-
-            const title =
-
-            (
-
-            item.title || ""
-
-            )
-
-            .toLowerCase();
-
-
-
-            const matchTitle =
-
-            title.includes(
-
-                keyword
-
-            );
-
-
-
-            const matchStatus =
-
-            status === ""
-
-            ||
-
-            item.status === status;
-
-
-
-            return (
-
-                matchTitle
-
-                &&
-
-                matchStatus
-
-            );
-
-
-        }
+            ()=>this.openCreate()
 
         );
 
@@ -780,229 +123,20 @@ class PodcastManager {
 
 
 
-        const sortType =
 
-        this.sort?.value;
+        document
 
+        .getElementById(
 
+            "savePodcast"
 
+        )
 
+        ?.addEventListener(
 
+            "click",
 
-        if(sortType === "newest"){
-
-
-            this.filtered.sort(
-
-                (a,b)=>
-
-                b.id-a.id
-
-            );
-
-
-        }
-
-
-
-
-
-
-        if(sortType === "oldest"){
-
-
-            this.filtered.sort(
-
-                (a,b)=>
-
-                a.id-b.id
-
-            );
-
-
-        }
-
-
-
-
-
-
-
-        if(sortType === "title"){
-
-
-            this.filtered.sort(
-
-            (a,b)=>
-
-            (
-
-            a.title || ""
-
-            )
-
-            .localeCompare(
-
-            b.title || ""
-
-            )
-
-
-            );
-
-
-        }
-
-
-
-
-
-
-        this.renderTable();
-
-        this.updateCounter();
-
-
-    }
-
-
-
-
-
-
-
-
-
-
-    /*
-    ========================================
-    TABLE EVENTS
-    ========================================
-    */
-
-    tableEvents(event){
-
-
-
-        const button =
-
-        event.target.closest(
-
-            "button[data-action]"
-
-        );
-
-
-
-
-        if(!button)
-
-        return;
-
-
-
-
-
-        const action =
-
-        button.dataset.action;
-
-
-
-        const id =
-
-        button.dataset.id;
-
-
-
-
-
-        if(
-
-            action === "edit"
-
-        ){
-
-
-            this.editPodcast(id);
-
-
-        }
-
-
-
-
-
-        if(
-
-            action === "delete"
-
-        ){
-
-
-            this.deletePodcast(id);
-
-
-        }
-
-
-    }
-
-
-
-
-
-
-
-
-
-    /*
-    ========================================
-    OPEN CREATE MODAL
-    ========================================
-    */
-
-    openCreateModal(){
-
-
-        this.currentPodcast = null;
-
-
-        this.resetForm();
-
-
-
-
-        this.modal.classList.add(
-
-            "show"
-
-        );
-
-
-    }
-
-
-
-
-
-
-
-
-
-    /*
-    ========================================
-    CLOSE MODAL
-    ========================================
-    */
-
-    closeModal(){
-
-
-
-        this.modal?.classList.remove(
-
-            "show"
+            ()=>this.save()
 
         );
 
@@ -1019,100 +153,30 @@ class PodcastManager {
 
 
     /*
-    ========================================
-    RESET FORM
-    ========================================
+    ==========================
+    LOAD PODCASTS
+    ==========================
     */
 
-    resetForm(){
 
+    async load(){
 
-
-        this.form?.reset();
-
-
-
-
-        document.getElementById(
-
-            "podcastId"
-
-        ).value = "";
-
-
-
-        document.getElementById(
-
-            "cover_url"
-
-        ).value = "";
-
-
-
-        document.getElementById(
-
-            "audio_url"
-
-        ).value = "";
-
-
-
-        this.coverUrl = "";
-
-        this.audioUrl = "";
-
-
-
-
-
-        if(this.coverPreview){
-
-
-            this.coverPreview.style.display =
-
-            "none";
-
-
-        }
-
-
-
-
-
-        if(this.audioPreview){
-
-
-            this.audioPreview.style.display =
-
-            "none";
-
-
-        }
-
-
-
-    }
-
-
-
-
-    /*
-    ========================================
-    EDIT PODCAST
-    ========================================
-    */
-
-    async editPodcast(id){
 
 
         try{
 
 
+
             Loader.show(
 
-                "در حال دریافت اطلاعات..."
+                "در حال دریافت پادکست‌ها..."
 
             );
+
+
+
+
+
 
 
 
@@ -1120,46 +184,335 @@ class PodcastManager {
 
             await API.get(
 
-                "/podcasts/" + id
+                `/admin/podcasts?page=${this.currentPage}&limit=${this.limit}`
 
             );
 
 
 
-            if(!result.success){
+
+
+
+
+
+            if(
+
+                !result.success
+
+            ){
+
 
 
                 throw new Error(
 
                     result.message ||
 
-                    "پادکست پیدا نشد"
+                    "خطا در دریافت پادکست‌ها"
 
                 );
+
+
 
             }
 
 
 
 
-            const item =
-
-            result.podcast;
 
 
 
 
-            this.currentPodcast = item;
+            this.render(
+
+                result.data
+
+            );
 
 
 
 
-            this.fillForm(item);
+
+        }
+
+        catch(error){
+
+
+
+            Toast.error(
+
+                error.message
+
+            );
+
+
+
+        }
+
+        finally{
+
+
+
+            Loader.hide();
+
+
+
+        }
+
+
+
+    }
+
+
+
+    /*
+    ==========================
+    RENDER PODCAST TABLE
+    ==========================
+    */
+
+
+    render(data){
+
+
+
+        const tbody =
+
+        document.querySelector(
+
+            "#podcastTableBody"
+
+        );
 
 
 
 
-            this.modal.classList.add(
+
+
+
+
+        if(
+
+            !tbody
+
+        ){
+
+            return;
+
+        }
+
+
+
+
+
+
+
+
+        tbody.innerHTML = "";
+
+
+
+
+
+
+
+
+        const podcasts =
+
+        data.items ||
+
+        data;
+
+
+
+
+
+
+
+
+        podcasts.forEach(
+
+            podcast=>{
+
+
+
+                tbody.innerHTML += `
+
+                <tr>
+
+
+
+                    <td>
+
+                        ${podcast.id}
+
+                    </td>
+
+
+
+
+
+                    <td>
+
+                        ${podcast.title}
+
+                    </td>
+
+
+
+
+
+                    <td>
+
+                        ${
+
+                            podcast.category ||
+
+                            "-"
+
+                        }
+
+                    </td>
+
+
+
+
+
+                    <td>
+
+                        <span class="badge badge-success">
+
+                            ${
+
+                            podcast.status ||
+
+                            "published"
+
+                            }
+
+                        </span>
+
+                    </td>
+
+
+
+
+
+                    <td>
+
+                        ${
+
+                        UI.formatDate(
+
+                            podcast.created_at
+
+                        )
+
+                        }
+
+                    </td>
+
+
+
+
+
+                    <td>
+
+
+                        <div class="action-group">
+
+
+
+                            <button
+
+                            class="action-btn action-edit"
+
+                            onclick="podcastsManager.edit(${podcast.id})"
+
+                            >
+
+                            ✏️
+
+                            </button>
+
+
+
+
+
+
+                            <button
+
+                            class="action-btn action-delete"
+
+                            onclick="podcastsManager.remove(${podcast.id})"
+
+                            >
+
+                            🗑️
+
+                            </button>
+
+
+
+                        </div>
+
+
+                    </td>
+
+
+
+                </tr>
+
+                `;
+
+
+
+            }
+
+        );
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    /*
+    ==========================
+    OPEN CREATE MODAL
+    ==========================
+    */
+
+
+    openCreate(){
+
+
+
+        const modal =
+
+        document.getElementById(
+
+            "podcastModal"
+
+        );
+
+
+
+
+
+
+
+
+        if(modal){
+
+
+
+            modal.classList.add(
 
                 "show"
 
@@ -1170,47 +523,9 @@ class PodcastManager {
         }
 
 
-        catch(error){
 
 
 
-            Toast.error(
-
-                error.message
-
-            );
-
-
-        }
-
-
-        finally{
-
-
-            Loader.hide();
-
-
-        }
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-    /*
-    ========================================
-    FILL FORM
-    ========================================
-    */
-
-    fillForm(item){
 
 
 
@@ -1218,180 +533,20 @@ class PodcastManager {
 
             "podcastId"
 
-        ).value = item.id || "";
+        ).value = "";
 
 
 
-        document.getElementById(
-
-            "title"
-
-        ).value = item.title || "";
-
-
-
-        document.getElementById(
-
-            "book_name"
-
-        ).value = item.book_name || "";
-
-
-
-        document.getElementById(
-
-            "author_name"
-
-        ).value = item.author_name || "";
-
-
-
-        document.getElementById(
-
-            "category_name"
-
-        ).value = item.category_name || "";
-
-
-
-        document.getElementById(
-
-            "episode_number"
-
-        ).value = item.episode_number || 1;
-
-
-
-        document.getElementById(
-
-            "status"
-
-        ).value = item.status || "inactive";
-
-
-
-        document.getElementById(
-
-            "description"
-
-        ).value = item.description || "";
-
-
-
-        document.getElementById(
-
-            "summary"
-
-        ).value = item.summary || "";
-
-
-
-        document.getElementById(
-
-            "transcript"
-
-        ).value = item.transcript || "";
-
-
-
-        document.getElementById(
-
-            "duration_seconds"
-
-        ).value = item.duration_seconds || 0;
 
 
 
-        document.getElementById(
-
-            "tags"
-
-        ).value = item.tags || "";
-
-
-
-
-
-
-        this.coverUrl =
-
-        item.cover_url || "";
-
-
-
-        this.audioUrl =
-
-        item.audio_url || "";
 
 
-
-
-
-        document.getElementById(
-
-            "cover_url"
-
-        ).value = this.coverUrl;
-
-
-
-
         document.getElementById(
-
-            "audio_url"
-
-        ).value = this.audioUrl;
-
-
-
-
-
-
-        if(
-
-            this.coverUrl &&
-
-            this.coverPreview
-
-        ){
-
-
-            this.coverPreview.src =
-
-            this.coverUrl;
-
-
-            this.coverPreview.style.display =
-
-            "block";
-
-
-        }
-
-
-
-
-
-        if(
-
-            this.audioUrl &&
-
-            this.audioPreview
-
-        ){
-
-
-            this.audioPreview.src =
-
-            this.audioUrl;
-
-
-            this.audioPreview.style.display =
-
-            "block";
 
+            "podcastForm"
 
-        }
+        )?.reset();
 
 
 
@@ -1400,152 +555,18 @@ class PodcastManager {
 
 
 
-
-
-
-
-
-    /*
-    ========================================
-    DELETE PODCAST
-    ========================================
-    */
-
-    async deletePodcast(id){
-
-
-        const confirmDelete =
-
-        confirm(
-
-        "آیا از حذف این پادکست مطمئن هستید؟"
-
-        );
-
-
-
-        if(!confirmDelete)
-
-        return;
-
-
-
-
-
-
-        try{
-
-
-            Loader.show(
-
-                "در حال حذف..."
-
-            );
-
-
-
-
-            const result =
-
-            await API.delete(
-
-                "/podcasts/" + id
-
-            );
-
-
-
-
-
-            if(!result.success){
-
-
-                throw new Error(
-
-                    result.message ||
-
-                    "حذف انجام نشد"
-
-                );
-
-            }
-
-
-
-
-
-            Toast.success(
-
-                "پادکست حذف شد"
-
-            );
-
-
-
-
-            await this.loadPodcasts();
-
-
-
-        }
-
-
-        catch(error){
-
-
-
-            Toast.error(
-
-                error.message
-
-            );
-
-
-        }
-
-
-        finally{
-
-
-            Loader.hide();
-
-
-        }
-
-
-
-        }
-
-
-
-
-    /*
-    ========================================
+        /*
+    ==========================
     SAVE PODCAST
-    ========================================
+    ==========================
     */
 
-    async savePodcast(){
+
+    async save(){
 
 
 
         try{
-
-
-
-            if(
-
-                !this.validateForm()
-
-            ){
-
-                return;
-
-            }
-
-
-
-
 
 
 
@@ -1562,67 +583,19 @@ class PodcastManager {
 
 
 
+
+
             const data = {
+
 
 
                 title:
 
                 document.getElementById(
 
-                    "title"
+                    "podcastTitle"
 
-                ).value.trim(),
-
-
-
-
-                book_name:
-
-                document.getElementById(
-
-                    "book_name"
-
-                ).value.trim(),
-
-
-
-
-                author_name:
-
-                document.getElementById(
-
-                    "author_name"
-
-                ).value.trim(),
-
-
-
-
-                category_name:
-
-                document.getElementById(
-
-                    "category_name"
-
-                ).value.trim(),
-
-
-
-
-                episode_number:
-
-                Number(
-
-                    document.getElementById(
-
-                    "episode_number"
-
-                    ).value
-
-                )
-
-                || 1,
-
+                ).value,
 
 
 
@@ -1632,76 +605,21 @@ class PodcastManager {
 
                 document.getElementById(
 
-                    "description"
+                    "podcastDescription"
 
-                ).value.trim(),
-
-
-
-
-                summary:
-
-                document.getElementById(
-
-                    "summary"
-
-                ).value.trim(),
+                ).value,
 
 
 
 
-                transcript:
+
+                category:
 
                 document.getElementById(
 
-                    "transcript"
+                    "podcastCategory"
 
-                ).value.trim(),
-
-
-
-
-                duration_seconds:
-
-                Number(
-
-                    document.getElementById(
-
-                    "duration_seconds"
-
-                    ).value
-
-                )
-
-                || 0,
-
-
-
-
-
-                tags:
-
-                document.getElementById(
-
-                    "tags"
-
-                ).value.trim(),
-
-
-
-
-
-                audio_url:
-
-                this.audioUrl || null,
-
-
-
-
-
-                cover_url:
-
-                this.coverUrl || null,
+                ).value,
 
 
 
@@ -1711,7 +629,7 @@ class PodcastManager {
 
                 document.getElementById(
 
-                    "status"
+                    "podcastStatus"
 
                 ).value
 
@@ -1728,9 +646,10 @@ class PodcastManager {
 
             Loader.show(
 
-                "در حال ذخیره اطلاعات..."
+                "در حال ذخیره..."
 
             );
+
 
 
 
@@ -1746,37 +665,41 @@ class PodcastManager {
 
 
 
+
             if(id){
+
 
 
                 result =
 
                 await API.put(
 
-                    "/podcasts/" + id,
+                    `/admin/podcasts/${id}`,
 
                     data
 
                 );
 
 
+
             }
 
-
             else{
+
 
 
                 result =
 
                 await API.post(
 
-                    "/podcasts",
+                    "/admin/podcasts",
 
                     data
 
                 );
 
 
+
             }
 
 
@@ -1786,19 +709,26 @@ class PodcastManager {
 
 
 
-            if(!result.success){
+            if(
+
+                !result.success
+
+            ){
+
 
 
                 throw new Error(
 
                     result.message ||
 
-                    "ذخیره انجام نشد"
+                    "ذخیره ناموفق بود"
 
                 );
 
 
+
             }
+
 
 
 
@@ -1808,17 +738,11 @@ class PodcastManager {
 
             Toast.success(
 
-                id
-
-                ?
-
-                "پادکست ویرایش شد"
-
-                :
-
-                "پادکست ایجاد شد"
+                "پادکست ذخیره شد"
 
             );
+
+
 
 
 
@@ -1829,9 +753,7 @@ class PodcastManager {
 
 
 
-
-
-            await this.loadPodcasts();
+            await this.load();
 
 
 
@@ -1841,12 +763,188 @@ class PodcastManager {
 
         }
 
-
         catch(error){
 
 
 
-            console.error(error);
+            Toast.error(
+
+                error.message
+
+            );
+
+
+
+        }
+
+        finally{
+
+
+
+            Loader.hide();
+
+
+
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    /*
+    ==========================
+    EDIT PODCAST
+    ==========================
+    */
+
+
+    async edit(id){
+
+
+
+        try{
+
+
+
+            const result =
+
+            await API.get(
+
+                `/admin/podcasts/${id}`
+
+            );
+
+
+
+
+
+
+
+
+            if(
+
+                !result.success
+
+            ){
+
+                return;
+
+            }
+
+
+
+
+
+
+
+
+            const item =
+
+            result.data;
+
+
+
+
+
+
+
+
+            document.getElementById(
+
+                "podcastId"
+
+            ).value = item.id;
+
+
+
+
+
+
+
+
+            document.getElementById(
+
+                "podcastTitle"
+
+            ).value = item.title;
+
+
+
+
+
+
+
+
+            document.getElementById(
+
+                "podcastDescription"
+
+            ).value =
+
+            item.description || "";
+
+
+
+
+
+
+
+
+            document.getElementById(
+
+                "podcastCategory"
+
+            ).value =
+
+            item.category || "";
+
+
+
+
+
+
+
+
+            document.getElementById(
+
+                "podcastStatus"
+
+            ).value =
+
+            item.status || "published";
+
+
+
+
+
+
+
+
+            document.getElementById(
+
+                "podcastModal"
+
+            )
+
+            .classList.add(
+
+                "show"
+
+            );
+
+
+
+        }
+
+        catch(error){
 
 
 
@@ -1861,205 +959,42 @@ class PodcastManager {
         }
 
 
-        finally{
-
-
-            Loader.hide();
-
-
-        }
-
-
 
     }
 
 
 
 
-
-
+    
 
 
 
     /*
-    ========================================
-    VALIDATION
-    ========================================
+    ==========================
+    DELETE PODCAST
+    ==========================
     */
 
 
-    validateForm(){
-
-
-
-        const title =
-
-        document.getElementById(
-
-            "title"
-
-        ).value.trim();
-
-
-
-
-
-        if(!title){
-
-
-
-            Toast.warning(
-
-                "عنوان پادکست الزامی است"
-
-            );
-
-
-
-            return false;
-
-
-
-        }
-
-
-
+    async remove(id){
 
 
 
         if(
 
-            !this.audioUrl
+            !UI.confirm(
 
-        ){
-
-
-
-            Toast.warning(
-
-                "فایل صوتی انتخاب نشده است"
-
-            );
-
-
-
-            return false;
-
-
-        }
-
-
-
-
-
-
-
-        if(
-
-            !this.coverUrl
-
-        ){
-
-
-
-            Toast.warning(
-
-                "کاور پادکست انتخاب نشده است"
-
-            );
-
-
-
-            return false;
-
-
-        }
-
-
-
-
-
-
-
-        return true;
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-
-    /*
-    ========================================
-    UPLOAD COVER
-    ========================================
-    */
-
-
-    async uploadCover(){
-
-
-        if(this.coverUploading)
-
-        return;
-
-
-
-        const file =
-
-        this.coverFile.files[0];
-
-
-
-        if(!file){
-
-
-            Toast.warning(
-
-                "ابتدا فایل کاور را انتخاب کنید"
-
-            );
-
-
-            return;
-
-
-        }
-
-
-
-
-
-
-        if(
-
-            !file.type.startsWith(
-
-                "image/"
+                "آیا از حذف این پادکست مطمئن هستید؟"
 
             )
 
         ){
 
-
-            Toast.error(
-
-                "فایل انتخاب شده تصویر نیست"
-
-            );
-
-
             return;
 
-
         }
+
+
 
 
 
@@ -2069,45 +1004,10 @@ class PodcastManager {
         try{
 
 
-            this.coverUploading = true;
 
+            Loader.show(
 
-
-            this.showUploadProgress(
-
-                "cover",
-
-                true
-
-            );
-
-
-
-
-
-
-            const formData =
-
-            new FormData();
-
-
-
-
-            formData.append(
-
-                "file",
-
-                file
-
-            );
-
-
-
-            formData.append(
-
-                "type",
-
-                "cover"
+                "در حال حذف..."
 
             );
 
@@ -2120,20 +1020,9 @@ class PodcastManager {
 
             const result =
 
-            await API.request(
+            await API.delete(
 
-                "/media/upload",
-
-                {
-
-
-                    method:"POST",
-
-
-                    body:formData
-
-
-                }
+                `/admin/podcasts/${id}`
 
             );
 
@@ -2144,57 +1033,26 @@ class PodcastManager {
 
 
 
-            if(!result.success){
+            if(
+
+                !result.success
+
+            ){
+
 
 
                 throw new Error(
 
                     result.message ||
 
-                    "آپلود کاور ناموفق بود"
+                    "حذف ناموفق بود"
 
                 );
 
 
+
             }
 
-
-
-
-
-
-
-            this.coverUrl =
-
-            result.url;
-
-
-
-
-
-            document.getElementById(
-
-                "cover_url"
-
-            ).value =
-
-            this.coverUrl;
-
-
-
-
-
-
-
-            this.coverPreview.src =
-
-            this.coverUrl;
-
-
-
-            this.coverPreview.style.display =
-
-            "block";
 
 
 
@@ -2204,15 +1062,26 @@ class PodcastManager {
 
             Toast.success(
 
-                "کاور با موفقیت آپلود شد"
+                "پادکست حذف شد"
 
             );
 
 
 
 
-        }
 
+
+
+
+            await this.load();
+
+
+
+
+
+
+
+        }
 
         catch(error){
 
@@ -2228,21 +1097,11 @@ class PodcastManager {
 
         }
 
-
         finally{
 
 
-            this.coverUploading = false;
 
-
-
-            this.showUploadProgress(
-
-                "cover",
-
-                false
-
-            );
+            Loader.hide();
 
 
 
@@ -2261,99 +1120,17 @@ class PodcastManager {
 
 
     /*
-    ========================================
+    ==========================
     UPLOAD AUDIO
-    ========================================
+    ==========================
     */
 
 
-    async uploadAudio(){
-
-
-
-        if(this.audioUploading)
-
-        return;
-
-
-
-
-
-        const file =
-
-        this.audioFile.files[0];
-
-
-
-
-
-        if(!file){
-
-
-
-            Toast.warning(
-
-                "فایل صوتی را انتخاب کنید"
-
-            );
-
-
-
-            return;
-
-
-        }
-
-
-
-
-
-
-        if(
-
-            file.type !== "audio/mpeg"
-
-            &&
-
-            !file.name.endsWith(".mp3")
-
-        ){
-
-
-            Toast.error(
-
-                "فقط فایل MP3 مجاز است"
-
-            );
-
-
-            return;
-
-
-        }
-
-
-
+    async uploadAudio(file){
 
 
 
         try{
-
-
-            this.audioUploading = true;
-
-
-
-            this.showUploadProgress(
-
-                "audio",
-
-                true
-
-            );
-
-
-
 
 
 
@@ -2365,9 +1142,12 @@ class PodcastManager {
 
 
 
+
+
+
             formData.append(
 
-                "file",
+                "audio",
 
                 file
 
@@ -2377,13 +1157,15 @@ class PodcastManager {
 
 
 
-            formData.append(
 
-                "type",
 
-                "audio"
+
+            Loader.show(
+
+                "در حال آپلود فایل صوتی..."
 
             );
+
 
 
 
@@ -2393,17 +1175,11 @@ class PodcastManager {
 
             const result =
 
-            await API.request(
+            await API.upload(
 
-                "/media/upload",
+                "/admin/podcasts/upload",
 
-                {
-
-                    method:"POST",
-
-                    body:formData
-
-                }
+                formData
 
             );
 
@@ -2413,7 +1189,12 @@ class PodcastManager {
 
 
 
-            if(!result.success){
+
+            if(
+
+                !result.success
+
+            ){
 
 
 
@@ -2421,7 +1202,7 @@ class PodcastManager {
 
                     result.message ||
 
-                    "آپلود فایل صوتی ناموفق بود"
+                    "آپلود انجام نشد"
 
                 );
 
@@ -2429,46 +1210,6 @@ class PodcastManager {
 
             }
 
-
-
-
-
-
-
-
-            this.audioUrl =
-
-            result.url;
-
-
-
-
-
-
-            document.getElementById(
-
-                "audio_url"
-
-            ).value =
-
-            this.audioUrl;
-
-
-
-
-
-
-
-
-            this.audioPreview.src =
-
-            this.audioUrl;
-
-
-
-            this.audioPreview.style.display =
-
-            "block";
 
 
 
@@ -2485,8 +1226,17 @@ class PodcastManager {
 
 
 
-        }
 
+
+
+
+            return result.data;
+
+
+
+
+
+        }
 
         catch(error){
 
@@ -2499,212 +1249,18 @@ class PodcastManager {
             );
 
 
-        }
 
+            return null;
+
+
+
+        }
 
         finally{
 
 
-            this.audioUploading = false;
 
-
-
-            this.showUploadProgress(
-
-                "audio",
-
-                false
-
-            );
-
-
-
-        }
-
-
-
-              }
-
-
-
-
-
-
-
-    /*
-    ========================================
-    UPLOAD PROGRESS CONTROL
-    ========================================
-    */
-
-
-    showUploadProgress(type, show){
-
-
-
-        let progress;
-
-        let bar;
-
-
-
-
-        if(type === "cover"){
-
-
-            progress =
-
-            document.getElementById(
-
-                "coverProgress"
-
-            );
-
-
-
-            bar =
-
-            document.getElementById(
-
-                "coverProgressBar"
-
-            );
-
-
-        }
-
-
-
-        if(type === "audio"){
-
-
-            progress =
-
-            document.getElementById(
-
-                "audioProgress"
-
-            );
-
-
-
-            bar =
-
-            document.getElementById(
-
-                "audioProgressBar"
-
-            );
-
-
-        }
-
-
-
-
-
-        if(!progress || !bar)
-
-        return;
-
-
-
-
-
-
-
-        if(show){
-
-
-            progress.style.display =
-
-            "block";
-
-
-
-            bar.style.width =
-
-            "0%";
-
-
-
-            let value = 0;
-
-
-
-            const timer =
-
-            setInterval(()=>{
-
-
-
-                value += 10;
-
-
-
-                if(value >= 90){
-
-
-                    clearInterval(timer);
-
-
-                }
-
-
-
-                bar.style.width =
-
-                value + "%";
-
-
-
-            },300);
-
-
-
-
-            progress.dataset.timer =
-
-            timer;
-
-
-
-        }
-
-        else{
-
-
-
-            clearInterval(
-
-                progress.dataset.timer
-
-            );
-
-
-
-            bar.style.width =
-
-            "100%";
-
-
-
-            setTimeout(()=>{
-
-
-                progress.style.display =
-
-                "none";
-
-
-
-                bar.style.width =
-
-                "0%";
-
-
-
-            },700);
+            Loader.hide();
 
 
 
@@ -2723,10 +1279,34 @@ class PodcastManager {
 
 
     /*
-    ========================================
-    END CLASS
-    ========================================
+    ==========================
+    CLOSE MODAL
+    ==========================
     */
+
+
+    closeModal(){
+
+
+
+        document
+
+        .getElementById(
+
+            "podcastModal"
+
+        )
+
+        ?.classList.remove(
+
+            "show"
+
+        );
+
+
+
+    }
+
 
 
 }
@@ -2740,15 +1320,19 @@ class PodcastManager {
 
 
 /*
-================================================
+=================================================
 
-START PODCAST MANAGER
+GLOBAL INSTANCE
 
-================================================
+=================================================
 */
 
 
-let podcastManager;
+let podcastsManager;
+
+
+
+
 
 
 
@@ -2759,14 +1343,13 @@ document.addEventListener(
 ()=>{
 
 
-    podcastManager =
+    podcastsManager =
 
-    new PodcastManager();
+    new PodcastsManager();
 
 
 
 });
-
 
 
 

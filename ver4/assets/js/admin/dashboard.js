@@ -4,10 +4,14 @@
 NightCast Ver4
 Admin Dashboard Manager
 
-Production Version
+Professional Version
 
-Based on real API:
-GET /podcasts
+Responsible for:
+- Dashboard Statistics
+- Podcast Overview
+- Latest Podcasts
+- Activity Feed
+- API Compatible Version
 
 =================================================
 */
@@ -29,7 +33,11 @@ class DashboardManager {
         this.podcasts = [];
 
 
+        this.initialized = false;
+
+
         this.init();
+
 
 
     }
@@ -57,19 +65,14 @@ class DashboardManager {
 
 
 
+            // بررسی ورود کاربر
+
             if(
-
-                window.Auth
-
-                &&
-
+                window.Auth &&
                 !Auth.requireAuth()
-
             ){
 
-
                 return;
-
 
             }
 
@@ -78,8 +81,11 @@ class DashboardManager {
 
 
 
-
             await this.loadData();
+
+
+
+            this.initialized = true;
 
 
 
@@ -91,7 +97,7 @@ class DashboardManager {
 
             console.error(
 
-                "DASHBOARD INIT ERROR",
+                "Dashboard Init Error:",
 
                 error
 
@@ -99,11 +105,18 @@ class DashboardManager {
 
 
 
-            this.showError(
+            if(window.UI){
 
-                error.message
 
-            );
+                UI.error(
+
+                    "خطا در راه‌اندازی داشبورد"
+
+                );
+
+
+            }
+
 
 
         }
@@ -124,6 +137,12 @@ class DashboardManager {
     ==========================
     LOAD DATA
     ==========================
+    
+    فقط بر اساس API واقعی فعلی:
+    
+    GET /podcasts
+    
+    ==========================
     */
 
 
@@ -135,11 +154,8 @@ class DashboardManager {
 
 
 
-            UI.showLoader(
+            this.showLoading();
 
-                "در حال دریافت اطلاعات..."
-
-            );
 
 
 
@@ -162,26 +178,9 @@ class DashboardManager {
 
 
 
-            console.log(
-
-                "DASHBOARD DATA",
-
-                result
-
-            );
-
-
-
-
-
-
-
-
             if(
 
-                !result
-
-                ||
+                !result ||
 
                 !result.success
 
@@ -191,9 +190,7 @@ class DashboardManager {
 
                 throw new Error(
 
-                    result.message
-
-                    ||
+                    result.message ||
 
                     "دریافت اطلاعات ناموفق بود"
 
@@ -232,26 +229,15 @@ class DashboardManager {
 
 
 
-            this.renderStats();
+            this.renderStatistics();
 
 
 
+            this.renderLatestPodcasts();
 
 
 
-
-            this.renderLatest();
-
-
-
-
-
-
-
-            this.renderActivity();
-
-
-
+            this.renderActivities();
 
 
 
@@ -263,7 +249,7 @@ class DashboardManager {
 
             console.error(
 
-                "LOAD DATA ERROR",
+                "Dashboard Load Error:",
 
                 error
 
@@ -285,7 +271,7 @@ class DashboardManager {
 
 
 
-            UI.hideLoader();
+            this.hideLoading();
 
 
 
@@ -297,18 +283,144 @@ class DashboardManager {
 
 
 
+
+
+
+
+
+
     /*
     ==========================
-    RENDER STATISTICS
+    LOADING
     ==========================
     */
 
 
-    renderStats(){
+    showLoading(){
 
 
 
-        const podcastElement =
+        if(
+
+            window.UI &&
+
+            UI.showLoader
+
+        ){
+
+
+
+            UI.showLoader(
+
+                "در حال دریافت اطلاعات داشبورد..."
+
+            );
+
+
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    hideLoading(){
+
+
+
+        if(
+
+            window.UI &&
+
+            UI.hideLoader
+
+        ){
+
+
+
+            UI.hideLoader();
+
+
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    showError(message){
+
+
+
+        if(
+
+            window.UI &&
+
+            UI.error
+
+        ){
+
+
+
+            UI.error(
+
+                message
+
+            );
+
+
+        }
+
+        else{
+
+
+            console.error(
+
+                message
+
+            );
+
+
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    /*
+    ==========================
+    STATISTICS
+    ==========================
+    */
+
+
+    renderStatistics(){
+
+
+
+        const totalPodcasts =
 
         document.getElementById(
 
@@ -320,19 +432,7 @@ class DashboardManager {
 
 
 
-        const playsElement =
-
-        document.getElementById(
-
-            "totalPlays"
-
-        );
-
-
-
-
-
-        const booksElement =
+        const totalBooks =
 
         document.getElementById(
 
@@ -344,7 +444,7 @@ class DashboardManager {
 
 
 
-        const usersElement =
+        const totalUsers =
 
         document.getElementById(
 
@@ -356,14 +456,29 @@ class DashboardManager {
 
 
 
+        const totalPlays =
+
+        document.getElementById(
+
+            "totalPlays"
+
+        );
 
 
 
-        if(podcastElement){
 
 
 
-            podcastElement.textContent =
+
+
+        // تعداد پادکست‌ها
+
+
+        if(totalPodcasts){
+
+
+
+            totalPodcasts.textContent =
 
             this.podcasts.length;
 
@@ -378,9 +493,54 @@ class DashboardManager {
 
 
 
-        let totalPlays = 0;
+        // فعلا API کتاب نداریم
 
 
+        if(totalBooks){
+
+
+
+            totalBooks.textContent =
+
+            "0";
+
+
+
+        }
+
+
+
+
+
+
+
+
+        // فعلا API کاربران نداریم
+
+
+        if(totalUsers){
+
+
+
+            totalUsers.textContent =
+
+            "0";
+
+
+
+        }
+
+
+
+
+
+
+
+
+        // مجموع شنیده‌ها
+
+
+        let plays = 0;
 
 
 
@@ -389,17 +549,13 @@ class DashboardManager {
             item=>{
 
 
-
-                totalPlays +=
-
-                Number(
+                plays += Number(
 
                     item.listen_count ||
 
                     0
 
                 );
-
 
 
             }
@@ -413,58 +569,13 @@ class DashboardManager {
 
 
 
-        if(playsElement){
+        if(totalPlays){
 
 
 
-            playsElement.textContent =
+            totalPlays.textContent =
 
-            totalPlays;
-
-
-
-        }
-
-
-
-
-
-
-
-
-        /*
-        ======================
-        هنوز API نداریم
-        ======================
-        */
-
-
-        if(booksElement){
-
-
-
-            booksElement.textContent =
-
-            "0";
-
-
-
-        }
-
-
-
-
-
-
-
-
-        if(usersElement){
-
-
-
-            usersElement.textContent =
-
-            "0";
+            plays;
 
 
 
@@ -482,14 +593,17 @@ class DashboardManager {
 
 
 
+
+
+
     /*
     ==========================
-    RENDER LATEST PODCASTS
+    LATEST PODCASTS TABLE
     ==========================
     */
 
 
-    renderLatest(){
+    renderLatestPodcasts(){
 
 
 
@@ -514,14 +628,13 @@ class DashboardManager {
 
             console.warn(
 
-                "recentPodcasts not found"
+                "recentPodcasts element not found"
 
             );
 
 
 
             return;
-
 
 
         }
@@ -599,6 +712,7 @@ class DashboardManager {
 
 
 
+
                 if(
 
                     podcast.created_at
@@ -607,31 +721,29 @@ class DashboardManager {
 
 
 
-                    try{
+                    if(
+
+                        window.UI &&
+
+                        UI.formatDate
+
+                    ){
 
 
 
                         date =
 
-                        UI.formatDate
-
-                        ?
-
                         UI.formatDate(
 
                             podcast.created_at
 
-                        )
-
-                        :
-
-                        podcast.created_at;
+                        );
 
 
 
                     }
 
-                    catch(e){
+                    else{
 
 
 
@@ -646,7 +758,6 @@ class DashboardManager {
 
 
                 }
-
 
 
 
@@ -674,55 +785,50 @@ class DashboardManager {
 
 
 
-
                 table.innerHTML += `
 
-                
 
                 <tr>
 
 
-
                     <td>
 
-                    ${
+                        ${
 
-                    podcast.title ||
+                        this.escapeHTML(
 
-                    "بدون عنوان"
+                            podcast.title ||
 
-                    }
+                            "بدون عنوان"
+
+                        )
+
+                        }
 
                     </td>
 
 
 
-
-
                     <td>
 
-                    <span class="badge badge-success">
+                        <span class="badge badge-success">
 
-                    ${status}
+                            ${status}
 
-                    </span>
+                        </span>
 
                     </td>
 
 
 
-
-
                     <td>
 
-                    ${date}
+                        ${date}
 
                     </td>
-
 
 
                 </tr>
-
 
 
                 `;
@@ -730,8 +836,6 @@ class DashboardManager {
 
 
             }
-
-
 
         );
 
@@ -749,16 +853,16 @@ class DashboardManager {
 
     /*
     ==========================
-    RENDER ACTIVITY
+    ACTIVITY FEED
     ==========================
     */
 
 
-    renderActivity(){
+    renderActivities(){
 
 
 
-        const area =
+        const container =
 
         document.getElementById(
 
@@ -773,7 +877,7 @@ class DashboardManager {
 
 
 
-        if(!area){
+        if(!container){
 
 
 
@@ -792,18 +896,18 @@ class DashboardManager {
 
         if(
 
-            this.podcasts.length===0
+            this.podcasts.length === 0
 
         ){
 
 
 
-            area.innerHTML = `
+            container.innerHTML = `
 
-            
+
             <div class="empty-state">
 
-            هنوز فعالیتی ثبت نشده است
+                هنوز فعالیتی ثبت نشده است
 
             </div>
 
@@ -825,7 +929,7 @@ class DashboardManager {
 
 
 
-        area.innerHTML = "";
+        container.innerHTML = "";
 
 
 
@@ -844,7 +948,7 @@ class DashboardManager {
 
 
 
-                area.innerHTML += `
+                container.innerHTML += `
 
 
                 <div class="notification">
@@ -852,7 +956,7 @@ class DashboardManager {
 
                     <div class="notification-icon">
 
-                    🎙
+                        🎙
 
                     </div>
 
@@ -865,9 +969,13 @@ class DashboardManager {
 
                         ${
 
-                        item.title ||
+                        this.escapeHTML(
 
-                        "پادکست"
+                            item.title ||
+
+                            "پادکست"
+
+                        )
 
                         }
 
@@ -881,7 +989,7 @@ class DashboardManager {
 
                         <small>
 
-                        ثبت شده در سیستم
+                        پادکست ثبت شده در سیستم
 
                         </small>
 
@@ -899,7 +1007,70 @@ class DashboardManager {
 
             }
 
+        );
 
+
+
+    }
+
+
+
+
+
+
+
+
+
+    /*
+    ==========================
+    SAFE HTML
+    ==========================
+    */
+
+
+    escapeHTML(value){
+
+
+
+        return String(value)
+
+        .replace(
+
+            /&/g,
+
+            "&amp;"
+
+        )
+
+        .replace(
+
+            /</g,
+
+            "&lt;"
+
+        )
+
+        .replace(
+
+            />/g,
+
+            "&gt;"
+
+        )
+
+        .replace(
+
+            /"/g,
+
+            "&quot;"
+
+        )
+
+        .replace(
+
+            /'/g,
+
+            "&#039;"
 
         );
 
@@ -917,56 +1088,7 @@ class DashboardManager {
 
     /*
     ==========================
-    ERROR HANDLER
-    ==========================
-    */
-
-
-    showError(message){
-
-
-
-        console.error(
-
-            message
-
-        );
-
-
-
-        if(window.UI){
-
-
-
-            UI.error(
-
-                message
-
-            );
-
-
-
-        }
-
-
-
-            }
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /*
-    ==========================
-    REFRESH DASHBOARD
+    REFRESH
     ==========================
     */
 
@@ -985,13 +1107,16 @@ class DashboardManager {
 
 
 
+    
+
+
+
+
+
+
+
+
 }
-
-
-
-
-
-
 
 
 
@@ -1015,37 +1140,15 @@ let dashboardManager = null;
 
 document.addEventListener(
 
-"DOMContentLoaded",
+    "DOMContentLoaded",
 
-()=>{
-
-
-
-    dashboardManager =
-
-    new DashboardManager();
+    ()=>{
 
 
 
+        dashboardManager =
 
-
-
-
-
-    /*
-    ==========================
-    LOGOUT BUTTON
-    ==========================
-    */
-
-
-    const logoutBtn =
-
-    document.getElementById(
-
-        "logoutBtn"
-
-    );
+        new DashboardManager();
 
 
 
@@ -1054,72 +1157,96 @@ document.addEventListener(
 
 
 
-    if(logoutBtn){
+        /*
+        ==========================
+        LOGOUT
+        ==========================
+        */
 
 
+        const logoutBtn =
 
-        logoutBtn.addEventListener(
+        document.getElementById(
 
-            "click",
-
-            ()=>{
-
-
-
-                if(
-
-                    window.Auth
-
-                ){
-
-
-
-                    Auth.logout();
-
-
-
-                }
-
-                else{
-
-
-
-                    localStorage.removeItem(
-
-                        "NightCastToken"
-
-                    );
-
-
-
-                    window.location.href =
-
-                    "login.html";
-
-
-
-                }
-
-
-
-            }
-
-
+            "logoutBtn"
 
         );
 
 
 
+
+
+
+
+
+        if(logoutBtn){
+
+
+
+            logoutBtn.addEventListener(
+
+                "click",
+
+                ()=>{
+
+
+
+                    if(
+
+                        window.Auth &&
+
+                        Auth.logout
+
+                    ){
+
+
+
+                        Auth.logout();
+
+
+
+                    }
+
+                    else{
+
+
+
+                        localStorage.removeItem(
+
+                            "NightCastToken"
+
+                        );
+
+
+
+                        window.location.href =
+
+                        "login.html";
+
+
+
+                    }
+
+
+
+                }
+
+            );
+
+
+
+        }
+
+
+
+
+
+
+
+
     }
 
-
-
-
-
-
-
-
-});
+);
 
 
 
@@ -1141,3 +1268,14 @@ GLOBAL EXPORT
 window.DashboardManager =
 
 DashboardManager;
+
+
+
+
+
+
+
+
+window.dashboardManager =
+
+dashboardManager;

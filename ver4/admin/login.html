@@ -24,52 +24,61 @@ NightCast Admin Login
 <div class="login-container">
 
 
-<h2>
-ورود به پنل مدیریت NightCast
-</h2>
+    <div class="login-card">
 
 
-<form id="loginForm">
-
-
-<label>
-نام کاربری
-</label>
-
-
-<input
-id="username"
-type="text"
-autocomplete="username"
->
+        <h2>
+            ورود به پنل مدیریت NightCast
+        </h2>
 
 
 
-<label>
-رمز عبور
-</label>
+        <form id="loginForm">
 
 
-<input
-id="password"
-type="password"
-autocomplete="current-password"
->
+            <label>
+                نام کاربری
+            </label>
 
 
-
-<button type="submit">
-
-ورود
-
-</button>
-
-
-</form>
+            <input
+            id="username"
+            type="text"
+            autocomplete="username"
+            >
 
 
 
-<div id="message"></div>
+            <label>
+                رمز عبور
+            </label>
+
+
+            <input
+            id="password"
+            type="password"
+            autocomplete="current-password"
+            >
+
+
+
+            <button 
+            class="login-button"
+            type="submit">
+
+                ورود
+
+            </button>
+
+
+        </form>
+
+
+
+        <div id="message"></div>
+
+
+    </div>
 
 
 </div>
@@ -79,7 +88,10 @@ autocomplete="current-password"
 
 
 <script src="../assets/js/core/api.js"></script>
+
 <script src="../assets/js/core/ui.js"></script>
+
+
 
 
 
@@ -91,6 +103,17 @@ const form =
 document.getElementById(
 "loginForm"
 );
+
+
+
+const message =
+
+document.getElementById(
+"message"
+);
+
+
+
 
 
 
@@ -109,7 +132,7 @@ const username =
 
 document.getElementById(
 "username"
-).value;
+).value.trim();
 
 
 
@@ -117,14 +140,35 @@ const password =
 
 document.getElementById(
 "password"
-).value;
+).value.trim();
+
+
+
+
+
+if(!username || !password){
+
+
+message.innerHTML =
+
+"لطفاً نام کاربری و رمز عبور را وارد کنید";
+
+
+return;
+
+
+}
+
 
 
 
 
 UI.showLoader(
+
 "در حال ورود..."
+
 );
+
 
 
 
@@ -153,11 +197,7 @@ password
 
 
 
-if(
-
-result.success
-
-){
+if(result.success){
 
 
 
@@ -173,15 +213,22 @@ result.token
 
 UI.hideLoader();
 
+
+
 UI.success(
+
 "ورود موفق"
+
 );
+
+
 
 
 setTimeout(()=>{
 
 
 location.href =
+
 "dashboard.html";
 
 
@@ -191,40 +238,61 @@ location.href =
 
 }
 
+
+
 else{
 
 
-UI.error(
+
+UI.hideLoader();
+
+
+
+message.innerHTML =
 
 result.message ||
 
-"ورود ناموفق"
-
-);
-
-
-}
+"نام کاربری یا رمز عبور اشتباه است";
 
 
 
 }
+
+
+
+
+}
+
 
 catch(error){
 
 
 
-UI.error(
+UI.hideLoader();
 
-error.message
+
+
+console.error(
+
+error
 
 );
 
 
 
+message.innerHTML =
+
+"خطا در ارتباط با سرور";
+
+
+
 }
 
 
+
 }
+
+
 
 );
 

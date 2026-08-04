@@ -1,1 +1,530 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
 
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>
+NightCast Test3 UI Dashboard
+</title>
+
+
+<link rel="stylesheet" href="../assets/css/core.css?v=4">
+<link rel="stylesheet" href="../assets/css/layout.css?v=4">
+<link rel="stylesheet" href="../assets/css/components.css?v=4">
+<link rel="stylesheet" href="../assets/css/responsive.css?v=4">
+
+
+<style>
+
+body{
+
+background:#f5f6fa;
+
+}
+
+
+.test-title{
+
+padding:20px;
+font-size:24px;
+font-weight:bold;
+
+}
+
+
+
+.debug{
+
+background:#111;
+color:#00ff88;
+padding:15px;
+margin:20px;
+border-radius:10px;
+direction:ltr;
+overflow:auto;
+
+}
+
+
+</style>
+
+
+</head>
+
+
+<body>
+
+
+<div class="test-title">
+
+🧪 NightCast Test3 - Dashboard UI
+
+</div>
+
+
+
+
+
+<section class="content-area">
+
+
+
+<div class="stats-grid">
+
+
+
+<div class="stat-card">
+
+<div class="stat-icon">
+🎙
+</div>
+
+<div class="stat-value" id="totalPodcasts">
+
+0
+
+</div>
+
+<div class="stat-title">
+
+تعداد پادکست‌ها
+
+</div>
+
+</div>
+
+
+
+
+
+<div class="stat-card">
+
+<div class="stat-icon">
+📚
+</div>
+
+
+<div class="stat-value" id="totalBooks">
+
+0
+
+</div>
+
+
+<div class="stat-title">
+
+کتاب‌ها
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="stat-card">
+
+<div class="stat-icon">
+👥
+</div>
+
+
+<div class="stat-value" id="totalUsers">
+
+0
+
+</div>
+
+
+<div class="stat-title">
+
+کاربران
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="stat-card">
+
+<div class="stat-icon">
+▶
+</div>
+
+
+<div class="stat-value" id="totalPlays">
+
+0
+
+</div>
+
+
+<div class="stat-title">
+
+شنیده‌ها
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+<div class="card">
+
+
+<div class="card-header">
+
+آخرین پادکست‌ها
+
+</div>
+
+
+<div class="table-container">
+
+
+<table>
+
+
+<thead>
+
+<tr>
+
+<th>
+عنوان
+</th>
+
+<th>
+وضعیت
+</th>
+
+<th>
+تاریخ
+</th>
+
+</tr>
+
+
+</thead>
+
+
+<tbody id="recentPodcasts">
+
+
+</tbody>
+
+
+</table>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="debug" id="debug">
+
+در انتظار...
+
+</div>
+
+
+
+
+
+</section>
+
+
+
+
+
+
+
+
+<script src="../assets/js/core/api.js"></script>
+
+
+
+<script>
+
+
+async function testDashboard(){
+
+
+
+let log=[];
+
+
+
+
+
+try{
+
+
+
+let podcasts =
+await API.get(
+"/podcasts"
+);
+
+
+
+
+log.push(
+"Podcast API OK"
+);
+
+
+
+
+
+if(
+
+podcasts.success
+
+&&
+
+podcasts.podcasts
+
+){
+
+
+
+let list =
+podcasts.podcasts;
+
+
+
+document.getElementById(
+"totalPodcasts"
+).innerHTML =
+list.length;
+
+
+
+
+
+
+let html="";
+
+
+
+list.forEach(item=>{
+
+
+html += `
+
+<tr>
+
+<td>
+
+${item.title}
+
+</td>
+
+
+<td>
+
+${item.status}
+
+</td>
+
+
+<td>
+
+${item.created_at}
+
+</td>
+
+
+</tr>
+
+`;
+
+
+
+});
+
+
+
+
+document.getElementById(
+"recentPodcasts"
+).innerHTML=html;
+
+
+
+
+}
+
+
+
+
+
+}
+
+catch(e){
+
+
+
+log.push(
+"ERROR : "+e.message
+);
+
+
+}
+
+
+
+
+
+
+
+// books
+
+
+try{
+
+
+let books =
+await API.get(
+"/books"
+);
+
+
+log.push(
+
+"Books : "
+
++
+JSON.stringify(books)
+
+);
+
+
+}
+
+catch(e){
+
+
+log.push(
+"Books Error "+e.message
+);
+
+
+}
+
+
+
+
+
+
+// users
+
+
+try{
+
+
+let users =
+await API.get(
+"/users"
+);
+
+
+log.push(
+
+"Users : "
+
++
+JSON.stringify(users)
+
+);
+
+
+
+}
+
+catch(e){
+
+
+
+log.push(
+"Users Error "+e.message
+);
+
+
+}
+
+
+
+
+
+
+
+document.getElementById(
+"debug"
+).innerHTML =
+
+log.join(
+"<br><br>"
+);
+
+
+
+
+}
+
+
+
+
+
+
+
+document.addEventListener(
+
+"DOMContentLoaded",
+
+()=>{
+
+
+testDashboard();
+
+
+});
+
+
+</script>
+
+
+</body>
+
+</html>

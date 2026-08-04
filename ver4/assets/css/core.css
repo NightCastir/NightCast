@@ -2,46 +2,129 @@
 =================================================
 
 NightCast Ver4
-Core Design System
+Core CSS
 
-App First UI
+Base:
+- Variables
+- Reset
+- Typography
+- Global Elements
 
 =================================================
 */
 
 
-/* ==========================
+
+:root {
+
+
+    --primary:
+    #6c5ce7;
+
+
+    --primary-dark:
+    #4834d4;
+
+
+    --secondary:
+    #00b894;
+
+
+    --danger:
+    #d63031;
+
+
+    --warning:
+    #fdcb6e;
+
+
+    --dark:
+    #1e272e;
+
+
+    --text:
+    #2d3436;
+
+
+    --muted:
+    #636e72;
+
+
+    --background:
+    #f5f6fa;
+
+
+    --surface:
+    #ffffff;
+
+
+    --border:
+    #dfe6e9;
+
+
+    --radius:
+    14px;
+
+
+    --shadow:
+    0 8px 30px rgba(0,0,0,.08);
+
+
+    --transition:
+    .25s ease;
+
+
+    --sidebar-width:
+    270px;
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+=========================
 RESET
-========================== */
+=========================
+*/
 
 
-*,
-*::before,
-*::after{
+* {
 
-    box-sizing:border-box;
-
-}
-
-
-
-html{
-
-    font-size:16px;
-
-    scroll-behavior:smooth;
-
-}
-
-
-
-body{
 
     margin:0;
 
     padding:0;
 
-    direction:rtl;
+    box-sizing:border-box;
+
+
+}
+
+
+
+
+
+html {
+
+
+    scroll-behavior:smooth;
+
+
+}
+
+
+
+
+
+body {
+
 
     font-family:
 
@@ -49,13 +132,19 @@ body{
     "Tahoma",
     sans-serif;
 
+
     background:
 
-    #f5f7fb;
+    var(--background);
 
-    color:#1f2937;
 
-    overflow-x:hidden;
+    color:
+
+    var(--text);
+
+
+    min-height:100vh;
+
 
 }
 
@@ -63,11 +152,14 @@ body{
 
 
 
-img{
+a {
 
-    max-width:100%;
 
-    display:block;
+    text-decoration:none;
+
+
+    color:inherit;
+
 
 }
 
@@ -78,31 +170,23 @@ img{
 button,
 input,
 textarea,
-select{
+select {
+
 
     font-family:inherit;
 
+
 }
 
 
 
 
 
-button{
+button {
+
 
     cursor:pointer;
 
-}
-
-
-
-
-
-a{
-
-    text-decoration:none;
-
-    color:inherit;
 
 }
 
@@ -110,195 +194,734 @@ a{
 
 
 
+img {
 
 
+    max-width:100%;
 
-/* ==========================
-NIGHTCAST THEME
-========================== */
 
+}
 
-:root{
 
 
-    /* Brand */
 
-    --primary:
 
-    #6c5ce7;
 
 
-    --primary-dark:
 
-    #5847d6;
 
+/*
+=========================
+TYPOGRAPHY
+=========================
+*/
 
 
-    --secondary:
+h1,
+h2,
+h3,
+h4 {
 
-    #00b894;
 
+    color:
 
+    var(--dark);
 
-    --danger:
 
-    #e74c3c;
+    font-weight:700;
 
 
+}
 
-    --warning:
 
-    #f39c12;
 
 
 
-    --info:
+.page-title {
 
-    #0984e3;
 
+    font-size:
 
+    28px;
 
 
+}
 
-    /* Background */
 
-    --bg:
 
-    #f5f7fb;
 
 
+.page-subtitle {
 
-    --surface:
 
-    #ffffff;
+    color:
 
+    var(--muted);
 
 
-    --surface-soft:
+    margin-top:8px;
 
-    #f8fafc;
 
+    font-size:14px;
 
 
+}
 
 
-    /* Text */
 
 
-    --text:
 
-    #1f2937;
+label {
 
 
-    --text-soft:
+    display:block;
 
-    #64748b;
 
+    margin-bottom:8px;
 
-    --text-light:
 
-    #94a3b8;
+    color:
 
+    var(--dark);
 
 
+    font-size:14px;
 
 
+    font-weight:600;
 
-    /* Border */
 
+}
 
-    --border:
 
-    #e5e7eb;
 
+/*
+=========================
+FORM ELEMENTS
+=========================
+*/
 
 
+input,
+textarea,
+select {
 
 
-    /* Shadow */
+    width:100%;
 
 
-    --shadow-sm:
+    border:
 
-    0 2px 8px rgba(0,0,0,.05);
+    1px solid var(--border);
 
 
+    background:
 
-    --shadow:
+    var(--surface);
 
 
-    0 8px 25px rgba(15,23,42,.08);
+    color:
 
+    var(--text);
 
 
-    --shadow-lg:
+    padding:
 
+    13px 16px;
 
-    0 20px 40px rgba(15,23,42,.12);
 
+    border-radius:
 
+    10px;
 
 
+    outline:none;
 
 
+    transition:
 
-    /* Radius */
+    var(--transition);
 
 
-    --radius-sm:
+}
 
-    8px;
 
 
 
-    --radius:
+
+input:focus,
+textarea:focus,
+select:focus {
+
+
+    border-color:
+
+    var(--primary);
+
+
+    box-shadow:
+
+    0 0 0 4px
+
+    rgba(108,92,231,.12);
+
+
+}
+
+
+
+
+
+
+
+textarea {
+
+
+    resize:vertical;
+
+
+    min-height:120px;
+
+
+}
+
+
+
+
+
+.form-group {
+
+
+    margin-bottom:20px;
+
+
+}
+
+
+
+
+
+.form-grid {
+
+
+    display:grid;
+
+
+    grid-template-columns:
+
+    repeat(2,1fr);
+
+
+    gap:20px;
+
+
+}
+
+
+
+
+
+.form-grid .full {
+
+
+    grid-column:
+
+    1 / -1;
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+=========================
+BUTTONS
+=========================
+*/
+
+
+.btn {
+
+
+    border:none;
+
+
+    padding:
+
+    12px 22px;
+
+
+    border-radius:
+
+    10px;
+
+
+    font-size:
 
     14px;
 
 
+    font-weight:
 
-    --radius-lg:
+    600;
+
+
+    transition:
+
+    var(--transition);
+
+
+    display:inline-flex;
+
+
+    align-items:center;
+
+
+    justify-content:center;
+
+
+    gap:8px;
+
+
+}
+
+
+
+
+
+.btn:hover {
+
+
+    transform:
+
+    translateY(-2px);
+
+
+}
+
+
+
+
+
+
+
+.btn-primary {
+
+
+    background:
+
+    var(--primary);
+
+
+    color:white;
+
+
+}
+
+
+
+
+
+
+
+.btn-primary:hover {
+
+
+    background:
+
+    var(--primary-dark);
+
+
+}
+
+
+
+
+
+
+
+.btn-secondary {
+
+
+    background:
+
+    #ecf0f1;
+
+
+    color:
+
+    var(--dark);
+
+
+}
+
+
+
+
+
+
+
+.btn-danger {
+
+
+    background:
+
+    var(--danger);
+
+
+    color:white;
+
+
+}
+
+
+
+
+
+
+
+.btn-light {
+
+
+    background:
+
+    #f1f2f6;
+
+
+    color:
+
+    var(--dark);
+
+
+}
+
+
+
+
+
+
+
+.btn-sm {
+
+
+    padding:
+
+    8px 14px;
+
+
+    font-size:
+
+    12px;
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+=========================
+CARDS
+=========================
+*/
+
+
+.card {
+
+
+    background:
+
+    var(--surface);
+
+
+    border-radius:
+
+    var(--radius);
+
+
+    box-shadow:
+
+    var(--shadow);
+
+
+    padding:
+
+    24px;
+
+
+    margin-bottom:
+
+    24px;
+
+
+}
+
+
+
+
+
+
+
+.card-header {
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    justify-content:space-between;
+
+
+    margin-bottom:22px;
+
+
+}
+
+
+
+
+
+
+
+.card-title {
+
+
+    font-size:
+
+    18px;
+
+
+    font-weight:
+
+    700;
+
+
+    color:
+
+    var(--dark);
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+=========================
+BADGES
+=========================
+*/
+
+
+.badge {
+
+
+    display:inline-flex;
+
+
+    align-items:center;
+
+
+    padding:
+
+    5px 12px;
+
+
+    border-radius:
+
+    50px;
+
+
+    font-size:
+
+    12px;
+
+
+    background:
+
+    #eee;
+
+
+}
+
+
+
+
+
+.badge-success {
+
+
+    background:
+
+    rgba(0,184,148,.15);
+
+
+    color:
+
+    #00a884;
+
+
+}
+
+
+
+
+
+.badge-warning {
+
+
+    background:
+
+    rgba(253,203,110,.25);
+
+
+    color:
+
+    #d39e00;
+
+
+    }
+
+
+
+
+/*
+=========================
+MODAL
+=========================
+*/
+
+
+.modal {
+
+
+    position:fixed;
+
+
+    inset:0;
+
+
+    background:
+
+    rgba(0,0,0,.45);
+
+
+    display:none;
+
+
+    align-items:center;
+
+
+    justify-content:center;
+
+
+    z-index:1000;
+
+
+    padding:20px;
+
+
+}
+
+
+
+
+
+
+
+.modal.show {
+
+
+    display:flex;
+
+
+}
+
+
+
+
+
+
+
+.modal-dialog {
+
+
+    background:
+
+    var(--surface);
+
+
+    width:
+
+    100%;
+
+
+    max-width:
+
+    700px;
+
+
+    border-radius:
+
+    18px;
+
+
+    box-shadow:
+
+    0 20px 60px rgba(0,0,0,.2);
+
+
+    animation:
+
+    modalShow .25s ease;
+
+
+}
+
+
+
+
+
+
+
+.modal-header {
+
+
+    display:flex;
+
+
+    justify-content:space-between;
+
+
+    align-items:center;
+
+
+    padding:
 
     22px;
 
 
+    border-bottom:
 
-
-
-
-
-    /* Layout */
-
-
-    --sidebar-width:
-
-    270px;
-
-
-
-    --header-height:
-
-    72px;
-
-
-
-
-
-
-
-    /* Animation */
-
-
-    --fast:
-
-    .2s ease;
-
-
-
-    --normal:
-
-    .35s ease;
-
+    1px solid var(--border);
 
 
 }
@@ -309,45 +932,12 @@ NIGHTCAST THEME
 
 
 
+.modal-header h2 {
 
 
-/* ==========================
-SCROLLBAR
-========================== */
+    font-size:
 
-
-::-webkit-scrollbar{
-
-    width:8px;
-
-}
-
-
-
-::-webkit-scrollbar-track{
-
-    background:#eef2f7;
-
-}
-
-
-
-::-webkit-scrollbar-thumb{
-
-
-    background:#cbd5e1;
-
-    border-radius:20px;
-
-
-}
-
-
-
-::-webkit-scrollbar-thumb:hover{
-
-
-    background:#94a3b8;
+    20px;
 
 
 }
@@ -358,26 +948,38 @@ SCROLLBAR
 
 
 
+.modal-close {
 
 
-/* ==========================
-GLOBAL STATES
-========================== */
+    border:none;
 
 
-.hidden{
+    background:none;
 
-    display:none!important;
+
+    font-size:
+
+    22px;
+
+
+    color:
+
+    var(--muted);
+
 
 }
 
 
 
-.fade-in{
 
-    animation:
 
-    fadeIn .35s ease;
+.modal-body {
+
+
+    padding:
+
+    24px;
+
 
 }
 
@@ -385,24 +987,66 @@ GLOBAL STATES
 
 
 
-@keyframes fadeIn{
 
 
-    from{
+.modal-footer {
+
+
+    padding:
+
+    18px 24px;
+
+
+    border-top:
+
+    1px solid var(--border);
+
+
+    display:flex;
+
+
+    justify-content:flex-end;
+
+
+    gap:12px;
+
+
+}
+
+
+
+
+
+
+
+@keyframes modalShow {
+
+
+    from {
+
 
         opacity:0;
 
-        transform:translateY(10px);
+
+        transform:
+
+        translateY(20px);
+
 
     }
 
 
 
-    to{
+    to {
+
 
         opacity:1;
 
-        transform:none;
+
+        transform:
+
+        translateY(0);
+
 
     }
 
@@ -416,23 +1060,36 @@ GLOBAL STATES
 
 
 
-/* ==========================
-APP SAFE AREA
 
-APK READY
-
-========================== */
-
-
-.app-container{
+/*
+=========================
+TOAST
+=========================
+*/
 
 
-    min-height:100vh;
+#toastContainer {
 
 
-    padding-bottom:
+    position:fixed;
 
-    env(safe-area-inset-bottom);
+
+    left:25px;
+
+
+    bottom:25px;
+
+
+    z-index:2000;
+
+
+    display:flex;
+
+
+    flex-direction:column;
+
+
+    gap:12px;
 
 
 }
@@ -441,10 +1098,35 @@ APK READY
 
 
 
-.no-select{
+.toast {
 
 
-    user-select:none;
+    min-width:
+
+    280px;
+
+
+    padding:
+
+    15px 20px;
+
+
+    border-radius:
+
+    12px;
+
+
+    color:white;
+
+
+    box-shadow:
+
+    var(--shadow);
+
+
+    animation:
+
+    toastShow .3s ease;
 
 
 }
@@ -453,10 +1135,234 @@ APK READY
 
 
 
-.text-center{
+
+
+.toast.success {
+
+
+    background:
+
+    var(--secondary);
+
+
+}
+
+
+
+
+
+
+
+.toast.error {
+
+
+    background:
+
+    var(--danger);
+
+
+}
+
+
+
+
+
+
+
+.toast.warning {
+
+
+    background:
+
+    var(--warning);
+
+
+    color:
+
+    #333;
+
+
+}
+
+
+
+
+
+
+
+@keyframes toastShow {
+
+
+    from {
+
+
+        opacity:0;
+
+
+        transform:
+
+        translateX(-20px);
+
+
+    }
+
+
+
+    to {
+
+
+        opacity:1;
+
+
+        transform:
+
+        translateX(0);
+
+
+    }
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+=========================
+LOADER
+=========================
+*/
+
+
+#globalLoader {
+
+
+    position:fixed;
+
+
+    inset:0;
+
+
+    background:
+
+    rgba(255,255,255,.7);
+
+
+    backdrop-filter:
+
+    blur(5px);
+
+
+    display:none;
+
+
+    align-items:center;
+
+
+    justify-content:center;
+
+
+    z-index:3000;
+
+
+}
+
+
+
+
+
+
+
+.loader-box {
+
+
+    background:white;
+
+
+    padding:
+
+    25px 35px;
+
+
+    border-radius:
+
+    15px;
+
+
+    box-shadow:
+
+    var(--shadow);
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+=========================
+UTILITIES
+=========================
+*/
+
+
+.text-center {
 
 
     text-align:center;
 
 
 }
+
+
+
+
+
+.hidden {
+
+
+    display:none !important;
+
+
+}
+
+
+
+
+
+.mt-20 {
+
+
+    margin-top:20px;
+
+
+}
+
+
+
+
+
+.mb-20 {
+
+
+    margin-bottom:20px;
+
+
+}
+
+
+
+
+
+
+

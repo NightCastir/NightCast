@@ -1,1 +1,1151 @@
+<!DOCTYPE html>
+
+<html lang="fa" dir="rtl">
+
+
+<head>
+
+
+<meta charset="UTF-8">
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<title>
+NightCast - Users Manager
+</title>
+
+
+
+
+
+<link rel="stylesheet" href="../assets/css/core.css">
+
+<link rel="stylesheet" href="../assets/css/layout.css">
+
+<link rel="stylesheet" href="../assets/css/components.css">
+
+<link rel="stylesheet" href="../assets/css/responsive.css">
+
+
+
+</head>
+
+
+
+
+
+<body>
+
+
+
+
+<div class="app-layout">
+
+
+
+
+
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar" id="sidebar">
+
+
+
+<div class="sidebar-logo">
+
+
+<span>
+
+◉
+
+</span>
+
+
+NightCast
+
+
+</div>
+
+
+
+
+
+
+
+<nav class="sidebar-menu">
+
+
+
+<a href="dashboard.html">
+
+
+🏠
+
+داشبورد
+
+
+</a>
+
+
+
+
+
+
+<a href="podcasts.html">
+
+
+🎙
+
+پادکست‌ها
+
+
+</a>
+
+
+
+
+
+
+
+<a href="media.html">
+
+
+🖼
+
+رسانه‌ها
+
+
+</a>
+
+
+
+
+
+
+
+<a href="books.html">
+
+
+📚
+
+کتاب‌ها
+
+
+</a>
+
+
+
+
+
+
+
+<a href="users.html" class="active">
+
+
+👥
+
+کاربران
+
+
+</a>
+
+
+
+
+
+
+
+<a href="settings.html">
+
+
+⚙
+
+تنظیمات
+
+
+</a>
+
+
+
+
+
+
+</nav>
+
+
+
+</aside>
+
+
+
+
+
+
+
+
+<div class="overlay" id="overlay"></div>
+
+
+
+
+
+
+
+
+
+<div class="main-area">
+
+
+
+
+
+
+<header class="app-header">
+
+
+
+<div class="header-right">
+
+
+
+<button
+
+class="menu-toggle"
+
+id="menuToggle">
+
+
+☰
+
+
+</button>
+
+
+
+
+
+
+<h3>
+
+مدیریت کاربران
+
+</h3>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="header-left">
+
+
+
+<div class="user-box">
+
+
+
+<div class="avatar">
+
+A
+
+</div>
+
+
+
+
+<span id="username">
+
+Admin
+
+</span>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+</header>
+
+  <!-- ==========================
+CONTENT
+========================== -->
+
+
+<section class="content-area">
+
+
+
+
+
+<div class="page-header">
+
+
+
+<div>
+
+
+<h1 class="page-title">
+
+مدیریت کاربران
+
+</h1>
+
+
+
+<p class="page-subtitle">
+
+مدیریت شنوندگان، مدیران و سطح دسترسی
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+<div class="page-actions">
+
+
+
+<button
+
+class="btn btn-primary"
+
+id="btnNewUser">
+
+
+➕
+
+
+کاربر جدید
+
+
+</button>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+FILTER
+========================== -->
+
+
+<div class="card">
+
+
+
+<div class="filter-row">
+
+
+
+<div class="form-group">
+
+
+<label>
+
+جستجو
+
+</label>
+
+
+
+<input
+
+type="text"
+
+id="userSearch"
+
+placeholder="نام، ایمیل یا شماره تلفن...">
+
+
+</div>
+
+
+
+
+
+
+
+<div class="form-group">
+
+
+<label>
+
+نقش کاربر
+
+</label>
+
+
+
+<select id="roleFilter">
+
+
+
+<option value="">
+
+همه
+
+
+</option>
+
+
+
+<option value="admin">
+
+مدیر
+
+
+</option>
+
+
+
+<option value="listener">
+
+شنونده
+
+
+</option>
+
+
+
+</select>
+
+
+
+</div>
+
+
+
+
+
+
+
+<div class="form-group">
+
+
+<label>
+
+وضعیت
+
+</label>
+
+
+
+<select id="userStatus">
+
+
+
+<option value="">
+
+همه
+
+
+</option>
+
+
+
+<option value="active">
+
+فعال
+
+
+</option>
+
+
+
+<option value="blocked">
+
+مسدود
+
+
+</option>
+
+
+
+</select>
+
+
+
+</div>
+
+
+
+
+
+
+
+<div class="filter-buttons">
+
+
+<button
+
+class="btn btn-secondary"
+
+id="btnRefreshUsers">
+
+
+بروزرسانی
+
+
+</button>
+
+
+</div>
+
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+USERS TABLE
+========================== -->
+
+
+<div class="card">
+
+
+
+<div class="card-header">
+
+
+
+<div class="card-title">
+
+لیست کاربران
+
+</div>
+
+
+
+<div class="card-tools">
+
+
+<span id="userCount">
+
+۰ کاربر
+
+</span>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="table-container">
+
+
+
+<table>
+
+
+
+<thead>
+
+
+
+<tr>
+
+
+<th>
+
+#
+
+</th>
+
+
+
+<th>
+
+نام
+
+</th>
+
+
+
+<th>
+
+ایمیل
+
+</th>
+
+
+
+<th>
+
+نقش
+
+</th>
+
+
+
+<th>
+
+وضعیت
+
+</th>
+
+
+
+<th>
+
+آخرین ورود
+
+</th>
+
+
+
+<th>
+
+عملیات
+
+</th>
+
+
+
+</tr>
+
+
+
+</thead>
+
+
+
+
+
+
+
+<tbody id="usersTable">
+
+
+
+<tr>
+
+
+<td colspan="7">
+
+
+در حال دریافت اطلاعات...
+
+
+</td>
+
+
+</tr>
+
+
+
+</tbody>
+
+
+
+</table>
+
+
+
+
+</div>
+
+
+
+  </div>
+
+
+
+
+
+
+
+
+  <!-- ==========================
+USER MODAL
+========================== -->
+
+
+<div
+
+class="modal"
+
+id="userModal">
+
+
+
+<div class="modal-dialog">
+
+
+
+
+
+
+<div class="modal-header">
+
+
+
+<h2>
+
+ثبت / ویرایش کاربر
+
+</h2>
+
+
+
+
+
+<button
+
+class="modal-close"
+
+id="closeUserModal">
+
+
+✕
+
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div class="modal-body">
+
+
+
+<form id="userForm">
+
+
+
+
+
+<input
+
+type="hidden"
+
+id="userId">
+
+
+
+
+
+
+
+<div class="form-grid">
+
+
+
+
+
+
+
+
+<div class="form-group">
+
+
+<label>
+
+نام کامل *
+
+</label>
+
+
+
+<input
+
+type="text"
+
+id="fullName"
+
+required>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="form-group">
+
+
+<label>
+
+نام کاربری
+
+</label>
+
+
+
+<input
+
+type="text"
+
+id="username">
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="form-group">
+
+
+<label>
+
+ایمیل
+
+</label>
+
+
+
+<input
+
+type="email"
+
+id="email">
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="form-group">
+
+
+<label>
+
+شماره تلفن
+
+</label>
+
+
+
+<input
+
+type="tel"
+
+id="phone">
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="form-group">
+
+
+<label>
+
+نقش کاربر
+
+</label>
+
+
+
+<select id="userRole">
+
+
+
+<option value="listener">
+
+شنونده
+
+</option>
+
+
+
+<option value="admin">
+
+مدیر
+
+</option>
+
+
+
+</select>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="form-group">
+
+
+<label>
+
+وضعیت حساب
+
+</label>
+
+
+
+<select id="accountStatus">
+
+
+
+<option value="active">
+
+فعال
+
+</option>
+
+
+
+<option value="blocked">
+
+مسدود
+
+</option>
+
+
+
+</select>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="form-group full">
+
+
+<label>
+
+یادداشت مدیر
+
+</label>
+
+
+
+<textarea
+
+id="adminNote"
+
+rows="4">
+
+</textarea>
+
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+</form>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div class="modal-footer">
+
+
+
+<button
+
+class="btn btn-light"
+
+id="cancelUser">
+
+
+انصراف
+
+
+</button>
+
+
+
+
+
+
+<button
+
+class="btn btn-primary"
+
+id="saveUser">
+
+
+ذخیره کاربر
+
+
+</button>
+
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div id="toastContainer"></div>
+
+
+<div id="globalLoader"></div>
+
+
+
+
+
+
+
+
+<script src="../assets/js/core/api.js"></script>
+
+<script src="../assets/js/core/auth.js"></script>
+
+<script src="../assets/js/core/toast.js"></script>
+
+<script src="../assets/js/core/loader.js"></script>
+
+<script src="../assets/js/admin/users.js"></script>
+
+
+
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+</body>
+
+
+  </html>
+
+
+
+
 

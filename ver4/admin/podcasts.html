@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 
@@ -13,6 +14,7 @@ NightCast - Podcasts
 </title>
 
 
+
 <link rel="stylesheet" href="../assets/css/core.css">
 
 <link rel="stylesheet" href="../assets/css/layout.css">
@@ -22,8 +24,8 @@ NightCast - Podcasts
 <link rel="stylesheet" href="../assets/css/responsive.css">
 
 
-</head>
 
+</head>
 
 
 <body>
@@ -34,9 +36,13 @@ NightCast - Podcasts
 
 
 
-<!-- SIDEBAR -->
+<!-- ==========================
+SIDEBAR
+========================== -->
+
 
 <aside class="sidebar" id="sidebar">
+
 
 
 <div class="sidebar-logo">
@@ -51,7 +57,11 @@ NightCast
 
 
 
+
+
+
 <nav class="sidebar-menu">
+
 
 
 <a href="dashboard.html">
@@ -61,6 +71,8 @@ NightCast
 داشبورد
 
 </a>
+
+
 
 
 
@@ -74,6 +86,8 @@ NightCast
 
 
 
+
+
 <a href="media.html">
 
 🖼
@@ -81,6 +95,8 @@ NightCast
 رسانه‌ها
 
 </a>
+
+
 
 
 
@@ -94,6 +110,8 @@ NightCast
 
 
 
+
+
 <a href="users.html">
 
 👥
@@ -101,6 +119,8 @@ NightCast
 کاربران
 
 </a>
+
+
 
 
 
@@ -114,11 +134,14 @@ NightCast
 
 
 
+
+
 </nav>
 
 
 
 </aside>
+
 
 
 
@@ -131,21 +154,41 @@ NightCast
 
 
 
+
+<!-- ==========================
+MAIN AREA
+========================== -->
+
+
 <div class="main-area">
+
+
+
 
 
 
 <header class="app-header">
 
 
+
 <div class="header-right">
 
 
-<button class="menu-toggle" id="menuToggle">
+
+<button
+
+type="button"
+
+class="menu-toggle"
+
+id="menuToggle">
 
 ☰
 
 </button>
+
+
+
 
 
 
@@ -157,14 +200,21 @@ NightCast
 
 
 
+
 </div>
+
+
+
+
 
 
 
 <div class="header-left">
 
 
+
 <div class="user-box">
+
 
 
 <div class="avatar">
@@ -174,6 +224,8 @@ A
 </div>
 
 
+
+
 <span id="username">
 
 Admin
@@ -181,23 +233,45 @@ Admin
 </span>
 
 
+
+
+
 </div>
 
 
+
 </div>
+
+
+
 
 
 </header>
-<!-- ==========================
+
+          <!-- ==========================
 CONTENT
 ========================== -->
+
 
 <section class="content-area">
 
 
+
+
+
+
+<!-- ==========================
+PAGE HEADER
+========================== -->
+
+
 <div class="page-header">
 
+
+
 <div>
+
+
 
 <h1 class="page-title">
 
@@ -205,29 +279,55 @@ CONTENT
 
 </h1>
 
+
+
+
+
 <p class="page-subtitle">
 
 ثبت، ویرایش و انتشار قسمت‌های NightCast
 
 </p>
 
+
+
 </div>
+
+
+
+
 
 
 
 <div class="page-actions">
 
+
+
 <button
+
+type="button"
+
 class="btn btn-primary"
+
 id="btnNewPodcast">
 
 ➕ پادکست جدید
 
 </button>
 
-</div>
+
 
 </div>
+
+
+
+
+
+</div>
+
+
+
+
 
 
 
@@ -237,12 +337,20 @@ id="btnNewPodcast">
 FILTER BAR
 ========================== -->
 
+
 <div class="card filter-card">
+
+
 
 <div class="filter-row">
 
 
+
+
+
 <div class="form-group">
+
+
 
 <label>
 
@@ -250,17 +358,33 @@ FILTER BAR
 
 </label>
 
+
+
+
+
 <input
+
 type="text"
+
 id="searchInput"
+
 placeholder="عنوان پادکست...">
+
+
 
 </div>
 
 
 
 
+
+
+
+
+
 <div class="form-group">
+
+
 
 <label>
 
@@ -268,7 +392,15 @@ placeholder="عنوان پادکست...">
 
 </label>
 
+
+
+
+
 <select id="statusFilter">
+
+
+
+
 
 <option value="">
 
@@ -276,11 +408,19 @@ placeholder="عنوان پادکست...">
 
 </option>
 
+
+
+
+
 <option value="active">
 
 منتشر شده
 
 </option>
+
+
+
+
 
 <option value="inactive">
 
@@ -288,14 +428,27 @@ placeholder="عنوان پادکست...">
 
 </option>
 
+
+
+
+
 </select>
+
+
 
 </div>
 
 
 
 
+
+
+
+
+
 <div class="form-group">
+
+
 
 <label>
 
@@ -303,7 +456,15 @@ placeholder="عنوان پادکست...">
 
 </label>
 
+
+
+
+
 <select id="sortBy">
+
+
+
+
 
 <option value="newest">
 
@@ -311,11 +472,19 @@ placeholder="عنوان پادکست...">
 
 </option>
 
+
+
+
+
 <option value="oldest">
 
 قدیمی‌ترین
 
 </option>
+
+
+
+
 
 <option value="title">
 
@@ -323,29 +492,63 @@ placeholder="عنوان پادکست...">
 
 </option>
 
+
+
+
+
 </select>
 
+
+
 </div>
+
+
+
+
+
 
 
 
 
 <div class="filter-buttons">
 
+
+
+
+
 <button
+
+type="button"
+
 class="btn btn-secondary"
+
 id="btnRefresh">
 
-بروزرسانی
+🔄 بروزرسانی
 
 </button>
 
+
+
+
+
+
 </div>
 
 
-</div>
+
+
+
+
 
 </div>
+
+
+
+</div>
+
+
+
 
 
 
@@ -353,13 +556,18 @@ id="btnRefresh">
 
 
 <!-- ==========================
-TABLE
+PODCAST TABLE
 ========================== -->
+
 
 <div class="card">
 
 
+
+
+
 <div class="card-header">
+
 
 
 <div class="card-title">
@@ -370,7 +578,12 @@ TABLE
 
 
 
+
+
+
 <div class="card-tools">
+
+
 
 <span id="podcastCount">
 
@@ -378,10 +591,20 @@ TABLE
 
 </span>
 
+
+
+
 </div>
 
 
+
+
+
 </div>
+
+
+
+
 
 
 
@@ -390,12 +613,19 @@ TABLE
 <div class="table-container">
 
 
+
 <table>
+
 
 
 <thead>
 
+
+
 <tr>
+
+
+
 
 <th width="60">
 
@@ -403,11 +633,19 @@ TABLE
 
 </th>
 
+
+
+
+
 <th>
 
 عنوان
 
 </th>
+
+
+
+
 
 <th>
 
@@ -415,11 +653,19 @@ TABLE
 
 </th>
 
+
+
+
+
 <th>
 
 قسمت
 
 </th>
+
+
+
+
 
 <th>
 
@@ -427,11 +673,19 @@ TABLE
 
 </th>
 
+
+
+
+
 <th>
 
 تاریخ
 
 </th>
+
+
+
+
 
 <th width="170">
 
@@ -439,9 +693,19 @@ TABLE
 
 </th>
 
+
+
+
 </tr>
 
+
+
 </thead>
+
+
+
+
+
 
 
 
@@ -449,40 +713,72 @@ TABLE
 <tbody id="podcastsTable">
 
 
+
 <tr>
 
+
+
 <td
+
 colspan="7"
+
 class="loading-row">
 
 در حال دریافت اطلاعات...
 
 </td>
 
+
+
 </tr>
 
+
+
+
+
 </tbody>
+
+
+
+
 
 
 </table>
 
 
-</div>
 
 
 </div>
-<!-- ==========================
+
+
+
+
+
+</div>
+
+          <!-- ==========================
 PODCAST MODAL
 ========================== -->
 
+
 <div
+
 class="modal"
+
 id="podcastModal">
+
+
 
 <div class="modal-dialog modal-lg">
 
 
+
+
+
+
 <div class="modal-header">
+
+
 
 <h2>
 
@@ -490,15 +786,32 @@ id="podcastModal">
 
 </h2>
 
+
+
+
+
+
 <button
+
+type="button"
+
 class="modal-close"
+
 id="closeModal">
 
 ✕
 
 </button>
 
+
+
+
+
 </div>
+
+
+
+
 
 
 
@@ -507,13 +820,20 @@ id="closeModal">
 <div class="modal-body">
 
 
+
 <form id="podcastForm">
 
 
 
+
+
 <input
+
 type="hidden"
+
 id="podcastId">
+
+
 
 
 
@@ -523,7 +843,13 @@ id="podcastId">
 
 
 
+
+
+
+
 <div class="form-group">
+
+
 
 <label>
 
@@ -531,10 +857,18 @@ id="podcastId">
 
 </label>
 
+
+
+
 <input
+
 type="text"
+
 id="title"
+
 required>
+
+
 
 </div>
 
@@ -542,7 +876,12 @@ required>
 
 
 
+
+
+
 <div class="form-group">
+
+
 
 <label>
 
@@ -550,9 +889,16 @@ required>
 
 </label>
 
+
+
+
 <input
+
 type="text"
+
 id="book_name">
+
+
 
 </div>
 
@@ -560,7 +906,12 @@ id="book_name">
 
 
 
+
+
+
 <div class="form-group">
+
+
 
 <label>
 
@@ -568,9 +919,16 @@ id="book_name">
 
 </label>
 
+
+
+
 <input
+
 type="text"
+
 id="author_name">
+
+
 
 </div>
 
@@ -578,7 +936,12 @@ id="author_name">
 
 
 
+
+
+
 <div class="form-group">
+
+
 
 <label>
 
@@ -586,9 +949,16 @@ id="author_name">
 
 </label>
 
+
+
+
 <input
+
 type="text"
+
 id="category_name">
+
+
 
 </div>
 
@@ -596,7 +966,12 @@ id="category_name">
 
 
 
+
+
+
 <div class="form-group">
+
+
 
 <label>
 
@@ -604,10 +979,18 @@ id="category_name">
 
 </label>
 
+
+
+
 <input
+
 type="number"
+
 id="episode_number"
+
 value="1">
+
+
 
 </div>
 
@@ -615,7 +998,12 @@ value="1">
 
 
 
+
+
+
 <div class="form-group">
+
+
 
 <label>
 
@@ -623,7 +1011,15 @@ value="1">
 
 </label>
 
+
+
+
+
 <select id="status">
+
+
+
+
 
 <option value="inactive">
 
@@ -631,13 +1027,23 @@ value="1">
 
 </option>
 
+
+
+
+
 <option value="active">
 
 منتشر شده
 
 </option>
 
+
+
+
+
 </select>
+
+
 
 </div>
 
@@ -645,7 +1051,13 @@ value="1">
 
 
 
+
+
+
+
 <div class="form-group full">
+
+
 
 <label>
 
@@ -653,9 +1065,16 @@ value="1">
 
 </label>
 
+
+
+
 <textarea
+
 id="description"
+
 rows="3"></textarea>
+
+
 
 </div>
 
@@ -663,17 +1082,30 @@ rows="3"></textarea>
 
 
 
+
+
+
+
 <div class="form-group full">
+
+
 
 <label>
 
-خلاصه
+خلاصه پادکست
 
 </label>
 
+
+
+
 <textarea
+
 id="summary"
+
 rows="5"></textarea>
+
+
 
 </div>
 
@@ -681,7 +1113,13 @@ rows="5"></textarea>
 
 
 
+
+
+
+
 <div class="form-group full">
+
+
 
 <label>
 
@@ -689,9 +1127,16 @@ rows="5"></textarea>
 
 </label>
 
+
+
+
 <textarea
+
 id="transcript"
+
 rows="10"></textarea>
+
+
 
 </div>
 
@@ -699,18 +1144,32 @@ rows="10"></textarea>
 
 
 
+
+
+
+
 <div class="form-group">
+
+
 
 <label>
 
-مدت (ثانیه)
+مدت زمان (ثانیه)
 
 </label>
 
+
+
+
 <input
+
 type="number"
+
 id="duration_seconds"
+
 value="0">
+
+
 
 </div>
 
@@ -718,7 +1177,13 @@ value="0">
 
 
 
+
+
+
+
 <div class="form-group">
+
+
 
 <label>
 
@@ -726,161 +1191,441 @@ value="0">
 
 </label>
 
+
+
+
 <input
+
 type="text"
+
 id="tags"
+
 placeholder="موفقیت, انگیزشی, کتاب">
 
+
+
 </div>
 
-</div>
-          <!-- ==========================
-        COVER IMAGE
-        ========================== -->
-
-        <div class="form-group">
-
-            <label>کاور پادکست</label>
-
-            <div class="upload-box">
-
-                <input
-                    type="file"
-                    id="coverFile"
-                    accept="image/*">
-
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    id="btnUploadCover">
-
-                    انتخاب و آپلود کاور
-
-                </button>
-
-                <div
-                    class="progress"
-                    id="coverProgress"
-                    style="display:none;">
-
-                    <div
-                        class="progress-bar"
-                        id="coverProgressBar">
-                    </div>
-
-                </div>
-
-                <input
-                    type="hidden"
-                    id="cover_url">
-
-                <img
-                    id="coverPreview"
-                    class="cover-preview"
-                    style="display:none;"
-                    alt="Cover Preview">
-
-            </div>
-
-        </div>
 
 
 
-        <!-- ==========================
-        AUDIO FILE
-        ========================== -->
-
-        <div class="form-group">
-
-            <label>فایل صوتی MP3</label>
-
-            <div class="upload-box">
-
-                <input
-                    type="file"
-                    id="audioFile"
-                    accept=".mp3,audio/mpeg">
-
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    id="btnUploadAudio">
-
-                    انتخاب و آپلود فایل صوتی
-
-                </button>
-
-                <div
-                    class="progress"
-                    id="audioProgress"
-                    style="display:none;">
-
-                    <div
-                        class="progress-bar"
-                        id="audioProgressBar">
-                    </div>
-
-                </div>
-
-                <input
-                    type="hidden"
-                    id="audio_url">
-
-                <audio
-                    id="audioPreview"
-                    controls
-                    style="display:none;width:100%;margin-top:15px;">
-                </audio>
-
-            </div>
-
-        </div>
 
 
 
-    </form>
 
 </div>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+COVER UPLOAD
+========================== -->
+
+
+<div class="form-group">
+
+
+
+<label>
+
+کاور پادکست
+
+</label>
+
+
+
+
+
+<div class="upload-box">
+
+
+
+
+
+<input
+
+type="file"
+
+id="coverFile"
+
+accept="image/*">
+
+
+
+
+
+
+
+<button
+
+type="button"
+
+class="btn btn-secondary"
+
+id="btnUploadCover">
+
+انتخاب و آپلود کاور
+
+</button>
+
+
+
+
+
+
+
+<div
+
+class="progress"
+
+id="coverProgress"
+
+style="display:none;">
+
+
+
+<div
+
+class="progress-bar"
+
+id="coverProgressBar">
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+<input
+
+type="hidden"
+
+id="cover_url">
+
+
+
+
+
+
+
+<img
+
+id="coverPreview"
+
+class="cover-preview"
+
+style="display:none;"
+
+alt="cover">
+
+
+
+
+
+</div>
+
+
+
+          </div>
+
+
+<!-- ==========================
+AUDIO UPLOAD
+========================== -->
+
+
+<div class="form-group">
+
+
+
+<label>
+
+فایل صوتی MP3
+
+</label>
+
+
+
+
+
+<div class="upload-box">
+
+
+
+
+
+
+<input
+
+type="file"
+
+id="audioFile"
+
+accept=".mp3,audio/mpeg">
+
+
+
+
+
+
+
+
+<button
+
+type="button"
+
+class="btn btn-secondary"
+
+id="btnUploadAudio">
+
+انتخاب و آپلود فایل صوتی
+
+</button>
+
+
+
+
+
+
+
+
+<div
+
+class="progress"
+
+id="audioProgress"
+
+style="display:none;">
+
+
+
+
+
+<div
+
+class="progress-bar"
+
+id="audioProgressBar">
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<input
+
+type="hidden"
+
+id="audio_url">
+
+
+
+
+
+
+
+
+<audio
+
+id="audioPreview"
+
+controls
+
+style="display:none;width:100%;margin-top:15px;">
+
+
+
+</audio>
+
+
+
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+</form>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+MODAL FOOTER
+========================== -->
 
 
 
 <div class="modal-footer">
 
-    <button
-        type="button"
-        class="btn btn-light"
-        id="btnCancel">
 
-        انصراف
 
-    </button>
 
-    <button
-        type="button"
-        class="btn btn-primary"
-        id="btnSavePodcast">
 
-        ذخیره پادکست
 
-    </button>
+<button
+
+type="button"
+
+class="btn btn-light"
+
+id="btnCancel">
+
+انصراف
+
+</button>
+
+
+
+
+
+
+
+
+<button
+
+type="button"
+
+class="btn btn-primary"
+
+id="btnSavePodcast">
+
+💾 ذخیره پادکست
+
+</button>
+
+
+
+
+
+
 
 </div>
 
-</div>
+
+
+
+
+
+
 
 </div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+GLOBAL COMPONENTS
+========================== -->
 
 
 
 <div id="toastContainer"></div>
 
+
+
 <div id="globalLoader"></div>
 
+
+
+
+
+
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+          
+          <!-- ==========================
+SCRIPTS
+========================== -->
+
+
 <script src="../assets/js/core/api.js"></script>
+
 <script src="../assets/js/core/auth.js"></script>
+
 <script src="../assets/js/core/toast.js"></script>
+
 <script src="../assets/js/core/loader.js"></script>
+
 <script src="../assets/js/admin/podcasts.js"></script>
 
+
+
+
 </body>
+
 </html>

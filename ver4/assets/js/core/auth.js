@@ -5,223 +5,49 @@ NightCast Ver4
 Authentication Manager
 
 Responsible for:
-- Login
-- Session
-- Current User
+- Token Checking
+- Admin Protection
+- Login State
 - Logout
-- Route Protection
+
+Token:
+NightCastToken
 
 =================================================
 */
 
 
+"use strict";
 
-const Auth = {
 
 
 
-    user:null,
 
 
 
+class AuthManager {
 
 
-    /*
-    ==========================
-    LOGIN
-    ==========================
-    */
 
+    constructor(){
 
-    async login(
 
-        username,
 
-        password
+        this.tokenKey =
 
-    ){
+        "NightCastToken";
 
 
-        try{
 
 
 
-            const result =
+        this.user = null;
 
-            await API.post(
 
-                "/auth/login",
 
-                {
 
 
-                    username,
-
-                    password
-
-
-                }
-
-            );
-
-
-
-
-
-
-            if(!result.success){
-
-
-                throw new Error(
-
-                    result.message
-
-                );
-
-
-            }
-
-
-
-
-
-
-            API.setToken(
-
-                result.token
-
-            );
-
-
-
-
-
-
-            this.user =
-
-            result.user;
-
-
-
-
-
-
-
-            return result;
-
-
-
-        }
-
-
-        catch(error){
-
-
-
-            console.error(
-
-                "LOGIN ERROR",
-
-                error
-
-            );
-
-
-
-            throw error;
-
-
-
-        }
-
-
-
-    },
-
-
-
-
-
-
-
-
-    /*
-    ==========================
-    CHECK SESSION
-    ==========================
-    */
-
-
-
-    async check(){
-
-
-
-        try{
-
-
-            const result =
-
-            await API.get(
-
-                "/auth/me"
-
-            );
-
-
-
-
-
-            if(
-
-                result.success
-
-            ){
-
-
-
-                this.user =
-
-                result.user;
-
-
-
-                return true;
-
-
-            }
-
-
-
-
-            return false;
-
-
-
-        }
-
-
-        catch(error){
-
-
-
-            API.removeToken();
-
-
-
-            this.user=null;
-
-
-
-            return false;
-
-
-
-        }
-
-
-
-    },
+    }
 
 
 
@@ -233,88 +59,24 @@ const Auth = {
 
     /*
     ==========================
-    GET USER
-    ==========================
-    */
-
-
-    getUser(){
-
-
-
-        return this.user;
-
-
-
-    },
-
-
-
-
-
-
-
-
-    /*
-    ==========================
-    LOGOUT
+    GET TOKEN
     ==========================
     */
 
 
 
-    async logout(){
+    getToken(){
 
 
 
-        try{
+        return localStorage.getItem(
+
+            this.tokenKey
+
+        );
 
 
-            await API.post(
-
-                "/auth/logout",
-
-                {}
-
-            );
-
-
-
-        }
-
-        catch(error){
-
-
-
-            console.warn(
-
-                "Logout API failed"
-
-            );
-
-
-        }
-
-        finally{
-
-
-            API.removeToken();
-
-
-            this.user=null;
-
-
-
-            location.href =
-
-            "/ver4/admin/login.html";
-
-
-
-        }
-
-
-    },
+    }
 
 
 
@@ -326,30 +88,60 @@ const Auth = {
 
     /*
     ==========================
-    REQUIRE LOGIN
+    CHECK LOGIN
     ==========================
     */
 
 
-
-    async requireLogin(){
-
-
-
-        const valid =
-
-        await this.check();
+    isLoggedIn(){
 
 
 
+        const token =
 
-        if(!valid){
+        this.getToken();
 
 
 
-            location.href =
 
-            "/ver4/admin/login.html";
+
+        return !!token;
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    /*
+    ==========================
+    REQUIRE AUTH
+    ==========================
+    */
+
+
+    requireAuth(){
+
+
+
+        if(
+
+            !this.isLoggedIn()
+
+        ){
+
+
+
+            window.location.href =
+
+            "/ver4/login.html";
+
 
 
             return false;
@@ -372,4 +164,373 @@ const Auth = {
 
 
 
-};
+
+
+
+    /*
+    ==========================
+    GET CURRENT USER
+    ==========================
+    */
+
+
+    async loadUser(){
+
+
+
+        try{
+
+
+
+            const result =
+
+            await API.get(
+
+                "/auth/me"
+
+            );
+
+
+
+
+
+
+
+
+            if(
+
+                !result.success
+
+            ){
+
+
+
+                throw new Error(
+
+                    "کاربر معتبر نیست"
+
+                );
+
+
+            }
+
+
+
+
+
+
+
+
+            this.user =
+
+            result.user;
+
+
+
+
+
+
+
+
+            this.updateUserUI();
+
+
+
+
+
+
+
+
+            return this.user;
+
+
+
+        }
+
+        catch(error){
+
+
+
+            console.error(
+
+                error
+
+            );
+
+
+
+            this.logout();
+
+
+
+        }
+
+
+
+    }
+
+
+
+
+
+        /*
+    ==========================
+    UPDATE USER UI
+    ==========================
+    */
+
+
+    updateUserUI(){
+
+
+
+        if(
+
+            !this.user
+
+        ){
+
+            return;
+
+        }
+
+
+
+
+
+
+
+
+        const nameElements =
+
+        document.querySelectorAll(
+
+            "[data-user-name]"
+
+        );
+
+
+
+
+
+
+
+
+        nameElements.forEach(
+
+            el=>{
+
+
+                el.textContent =
+
+                this.user.name ||
+
+                this.user.username ||
+
+                "Admin";
+
+
+            }
+
+        );
+
+
+
+
+
+
+
+
+        const emailElements =
+
+        document.querySelectorAll(
+
+            "[data-user-email]"
+
+        );
+
+
+
+
+
+
+
+
+        emailElements.forEach(
+
+            el=>{
+
+
+                el.textContent =
+
+                this.user.email ||
+
+                "";
+
+
+            }
+
+        );
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    /*
+    ==========================
+    LOGOUT
+    ==========================
+    */
+
+
+    logout(){
+
+
+
+        localStorage.removeItem(
+
+            this.tokenKey
+
+        );
+
+
+
+
+
+        this.user = null;
+
+
+
+
+
+
+
+
+        window.location.href =
+
+        "/ver4/login.html";
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    /*
+    ==========================
+    INIT AUTH
+    ==========================
+    */
+
+
+    async init(){
+
+
+
+        if(
+
+            !this.requireAuth()
+
+        ){
+
+            return;
+
+        }
+
+
+
+
+
+
+
+
+        await this.loadUser();
+
+
+
+    }
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+=================================================
+
+GLOBAL AUTH INSTANCE
+
+=================================================
+*/
+
+
+window.Auth =
+
+new AuthManager();
+
+
+
+
+
+
+
+
+
+document.addEventListener(
+
+"DOMContentLoaded",
+
+()=>{
+
+
+    if(
+
+        document.body.dataset.auth
+
+        ===
+
+        "required"
+
+    ){
+
+
+
+        Auth.init();
+
+
+
+    }
+
+
+
+});
+
+
+
+
+
+
+
+
+

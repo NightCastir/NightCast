@@ -13,178 +13,98 @@
 NightCast Admin Dashboard
 </title>
 
-
 <link rel="stylesheet" href="../assets/css/core.css">
-
 <link rel="stylesheet" href="../assets/css/layout.css">
-
 <link rel="stylesheet" href="../assets/css/components.css">
-
 <link rel="stylesheet" href="../assets/css/responsive.css">
-
 
 </head>
 
-
-
-<body>
-
+<body data-auth="required">
 
 <div class="app-layout">
-
-
 
 <!-- ==========================
 SIDEBAR
 ========================== -->
 
-
 <aside class="sidebar" id="sidebar">
-
 
 <div class="sidebar-logo">
 
-
-<span>
-◉
-</span>
-
+<span>◉</span>
 
 NightCast
 
-
 </div>
-
-
-
-
 
 <nav class="sidebar-menu">
 
-
-
 <a href="dashboard.html" class="active">
-
 <span>🏠</span>
-
 داشبورد
-
 </a>
-
-
 
 <a href="podcasts.html">
-
 <span>🎙</span>
-
 پادکست‌ها
-
 </a>
-
-
 
 <a href="media.html">
-
 <span>🖼</span>
-
 مدیریت رسانه
-
 </a>
-
-
 
 <a href="books.html">
-
 <span>📚</span>
-
 کتاب‌ها
-
 </a>
-
-
 
 <a href="users.html">
-
 <span>👥</span>
-
 کاربران
-
 </a>
-
-
 
 <a href="settings.html">
-
 <span>⚙</span>
-
 تنظیمات
-
 </a>
-
-
 
 </nav>
 
-
-
-
-
-
 <div class="sidebar-footer">
 
-
-<button class="btn btn-danger" id="logoutBtn">
+<button
+id="logoutBtn"
+class="btn btn-danger">
 
 خروج
 
 </button>
 
-
 </div>
-
-
 
 </aside>
 
-
-
-
-
-
 <div class="overlay" id="overlay"></div>
-
-
-
-
-
-
-
 
 <!-- ==========================
 MAIN
 ========================== -->
 
-
 <div class="main-area">
-
-
-
-
 
 <header class="app-header">
 
-
-
 <div class="header-right">
 
-
-<button class="menu-toggle" id="menuToggle">
+<button
+class="menu-toggle"
+id="menuToggle">
 
 ☰
 
 </button>
-
-
 
 <h3>
 
@@ -192,20 +112,11 @@ MAIN
 
 </h3>
 
-
 </div>
-
-
-
-
-
-
 
 <div class="header-left">
 
-
 <div class="user-box">
-
 
 <div class="avatar">
 
@@ -213,34 +124,23 @@ A
 
 </div>
 
-
-<span id="username">
+<span data-user-name>
 
 Admin
 
 </span>
 
-
-
 </div>
 
-
-
 </div>
-
-
 
 </header>
+
 <!-- ==========================
-CONTENT AREA
+CONTENT
 ========================== -->
 
-
 <section class="content-area">
-
-
-
-
 
 <div class="page-title">
 
@@ -248,14 +148,7 @@ CONTENT AREA
 
 </div>
 
-
-
-
-
-
-
-
-<!-- ==========================
+  <!-- ==========================
 STAT CARDS
 ========================== -->
 
@@ -264,42 +157,21 @@ STAT CARDS
 
 
 
-
-
 <div class="stat-card">
 
-
 <div class="stat-icon">
-
 🎙
-
 </div>
 
-
-<div>
-
-<div class="stat-number" id="totalPodcasts">
-
+<div class="stat-value" id="totalPodcasts">
 0
-
 </div>
 
-
-<div class="stat-label">
-
+<div class="stat-title">
 تعداد پادکست‌ها
-
 </div>
 
-
 </div>
-
-
-</div>
-
-
-
-
 
 
 
@@ -307,38 +179,19 @@ STAT CARDS
 
 <div class="stat-card">
 
-
 <div class="stat-icon">
-
 📚
-
 </div>
 
-
-<div>
-
-<div class="stat-number" id="totalBooks">
-
+<div class="stat-value" id="totalBooks">
 0
-
 </div>
 
-
-<div class="stat-label">
-
+<div class="stat-title">
 کتاب‌ها
-
 </div>
 
-
 </div>
-
-
-</div>
-
-
-
-
 
 
 
@@ -346,38 +199,19 @@ STAT CARDS
 
 <div class="stat-card">
 
-
 <div class="stat-icon">
-
 👥
-
 </div>
 
-
-<div>
-
-<div class="stat-number" id="totalUsers">
-
+<div class="stat-value" id="totalUsers">
 0
-
 </div>
 
-
-<div class="stat-label">
-
+<div class="stat-title">
 کاربران
-
 </div>
 
-
 </div>
-
-
-</div>
-
-
-
-
 
 
 
@@ -385,43 +219,23 @@ STAT CARDS
 
 <div class="stat-card">
 
-
 <div class="stat-icon">
-
 ▶
-
 </div>
 
-
-<div>
-
-<div class="stat-number" id="totalPlays">
-
+<div class="stat-value" id="totalPlays">
 0
-
 </div>
 
-
-<div class="stat-label">
-
+<div class="stat-title">
 شنیده‌ها
-
 </div>
-
-
-</div>
-
 
 </div>
 
 
 
-
-
-
 </div>
-
-
 
 
 
@@ -434,14 +248,7 @@ MAIN GRID
 ========================== -->
 
 
-<div style="
-margin-top:25px;
-display:grid;
-grid-template-columns:2fr 1fr;
-gap:20px;
-">
-
-
+<div class="dashboard-grid">
 
 
 
@@ -464,7 +271,9 @@ gap:20px;
 
 
 
-<a href="podcasts.html" class="btn btn-primary">
+<a 
+href="podcasts.html"
+class="btn btn-primary">
 
 مشاهده همه
 
@@ -653,14 +462,17 @@ GitHub
 
 
 
-</div>
+  </div>
+
+
+
 
   <!-- ==========================
 ACTIVITY
 ========================== -->
 
 
-<div class="card" style="margin-top:20px;">
+<div class="card activity-card">
 
 
 <div class="card-header">
@@ -709,8 +521,6 @@ ACTIVITY
 
 
 
-
-
 </div>
 
 <!-- END MAIN AREA -->
@@ -720,6 +530,7 @@ ACTIVITY
 </div>
 
 <!-- END APP LAYOUT -->
+
 
 
 
@@ -738,7 +549,7 @@ GLOBAL LOADER
 <div class="loader-box">
 
 
-<div class="loader-circle"></div>
+<div class="loader-spinner"></div>
 
 
 <p>
@@ -765,28 +576,33 @@ TOAST CONTAINER
 ========================== -->
 
 
-<div id="toastContainer">
-
-
-</div>
+<div id="toastContainer"></div>
 
 
 
 
 
 
+
+
+<!-- ==========================
+SCRIPTS
+========================== -->
 
 
 <script src="../assets/js/core/api.js"></script>
-
-<script src="../assets/js/core/auth.js"></script>
 
 <script src="../assets/js/core/toast.js"></script>
 
 <script src="../assets/js/core/loader.js"></script>
 
+<script src="../assets/js/core/auth.js"></script>
+
+<script src="../assets/js/core/layout.js"></script>
 
 <script src="../assets/js/admin/dashboard.js"></script>
+
+
 
 
 
@@ -794,4 +610,3 @@ TOAST CONTAINER
 </body>
 
 </html>
-

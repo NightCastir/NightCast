@@ -1,1 +1,237 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
 
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>
+NightCast Admin Login
+</title>
+
+
+<link rel="stylesheet" href="../assets/css/core.css">
+<link rel="stylesheet" href="../assets/css/components.css">
+
+</head>
+
+
+<body>
+
+
+<div class="login-container">
+
+
+<h2>
+ورود به پنل مدیریت NightCast
+</h2>
+
+
+<form id="loginForm">
+
+
+<label>
+نام کاربری
+</label>
+
+
+<input
+id="username"
+type="text"
+autocomplete="username"
+>
+
+
+
+<label>
+رمز عبور
+</label>
+
+
+<input
+id="password"
+type="password"
+autocomplete="current-password"
+>
+
+
+
+<button type="submit">
+
+ورود
+
+</button>
+
+
+</form>
+
+
+
+<div id="message"></div>
+
+
+</div>
+
+
+
+
+
+<script src="../assets/js/core/api.js"></script>
+<script src="../assets/js/core/ui.js"></script>
+
+
+
+<script>
+
+
+const form =
+
+document.getElementById(
+"loginForm"
+);
+
+
+
+form.addEventListener(
+
+"submit",
+
+async(e)=>{
+
+
+e.preventDefault();
+
+
+
+const username =
+
+document.getElementById(
+"username"
+).value;
+
+
+
+const password =
+
+document.getElementById(
+"password"
+).value;
+
+
+
+
+UI.loading(
+"در حال ورود..."
+);
+
+
+
+
+try{
+
+
+const result =
+
+await API.post(
+
+"/auth/login",
+
+{
+
+
+username,
+
+password
+
+
+}
+
+);
+
+
+
+
+
+if(
+
+result.success
+
+){
+
+
+
+localStorage.setItem(
+
+"NightCastToken",
+
+result.token
+
+);
+
+
+
+UI.success(
+"ورود موفق"
+);
+
+
+
+setTimeout(()=>{
+
+
+location.href =
+"dashboard.html";
+
+
+},800);
+
+
+
+}
+
+else{
+
+
+UI.error(
+
+result.message ||
+
+"ورود ناموفق"
+
+);
+
+
+}
+
+
+
+}
+
+catch(error){
+
+
+
+UI.error(
+
+error.message
+
+);
+
+
+
+}
+
+
+}
+
+);
+
+
+</script>
+
+
+</body>
+
+</html>

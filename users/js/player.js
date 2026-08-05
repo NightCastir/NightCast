@@ -1,445 +1,819 @@
 /* ==================================================
-   NightCast Audio Player Engine
-   File: /users/js/player.js
-   Version: 2.0
+
+NightCast User Audio Player V1
+
+File:
+ /users/js/player.js
+
+Responsibility:
+ ONLY AUDIO PLAYER
+
+Depends on:
+ api.js
+ auth.js
+ ui.js
+
 ================================================== */
 
 
 const NightCastPlayer = {
 
 
-audio:null,
+    audio:null,
 
-current:null,
+    currentPodcast:null,
 
 
 
-init(){
 
 
-this.audio = document.getElementById(
-"nightcastAudio"
-);
+    init(){
 
 
-if(!this.audio){
+        this.audio =
+        document.getElementById(
+            "nightcastAudio"
+        );
 
-console.error(
-"NightCast Audio element not found"
-);
 
-return;
 
-}
+        if(!this.audio){
 
+            console.warn(
+                "Audio element not found"
+            );
 
-this.bindEvents();
+            return;
 
+        }
 
-},
 
 
+        this.bindEvents();
 
 
-play(podcast){
+        console.log(
+            "NightCast Player Loaded"
+        );
 
 
-if(!this.audio || !podcast){
+    },
 
-return;
 
-}
 
 
-if(!podcast.audio_url){
 
-NightCastUI.showToast(
-"فایل صوتی موجود نیست"
-);
 
-return;
 
-}
 
 
-this.current = podcast;
+    bindEvents(){
 
 
-this.audio.src =
-podcast.audio_url;
 
+        const playBtn =
+        document.getElementById(
+            "playerPlayBtn"
+        );
 
-this.audio.load();
 
 
-this.audio.play()
+        if(playBtn){
 
-.then(()=>{
 
+            playBtn.onclick = ()=>{
 
-this.updateInfo();
+                this.toggle();
 
+            };
 
-})
 
-.catch(error=>{
+        }
 
 
-console.error(
-"Audio Play Error:",
-error
-);
 
 
-NightCastUI.showToast(
-"پخش صوت امکان‌پذیر نیست"
-);
 
 
-});
 
+        const volume =
+        document.getElementById(
+            "playerVolume"
+        );
 
-},
 
 
+        if(volume){
 
 
+            volume.oninput = ()=>{
 
-pause(){
 
+                this.audio.volume =
+                volume.value;
 
-if(this.audio){
 
-this.audio.pause();
+            };
 
-}
 
+        }
 
-},
 
 
 
 
 
-toggle(){
 
 
-if(!this.audio){
+        const speed =
+        document.getElementById(
+            "speedButton"
+        );
 
-return;
 
-}
 
+        if(speed){
 
-if(this.audio.paused){
 
-this.audio.play();
+            speed.onclick = ()=>{
 
-}
 
-else{
+                this.changeSpeed();
 
-this.audio.pause();
 
-}
+            };
 
 
-},
+        }
 
 
 
 
 
-stop(){
 
 
-if(this.audio){
+        this.audio.addEventListener(
 
-this.audio.pause();
+            "timeupdate",
 
-this.audio.currentTime=0;
+            ()=>{
 
-}
+                this.updateProgress();
 
+            }
 
-},
+        );
 
 
 
 
 
+        this.audio.addEventListener(
 
-updateInfo(){
+            "loadedmetadata",
 
+            ()=>{
 
-if(!this.current){
+                this.updateDuration();
 
-return;
+            }
 
-}
+        );
 
 
 
-const title =
-document.getElementById(
-"playerTitle"
-);
+    },
 
 
-const author =
-document.getElementById(
-"playerAuthor"
-);
 
 
 
-const cover =
-document.getElementById(
-"playerCover"
-);
 
 
 
-if(title){
 
-title.textContent =
-this.current.title || "NightCast";
+    load(podcast){
 
-}
 
 
+        if(!podcast){
 
-if(author){
+            return;
 
-author.textContent =
-this.current.author_name || "رادیو NightCast";
+        }
 
-}
 
 
 
-if(cover){
 
-cover.src =
-this.current.cover_url ||
+        this.currentPodcast =
+        podcast;
 
-"/users/assets/default-cover.jpg";
 
-}
 
 
 
-},
+        this.audio.src =
+        podcast.audio_url ||
+        podcast.audio ||
+        "";
 
 
 
 
 
+        this.updateInfo();
 
 
-bindEvents(){
 
 
 
-const playBtn =
-document.getElementById(
-"playerPlayBtn"
-);
+    },
 
 
 
-const pauseBtn =
-document.getElementById(
-"playerPauseBtn"
-);
 
 
 
 
-if(playBtn){
 
-playBtn.onclick=()=>{
 
-this.toggle();
+    play(){
+
+
+
+        if(!this.audio.src){
+
+
+            if(window.NightCastUI){
+
+                NightCastUI.toast(
+                    "فایل صوتی موجود نیست",
+                    "error"
+                );
+
+            }
+
+
+            return;
+
+        }
+
+
+
+
+        this.audio.play();
+
+        this.updateButton(true);
+
+
+    },
+
+
+
+
+
+
+
+
+
+    pause(){
+
+
+        this.audio.pause();
+
+
+        this.updateButton(false);
+
+
+    },
+
+
+
+
+
+
+
+
+
+    toggle(){
+
+
+
+        if(this.audio.paused){
+
+
+            this.play();
+
+
+        }
+
+        else{
+
+
+            this.pause();
+
+
+        }
+
+
+    },
+
+
+
+
+
+
+
+
+
+    updateButton(state){
+
+
+
+        const btn =
+        document.getElementById(
+            "playerPlayBtn"
+        );
+
+
+
+        if(!btn){
+
+            return;
+
+        }
+
+
+
+        btn.innerHTML = state
+
+        ?
+
+        `<i class="fa-solid fa-pause"></i>`
+
+        :
+
+        `<i class="fa-solid fa-play"></i>`;
+
+
+    },
+
+
+
+
+
+
+
+
+
+    updateInfo(){
+
+
+
+        if(!this.currentPodcast){
+
+            return;
+
+        }
+
+
+
+
+
+        const title =
+        document.getElementById(
+            "playerTitle"
+        );
+
+
+
+        const author =
+        document.getElementById(
+            "playerAuthor"
+        );
+
+
+
+        const cover =
+        document.getElementById(
+            "playerCover"
+        );
+
+
+
+
+
+        if(title){
+
+            title.innerText =
+            this.currentPodcast.title ||
+            "NightCast";
+
+        }
+
+
+
+
+
+        if(author){
+
+            author.innerText =
+            this.currentPodcast.author ||
+            "NightCast";
+
+        }
+
+
+
+
+
+        if(cover){
+
+
+            cover.src =
+
+            this.currentPodcast.cover ||
+
+            "/users/assets/images/default-cover.jpg";
+
+
+        }
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    updateProgress(){
+
+
+
+        const bar =
+        document.getElementById(
+            "playerProgressBar"
+        );
+
+
+
+        const current =
+        document.getElementById(
+            "playerCurrentTime"
+        );
+
+
+
+
+
+        if(!bar){
+
+            return;
+
+        }
+
+
+
+
+
+        const percent =
+
+        (
+
+            this.audio.currentTime /
+
+            this.audio.duration
+
+        )
+
+        *
+
+        100;
+
+
+
+
+
+        bar.style.width =
+
+        percent + "%";
+
+
+
+
+
+        if(current){
+
+
+            current.innerText =
+            this.formatTime(
+                this.audio.currentTime
+            );
+
+
+        }
+
+
+    },
+
+
+
+
+
+
+
+
+
+    updateDuration(){
+
+
+
+        const duration =
+        document.getElementById(
+            "playerDuration"
+        );
+
+
+
+        if(duration){
+
+
+            duration.innerText =
+
+            this.formatTime(
+                this.audio.duration
+            );
+
+
+        }
+
+
+    },
+
+
+
+
+
+
+
+
+
+    seek(percent){
+
+
+
+        if(!this.audio.duration){
+
+            return;
+
+        }
+
+
+
+
+        this.audio.currentTime =
+
+        this.audio.duration *
+
+        percent;
+
+
+    },
+
+
+
+
+
+
+
+
+
+    changeSpeed(){
+
+
+
+        const speeds = [
+
+            1,
+
+            1.25,
+
+            1.5,
+
+            2
+
+        ];
+
+
+
+
+        let current =
+
+        this.audio.playbackRate;
+
+
+
+
+
+        let index =
+
+        speeds.indexOf(current);
+
+
+
+
+
+        index++;
+
+
+
+
+
+        if(index >= speeds.length){
+
+            index=0;
+
+        }
+
+
+
+
+
+        this.audio.playbackRate =
+
+        speeds[index];
+
+
+
+
+
+        const btn =
+        document.getElementById(
+            "speedButton"
+        );
+
+
+
+        if(btn){
+
+            btn.innerText =
+            speeds[index]+"x";
+
+        }
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    download(){
+
+
+
+        if(
+            !window.NightCastAuth ||
+            !NightCastAuth.isLoggedIn()
+        ){
+
+
+            if(window.NightCastUI){
+
+                NightCastUI.toast(
+                    "برای دانلود ابتدا وارد شوید",
+                    "warning"
+                );
+
+            }
+
+
+            return;
+
+
+        }
+
+
+
+
+
+
+        if(!this.currentPodcast){
+
+            return;
+
+        }
+
+
+
+
+
+        window.location.href =
+
+        this.currentPodcast.download_url ||
+
+        "/api/download/"+this.currentPodcast.id;
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    formatTime(seconds){
+
+
+
+        if(
+            !seconds ||
+            isNaN(seconds)
+        ){
+
+            return "00:00";
+
+        }
+
+
+
+
+        let min =
+
+        Math.floor(
+            seconds / 60
+        );
+
+
+
+        let sec =
+
+        Math.floor(
+            seconds % 60
+        );
+
+
+
+
+
+        return (
+
+            min < 10
+            ?
+
+            "0"+min
+
+            :
+
+            min
+
+        )
+
+        +
+
+        ":"
+
+
+        +
+
+        (
+
+            sec < 10
+
+            ?
+
+            "0"+sec
+
+            :
+
+            sec
+
+        );
+
+
+    }
+
+
+
 
 };
 
-}
 
-
-
-
-if(pauseBtn){
-
-pauseBtn.onclick=()=>{
-
-this.pause();
-
-};
-
-}
-
-
-
-
-
-
-
-this.audio.addEventListener(
-"timeupdate",
-()=>{
-
-this.updateProgress();
-
-});
-
-
-
-
-
-
-this.audio.addEventListener(
-"ended",
-()=>{
-
-this.stop();
-
-});
-
-
-
-
-},
-
-
-
-
-
-
-
-updateProgress(){
-
-
-
-if(
-!this.audio ||
-!this.audio.duration
-){
-
-return;
-
-}
-
-
-
-
-const percent =
-(
-this.audio.currentTime /
-this.audio.duration
-)*100;
-
-
-
-const bar =
-document.getElementById(
-"playerProgressBar"
-);
-
-
-
-if(bar){
-
-bar.style.width =
-percent+"%";
-
-}
-
-
-
-
-},
-
-
-
-
-
-
-
-seek(event){
-
-
-if(!this.audio){
-
-return;
-
-}
-
-
-const width =
-event.currentTarget.offsetWidth;
-
-
-const click =
-event.offsetX;
-
-
-this.audio.currentTime =
-(click / width) *
-this.audio.duration;
-
-
-
-},
-
-
-
-
-
-
-volume(value){
-
-
-if(this.audio){
-
-this.audio.volume=value;
-
-}
-
-
-},
-
-
-
-
-
-
-download(){
-
-
-if(
-this.current &&
-this.current.audio_url
-){
-
-
-window.open(
-this.current.audio_url,
-"_blank"
-);
-
-
-}
-
-
-
-}
-
-
-
-
-
-};
 
 
 
@@ -450,12 +824,17 @@ NightCastPlayer;
 
 
 
+
 document.addEventListener(
+
 "DOMContentLoaded",
+
 ()=>{
 
 
-NightCastPlayer.init();
+    NightCastPlayer.init();
 
 
-});
+}
+
+);

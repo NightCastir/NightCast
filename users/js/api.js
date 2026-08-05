@@ -1,16 +1,22 @@
 /* ==================================================
-   NightCast User API Manager V2
+
+   NightCast User API Manager V3
 
    File:
    /users/js/core/api.js
 
+
    Responsibility:
+
    ONLY API Communication
+
 
 ================================================== */
 
 
+
 const NightCastAPI = {
+
 
 
     /*
@@ -30,10 +36,9 @@ const NightCastAPI = {
 
     /*
     ====================================
-    TOKEN KEY
+    USER TOKEN KEY
 
-    IMPORTANT:
-    User Authentication Only
+    Separate from Admin Panel
 
     ====================================
     */
@@ -51,9 +56,10 @@ const NightCastAPI = {
 
     /*
     ====================================
-    GET TOKEN
+    TOKEN METHODS
     ====================================
     */
+
 
 
     getToken(){
@@ -73,24 +79,15 @@ const NightCastAPI = {
 
 
 
-
-
-
-    /*
-    ====================================
-    SAVE TOKEN
-    ====================================
-    */
-
-
     setToken(token){
 
 
         if(!token){
 
-            return;
+            return false;
 
         }
+
 
 
         localStorage.setItem(
@@ -102,21 +99,15 @@ const NightCastAPI = {
         );
 
 
+
+        return true;
+
+
     },
 
 
 
 
-
-
-
-
-
-    /*
-    ====================================
-    REMOVE TOKEN
-    ====================================
-    */
 
 
     removeToken(){
@@ -134,16 +125,6 @@ const NightCastAPI = {
 
 
 
-
-
-
-
-
-    /*
-    ====================================
-    CHECK LOGIN
-    ====================================
-    */
 
 
     isLoggedIn(){
@@ -164,7 +145,7 @@ const NightCastAPI = {
 
     /*
     ====================================
-    HEADERS
+    REQUEST HEADERS
     ====================================
     */
 
@@ -172,12 +153,15 @@ const NightCastAPI = {
     headers(auth=false){
 
 
+
         const headers = {
+
 
 
             "Content-Type":
 
             "application/json"
+
 
 
         };
@@ -189,6 +173,7 @@ const NightCastAPI = {
         if(auth){
 
 
+
             const token =
 
             this.getToken();
@@ -196,12 +181,16 @@ const NightCastAPI = {
 
 
 
+
             if(token){
+
 
 
                 headers.Authorization =
 
+
                 "Bearer " + token;
+
 
 
             }
@@ -216,6 +205,7 @@ const NightCastAPI = {
         return headers;
 
 
+
     },
 
 
@@ -228,7 +218,7 @@ const NightCastAPI = {
 
     /*
     ====================================
-    REQUEST ENGINE
+    MAIN REQUEST ENGINE
     ====================================
     */
 
@@ -246,15 +236,21 @@ const NightCastAPI = {
         try{
 
 
+
             const response =
 
             await fetch(
 
+
                 this.baseURL + endpoint,
+
 
                 options
 
+
             );
+
+
 
 
 
@@ -266,7 +262,10 @@ const NightCastAPI = {
 
 
 
+
+
             try{
+
 
 
                 data =
@@ -277,16 +276,20 @@ const NightCastAPI = {
 
             }
 
-            catch(error){
+            catch(e){
+
 
 
                 data={
 
+
                     success:false,
+
 
                     message:
 
-                    "Invalid server response"
+                    "Invalid JSON response"
+
 
                 };
 
@@ -299,7 +302,10 @@ const NightCastAPI = {
 
 
 
+
+
             if(!response.ok){
+
 
 
                 return {
@@ -313,18 +319,22 @@ const NightCastAPI = {
                     response.status,
 
 
+
                     message:
 
                     data.message ||
 
-                    "Request failed"
+                    "API Request Failed"
 
 
 
-                    };
+                };
+
 
 
             }
+
+
 
 
 
@@ -335,19 +345,10 @@ const NightCastAPI = {
 
 
 
+
         }
 
         catch(error){
-
-
-
-            console.error(
-
-                "NightCast API Error:",
-
-                error
-
-            );
 
 
 
@@ -356,12 +357,15 @@ const NightCastAPI = {
             return {
 
 
+
                 success:false,
+
 
 
                 message:
 
                 "Network Error",
+
 
 
                 error:
@@ -390,7 +394,7 @@ const NightCastAPI = {
 
     /*
     ====================================
-    TEST API
+    TEST WORKER
     ====================================
     */
 
@@ -398,9 +402,12 @@ const NightCastAPI = {
     async test(){
 
 
+
         return this.request(
 
+
             "/test",
+
 
             {
 
@@ -408,7 +415,9 @@ const NightCastAPI = {
 
             }
 
+
         );
+
 
 
     },
@@ -423,7 +432,7 @@ const NightCastAPI = {
 
     /*
     ====================================
-    PODCAST LIST
+    PUBLIC PODCASTS
     ====================================
     */
 
@@ -434,13 +443,16 @@ const NightCastAPI = {
 
         limit=5
 
+
     ){
 
 
 
         return this.request(
 
+
             `/public/podcasts?page=${page}&limit=${limit}`,
+
 
             {
 
@@ -448,7 +460,9 @@ const NightCastAPI = {
 
             }
 
+
         );
+
 
 
     },
@@ -463,7 +477,7 @@ const NightCastAPI = {
 
     /*
     ====================================
-    REGISTER
+    REGISTER USER
     ====================================
     */
 
@@ -474,20 +488,29 @@ const NightCastAPI = {
 
         return this.request(
 
+
             "/public/register",
 
+
             {
+
 
 
                 method:"POST",
 
 
+
+
                 headers:
+
 
                 this.headers(),
 
 
+
+
                 body:
+
 
                 JSON.stringify(data)
 
@@ -499,6 +522,7 @@ const NightCastAPI = {
         );
 
 
+
     },
 
 
@@ -511,7 +535,7 @@ const NightCastAPI = {
 
     /*
     ====================================
-    LOGIN
+    LOGIN USER
     ====================================
     */
 
@@ -522,7 +546,10 @@ const NightCastAPI = {
 
         password
 
+
     ){
+
+
 
 
 
@@ -530,20 +557,30 @@ const NightCastAPI = {
 
         await this.request(
 
+
             "/public/login",
 
+
             {
+
 
 
                 method:"POST",
 
 
+
+
                 headers:
+
 
                 this.headers(),
 
 
+
+
+
                 body:
+
 
                 JSON.stringify({
 
@@ -557,6 +594,7 @@ const NightCastAPI = {
 
 
 
+
             }
 
 
@@ -567,18 +605,24 @@ const NightCastAPI = {
 
 
 
+
         if(
+
 
             result.success &&
 
             result.token
 
+
         ){
+
 
 
             this.setToken(
 
+
                 result.token
+
 
             );
 
@@ -618,21 +662,31 @@ const NightCastAPI = {
 
         return this.request(
 
+
+
             "/public/me",
 
+
+
+
             {
+
 
 
                 method:"GET",
 
 
+
+
                 headers:
+
 
                 this.headers(true)
 
 
 
             }
+
 
 
         );
@@ -662,15 +716,24 @@ const NightCastAPI = {
 
         return this.request(
 
+
+
             "/public/download/" + id,
 
+
+
+
             {
+
 
 
                 method:"GET",
 
 
+
+
                 headers:
+
 
                 this.headers(true)
 
@@ -679,64 +742,8 @@ const NightCastAPI = {
             }
 
 
-        );
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    LOGOUT
-    ====================================
-    */
-
-
-    async logout(){
-
-
-
-        const result =
-
-        await this.request(
-
-            "/public/logout",
-
-            {
-
-
-                method:"POST",
-
-
-                headers:
-
-                this.headers(true)
-
-
-
-            }
-
 
         );
-
-
-
-
-
-        this.removeToken();
-
-
-
-
-        return result;
 
 
 
@@ -751,7 +758,26 @@ const NightCastAPI = {
 
 
 
+
+
+
+/*
+====================================
+GLOBAL ACCESS
+
+Used by:
+
+auth.js
+podcasts.js
+player.js
+library.js
+
+====================================
+*/
+
+
 window.NightCastAPI = NightCastAPI;
+
 
 
 
@@ -759,6 +785,6 @@ window.NightCastAPI = NightCastAPI;
 
 console.log(
 
-"NightCast API V2 Loaded"
+"NightCast User API V3 Loaded"
 
 );

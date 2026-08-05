@@ -16,7 +16,7 @@ NightCast | رادیو نایت‌کست
 
 
 <meta name="description"
-content="NightCast | رادیوی تجربه، یادگیری، پادکست و کتاب‌های صوتی">
+content="NightCast - رادیوی تجربه، یادگیری و رشد فردی">
 
 
 <meta name="theme-color"
@@ -24,11 +24,11 @@ content="#0b1220">
 
 
 <meta property="og:title"
-content="NightCast">
+content="NightCast | رادیو نایت‌کست">
 
 
 <meta property="og:description"
-content="رادیوی تجربه، یادگیری و رشد فردی">
+content="پادکست، کتاب صوتی و تجربه‌های ارزشمند">
 
 
 <meta property="og:type"
@@ -39,12 +39,7 @@ content="website">
 content="/users/assets/images/cover.jpg">
 
 
-<link rel="icon"
-href="/users/assets/images/favicon.png">
-
-
-
-<!-- Font -->
+<!-- FONT -->
 
 <link rel="preconnect"
 href="https://fonts.googleapis.com">
@@ -60,14 +55,14 @@ rel="stylesheet">
 
 
 
-<!-- Icons -->
+<!-- ICON -->
 
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
 
 
-<!-- Main CSS -->
+<!-- USER STYLE -->
 
 <link rel="stylesheet"
 href="/users/css/user-core.css">
@@ -81,33 +76,148 @@ href="/users/css/responsive.css">
 </head>
 
 
-
 <body id="home">
 
 
 
-<!-- =========================
-GLOBAL LOADER
-========================= -->
+<!-- =================================================
+LOGIN ENTRY SYSTEM
+
+User can:
+- Login
+- Register
+- Skip
+
+Download requires login
+
+================================================= -->
 
 
-<div id="globalLoader"
-class="global-loader">
+<section
+id="loginEntry"
+class="login-entry">
 
 
-<div class="loader-box">
+<div class="login-box">
 
 
-<div class="loader-circle"></div>
+
+<div class="login-logo">
+
+<i class="fa-solid fa-moon"></i>
+
+</div>
+
+
+
+<h1>
+
+Welcome To NightCast
+
+</h1>
+
+
+
+<p>
+
+برای تجربه کامل وارد شوید یا بدون حساب ادامه دهید
+
+</p>
+
+
+
+
+<div class="login-actions">
+
+
+
+<button
+id="openidLoginButton"
+class="login-primary">
+
+
+<i class="fa-brands fa-google"></i>
+
+
+ورود سریع
+
+
+</button>
+
+
+
+
+
+<button
+id="smsLoginButton"
+class="login-secondary">
+
+
+<i class="fa-solid fa-mobile-screen"></i>
+
+
+ورود با پیامک
+
+
+</button>
+
+
+
+
+
+<button
+id="skipLoginButton"
+class="login-skip">
+
+
+ادامه بدون ورود
+
+
+</button>
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+<!-- =================================================
+GLOBAL SYSTEM
+================================================= -->
+
+
+<div
+id="globalLoader"
+class="global-loader hidden">
+
+
+<div class="loader-content">
+
+
+<div class="loader-spinner"></div>
 
 
 <h3>
+
 NightCast
+
 </h3>
 
 
 <p>
+
 در حال آماده‌سازی...
+
 </p>
 
 
@@ -120,12 +230,8 @@ NightCast
 
 
 
-<!-- =========================
-TOAST
-========================= -->
-
-
-<div id="toastContainer"
+<div
+id="toastContainer"
 class="toast-container">
 
 </div>
@@ -133,24 +239,28 @@ class="toast-container">
 
 
 
-
-<!-- =========================
+<!-- =================================================
 HEADER
-========================= -->
+================================================= -->
 
 
-<header class="main-header">
+<header
+id="mainHeader"
+class="main-header">
 
 
-<div class="header-wrapper">
+<div class="header-container">
 
 
 
-<a href="/users/"
-class="logo">
+<!-- LOGO -->
+
+<a
+href="/users/"
+class="brand">
 
 
-<div class="logo-icon">
+<div class="brand-icon">
 
 
 <i class="fa-solid fa-radio"></i>
@@ -160,9 +270,7 @@ class="logo">
 
 
 
-
-
-<div class="logo-text">
+<div class="brand-text">
 
 
 <h2>
@@ -179,6 +287,7 @@ Night<span>Cast</span>
 </p>
 
 
+
 </div>
 
 
@@ -191,11 +300,14 @@ Night<span>Cast</span>
 
 
 
+<!-- SEARCH -->
 
-<div class="header-search">
+<div
+class="search-box">
 
 
 <i class="fa-solid fa-magnifying-glass"></i>
+
 
 
 <input
@@ -212,35 +324,26 @@ placeholder="جستجوی پادکست، کتاب یا نویسنده...">
 
 
 
-<div class="header-actions">
+<!-- HEADER ACTIONS -->
+
+
+<div
+class="header-actions">
+
+
 
 
 
 <button
 id="themeButton"
-class="icon-button">
+class="icon-button"
+title="تغییر حالت">
 
 
 <i class="fa-solid fa-moon"></i>
 
 
 </button>
-
-
-
-
-
-
-<button
-id="notificationButton"
-class="icon-button">
-
-
-<i class="fa-regular fa-bell"></i>
-
-
-</button>
-
 
 
 
@@ -273,6 +376,7 @@ class="primary-button">
 
 
 
+
 </div>
 
 
@@ -282,14 +386,17 @@ class="primary-button">
 
 
 
-<!-- =========================
+
+
+
+
+<!-- =================================================
 MOBILE HEADER
-========================= -->
+================================================= -->
 
 
 <header
-class="mobile-header"
-id="mobileHeader">
+class="mobile-header">
 
 
 
@@ -307,13 +414,15 @@ class="icon-button">
 
 
 
-<div class="mobile-logo">
+
+<div class="mobile-brand">
 
 
 Night<span>Cast</span>
 
 
 </div>
+
 
 
 
@@ -333,6 +442,7 @@ class="icon-button">
 
 
 
+
 </header>
 
 
@@ -343,27 +453,21 @@ class="icon-button">
 
 
 
-<!-- =========================
-SIDE MENU
-========================= -->
+<!-- =================================================
+MOBILE MENU
+================================================= -->
 
 
 <aside
-id="sideMenu"
-class="side-menu">
+id="mobileMenu"
+class="mobile-menu">
+
+
+<div class="mobile-menu-header">
 
 
 
-
-
-<div class="side-header">
-
-
-
-<div class="side-logo">
-
-
-<i class="fa-solid fa-radio"></i>
+<div class="mobile-menu-logo">
 
 
 Night<span>Cast</span>
@@ -375,9 +479,8 @@ Night<span>Cast</span>
 
 
 
-
 <button
-id="closeMenu"
+id="closeMobileMenu"
 class="icon-button">
 
 
@@ -385,7 +488,6 @@ class="icon-button">
 
 
 </button>
-
 
 
 
@@ -399,7 +501,7 @@ class="icon-button">
 
 
 <nav
-class="side-navigation">
+class="mobile-navigation">
 
 
 
@@ -412,11 +514,7 @@ class="active">
 <i class="fa-solid fa-house"></i>
 
 
-<span>
-
 خانه
-
-</span>
 
 
 </a>
@@ -427,18 +525,30 @@ class="active">
 
 
 
-
-<a href="#podcastSection">
+<a href="#podcasts">
 
 
 <i class="fa-solid fa-headphones"></i>
 
 
-<span>
-
 پادکست‌ها
 
-</span>
+
+</a>
+
+
+
+
+
+
+
+<a href="#about">
+
+
+<i class="fa-solid fa-circle-info"></i>
+
+
+درباره NightCast
 
 
 </a>
@@ -449,88 +559,16 @@ class="active">
 
 
 
-
-<a href="#booksSection">
-
-
-<i class="fa-solid fa-book-open"></i>
-
-
-<span>
-
-کتاب‌های صوتی
-
-</span>
-
-
-</a>
-
-
-
-
-
-
-
-
-<a href="#categoriesSection">
-
-
-<i class="fa-solid fa-layer-group"></i>
-
-
-<span>
-
-دسته‌بندی‌ها
-
-</span>
-
-
-</a>
-
-
-
-
-
-
-
-
-<a href="#librarySection">
-
-
-<i class="fa-solid fa-bookmark"></i>
-
-
-<span>
-
-کتابخانه من
-
-</span>
-
-
-</a>
-
-
-
-
-
-
-
-
-<a href="#profilePanel">
+<a href="#profile">
 
 
 <i class="fa-solid fa-user"></i>
 
 
-<span>
-
 پروفایل
-
-</span>
 
 
 </a>
-
 
 
 
@@ -538,8 +576,6 @@ class="active">
 
 
 </nav>
-
-
 
 
 
@@ -555,9 +591,8 @@ class="active">
 
 
 <div
-id="menuOverlay"
-class="menu-overlay">
-
+id="mobileOverlay"
+class="mobile-overlay">
 
 </div>
 
@@ -569,36 +604,18 @@ class="menu-overlay">
 
 
 
-<!-- =========================
-MAIN CONTENT
-========================= -->
-
-
-<main
-id="mainContent">
-
-
-
-
-
-
-
-<!-- =========================
+<!-- =================================================
 HERO SECTION
-========================= -->
+================================================= -->
 
 
 <section
-id="heroSection"
 class="hero-section">
-
-
 
 
 
 <div
 class="hero-container">
-
 
 
 
@@ -635,21 +652,12 @@ class="hero-badge">
 
 تجربه‌هایی که
 
-
 <br>
 
-
-زندگی شما را
-
-
-<br>
-
-
-تغییر می‌دهند
+زندگی را تغییر می‌دهند
 
 
 </h1>
-
 
 
 
@@ -661,8 +669,7 @@ class="hero-badge">
 
 
 در NightCast به پادکست‌های آموزشی،
-خلاصه کتاب‌ها و تجربه‌های ارزشمند گوش دهید
-و مسیر رشد خود را بسازید.
+خلاصه کتاب‌ها، تجربه‌های واقعی و داستان‌های الهام‌بخش گوش دهید.
 
 
 </p>
@@ -672,10 +679,8 @@ class="hero-badge">
 
 
 
-
-
 <div
-class="hero-actions">
+class="hero-buttons">
 
 
 
@@ -700,6 +705,7 @@ class="gold-button">
 
 
 
+
 <button
 id="exploreButton"
 class="outline-button">
@@ -717,11 +723,6 @@ class="outline-button">
 
 
 
-</div>
-
-
-
-
 
 
 </div>
@@ -731,10 +732,12 @@ class="outline-button">
 
 
 
+</div>
 
 
 
-<!-- HERO VISUAL -->
+
+
 
 
 <div
@@ -745,7 +748,7 @@ class="hero-visual">
 
 
 <div
-class="hero-circle">
+class="hero-headphone">
 
 
 <i class="fa-solid fa-headphones"></i>
@@ -760,7 +763,7 @@ class="hero-circle">
 
 
 <div
-class="floating-card card-book">
+class="hero-floating-card one">
 
 
 <i class="fa-solid fa-book-open"></i>
@@ -781,8 +784,9 @@ class="floating-card card-book">
 
 
 
+
 <div
-class="floating-card card-podcast">
+class="hero-floating-card two">
 
 
 <i class="fa-solid fa-microphone-lines"></i>
@@ -803,11 +807,12 @@ class="floating-card card-podcast">
 
 
 
+
 <div
-class="floating-card card-growth">
+class="hero-floating-card three">
 
 
-<i class="fa-solid fa-chart-line"></i>
+<i class="fa-solid fa-brain"></i>
 
 
 <span>
@@ -824,6 +829,11 @@ class="floating-card card-growth">
 
 
 
+</div>
+
+
+
+
 
 </div>
 
@@ -832,18 +842,9 @@ class="floating-card card-growth">
 
 
 
-     </div>
 
 
-
-
-
-
-
-     
-<!-- =========================
-HERO STATISTICS
-========================= -->
+<!-- HERO STATS -->
 
 
 <div
@@ -854,33 +855,22 @@ class="hero-stats">
 
 
 <div
-class="hero-stat-card">
-
-
-<div
-class="stat-icon">
+class="stat-card">
 
 
 <i class="fa-solid fa-podcast"></i>
-
-
-</div>
-
-
-
 
 
 <div>
 
 
 <strong
-id="heroPodcastCount">
+id="podcastCount">
+
 
 0
 
 </strong>
-
-
 
 
 <span>
@@ -890,14 +880,10 @@ id="heroPodcastCount">
 </span>
 
 
-
-
 </div>
 
 
-
 </div>
-
 
 
 
@@ -906,33 +892,22 @@ id="heroPodcastCount">
 
 
 <div
-class="hero-stat-card">
-
-
-<div
-class="stat-icon">
+class="stat-card">
 
 
 <i class="fa-solid fa-book-open-reader"></i>
-
-
-</div>
-
-
-
 
 
 <div>
 
 
 <strong
-id="heroBookCount">
+id="bookCount">
+
 
 0
 
 </strong>
-
-
 
 
 <span>
@@ -942,10 +917,7 @@ id="heroBookCount">
 </span>
 
 
-
-
 </div>
-
 
 
 </div>
@@ -958,33 +930,22 @@ id="heroBookCount">
 
 
 <div
-class="hero-stat-card">
-
-
-<div
-class="stat-icon">
+class="stat-card">
 
 
 <i class="fa-solid fa-users"></i>
-
-
-</div>
-
-
-
 
 
 <div>
 
 
 <strong
-id="heroListenerCount">
+id="listenerCount">
+
 
 0
 
 </strong>
-
-
 
 
 <span>
@@ -994,17 +955,7 @@ id="heroListenerCount">
 </span>
 
 
-
-
 </div>
-
-
-
-</div>
-
-
-
-
 
 
 </div>
@@ -1013,399 +964,8 @@ id="heroListenerCount">
 
 
 
-
-</section>
-
-
-
-
-
-
-
-
-
-<!-- =========================
-CATEGORY SECTION
-========================= -->
-
-
-<section
-id="categoriesSection"
-class="category-section">
-
-
-
-
-
-<div
-class="section-container">
-
-
-
-
-
-<div
-class="section-header">
-
-
-
-<div>
-
-
-<h2>
-
-دسته‌بندی‌ها
-
-</h2>
-
-
-
-<p>
-
-موضوع مورد علاقه خود را انتخاب کنید
-
-</p>
-
-
 </div>
 
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-<div
-class="category-list">
-
-
-
-
-
-
-
-<button
-class="category-card active"
-data-category="all">
-
-
-<i class="fa-solid fa-layer-group"></i>
-
-
-<span>
-
-همه
-
-</span>
-
-
-</button>
-
-
-
-
-
-
-
-
-<button
-class="category-card"
-data-category="book">
-
-
-<i class="fa-solid fa-book"></i>
-
-
-<span>
-
-کتاب‌ها
-
-</span>
-
-
-</button>
-
-
-
-
-
-
-
-
-<button
-class="category-card"
-data-category="experience">
-
-
-<i class="fa-solid fa-lightbulb"></i>
-
-
-<span>
-
-تجربه‌ها
-
-</span>
-
-
-</button>
-
-
-
-
-
-
-
-
-<button
-class="category-card"
-data-category="education">
-
-
-<i class="fa-solid fa-graduation-cap"></i>
-
-
-<span>
-
-آموزشی
-
-</span>
-
-
-</button>
-
-
-
-
-
-
-
-
-<button
-class="category-card"
-data-category="psychology">
-
-
-<i class="fa-solid fa-brain"></i>
-
-
-<span>
-
-روانشناسی
-
-</span>
-
-
-</button>
-
-
-
-
-
-
-
-
-<button
-class="category-card"
-data-category="growth">
-
-
-<i class="fa-solid fa-arrow-trend-up"></i>
-
-
-<span>
-
-رشد فردی
-
-</span>
-
-
-</button>
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-</div>
-
-
-
-</section>
-
-
-
-
-
-
-
-
-
-<!-- =========================
-CONTINUE LISTENING
-========================= -->
-
-
-<section
-id="librarySection"
-class="continue-section">
-
-
-
-
-
-<div
-class="section-container">
-
-
-
-
-
-<div
-class="section-header">
-
-
-
-<div>
-
-
-<h2>
-
-ادامه شنیدن
-
-</h2>
-
-
-
-<p>
-
-آخرین محتوای پخش شده شما
-
-</p>
-
-
-
-</div>
-
-
-
-
-
-
-
-<button
-class="view-all-button">
-
-
-مشاهده همه
-
-
-<i class="fa-solid fa-arrow-left"></i>
-
-
-</button>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div
-id="continueListening"
-class="continue-card">
-
-
-
-
-
-<div
-class="empty-player">
-
-
-
-
-
-<div
-class="empty-player-icon">
-
-
-<i class="fa-solid fa-headphones"></i>
-
-
-</div>
-
-
-
-
-
-
-<h3>
-
-هنوز چیزی پخش نشده است
-
-</h3>
-
-
-
-
-
-
-
-<p>
-
-یک پادکست انتخاب کنید و تجربه شنیدن را شروع کنید.
-
-</p>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-</div>
 
 
 
@@ -1417,236 +977,14 @@ class="empty-player-icon">
 
 
 
-
-<!-- =========================
-TRENDING PODCASTS
-========================= -->
+<!-- =================================================
+PODCAST SECTION
+================================================= -->
 
 
 <section
-class="trending-section">
-
-
-
-<div
-class="section-container">
-
-
-
-
-
-
-<div
-class="section-header">
-
-
-
-<div>
-
-
-<h2>
-
-محبوب‌ترین پادکست‌ها
-
-</h2>
-
-
-
-<p>
-
-انتخاب شنوندگان NightCast
-
-</p>
-
-
-
-</div>
-
-
-
-
-
-
-
-<button
-class="view-all-button">
-
-
-مشاهده همه
-
-
-<i class="fa-solid fa-arrow-left"></i>
-
-
-</button>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div
-id="trendingList"
-class="podcast-horizontal-list">
-
-
-
-
-
-
-
-<!-- Dynamic Content -->
-
-
-
-<div
-class="loading-card">
-
-
-
-<div
-class="skeleton-cover">
-
-</div>
-
-
-
-
-<div
-class="skeleton-line">
-
-</div>
-
-
-
-
-<div
-class="skeleton-line short">
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-<div
-class="loading-card">
-
-
-
-<div
-class="skeleton-cover">
-
-</div>
-
-
-
-
-<div
-class="skeleton-line">
-
-</div>
-
-
-
-
-<div
-class="skeleton-line short">
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-<div
-class="loading-card">
-
-
-
-<div
-class="skeleton-cover">
-
-</div>
-
-
-
-
-<div
-class="skeleton-line">
-
-</div>
-
-
-
-
-<div
-class="skeleton-line short">
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-</div>
-
-
-
-</section>
-
-
-
-
-
-
-
-
-
-<!-- =========================
-LATEST PODCASTS
-========================= -->
-
-
-<section
-id="podcastSection"
-class="podcast-section">
-
-
+id="podcasts"
+class="podcasts-section">
 
 
 
@@ -1659,8 +997,6 @@ class="section-container">
 
 <div
 class="section-header">
-
-
 
 
 
@@ -1674,14 +1010,11 @@ class="section-header">
 </h2>
 
 
-
 <p>
 
-جدیدترین محتواهای منتشر شده
+جدیدترین تجربه‌های صوتی NightCast
 
 </p>
-
-
 
 
 </div>
@@ -1691,16 +1024,12 @@ class="section-header">
 
 
 
-
-
-
 <div
-class="sort-control">
-
+class="podcast-filter">
 
 
 <button
-id="sortButton">
+id="sortPodcastButton">
 
 
 <i class="fa-solid fa-arrow-down-wide-short"></i>
@@ -1713,6 +1042,10 @@ id="sortButton">
 
 
 
+</div>
+
+
+
 
 </div>
 
@@ -1721,18 +1054,15 @@ id="sortButton">
 
 
 
-</div>
 
 
 
-
-
-
+<!-- PODCAST GRID -->
 
 
 
 <div
-id="podcastList"
+id="podcastGrid"
 class="podcast-grid">
 
 
@@ -1741,8 +1071,34 @@ class="podcast-grid">
 
 
 <!--
-podcasts.js
-این قسمت را با اطلاعات واقعی پر می‌کند
+
+Podcast Cards
+Dynamic From API
+
+Structure:
+
+
+article
+class podcast-card
+
+
+cover
+
+title
+
+author
+
+description
+
+
+actions:
+
+play
+download
+favorite
+comments
+
+
 -->
 
 
@@ -1750,21 +1106,14 @@ podcasts.js
 
 
 
-<div
-class="loading-card large">
+
+<article
+class="podcast-card skeleton">
 
 
 
 <div
-class="skeleton-cover">
-
-</div>
-
-
-
-
-<div
-class="skeleton-line">
+class="podcast-cover-placeholder">
 
 </div>
 
@@ -1772,7 +1121,30 @@ class="skeleton-line">
 
 
 <div
-class="skeleton-line">
+class="podcast-info-placeholder">
+
+
+</div>
+
+
+
+</article>
+
+
+
+
+
+
+
+
+
+<article
+class="podcast-card skeleton">
+
+
+
+<div
+class="podcast-cover-placeholder">
 
 </div>
 
@@ -1780,35 +1152,30 @@ class="skeleton-line">
 
 
 <div
-class="skeleton-line short">
-
-</div>
-
+class="podcast-info-placeholder">
 
 
 </div>
 
 
 
+</article>
 
+
+
+
+
+
+
+
+
+<article
+class="podcast-card skeleton">
 
 
 
 <div
-class="loading-card large">
-
-
-
-<div
-class="skeleton-cover">
-
-</div>
-
-
-
-
-<div
-class="skeleton-line">
+class="podcast-cover-placeholder">
 
 </div>
 
@@ -1816,70 +1183,36 @@ class="skeleton-line">
 
 
 <div
-class="skeleton-line">
+class="podcast-info-placeholder">
+
 
 </div>
 
 
+
+</article>
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+<!-- INFINITE SCROLL TARGET -->
 
 
 <div
-class="skeleton-line short">
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-<div
-class="loading-card large">
-
-
-
-<div
-class="skeleton-cover">
-
-</div>
-
-
-
-
-<div
-class="skeleton-line">
-
-</div>
-
-
-
-
-<div
-class="skeleton-line">
-
-</div>
-
-
-
-
-<div
-class="skeleton-line short">
-
-</div>
-
-
-
-</div>
-
-
-
-
-
+id="podcastLoadingTrigger"
+class="loading-trigger">
 
 
 </div>
@@ -1891,28 +1224,7 @@ class="skeleton-line short">
 
 
 
-
-<button
-id="loadMoreButton"
-class="load-more-button">
-
-
-<i class="fa-solid fa-plus"></i>
-
-
-نمایش پادکست‌های بیشتر
-
-
-</button>
-
-
-
-
-
-
 </div>
-
-
 
 
 </section>
@@ -1920,47 +1232,40 @@ class="load-more-button">
 
 
 
-     
-     <!-- =========================
-FEATURED PODCAST
-========================= -->
-
-
-<section
-class="featured-section">
-
-
-
-<div
-class="section-container">
 
 
 
 
 
+<!-- =================================================
+PODCAST CARD TEMPLATE
 
-<div
-class="featured-card">
+Used By podcasts.js
+
+================================================= -->
 
 
+<template
+id="podcastCardTemplate">
+
+
+
+<article
+class="podcast-card">
 
 
 
 
 
 <div
-class="featured-image">
+class="podcast-cover">
 
 
 
 <img
-
-id="featuredCover"
-
-src="/users/assets/images/default-cover.jpg"
-
-alt="NightCast Featured Podcast">
-
+class="podcast-image"
+src=""
+alt="NightCast Podcast">
 
 
 
@@ -1968,10 +1273,7 @@ alt="NightCast Featured Podcast">
 
 
 <button
-
-id="featuredPlayButton"
-
-class="featured-play-button">
+class="play-button">
 
 
 <i class="fa-solid fa-play"></i>
@@ -1983,993 +1285,6 @@ class="featured-play-button">
 
 
 
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div
-class="featured-content">
-
-
-
-
-
-<div
-class="featured-label">
-
-
-<i class="fa-solid fa-star"></i>
-
-
-پیشنهاد امروز
-
-
-</div>
-
-
-
-
-
-
-
-
-<h2
-
-id="featuredTitle">
-
-
-یک تجربه تازه برای شروع
-
-
-</h2>
-
-
-
-
-
-
-
-<p
-
-id="featuredDescription">
-
-
-هر روز یک قدم برای یادگیری و رشد فردی.
-
-
-</p>
-
-
-
-
-
-
-
-
-<div
-class="featured-meta">
-
-
-
-
-
-<div>
-
-
-<i class="fa-solid fa-headphones"></i>
-
-
-<span>
-
-شنیدن
-
-</span>
-
-
-</div>
-
-
-
-
-
-
-
-<div>
-
-
-<i class="fa-solid fa-clock"></i>
-
-
-<span>
-
-زمان پخش
-
-</span>
-
-
-</div>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<button
-
-id="featuredListenButton"
-
-class="gold-button">
-
-
-<i class="fa-solid fa-play"></i>
-
-
-شروع شنیدن
-
-
-</button>
-
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-</section>
-
-
-
-
-
-
-
-
-
-<!-- =========================
-AUDIO BOOKS
-========================= -->
-
-
-<section
-
-id="booksSection"
-
-class="books-section">
-
-
-
-
-
-<div
-
-class="section-container">
-
-
-
-
-
-
-
-<div
-
-class="section-header">
-
-
-
-
-
-<div>
-
-
-<h2>
-
-کتاب‌های صوتی
-
-</h2>
-
-
-
-<p>
-
-خلاصه کتاب‌ها و تجربه‌های ماندگار
-
-</p>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-<button
-
-class="view-all-button">
-
-
-مشاهده همه
-
-
-<i class="fa-solid fa-arrow-left"></i>
-
-
-</button>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div
-
-id="booksList"
-
-class="books-grid">
-
-
-
-
-
-
-
-<!--
-library.js
-محتوا را بارگذاری می‌کند
--->
-
-
-
-
-
-
-<div
-
-class="book-loading-card">
-
-
-
-<div
-
-class="skeleton-book">
-
-</div>
-
-
-
-
-<div
-
-class="skeleton-line">
-
-</div>
-
-
-
-
-<div
-
-class="skeleton-line short">
-
-</div>
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-<div
-
-class="book-loading-card">
-
-
-
-<div
-
-class="skeleton-book">
-
-</div>
-
-
-
-
-<div
-
-class="skeleton-line">
-
-</div>
-
-
-
-
-<div
-
-class="skeleton-line short">
-
-</div>
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-<div
-
-class="book-loading-card">
-
-
-
-<div
-
-class="skeleton-book">
-
-</div>
-
-
-
-
-<div
-
-class="skeleton-line">
-
-</div>
-
-
-
-
-<div
-
-class="skeleton-line short">
-
-</div>
-
-
-
-
-</div>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-</div>
-
-
-
-
-</section>
-
-
-
-
-
-
-
-
-
-<!-- =========================
-AUTHORS SECTION
-========================= -->
-
-
-<section
-
-class="authors-section">
-
-
-
-
-
-<div
-
-class="section-container">
-
-
-
-
-
-
-<div
-
-class="section-header">
-
-
-
-
-
-<div>
-
-
-<h2>
-
-گویندگان و نویسندگان
-
-</h2>
-
-
-
-<p>
-
-افرادی که تجربه‌های ارزشمند را روایت می‌کنند
-
-</p>
-
-
-
-</div>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-<div
-
-id="authorsList"
-
-class="authors-grid">
-
-
-
-
-
-
-
-<!-- Dynamic Authors -->
-
-
-
-
-
-
-
-<div
-
-class="author-card">
-
-
-
-<div
-
-class="author-avatar">
-
-
-<i class="fa-solid fa-microphone-lines"></i>
-
-
-</div>
-
-
-
-
-
-<h3>
-
-گویندگان NightCast
-
-</h3>
-
-
-
-
-
-<p>
-
-صداهای ماندگار
-
-</p>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div
-
-class="author-card">
-
-
-
-<div
-
-class="author-avatar">
-
-
-<i class="fa-solid fa-pen-nib"></i>
-
-
-</div>
-
-
-
-
-
-<h3>
-
-نویسندگان
-
-</h3>
-
-
-
-
-
-<p>
-
-خالقان ایده‌های ارزشمند
-
-</p>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-</section>
-
-
-
-
-     <!-- =========================
-USER REVIEWS
-========================= -->
-
-
-<section
-
-class="reviews-section">
-
-
-
-
-
-<div
-
-class="section-container">
-
-
-
-
-
-
-
-<div
-
-class="section-header">
-
-
-
-
-
-<div>
-
-
-<h2>
-
-نظر شنوندگان
-
-</h2>
-
-
-
-<p>
-
-تجربه کسانی که NightCast را انتخاب کرده‌اند
-
-</p>
-
-
-
-</div>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div
-
-id="reviewsList"
-
-class="reviews-grid">
-
-
-
-
-
-
-
-<div
-
-class="review-card">
-
-
-
-
-
-
-<div
-
-class="review-stars">
-
-
-<i class="fa-solid fa-star"></i>
-
-<i class="fa-solid fa-star"></i>
-
-<i class="fa-solid fa-star"></i>
-
-<i class="fa-solid fa-star"></i>
-
-<i class="fa-solid fa-star"></i>
-
-
-</div>
-
-
-
-
-
-
-
-
-<p>
-
-
-NightCast باعث شد زمان‌های از دست رفته روزم تبدیل به زمان یادگیری شود.
-
-
-</p>
-
-
-
-
-
-
-
-<div
-
-class="review-user">
-
-
-
-
-
-<div
-
-class="mini-avatar">
-
-
-<i class="fa-solid fa-user"></i>
-
-
-</div>
-
-
-
-
-
-
-<span>
-
-شنونده NightCast
-
-</span>
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div
-
-class="review-card">
-
-
-
-
-
-
-<div
-
-class="review-stars">
-
-
-<i class="fa-solid fa-star"></i>
-
-<i class="fa-solid fa-star"></i>
-
-<i class="fa-solid fa-star"></i>
-
-<i class="fa-solid fa-star"></i>
-
-<i class="fa-regular fa-star"></i>
-
-
-</div>
-
-
-
-
-
-
-
-
-<p>
-
-
-خلاصه کتاب‌ها کاربردی و قابل استفاده هستند.
-
-
-</p>
-
-
-
-
-
-
-
-<div
-
-class="review-user">
-
-
-
-
-
-<div
-
-class="mini-avatar">
-
-
-<i class="fa-solid fa-user"></i>
-
-
-</div>
-
-
-
-
-
-
-<span>
-
-کاربر NightCast
-
-</span>
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-</section>
-
-
-
-
-
-
-
-
-
-<!-- =========================
-NEWSLETTER
-========================= -->
-
-
-<section
-
-class="newsletter-section">
-
-
-
-
-
-
-<div
-
-class="section-container">
-
-
-
-
-
-
-<div
-
-class="newsletter-card">
-
-
-
-
-
-
-<div
-
-class="newsletter-icon">
-
-
-<i class="fa-solid fa-envelope-open-text"></i>
-
-
 </div>
 
 
@@ -2979,186 +1294,17 @@ class="newsletter-icon">
 
 
 <div
-
-class="newsletter-content">
-
-
-
-
-
-<h2>
-
-از تجربه‌های جدید باخبر شوید
-
-</h2>
-
-
-
-
-
-
-
-<p>
-
-
-پادکست‌ها و کتاب‌های صوتی جدید را از دست ندهید.
-
-
-</p>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div
-
-class="newsletter-form">
-
-
-
-
-
-<input
-
-id="newsletterEmail"
-
-type="email"
-
-placeholder="ایمیل شما">
-
-
-
-
-
-
-
-<button
-
-id="newsletterButton">
-
-
-عضویت
-
-
-<i class="fa-solid fa-paper-plane"></i>
-
-
-</button>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-</section>
-
-
-
-
-
-
-
-
-
-<!-- =========================
-PRO AUDIO PLAYER
-========================= -->
-
-
-<div
-
-id="nightcastPlayer"
-
-class="nightcast-player">
-
-
-
-
-
-
-
-<div
-
-class="player-cover-area">
-
-
-
-
-
-<img
-
-id="playerCover"
-
-src="/users/assets/images/default-cover.jpg"
-
-alt="NightCast Cover">
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div
-
-class="player-information">
-
+class="podcast-body">
 
 
 
 
 
 <h3
+class="podcast-title">
 
-id="playerTitle">
 
-
-NightCast Player
+عنوان پادکست
 
 
 </h3>
@@ -3169,15 +1315,124 @@ NightCast Player
 
 
 
+
 <p
+class="podcast-author">
 
-id="playerAuthor">
 
-
-آماده پخش
+گوینده
 
 
 </p>
+
+
+
+
+
+
+
+
+<p
+class="podcast-description">
+
+
+توضیحات پادکست
+
+
+</p>
+
+
+
+
+
+
+
+<div
+class="podcast-meta">
+
+
+
+<span
+class="duration">
+
+
+<i class="fa-solid fa-clock"></i>
+
+
+00:00
+
+
+</span>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div
+class="podcast-actions">
+
+
+
+
+
+<button
+class="download-button"
+data-action="download">
+
+
+<i class="fa-solid fa-download"></i>
+
+
+دانلود
+
+
+</button>
+
+
+
+
+
+
+
+
+<button
+class="favorite-button"
+data-action="favorite">
+
+
+<i class="fa-regular fa-heart"></i>
+
+
+</button>
+
+
+
+
+
+
+
+
+<button
+class="comment-button"
+data-action="comments">
+
+
+<i class="fa-regular fa-comment"></i>
+
+
+نظرات
+
+
+</button>
+
 
 
 
@@ -3193,9 +1448,408 @@ id="playerAuthor">
 
 
 
+</div>
+
+
+
+
+
+
+
+</article>
+
+
+
+
+
+
+</template>
+
+
+
+
+
+
+
+
+
+<!-- =================================================
+COMMENTS MODAL
+
+Podcast Comments System
+
+================================================= -->
+
 
 <div
+id="commentsModal"
+class="comments-modal hidden">
 
+
+
+
+
+<div
+class="comments-box">
+
+
+
+
+
+<div
+class="comments-header">
+
+
+
+<h3>
+
+نظرات کاربران
+
+</h3>
+
+
+
+
+
+
+<button
+id="closeComments">
+
+
+<i class="fa-solid fa-xmark"></i>
+
+
+</button>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div
+id="commentsList"
+class="comments-list">
+
+
+
+<p>
+
+هنوز نظری ثبت نشده است.
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<form
+id="commentForm"
+class="comment-form">
+
+
+
+
+
+
+<textarea
+id="commentText"
+placeholder="نظر خود را بنویسید...">
+
+
+</textarea>
+
+
+
+
+
+
+
+
+<button
+type="submit"
+class="submit-comment">
+
+
+<i class="fa-solid fa-paper-plane"></i>
+
+
+ارسال نظر
+
+
+</button>
+
+
+
+
+
+
+</form>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+<!-- =================================================
+ABOUT NIGHTCAST
+================================================= -->
+
+
+<section
+id="about"
+class="about-section">
+
+
+
+<div
+class="section-container">
+
+
+
+
+
+<div
+class="about-content">
+
+
+
+
+
+
+<h2>
+
+درباره NightCast
+
+</h2>
+
+
+
+
+
+
+<p>
+
+
+NightCast یک رادیوی تجربه است؛
+جایی برای شنیدن داستان‌ها، آموختن از کتاب‌ها،
+و استفاده از تجربه انسان‌هایی که مسیر رشد را طی کرده‌اند.
+
+
+</p>
+
+
+
+
+
+
+<div
+class="about-features">
+
+
+
+
+
+<div
+class="feature-item">
+
+
+<i class="fa-solid fa-book-open"></i>
+
+
+<span>
+
+خلاصه کتاب‌های ارزشمند
+
+</span>
+
+
+</div>
+
+
+
+
+
+
+
+<div
+class="feature-item">
+
+
+<i class="fa-solid fa-microphone"></i>
+
+
+<span>
+
+پادکست‌های آموزشی
+
+</span>
+
+
+</div>
+
+
+
+
+
+
+
+<div
+class="feature-item">
+
+
+<i class="fa-solid fa-lightbulb"></i>
+
+
+<span>
+
+تجربه‌های واقعی
+
+</span>
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+     </section>
+
+
+
+
+
+
+
+     <!-- =================================================
+GLOBAL FIXED AUDIO PLAYER
+================================================= -->
+
+
+<div
+id="nightcastPlayer"
+class="audio-player">
+
+
+
+
+
+
+<div
+class="player-main">
+
+
+
+
+
+
+<!-- COVER -->
+
+
+<div
+class="player-cover">
+
+
+<img
+id="playerCover"
+src="/users/assets/images/default-cover.jpg"
+alt="NightCast">
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- INFORMATION -->
+
+
+<div
+class="player-info">
+
+
+<h3
+id="playerTitle">
+
+NightCast Player
+
+</h3>
+
+
+
+<p
+id="playerAuthor">
+
+آماده پخش
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+<!-- CONTROLS -->
+
+
+<div
 class="player-controls">
 
 
@@ -3204,10 +1858,8 @@ class="player-controls">
 
 
 <button
-
-id="playerPreviousBtn"
-
-class="player-control-button">
+id="previousButton"
+class="player-btn">
 
 
 <i class="fa-solid fa-backward-step"></i>
@@ -3221,13 +1873,9 @@ class="player-control-button">
 
 
 
-
-
 <button
-
-id="playerPlayBtn"
-
-class="player-control-button main-play">
+id="playButton"
+class="player-btn main">
 
 
 <i class="fa-solid fa-play"></i>
@@ -3241,13 +1889,9 @@ class="player-control-button main-play">
 
 
 
-
-
 <button
-
-id="playerNextBtn"
-
-class="player-control-button">
+id="nextButton"
+class="player-btn">
 
 
 <i class="fa-solid fa-forward-step"></i>
@@ -3261,7 +1905,6 @@ class="player-control-button">
 
 
 
-
 </div>
 
 
@@ -3271,9 +1914,45 @@ class="player-control-button">
 
 
 
-<div
 
-class="player-progress-container">
+<!-- PROGRESS -->
+
+
+<div
+class="player-progress-area">
+
+
+
+
+
+<span
+id="currentTime">
+
+
+00:00
+
+</span>
+
+
+
+
+
+
+<div
+id="progressContainer"
+class="progress-container">
+
+
+<div
+id="progressBar"
+class="progress-bar">
+
+
+</div>
+
+
+</div>
+
 
 
 
@@ -3281,12 +1960,10 @@ class="player-progress-container">
 
 
 <span
-
-id="playerCurrentTime">
+id="duration">
 
 
 00:00
-
 
 </span>
 
@@ -3296,27 +1973,6 @@ id="playerCurrentTime">
 
 
 
-
-<div
-
-id="playerProgress"
-
-class="player-progress">
-
-
-
-<div
-
-id="playerProgressBar"
-
-class="player-progress-bar">
-
-
-
-</div>
-
-
-
 </div>
 
 
@@ -3326,33 +1982,10 @@ class="player-progress-bar">
 
 
 
-<span
-
-id="playerDuration">
-
-
-00:00
-
-
-</span>
-
-
-
-
-
-
-</div>
-
-
-
-
-<!-- =========================
-PLAYER EXTRA CONTROLS
-========================= -->
+<!-- OPTIONS -->
 
 
 <div
-
 class="player-options">
 
 
@@ -3360,130 +1993,13 @@ class="player-options">
 
 
 <button
-
-id="speedButton"
-
-class="speed-button">
+id="speedButton">
 
 
 1x
 
-
 </button>
 
-
-
-
-
-
-
-
-<div
-
-id="speedMenu"
-
-class="speed-menu hidden">
-
-
-
-
-
-<button
-
-data-speed="0.75">
-
-
-0.75x
-
-
-</button>
-
-
-
-
-
-
-<button
-
-data-speed="1">
-
-
-1x
-
-
-</button>
-
-
-
-
-
-
-<button
-
-data-speed="1.25">
-
-
-1.25x
-
-
-</button>
-
-
-
-
-
-
-<button
-
-data-speed="1.5">
-
-
-1.5x
-
-
-</button>
-
-
-
-
-
-
-<button
-
-data-speed="2">
-
-
-2x
-
-
-</button>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div
-
-class="volume-box">
-
-
-
-<i
-
-class="fa-solid fa-volume-high">
-
-</i>
 
 
 
@@ -3491,47 +2007,24 @@ class="fa-solid fa-volume-high">
 
 
 <input
-
-id="playerVolume"
-
+id="volumeControl"
 type="range"
-
 min="0"
-
 max="1"
-
 step="0.01"
-
 value="1">
 
 
 
 
 
-</div>
-
-
-
-
-
-
-
 
 
 <button
-
-id="playerDownloadBtn"
-
-class="player-icon-button"
-
-title="دانلود">
+id="downloadCurrentButton">
 
 
-<i
-
-class="fa-solid fa-download">
-
-</i>
+<i class="fa-solid fa-download"></i>
 
 
 </button>
@@ -3541,22 +2034,11 @@ class="fa-solid fa-download">
 
 
 
-
-
 <button
-
-id="playerQueueBtn"
-
-class="player-icon-button"
-
-title="لیست پخش">
+id="queueButton">
 
 
-<i
-
-class="fa-solid fa-list">
-
-</i>
+<i class="fa-solid fa-list"></i>
 
 
 </button>
@@ -3576,13 +2058,16 @@ class="fa-solid fa-list">
 
 
 
-<!-- AUDIO ENGINE -->
+</div>
+
+
+
+
+
 
 
 <audio
-
-id="nightcastAudio"
-
+id="audioElement"
 preload="metadata">
 
 
@@ -3592,10 +2077,6 @@ preload="metadata">
 
 
 
-
-
-
-
 </div>
 
 
@@ -3606,15 +2087,13 @@ preload="metadata">
 
 
 
-<!-- =========================
+<!-- =================================================
 QUEUE PANEL
-========================= -->
+================================================= -->
 
 
 <div
-
 id="queuePanel"
-
 class="queue-panel hidden">
 
 
@@ -3622,16 +2101,13 @@ class="queue-panel hidden">
 
 
 <div
-
 class="queue-header">
-
-
 
 
 
 <h3>
 
-لیست پخش
+صف پخش
 
 </h3>
 
@@ -3641,17 +2117,10 @@ class="queue-header">
 
 
 <button
-
-id="closeQueue"
-
-class="icon-button">
+id="closeQueue">
 
 
-<i
-
-class="fa-solid fa-xmark">
-
-</i>
+<i class="fa-solid fa-xmark"></i>
 
 
 </button>
@@ -3661,7 +2130,6 @@ class="fa-solid fa-xmark">
 
 
 
-
 </div>
 
 
@@ -3670,24 +2138,26 @@ class="fa-solid fa-xmark">
 
 
 
+
 <div
-
 id="queueList"
-
 class="queue-list">
-
-
 
 
 
 <p>
 
-لیست پخش خالی است
+صف پخش خالی است
 
 </p>
 
 
 
+</div>
+
+
+
+
 
 
 </div>
@@ -3699,34 +2169,29 @@ class="queue-list">
 
 
 
-</div>
+
+<!-- =================================================
+AUTH SYSTEM
+
+LOGIN / REGISTER / SMS / OPENID
+
+================================================= -->
 
 
 
-
-
-
-
-
-
-<!-- =========================
-AUTH MODAL
-========================= -->
 
 
 <div
-
 id="authModal"
-
 class="auth-modal hidden">
 
 
 
 
 
-<div
 
-class="auth-box">
+<div
+class="auth-container">
 
 
 
@@ -3735,17 +2200,11 @@ class="auth-box">
 
 
 <button
-
-id="closeAuthModal"
-
+id="closeAuth"
 class="auth-close">
 
 
-<i
-
-class="fa-solid fa-xmark">
-
-</i>
+<i class="fa-solid fa-xmark"></i>
 
 
 </button>
@@ -3757,39 +2216,22 @@ class="fa-solid fa-xmark">
 
 
 
-
 <div
-
-class="auth-header">
-
-
-
-
-
-<div
-
-class="auth-logo">
-
-
-<i
-
-class="fa-solid fa-moon">
-
-</i>
-
-
-</div>
+class="auth-tabs">
 
 
 
 
 
+<button
+class="active"
+data-auth-tab="login">
 
-<h2>
 
-ورود به NightCast
+ورود
 
-</h2>
+
+</button>
 
 
 
@@ -3797,12 +2239,44 @@ class="fa-solid fa-moon">
 
 
 
-<p>
+<button
+data-auth-tab="register">
 
-تجربه شنیدن خود را ذخیره کنید
 
-</p>
+ثبت نام
 
+
+</button>
+
+
+
+
+
+
+
+<button
+data-auth-tab="sms">
+
+
+پیامک
+
+
+</button>
+
+
+
+
+
+
+
+<button
+data-auth-tab="openid">
+
+
+OpenID
+
+
+</button>
 
 
 
@@ -3822,10 +2296,8 @@ class="fa-solid fa-moon">
 <!-- LOGIN FORM -->
 
 
-<div
-
+<form
 id="loginForm"
-
 class="auth-form">
 
 
@@ -3834,12 +2306,9 @@ class="auth-form">
 
 
 <input
-
 id="loginUsername"
-
 type="text"
-
-placeholder="نام کاربری یا ایمیل">
+placeholder="نام کاربری">
 
 
 
@@ -3848,11 +2317,8 @@ placeholder="نام کاربری یا ایمیل">
 
 
 <input
-
 id="loginPassword"
-
 type="password"
-
 placeholder="رمز عبور">
 
 
@@ -3861,19 +2327,12 @@ placeholder="رمز عبور">
 
 
 
-
 <button
-
-id="loginSubmit"
-
-class="primary-auth-button">
+type="submit"
+class="auth-submit">
 
 
-<i
-
-class="fa-solid fa-right-to-bracket">
-
-</i>
+<i class="fa-solid fa-right-to-bracket"></i>
 
 
 ورود
@@ -3887,7 +2346,7 @@ class="fa-solid fa-right-to-bracket">
 
 
 
-</div>
+</form>
 
 
 
@@ -3900,24 +2359,16 @@ class="fa-solid fa-right-to-bracket">
 <!-- REGISTER FORM -->
 
 
-<div
-
+<form
 id="registerForm"
-
 class="auth-form hidden">
 
 
 
 
 
-
-
 <input
-
 id="registerName"
-
-type="text"
-
 placeholder="نام کامل">
 
 
@@ -3927,11 +2378,7 @@ placeholder="نام کامل">
 
 
 <input
-
 id="registerUsername"
-
-type="text"
-
 placeholder="نام کاربری">
 
 
@@ -3940,12 +2387,10 @@ placeholder="نام کاربری">
 
 
 
+
 <input
-
 id="registerEmail"
-
 type="email"
-
 placeholder="ایمیل">
 
 
@@ -3955,11 +2400,8 @@ placeholder="ایمیل">
 
 
 <input
-
 id="registerPassword"
-
 type="password"
-
 placeholder="رمز عبور">
 
 
@@ -3969,17 +2411,8 @@ placeholder="رمز عبور">
 
 
 <button
-
-id="registerSubmit"
-
-class="primary-auth-button">
-
-
-<i
-
-class="fa-solid fa-user-plus">
-
-</i>
+type="submit"
+class="auth-submit">
 
 
 ثبت نام
@@ -3993,20 +2426,120 @@ class="fa-solid fa-user-plus">
 
 
 
-
-</div>
-
+</form>
 
 
 
 
 
 
+
+
+
+<!-- SMS LOGIN -->
+
+
+<form
+id="smsLoginForm"
+class="auth-form hidden">
+
+
+
+
+
+<input
+id="mobileNumber"
+placeholder="شماره موبایل">
+
+
+
+
+
+
+
+<button
+id="sendSmsButton"
+type="button"
+class="auth-submit">
+
+
+ارسال کد
+
+
+</button>
+
+
+
+
+
+
+<input
+id="smsCode"
+placeholder="کد تایید">
+
+
+
+
+
+
+
+<button
+type="submit"
+class="auth-submit">
+
+
+تایید
+
+
+</button>
+
+
+
+
+
+
+
+</form>
+
+
+
+
+
+
+
+
+
+<!-- OPEN ID -->
 
 
 <div
+id="openidLogin"
+class="openid-login hidden">
 
-class="auth-switch">
+
+
+
+
+<button
+id="googleLoginButton"
+class="openid-button">
+
+
+<i class="fa-brands fa-google"></i>
+
+
+ورود با گوگل
+
+
+</button>
+
+
+
+
+
+
+</div>
+
 
 
 
@@ -4014,17 +2547,18 @@ class="auth-switch">
 
 
 <p
+class="skip-login">
 
-id="switchToRegister">
+
+<a
+href="#"
+id="skipLogin">
 
 
-حساب ندارید؟
+ادامه بدون ورود
 
-<strong>
 
-ثبت نام کنید
-
-</strong>
+</a>
 
 
 </p>
@@ -4035,40 +2569,6 @@ id="switchToRegister">
 
 
 
-<p
-
-id="switchToLogin"
-
-class="hidden">
-
-
-قبلاً ثبت نام کرده‌اید؟
-
-<strong>
-
-ورود
-
-</strong>
-
-
-</p>
-
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
 </div>
 
 
@@ -4083,28 +2583,20 @@ class="hidden">
 
 
 
-
-
-     
-
-<!-- =========================
+<!-- =================================================
 PROFILE PANEL
-========================= -->
+================================================= -->
 
 
-<div
-
+<aside
 id="profilePanel"
-
 class="profile-panel hidden">
 
 
 
 
 
-
 <div
-
 class="profile-header">
 
 
@@ -4112,15 +2604,10 @@ class="profile-header">
 
 
 <div
-
 class="profile-avatar">
 
 
-<i
-
-class="fa-solid fa-user">
-
-</i>
+<i class="fa-solid fa-user"></i>
 
 
 </div>
@@ -4130,16 +2617,15 @@ class="fa-solid fa-user">
 
 
 
-<div>
+<div
+class="profile-info">
+
 
 
 <h3
-
 id="profileName">
 
-
 کاربر NightCast
-
 
 </h3>
 
@@ -4149,12 +2635,9 @@ id="profileName">
 
 
 <p
-
 id="profileUsername">
 
-
 @username
-
 
 </p>
 
@@ -4170,6 +2653,7 @@ id="profileUsername">
 
 
 
+
 </div>
 
 
@@ -4179,23 +2663,18 @@ id="profileUsername">
 
 
 
-
-<div
-
+<nav
 class="profile-menu">
 
 
 
 
 
-<button>
+<button
+id="historyButton">
 
 
-<i
-
-class="fa-solid fa-clock-rotate-left">
-
-</i>
+<i class="fa-solid fa-clock-rotate-left"></i>
 
 
 تاریخچه شنیدن
@@ -4209,35 +2688,11 @@ class="fa-solid fa-clock-rotate-left">
 
 
 
-<button>
+<button
+id="favoritesButton">
 
 
-<i
-
-class="fa-solid fa-bookmark">
-
-</i>
-
-
-ذخیره‌ها
-
-
-</button>
-
-
-
-
-
-
-
-<button>
-
-
-<i
-
-class="fa-solid fa-heart">
-
-</i>
+<i class="fa-solid fa-heart"></i>
 
 
 علاقه‌مندی‌ها
@@ -4251,17 +2706,47 @@ class="fa-solid fa-heart">
 
 
 
+<button
+id="downloadsButton">
+
+
+<i class="fa-solid fa-download"></i>
+
+
+دانلودها
+
+
+</button>
+
+
+
+
+
+
 
 <button
+id="savedButton">
 
+
+<i class="fa-solid fa-bookmark"></i>
+
+
+ذخیره‌ها
+
+
+</button>
+
+
+
+
+
+
+
+<button
 id="logoutButton">
 
 
-<i
-
-class="fa-solid fa-right-from-bracket">
-
-</i>
+<i class="fa-solid fa-right-from-bracket"></i>
 
 
 خروج
@@ -4275,16 +2760,8 @@ class="fa-solid fa-right-from-bracket">
 
 
 
-</div>
 
-
-
-
-
-
-
-</div>
-
+</nav>
 
 
 
@@ -4293,129 +2770,24 @@ class="fa-solid fa-right-from-bracket">
 
 
 
-<!-- =========================
-FOOTER
-========================= -->
-
-
-<footer
-
-class="nightcast-footer">
+</aside>
 
 
 
 
+
+
+
+
+
+<!-- =================================================
+TOAST SYSTEM
+================================================= -->
 
 
 <div
-
-class="footer-content">
-
-
-
-
-
-
-<div
-
-class="footer-brand">
-
-
-
-
-
-<h2>
-
-
-Night<span>Cast</span>
-
-
-</h2>
-
-
-
-
-
-
-<p>
-
-
-رادیویی برای تجربه، یادگیری و رشد فردی
-
-
-</p>
-
-
-
-
-
-
-
-<div
-
-class="social-links">
-
-
-
-
-
-<a href="#">
-
-<i
-
-class="fa-brands fa-instagram">
-
-</i>
-
-
-</a>
-
-
-
-
-
-
-
-<a href="#">
-
-<i
-
-class="fa-brands fa-telegram">
-
-</i>
-
-
-</a>
-
-
-
-
-
-
-
-<a href="#">
-
-<i
-
-class="fa-brands fa-youtube">
-
-</i>
-
-
-</a>
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
+id="toastContainer"
+class="toast-container">
 
 
 </div>
@@ -4427,9 +2799,41 @@ class="fa-brands fa-youtube">
 
 
 
-<div
 
-class="footer-links">
+<!-- =================================================
+GLOBAL LOADER
+================================================= -->
+
+
+<div
+id="globalLoader"
+class="global-loader">
+
+
+
+
+
+<div
+class="loader-content">
+
+
+
+
+
+
+<div
+class="loader-animation">
+
+
+<div></div>
+
+<div></div>
+
+<div></div>
+
+
+</div>
+
 
 
 
@@ -4437,9 +2841,7 @@ class="footer-links">
 
 <h3>
 
-
-دسترسی سریع
-
+NightCast
 
 </h3>
 
@@ -4448,171 +2850,9 @@ class="footer-links">
 
 
 
-<a href="#home">
+<p>
 
-
-خانه
-
-
-</a>
-
-
-
-
-
-
-<a href="#podcastSection">
-
-
-پادکست‌ها
-
-
-</a>
-
-
-
-
-
-
-<a href="#booksSection">
-
-
-کتاب‌ها
-
-
-</a>
-
-
-
-
-
-
-<a href="#librarySection">
-
-
-کتابخانه
-
-
-</a>
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div
-
-class="footer-bottom">
-
-
-
-© 2026 NightCast
-
-تمامی حقوق محفوظ است.
-
-
-
-</div>
-
-
-
-
-
-
-</footer>
-
-
-
-
-
-
-
-
-
-<!-- =========================
-MOBILE MINI PLAYER
-========================= -->
-
-
-<div
-
-id="mobileMiniPlayer"
-
-class="mobile-mini-player hidden">
-
-
-
-
-
-
-<div
-
-class="mini-info">
-
-
-
-
-
-
-<img
-
-id="miniCover"
-
-src="/users/assets/images/default-cover.jpg"
-
-alt="cover">
-
-
-
-
-
-
-<div>
-
-
-<h4
-
-id="miniTitle">
-
-
-NightCast
-
-
-</h4>
-
-
-
-
-
-
-
-<p
-
-id="miniAuthor">
-
-
-آماده پخش
-
+در حال آماده‌سازی تجربه شنیدن...
 
 </p>
 
@@ -4620,96 +2860,7 @@ id="miniAuthor">
 
 
 
-
-
 </div>
-
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-<div
-
-class="mini-controls">
-
-
-
-
-
-<button
-
-id="miniPrevious">
-
-
-<i
-
-class="fa-solid fa-backward-step">
-
-</i>
-
-
-</button>
-
-
-
-
-
-
-
-<button
-
-id="miniPlay">
-
-
-<i
-
-class="fa-solid fa-play">
-
-</i>
-
-
-</button>
-
-
-
-
-
-
-
-<button
-
-id="miniNext">
-
-
-<i
-
-class="fa-solid fa-forward-step">
-
-</i>
-
-
-</button>
-
-
-
-
-
-
-</div>
-
-
 
 
 
@@ -4726,39 +2877,36 @@ class="fa-solid fa-forward-step">
 
 
 
-<!-- =========================
+<!-- =================================================
 MOBILE BOTTOM NAVIGATION
-========================= -->
+
+For Future APK / PWA
+
+================================================= -->
 
 
 <nav
-
 class="mobile-bottom-nav">
 
 
 
 
 
+<a
+href="#home"
+class="bottom-item active">
 
-<a href="#home"
-
-class="bottom-nav-item active">
 
 
-<i
-
-class="fa-solid fa-house">
-
-</i>
+<i class="fa-solid fa-house"></i>
 
 
 <span>
-
 
 خانه
 
-
 </span>
+
 
 
 </a>
@@ -4769,26 +2917,21 @@ class="fa-solid fa-house">
 
 
 
+<a
+href="#podcasts"
+class="bottom-item">
 
-<a href="#podcastSection"
-
-class="bottom-nav-item">
 
 
-<i
-
-class="fa-solid fa-headphones">
-
-</i>
+<i class="fa-solid fa-headphones"></i>
 
 
 <span>
 
-
-شنیدن
-
+پادکست
 
 </span>
+
 
 
 </a>
@@ -4799,26 +2942,38 @@ class="fa-solid fa-headphones">
 
 
 
+<button
+id="bottomPlayButton"
+class="bottom-play">
 
-<a href="#booksSection"
-
-class="bottom-nav-item">
 
 
-<i
+<i class="fa-solid fa-play"></i>
 
-class="fa-solid fa-bookmark">
 
-</i>
+</button>
+
+
+
+
+
+
+
+<a
+href="#library"
+class="bottom-item">
+
+
+
+<i class="fa-solid fa-bookmark"></i>
 
 
 <span>
-
 
 کتابخانه
 
-
 </span>
+
 
 
 </a>
@@ -4829,29 +2984,25 @@ class="fa-solid fa-bookmark">
 
 
 
+<a
+href="#profile"
+class="bottom-item">
 
-<a href="#profilePanel"
-
-class="bottom-nav-item">
 
 
-<i
-
-class="fa-solid fa-user">
-
-</i>
+<i class="fa-solid fa-user"></i>
 
 
 <span>
 
-
 پروفایل
-
 
 </span>
 
 
+
 </a>
+
 
 
 
@@ -4869,33 +3020,360 @@ class="fa-solid fa-user">
 
 
 
-<!-- =========================
-JAVASCRIPT FILES
-========================= -->
+<!-- =================================================
+FOOTER
+================================================= -->
 
 
+<footer
+class="nightcast-footer">
+
+
+
+
+
+<div
+class="footer-container">
+
+
+
+
+
+
+
+
+<div
+class="footer-brand">
+
+
+
+
+
+<h2>
+
+Night<span>Cast</span>
+
+</h2>
+
+
+
+
+
+
+<p>
+
+رادیوی تجربه، یادگیری و رشد فردی
+
+
+</p>
+
+
+
+
+
+
+<div
+class="footer-social">
+
+
+
+
+
+<a
+href="#">
+
+<i class="fa-brands fa-instagram"></i>
+
+
+</a>
+
+
+
+
+
+
+
+<a
+href="#">
+
+<i class="fa-brands fa-telegram"></i>
+
+
+</a>
+
+
+
+
+
+
+
+<a
+href="#">
+
+<i class="fa-brands fa-youtube"></i>
+
+
+</a>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div
+class="footer-links">
+
+
+
+
+
+<h3>
+
+دسترسی سریع
+
+</h3>
+
+
+
+
+
+
+<a
+href="#podcasts">
+
+پادکست‌ها
+
+</a>
+
+
+
+
+
+
+<a
+href="#about">
+
+درباره NightCast
+
+</a>
+
+
+
+
+
+
+
+<a
+href="#profile">
+
+حساب کاربری
+
+</a>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div
+class="footer-links">
+
+
+
+
+
+<h3>
+
+پشتیبانی
+
+</h3>
+
+
+
+
+
+
+<a
+href="#">
+
+قوانین استفاده
+
+</a>
+
+
+
+
+
+
+<a
+href="#">
+
+حریم خصوصی
+
+</a>
+
+
+
+
+
+
+<a
+href="#">
+
+تماس با ما
+
+</a>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div
+class="footer-bottom">
+
+
+
+© 2026 NightCast
+
+</div>
+
+
+
+
+
+
+</footer>
+
+
+
+
+     
+
+     
+     <!-- =================================================
+NIGHTCAST JAVASCRIPT CORE
+================================================= -->
+
+
+<!-- API COMMUNICATION LAYER -->
 
 <script src="/users/js/core/api.js"></script>
 
+
+
+<!-- AUTHENTICATION SYSTEM -->
+
 <script src="/users/js/core/auth.js"></script>
+
+
+
+<!-- GLOBAL UI COMPONENTS -->
 
 <script src="/users/js/core/ui.js"></script>
 
 
 
 
+
+<!-- =================================================
+USER FEATURES
+================================================= -->
+
+
+<!-- Podcast Loading / Cards / Actions -->
+
 <script src="/users/js/features/podcasts.js"></script>
+
+
+
+<!-- Search Engine -->
 
 <script src="/users/js/features/search.js"></script>
 
+
+
+<!-- User Library -->
+
 <script src="/users/js/features/library.js"></script>
+
+
+
+<!-- Profile Management -->
 
 <script src="/users/js/features/profile.js"></script>
 
 
 
 
+
+
+
+<!-- =================================================
+MEDIA PLAYER
+================================================= -->
+
+
 <script src="/users/js/player.js"></script>
+
+
+
+
+
+
+
+<!-- =================================================
+APPLICATION STARTUP
+================================================= -->
+
 
 <script src="/users/js/app.js"></script>
 
@@ -4903,14 +3381,111 @@ JAVASCRIPT FILES
 
 
 
-
-
 </body>
-
 
 </html>
 
 
 
-     
+
+
+<!-- =================================================
+END APPLICATION STRUCTURE
+================================================= -->
+
+
+<!--
+=====================================================
+
+NightCast User Architecture
+
+Future Ready:
+
+Desktop
+Tablet
+Mobile
+PWA
+APK
+
+=====================================================
+-->
+
+
+
+<!--
+Dynamic Areas Controlled By JS
+
+
+1. Podcast Engine
+
+#podcastList
+
+
+2. Infinite Scroll
+
+#loadMoreButton
+
+
+3. Audio Player
+
+#nightcastPlayer
+
+
+4. User Authentication
+
+#authModal
+
+
+5. Profile
+
+#profilePanel
+
+
+6. Search
+
+#searchInput
+
+
+7. Notifications
+
+#toastContainer
+
+
+8. Theme
+
+#themeButton
+
+
+=====================================================
+-->
+
+
+
+
+<!--
+Future API Modules:
+
+
+/public/podcasts
+
+/public/login
+
+/public/register
+
+/public/me
+
+/public/download/{id}
+
+/public/comments/{id}
+
+
+=====================================================
+-->
+
+
+
+
+
+
+
      

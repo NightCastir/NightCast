@@ -1,29 +1,12 @@
 /* ==================================================
 
-NightCast User Application Core V1
+NightCast User Application Core V2
 
 File:
  /users/js/app.js
 
-
 Responsibility:
-
-- Application Bootstrap
-- Module Initialization
-
-
-Modules:
-
-api.js
-auth.js
-ui.js
-podcasts.js
-search.js
-library.js
-profile.js
-player.js
-comments.js
-
+Application Bootstrap
 
 ================================================== */
 
@@ -32,295 +15,197 @@ const NightCastApp = {
 
 
 
-    /*
-    ====================================
-    INIT APPLICATION
-    ====================================
-    */
-
-
     async init(){
 
 
-
         console.log(
-
             "🚀 NightCast Starting..."
-
         );
 
 
 
+        try{
+
+
+
+            /*
+            UI
+            */
+
+            if(window.NightCastUI){
+
+                NightCastUI.init();
+
+            }
 
 
 
 
-        /*
-        ================================
-        GLOBAL SYSTEM
-        ================================
-        */
-
-
-        this.hideLoader();
 
 
 
+            /*
+            AUTH
+
+            Guest allowed
+
+            */
+
+            if(window.NightCastAuth){
+
+                await NightCastAuth.init();
+
+            }
 
 
 
 
 
 
-        /*
-        ================================
-        UI CORE
-        ================================
-        */
 
 
-        if(
-
-            window.NightCastUI
-
-        ){
+            /*
+            FEATURES
+            */
 
 
-            NightCastUI.init();
+
+            const modules = [
+
+
+                "NightCastPodcasts",
+
+
+                "NightCastSearch",
+
+
+                "NightCastLibrary",
+
+
+                "NightCastProfile",
+
+
+                "NightCastComments"
+
+
+            ];
+
+
+
+
+
+
+
+            modules.forEach(
+                
+                module=>{
+
+
+                    if(
+                        window[module]
+                        &&
+                        typeof window[module].init === "function"
+                    ){
+
+                        window[module].init();
+
+                    }
+
+
+                }
+
+            );
+
+
+
+
+
+
+
+
+            /*
+            PLAYER
+
+            only once
+
+            */
+
+            if(
+
+                window.NightCastPlayer
+
+                &&
+
+                !window.NightCastPlayer.started
+
+            ){
+
+
+                NightCastPlayer.init();
+
+
+                NightCastPlayer.started=true;
+
+
+            }
+
+
+
+
+
+
+
+
+
+
+            document.body.classList.add(
+                "app-ready"
+            );
+
+
+
+
+            this.hideLoader();
+
+
+
+            console.log(
+                "✅ NightCast Ready"
+            );
+
+
+
 
 
         }
 
+        catch(error){
 
 
 
+            console.error(
+                "NightCast Init Error:",
+                error
+            );
 
 
 
+            this.hideLoader();
 
 
-        /*
-        ================================
-        AUTH SYSTEM
-        ================================
-        */
 
+            if(window.NightCastUI){
 
-        if(
+                NightCastUI.toast(
+                    "خطا در آماده‌سازی برنامه",
+                    "error"
+                );
 
-            window.NightCastAuth
+            }
 
-        ){
-
-
-            await NightCastAuth.init();
 
 
         }
-
-
-
-
-
-
-
-
-
-        /*
-        ================================
-        PODCASTS
-        ================================
-        */
-
-
-        if(
-
-            window.NightCastPodcasts
-
-        ){
-
-
-            NightCastPodcasts.init();
-
-
-        }
-
-
-
-
-
-
-
-
-
-        /*
-        ================================
-        SEARCH
-        ================================
-        */
-
-
-        if(
-
-            window.NightCastSearch
-
-        ){
-
-
-            NightCastSearch.init();
-
-
-        }
-
-
-
-
-
-
-
-
-
-        /*
-        ================================
-        LIBRARY
-        ================================
-        */
-
-
-        if(
-
-            window.NightCastLibrary
-
-        ){
-
-
-            NightCastLibrary.init();
-
-
-        }
-
-
-
-
-
-
-
-
-
-        /*
-        ================================
-        PROFILE
-        ================================
-        */
-
-
-        if(
-
-            window.NightCastProfile
-
-        ){
-
-
-            NightCastProfile.init();
-
-
-        }
-
-
-
-
-
-
-
-
-
-        /*
-        ================================
-        PLAYER
-        ================================
-        */
-
-
-        if(
-
-            window.NightCastPlayer
-
-        ){
-
-
-            NightCastPlayer.init();
-
-
-        }
-
-
-
-
-
-
-
-
-
-        /*
-        ================================
-        COMMENTS
-
-        فقط صفحات مربوط به نظر
-
-        ================================
-        */
-
-
-        if(
-
-            window.NightCastComments
-
-            &&
-
-            document.getElementById(
-
-                "commentsList"
-
-            )
-
-        ){
-
-
-            NightCastComments.init();
-
-
-        }
-
-
-
-
-
-
-
-
-
-        /*
-        ================================
-        READY
-        ================================
-        */
-
-
-        document.body.classList.add(
-
-            "app-ready"
-
-        );
-
-
-
-
-
-        console.log(
-
-            "✅ NightCast Ready"
-
-        );
 
 
 
@@ -333,14 +218,6 @@ const NightCastApp = {
 
 
 
-
-    /*
-    ====================================
-    LOADER
-    ====================================
-    */
-
-
     hideLoader(){
 
 
@@ -348,46 +225,24 @@ const NightCastApp = {
         const loader =
 
         document.getElementById(
-
             "globalLoader"
-
         );
 
 
 
 
+        if(loader){
 
-        if(!loader){
 
-            return;
+            loader.classList.add(
+                "hidden"
+            );
+
 
         }
 
 
-
-
-
-
-
-        setTimeout(()=>{
-
-
-            loader.classList.add(
-
-                "hidden"
-
-            );
-
-
-
-        },500);
-
-
-
     }
-
-
-
 
 
 
@@ -400,33 +255,22 @@ const NightCastApp = {
 
 
 
-/*
-====================================
-START
-====================================
-*/
+window.NightCastApp = NightCastApp;
+
+
+
 
 
 document.addEventListener(
 
-    "DOMContentLoaded",
+"DOMContentLoaded",
 
-    ()=>{
-
-
-        NightCastApp.init();
+()=>{
 
 
-    }
+    NightCastApp.init();
 
+
+}
 
 );
-
-
-
-
-
-
-window.NightCastApp =
-
-NightCastApp;

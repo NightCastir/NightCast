@@ -1,213 +1,47 @@
 /* ==================================================
-   NightCast Responsive CSS
-   File: /users/css/responsive.css
-   Version: 1.0
+
+NightCast Responsive System V1
+
+File:
+ /users/css/responsive.css
+
+
+Mobile First
+
+Breakpoints:
+
+Mobile
+Tablet
+Desktop
+Large Desktop
+
 ================================================== */
 
 
-
-/* ==========================
-   LARGE DESKTOP
-========================== */
-
-
-@media (min-width:1400px){
+/* =====================================
+BASE MOBILE
+===================================== */
 
 
+*{
 
-.header-container,
-
-.hero-content,
-
-#podcastSection{
-
-max-width:1300px;
+box-sizing:border-box;
 
 }
 
 
 
+html{
 
-.podcast-grid{
-
-grid-template-columns:
-
-repeat(4,1fr);
+scroll-behavior:smooth;
 
 }
-
-
-
-.hero h1{
-
-font-size:50px;
-
-}
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/* ==========================
-   DESKTOP
-========================== */
-
-
-@media (min-width:1024px){
-
-
-
-.podcast-grid{
-
-grid-template-columns:
-
-repeat(3,1fr);
-
-}
-
-
-
-.hero{
-
-padding-top:80px;
-
-}
-
-
-
-.audio-player{
-
-padding-left:40px;
-
-padding-right:40px;
-
-}
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/* ==========================
-   TABLET
-========================== */
-
-
-@media (max-width:1023px){
-
-
-
-.header-container{
-
-padding:
-
-15px;
-
-}
-
-
-
-.logo{
-
-font-size:21px;
-
-}
-
-
-
-.hero-content{
-
-padding:
-
-35px 25px;
-
-}
-
-
-
-.hero h1{
-
-font-size:34px;
-
-}
-
-
-
-.podcast-grid{
-
-grid-template-columns:
-
-repeat(2,1fr);
-
-}
-
-
-
-.cover-wrapper{
-
-height:220px;
-
-}
-
-
-
-.search-box{
-
-order:3;
-
-width:100%;
-
-}
-
-
-
-.header-container{
-
-flex-wrap:wrap;
-
-}
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/* ==========================
-   MOBILE
-========================== */
-
-
-@media(max-width:700px){
 
 
 
 body{
 
-padding-bottom:
-
-110px;
+overflow-x:hidden;
 
 }
 
@@ -215,56 +49,68 @@ padding-bottom:
 
 
 
-/* HEADER */
+
+/* =====================================
+HEADER
+===================================== */
 
 
-.header-container{
+.main-header{
 
-flex-direction:
+display:none;
 
-row;
+}
+
+
+
+
+.mobile-header{
+
+display:flex;
 
 align-items:center;
 
-gap:10px;
+justify-content:space-between;
+
+padding:12px 16px;
+
+position:sticky;
+
+top:0;
+
+z-index:900;
 
 }
 
 
 
-.logo{
+.header-wrapper{
 
-font-size:19px;
+display:flex;
 
-}
+align-items:center;
 
+justify-content:space-between;
 
-
-.login-btn{
-
-padding:
-
-8px 15px;
-
-font-size:13px;
+gap:20px;
 
 }
 
 
 
-.search-box{
+.header-search{
 
-width:100%;
-
-order:5;
+display:none;
 
 }
 
 
 
-.search-box input{
+.header-actions{
 
-height:42px;
+display:flex;
+
+gap:8px;
 
 }
 
@@ -272,16 +118,38 @@ height:42px;
 
 
 
+.logo-text p{
+
+display:none;
+
+}
 
 
-/* HERO */
 
 
-.hero{
 
-padding:
 
-25px 15px;
+
+/* =====================================
+HERO
+===================================== */
+
+
+.hero-section{
+
+padding:30px 16px;
+
+}
+
+
+
+.hero-container{
+
+display:flex;
+
+flex-direction:column;
+
+gap:30px;
 
 }
 
@@ -289,64 +157,39 @@ padding:
 
 .hero-content{
 
-padding:
-
-30px 20px;
-
-border-radius:
-
-18px;
+text-align:center;
 
 }
 
 
 
-.hero h1{
+.hero-content h1{
 
-font-size:
+font-size:32px;
 
-28px;
-
-}
-
-
-
-.hero p{
-
-font-size:
-
-15px;
+line-height:1.6;
 
 }
 
 
 
+.hero-content p{
 
+font-size:15px;
 
-
-
-/* CATEGORY */
-
-
-.category-section{
-
-padding:
-
-5px 15px;
+line-height:2;
 
 }
 
 
 
-.category-btn{
+.hero-actions{
 
-padding:
+display:flex;
 
-8px 15px;
+flex-direction:column;
 
-font-size:
-
-13px;
+gap:12px;
 
 }
 
@@ -354,80 +197,162 @@ font-size:
 
 
 
+.hero-visual{
+
+min-height:250px;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+}
 
 
-/* PODCAST */
 
+.hero-circle{
 
-#podcastSection{
+width:180px;
 
-padding:
+height:180px;
 
-20px 15px;
+border-radius:50%;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
 
 }
 
 
 
-#podcastSection h2{
 
-font-size:
 
-22px;
+.floating-card{
+
+position:absolute;
 
 }
 
+
+
+
+
+
+
+
+/* =====================================
+STATS
+===================================== */
+
+
+.hero-stats{
+
+display:grid;
+
+grid-template-columns:1fr;
+
+gap:12px;
+
+padding:20px 16px;
+
+}
+
+
+
+.hero-stat-card{
+
+display:flex;
+
+align-items:center;
+
+gap:15px;
+
+}
+
+
+
+
+
+
+
+
+/* =====================================
+CONTAINER
+===================================== */
+
+
+.section-container{
+
+width:100%;
+
+padding:0 16px;
+
+}
+
+
+
+
+
+
+
+/* =====================================
+CATEGORY
+===================================== */
+
+
+.category-list{
+
+display:flex;
+
+overflow-x:auto;
+
+gap:12px;
+
+padding-bottom:10px;
+
+}
+
+
+
+.category-card{
+
+min-width:110px;
+
+flex-shrink:0;
+
+}
+
+
+
+
+
+
+
+
+/* =====================================
+PODCAST GRID
+===================================== */
 
 
 .podcast-grid{
 
-grid-template-columns:
+display:grid;
 
-1fr;
+grid-template-columns:1fr;
 
-gap:18px;
-
-}
-
-
-
-.cover-wrapper{
-
-height:
-
-260px;
+gap:20px;
 
 }
 
 
 
-.podcast-info{
+.podcast-card{
 
-padding:
-
-15px;
-
-}
-
-
-
-.podcast-title{
-
-font-size:
-
-18px;
-
-}
-
-
-
-.podcast-actions button{
-
-flex:1;
-
-font-size:
-
-13px;
+overflow:hidden;
 
 }
 
@@ -435,110 +360,13 @@ font-size:
 
 
 
+.podcast-cover img{
 
+width:100%;
 
-/* POPUP */
+aspect-ratio:1/1;
 
-
-.popup-box{
-
-width:
-
-95%;
-
-padding:
-
-20px;
-
-}
-
-
-
-.popup-box h2{
-
-font-size:
-
-20px;
-
-}
-
-
-
-
-
-
-
-/* FOOTER */
-
-
-.main-footer{
-
-padding:
-
-30px 15px;
-
-}
-
-
-
-.footer-links{
-
-flex-direction:
-
-column;
-
-gap:
-
-8px;
-
-}
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/* ==========================
-   SMALL PHONES
-========================== */
-
-
-@media(max-width:380px){
-
-
-
-.logo{
-
-font-size:
-
-17px;
-
-}
-
-
-
-.hero h1{
-
-font-size:
-
-24px;
-
-}
-
-
-
-.cover-wrapper{
-
-height:
-
-220px;
+object-fit:cover;
 
 }
 
@@ -546,23 +374,11 @@ height:
 
 .podcast-actions{
 
-flex-direction:
+display:grid;
 
-column;
+grid-template-columns:1fr 1fr;
 
-}
-
-
-
-.podcast-actions button{
-
-width:
-
-100%;
-
-}
-
-
+gap:8px;
 
 }
 
@@ -572,30 +388,197 @@ width:
 
 
 
+/* =====================================
+BOOKS
+===================================== */
 
 
-/* ==========================
-   LANDSCAPE MOBILE
-========================== */
+.books-grid{
 
+display:grid;
 
-@media(
+grid-template-columns:1fr;
 
-max-height:500px
+gap:20px;
 
-)
-
-and
-
-(orientation:landscape){
+}
 
 
 
-.hero{
 
-padding:
 
-15px;
+
+
+/* =====================================
+PLAYER FIXED
+===================================== */
+
+
+.nightcast-player{
+
+position:fixed;
+
+bottom:0;
+
+right:0;
+
+left:0;
+
+z-index:1000;
+
+}
+
+
+
+.player-controls{
+
+display:flex;
+
+justify-content:center;
+
+}
+
+
+
+
+
+.player-options{
+
+display:none;
+
+}
+
+
+
+
+
+
+
+
+/* =====================================
+PROFILE PANEL
+===================================== */
+
+
+.profile-panel{
+
+position:fixed;
+
+right:-100%;
+
+top:0;
+
+height:100%;
+
+width:85%;
+
+z-index:1200;
+
+transition:.3s;
+
+}
+
+
+
+.profile-panel.active{
+
+right:0;
+
+}
+
+
+
+
+
+
+
+
+/* =====================================
+AUTH MODAL
+===================================== */
+
+
+.auth-box{
+
+width:90%;
+
+max-width:400px;
+
+}
+
+
+
+
+
+
+
+
+
+/* =====================================
+MOBILE BOTTOM NAV
+===================================== */
+
+
+.mobile-bottom-nav{
+
+display:flex;
+
+position:fixed;
+
+bottom:0;
+
+left:0;
+
+right:0;
+
+height:65px;
+
+z-index:950;
+
+}
+
+
+
+
+
+
+
+
+
+
+/* =====================================
+TABLET
+
+768px+
+
+===================================== */
+
+
+@media(min-width:768px){
+
+
+
+.mobile-header{
+
+display:none;
+
+}
+
+
+
+.main-header{
+
+display:block;
+
+}
+
+
+
+.hero-container{
+
+flex-direction:row;
+
+align-items:center;
 
 }
 
@@ -603,24 +586,68 @@ padding:
 
 .hero-content{
 
-padding:
+text-align:right;
 
-20px;
-
-}
-
-
-
-.cover-wrapper{
-
-height:
-
-180px;
+width:50%;
 
 }
 
 
 
+.hero-visual{
+
+width:50%;
+
+}
+
+
+
+.hero-actions{
+
+flex-direction:row;
+
+}
+
+
+
+
+
+.hero-stats{
+
+grid-template-columns:repeat(3,1fr);
+
+}
+
+
+
+.podcast-grid{
+
+grid-template-columns:repeat(2,1fr);
+
+}
+
+
+
+.books-grid{
+
+grid-template-columns:repeat(2,1fr);
+
+}
+
+
+
+
+
+.player-options{
+
+display:flex;
+
+}
+
+
+
+
+
 }
 
 
@@ -631,18 +658,138 @@ height:
 
 
 
-/* ==========================
-   DARK MODE READY
-========================== */
+/* =====================================
+DESKTOP
+
+1024px+
+
+===================================== */
 
 
-@media(prefers-color-scheme:dark){
+@media(min-width:1024px){
+
+
+
+.section-container{
+
+max-width:1200px;
+
+margin:auto;
+
+}
+
+
+
+
+
+.podcast-grid{
+
+grid-template-columns:repeat(3,1fr);
+
+}
+
+
+
+
+.books-grid{
+
+grid-template-columns:repeat(3,1fr);
+
+}
+
+
+
+
+
+.header-search{
+
+display:flex;
+
+flex:1;
+
+max-width:500px;
+
+}
+
+
+
+
+.logo-text p{
+
+display:block;
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* =====================================
+LARGE DESKTOP
+
+1400px+
+
+===================================== */
+
+
+@media(min-width:1400px){
+
+
+
+.podcast-grid{
+
+grid-template-columns:repeat(4,1fr);
+
+}
+
+
+
+.hero-content h1{
+
+font-size:46px;
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+/* =====================================
+SAFE AREA FOR MOBILE APK
+
+===================================== */
+
+
+@media(max-width:767px){
 
 
 
 body{
 
-background:#0b0b0b;
+padding-bottom:80px;
+
+}
+
+
+
+.nightcast-player{
+
+bottom:65px;
 
 }
 

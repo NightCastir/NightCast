@@ -3,29 +3,36 @@
 NightCast Library Manager V1
 
 File:
- /users/js/features/library.js
+
+/users/js/features/library.js
+
 
 Responsibility:
 
-- Continue Listening
-- History
-- Saved Podcasts
-- Recently Played
+- Favorites
+- Downloads
+- Listening History
+
 
 Depends:
 
-player.js
-ui.js
+api.js
+
 
 ================================================== */
 
+
 const NightCastLibrary = {
 
-    historyKey: "NightCastHistory",
 
-    continueKey: "NightCastContinue",
 
-    favoriteKey: "NightCastFavorites",
+    favorites:[],
+
+
+    downloads:[],
+
+
+    history:[],
 
 
 
@@ -37,62 +44,30 @@ const NightCastLibrary = {
     ====================================
     */
 
+
     init(){
 
-        this.renderContinue();
-
-        console.log("NightCast Library Loaded");
-
-    },
 
 
+        this.loadLocal();
+
+        this.bindEvents();
 
 
 
 
-    /*
-    ====================================
-    SAVE LAST PLAYED
-    ====================================
-    */
+        console.log(
 
-    saveContinue(podcast, currentTime = 0){
-
-        if(!podcast){
-
-            return;
-
-        }
-
-        const data = {
-
-            id: podcast.id,
-
-            title: podcast.title,
-
-            author: podcast.author,
-
-            cover: podcast.cover,
-
-            audio: podcast.audio,
-
-            currentTime: currentTime,
-
-            updatedAt: Date.now()
-
-        };
-
-        localStorage.setItem(
-
-            this.continueKey,
-
-            JSON.stringify(data)
+            "NightCast Library Ready"
 
         );
 
-        this.addHistory(data);
+
 
     },
+
+
+
 
 
 
@@ -101,33 +76,424 @@ const NightCastLibrary = {
 
     /*
     ====================================
-    LOAD CONTINUE
+    LOCAL DATA
     ====================================
     */
 
-    getContinue(){
 
-        try{
+    loadLocal(){
 
-            return JSON.parse(
 
-                localStorage.getItem(
 
-                    this.continueKey
+        this.favorites =
 
-                )
+        JSON.parse(
+
+            localStorage.getItem(
+
+                "NightCastFavorites"
+
+            )
+
+        )
+
+        ||
+
+        [];
+
+
+
+
+
+
+        this.downloads =
+
+        JSON.parse(
+
+            localStorage.getItem(
+
+                "NightCastDownloads"
+
+            )
+
+        )
+
+        ||
+
+        [];
+
+
+
+
+
+
+
+        this.history =
+
+        JSON.parse(
+
+            localStorage.getItem(
+
+                "NightCastHistory"
+
+            )
+
+        )
+
+        ||
+
+        [];
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    save(){
+
+
+
+        localStorage.setItem(
+
+            "NightCastFavorites",
+
+            JSON.stringify(
+
+                this.favorites
+
+            )
+
+        );
+
+
+
+
+
+
+        localStorage.setItem(
+
+            "NightCastDownloads",
+
+            JSON.stringify(
+
+                this.downloads
+
+            )
+
+        );
+
+
+
+
+
+
+        localStorage.setItem(
+
+            "NightCastHistory",
+
+            JSON.stringify(
+
+                this.history
+
+            )
+
+        );
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    FAVORITE
+    ====================================
+    */
+
+
+    toggleFavorite(podcast){
+
+
+
+        const index =
+
+        this.favorites.findIndex(
+
+            item=>item.id===podcast.id
+
+        );
+
+
+
+
+
+
+        if(index>-1){
+
+
+
+            this.favorites.splice(
+
+                index,
+
+                1
 
             );
 
+
+
+
+            if(window.NightCastUI){
+
+
+
+                NightCastUI.toast(
+
+                    "از علاقه‌مندی‌ها حذف شد",
+
+                    "info"
+
+                );
+
+
+
+            }
+
+
+
+
         }
 
-        catch{
+        else{
 
-            return null;
+
+
+            this.favorites.push(
+
+                podcast
+
+            );
+
+
+
+
+
+
+            if(window.NightCastUI){
+
+
+
+                NightCastUI.toast(
+
+                    "به علاقه‌مندی‌ها اضافه شد",
+
+                    "success"
+
+                );
+
+
+
+            }
+
+
 
         }
+
+
+
+
+
+
+        this.save();
+
+
 
     },
+
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    DOWNLOAD
+    ====================================
+    */
+
+
+    async download(podcast){
+
+
+
+        if(!podcast.audio_url){
+
+
+
+            NightCastUI.toast(
+
+                "فایل صوتی موجود نیست",
+
+                "error"
+
+            );
+
+
+            return;
+
+
+
+        }
+
+
+
+
+
+
+
+
+        const token =
+
+        localStorage.getItem(
+
+            "NightCastToken"
+
+        );
+
+
+
+
+
+
+
+        if(!token){
+
+
+
+            if(window.NightCastAuth){
+
+
+
+                NightCastAuth.openLogin();
+
+
+
+            }
+
+
+
+            NightCastUI.toast(
+
+                "برای دانلود وارد شوید",
+
+                "warning"
+
+            );
+
+
+
+            return;
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+        const result =
+
+        await API.get(
+
+            "/public/download/" +
+
+            podcast.id
+
+        );
+
+
+
+
+
+
+
+        if(result.success){
+
+
+
+            this.downloads.push(
+
+                podcast
+
+            );
+
+
+
+            this.save();
+
+
+
+
+
+            window.open(
+
+                podcast.audio_url,
+
+                "_blank"
+
+            );
+
+
+
+
+        }
+
+        else{
+
+
+
+            NightCastUI.toast(
+
+                result.message ||
+
+                "دانلود امکان پذیر نیست",
+
+                "error"
+
+            );
+
+
+
+        }
+
+
+
+    },
+
+
+
 
 
 
@@ -140,27 +506,53 @@ const NightCastLibrary = {
     ====================================
     */
 
-    addHistory(item){
 
-        let history = this.getHistory();
+    addHistory(podcast){
 
-        history = history.filter(
 
-            x => x.id !== item.id
+
+        this.history =
+
+        this.history.filter(
+
+            item=>item.id!==podcast.id
+
+        );
+
+
+
+
+
+
+        this.history.unshift(
+
+            podcast
 
         );
 
-        history.unshift(item);
 
-        history = history.slice(0,50);
 
-        localStorage.setItem(
 
-            this.historyKey,
 
-            JSON.stringify(history)
+
+        this.history =
+
+        this.history.slice(
+
+            0,
+
+            50
 
         );
+
+
+
+
+
+
+        this.save();
+
+
 
     },
 
@@ -169,257 +561,171 @@ const NightCastLibrary = {
 
 
 
-    /*
-    ====================================
-    GET HISTORY
-    ====================================
-    */
-
-    getHistory(){
-
-        try{
-
-            return JSON.parse(
-
-                localStorage.getItem(
-
-                    this.historyKey
-
-                )
-
-            ) || [];
-
-        }
-
-        catch{
-
-            return [];
-
-        }
-
-    },
-
-
-
 
 
 
     /*
     ====================================
-    FAVORITES
+    EVENTS
     ====================================
     */
 
-    getFavorites(){
 
-        try{
+    bindEvents(){
 
-            return JSON.parse(
 
-                localStorage.getItem(
 
-                    this.favoriteKey
 
-                )
 
-            ) || [];
+        document.addEventListener(
 
-        }
+            "click",
 
-        catch{
+            e=>{
 
-            return [];
 
-        }
 
-    },
 
 
+                const download =
 
+                e.target.closest(
 
+                    ".download-button"
 
+                );
 
-    /*
-    ====================================
-    CONTINUE UI
-    ====================================
-    */
 
-    renderContinue(){
 
-        const box =
 
-        document.getElementById(
 
-            "continueListening"
+                if(download){
 
-        );
 
-        if(!box){
 
-            return;
+                    const card =
 
-        }
+                    download.closest(
 
-        const item = this.getContinue();
+                        ".podcast-card"
 
-        if(!item){
+                    );
 
-            return;
 
-        }
 
-        box.innerHTML = `
+                    if(card && card.dataset.id){
 
-<div class="continue-card">
 
-    <img
 
-    src="${item.cover ||
+                        this.download({
 
-    "/users/assets/images/default-cover.jpg"}"
+                            id:card.dataset.id,
 
-    class="continue-cover">
+                            audio_url:card.dataset.audio,
 
+                            title:card.dataset.title
 
+                        });
 
-    <div class="continue-info">
 
-        <h3>${item.title}</h3>
 
-        <p>${item.author || "NightCast"}</p>
+                    }
 
-        <small>
 
-        ادامه از
-
-        ${this.format(item.currentTime)}
-
-        </small>
-
-    </div>
-
-
-
-    <button
-
-    class="gold-button"
-
-    id="continuePlay">
-
-        ادامه پخش
-
-    </button>
-
-</div>
-
-`;
-
-        const btn =
-
-        document.getElementById(
-
-            "continuePlay"
-
-        );
-
-        if(btn){
-
-            btn.onclick = ()=>{
-
-                if(window.NightCastPlayer){
-
-                    NightCastPlayer.load(item);
-
-                    NightCastPlayer.audio.currentTime =
-
-                        item.currentTime || 0;
-
-                    NightCastPlayer.play();
 
                 }
 
-            };
-
-        }
-
-    },
 
 
 
 
 
 
-    /*
-    ====================================
-    CLEAR HISTORY
-    ====================================
-    */
 
-    clearHistory(){
+                const favorite =
 
-        localStorage.removeItem(
+                e.target.closest(
 
-            this.historyKey
+                    ".favorite-button"
 
-        );
-
-    },
+                );
 
 
 
 
 
 
-    /*
-    ====================================
-    CLEAR CONTINUE
-    ====================================
-    */
+                if(favorite){
 
-    clearContinue(){
 
-        localStorage.removeItem(
 
-            this.continueKey
+                    const card =
 
-        );
+                    favorite.closest(
 
-    },
+                        ".podcast-card"
+
+                    );
 
 
 
 
 
 
-    /*
-    ====================================
-    FORMAT TIME
-    ====================================
-    */
+                    if(card){
 
-    format(sec){
 
-        sec = parseInt(sec || 0);
 
-        let m = Math.floor(sec/60);
+                        this.toggleFavorite({
 
-        let s = sec%60;
+                            id:card.dataset.id,
 
-        return (
+                            title:card.dataset.title
 
-            String(m).padStart(2,"0")
+                        });
 
-            + ":"
 
-            +
 
-            String(s).padStart(2,"0")
+                    }
+
+
+
+                }
+
+
+
+
+
+            }
 
         );
+
+
 
     }
 
+
+
+
 };
 
-window.NightCastLibrary = NightCastLibrary;
+
+
+
+
+
+
+window.NightCastLibrary =
+
+NightCastLibrary;
+
+
+
+
+
+
+console.log(
+
+"NightCast Library V1 Loaded"
+
+);

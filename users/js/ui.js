@@ -1,13 +1,34 @@
-/* ==================================================
-   NightCast User Interface Manager
-   File: /users/js/ui.js
-   Version: 2.0 Professional
-================================================== */
 
+/* ==================================================
+   NightCast UI Manager V2
+
+   File:
+   /users/js/core/ui.js
+
+   Responsibility:
+   UI Components Manager
+
+================================================== */
 
 const NightCastUI = {
 
+    loader:null,
+    toast:null,
 
+    /*
+    ====================================
+    INIT
+    ====================================
+    */
+
+    init(){
+
+        this.loader =
+        document.getElementById("globalLoader");
+
+        this.createToast();
+
+    },
 
     /*
     ====================================
@@ -15,318 +36,156 @@ const NightCastUI = {
     ====================================
     */
 
-
     showLoader(){
 
+        if(this.loader){
 
-        const loader =
-
-        document.getElementById(
-
-            "globalLoader"
-
-        );
-
-
-
-        if(loader){
-
-
-            loader.classList.remove(
-
-                "hidden"
-
-            );
-
+            this.loader.classList.remove("hidden");
 
         }
 
-
     },
-
-
-
-
-
-
-
 
     hideLoader(){
 
+        if(this.loader){
 
-        const loader =
-
-        document.getElementById(
-
-            "globalLoader"
-
-        );
-
-
-
-        if(loader){
-
-
-            loader.classList.add(
-
-                "hidden"
-
-            );
-
+            this.loader.classList.add("hidden");
 
         }
-
 
     },
 
-
-
-
-
-
-
-
-
     /*
     ====================================
-    TOAST MESSAGE
+    TOAST
     ====================================
     */
 
+    createToast(){
 
-    toast(
+        if(document.getElementById("nightToast")){
 
-        message,
+            this.toast =
+            document.getElementById("nightToast");
 
-        type="success"
-
-    ){
-
-
-
-        let toast =
-
-        document.getElementById(
-
-            "nightToast"
-
-        );
-
-
-
-
-
-        if(!toast){
-
-
-
-            toast =
-
-            document.createElement(
-
-                "div"
-
-            );
-
-
-
-            toast.id =
-
-            "nightToast";
-
-
-
-            toast.className =
-
-            "toast";
-
-
-
-            document.body.appendChild(
-
-                toast
-
-            );
-
-
+            return;
 
         }
 
+        this.toast =
+        document.createElement("div");
 
+        this.toast.id = "nightToast";
 
+        this.toast.style.position = "fixed";
+        this.toast.style.bottom = "90px";
+        this.toast.style.left = "50%";
+        this.toast.style.transform = "translateX(-50%)";
+        this.toast.style.background = "#111";
+        this.toast.style.color = "#fff";
+        this.toast.style.padding = "12px 22px";
+        this.toast.style.borderRadius = "12px";
+        this.toast.style.zIndex = "99999";
+        this.toast.style.display = "none";
+        this.toast.style.boxShadow = "0 6px 20px rgba(0,0,0,.35)";
+        this.toast.style.maxWidth = "90%";
+        this.toast.style.textAlign = "center";
 
+        document.body.appendChild(this.toast);
 
+    },
 
+    /*
+    ====================================
+    SHOW MESSAGE
+    ====================================
+    */
 
-        toast.textContent =
+    showMessage(message,type="info"){
 
-        message;
+        if(!this.toast){
 
+            this.createToast();
 
+        }
 
+        this.toast.innerText = message;
 
+        switch(type){
 
-        toast.classList.remove(
+            case "success":
 
-            "success",
+                this.toast.style.background="#16a34a";
 
-            "error"
+                break;
 
-        );
+            case "error":
 
+                this.toast.style.background="#dc2626";
 
+                break;
 
+            case "warning":
 
+                this.toast.style.background="#d97706";
 
-        toast.classList.add(
+                break;
 
-            type
+            default:
 
-        );
+                this.toast.style.background="#111";
 
+        }
 
+        this.toast.style.display="block";
 
+        clearTimeout(this.toast.timer);
 
-
-        toast.classList.remove(
-
-            "hidden"
-
-        );
-
-
-
-
-
-
-
-        clearTimeout(
-
-            this.toastTimer
-
-        );
-
-
-
-
-
-        this.toastTimer =
-
+        this.toast.timer =
         setTimeout(()=>{
 
+            this.toast.style.display="none";
 
-
-            toast.classList.add(
-
-                "hidden"
-
-            );
-
-
-
-        },3500);
-
-
-
-
+        },3000);
 
     },
-
-
-
-
-
-
-
-
 
     /*
     ====================================
-    SUCCESS
+    POPUP
     ====================================
     */
 
+    openPopup(id){
 
-    success(message){
+        const popup =
+        document.getElementById(id);
 
+        if(!popup){
 
+            return;
 
-        this.toast(
+        }
 
-            message,
-
-            "success"
-
-        );
-
-
+        popup.classList.remove("hidden");
 
     },
 
+    closePopup(id){
 
+        const popup =
+        document.getElementById(id);
 
+        if(!popup){
 
+            return;
 
+        }
 
-
-
-
-    /*
-    ====================================
-    ERROR
-    ====================================
-    */
-
-
-    error(message){
-
-
-
-        this.toast(
-
-            message,
-
-            "error"
-
-        );
-
+        popup.classList.add("hidden");
 
     },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    CONFIRM
-    ====================================
-    */
-
-
-    confirm(message){
-
-
-        return window.confirm(
-
-            message
-
-        );
-
-
-    },
-
-
-
-
-
-
-
-
 
     /*
     ====================================
@@ -334,225 +193,82 @@ const NightCastUI = {
     ====================================
     */
 
-
     formatTime(seconds){
 
-
-
-        if(
-
-            !seconds ||
-
-            isNaN(seconds)
-
-        ){
-
+        if(!seconds){
 
             return "00:00";
 
-
         }
 
+        seconds = Math.floor(seconds);
 
+        const m =
+        Math.floor(seconds/60);
 
-
-
-
-
-        seconds =
-
-        Math.floor(
-
-            seconds
-
-        );
-
-
-
-
-
-        const min =
-
-        Math.floor(
-
-            seconds / 60
-
-        );
-
-
-
-
-
-        const sec =
-
-        seconds % 60;
-
-
-
-
-
-
+        const s =
+        seconds%60;
 
         return (
 
-            String(min)
+            String(m).padStart(2,"0")
 
-            .padStart(
-
-                2,
-
-                "0"
-
-            )
+            +":"
 
             +
 
-            ":"
-
-            +
-
-            String(sec)
-
-            .padStart(
-
-                2,
-
-                "0"
-
-            )
+            String(s).padStart(2,"0")
 
         );
 
-
-
     },
-
-
-
-
-
-
-
-
 
     /*
     ====================================
-    EMPTY STATE
+    BUTTON LOADING
     ====================================
     */
 
+    buttonLoading(btn,state=true){
 
-    empty(
+        if(!btn){
 
-        container,
-
-        message
-
-    ){
-
-
-
-        if(container){
-
-
-            container.innerHTML =
-
-
-            `
-
-            <div class="empty-state">
-
-            ${message}
-
-            </div>
-
-            `;
-
-
+            return;
 
         }
 
+        if(state){
 
-    },
+            btn.disabled=true;
 
+            btn.dataset.oldText=btn.innerHTML;
 
-
-
-
-
-
-
-
-    /*
-    ====================================
-    SAFE HTML
-    ====================================
-    */
-
-
-    escape(text){
-
-
-
-        if(!text){
-
-            return "";
+            btn.innerHTML="...";
 
         }
 
+        else{
 
+            btn.disabled=false;
 
-        return text
+            btn.innerHTML=btn.dataset.oldText;
 
-        .toString()
-
-        .replace(
-
-            /[&<>"']/g,
-
-            function(char){
-
-
-
-                return {
-
-                    "&":"&amp;",
-
-                    "<":"&lt;",
-
-                    ">":"&gt;",
-
-                    '"':"&quot;",
-
-                    "'":"&#039;"
-
-                }[char];
-
-
-
-            }
-
-        );
-
+        }
 
     }
 
-
-
-
-
-
-
-
 };
 
+window.NightCastUI = NightCastUI;
 
+document.addEventListener(
 
+"DOMContentLoaded",
 
+()=>{
 
+    NightCastUI.init();
 
+});
 
-
-window.NightCastUI =
-
-NightCastUI;
+console.log("NightCast UI V2 Loaded");

@@ -2,21 +2,18 @@
 /*
 =================================================
 
-NightCast Ver6
+NightCast Ver7
 Admin Podcasts Manager
 
 Professional Stable Version
 
 Responsible for:
-- Podcast List
-- Create Podcast
-- Edit Podcast
-- Delete Podcast
+- Podcast Management
 - Upload Cover
 - Upload Audio
+- CRUD
 - Search
 - Filter
-- Messages
 
 =================================================
 */
@@ -81,6 +78,7 @@ try{
 
 
 
+
     this.bindEvents();
 
 
@@ -95,14 +93,20 @@ catch(error){
 
 
     console.error(
+
         "PODCAST INIT ERROR:",
+
         error
+
     );
 
 
     this.showError(
+
         "خطا در راه‌اندازی مدیریت پادکست‌ها"
+
     );
+
 
 
 }
@@ -130,6 +134,8 @@ bindEvents(){
 
 
 
+
+
 /*
 ---------------------------------
 NEW PODCAST
@@ -140,10 +146,14 @@ NEW PODCAST
 document
 .getElementById("btnNewPodcast")
 ?.addEventListener(
+
 "click",
+
 ()=>{
 
+
     this.openCreate();
+
 
 }
 
@@ -158,7 +168,7 @@ document
 
 /*
 ---------------------------------
-SAVE
+SAVE PODCAST
 ---------------------------------
 */
 
@@ -166,10 +176,14 @@ SAVE
 document
 .getElementById("btnSavePodcast")
 ?.addEventListener(
+
 "click",
+
 ()=>{
 
+
     this.save();
+
 
 }
 
@@ -192,10 +206,14 @@ CANCEL
 document
 .getElementById("btnCancel")
 ?.addEventListener(
+
 "click",
+
 ()=>{
 
+
     this.closeModal();
+
 
 }
 
@@ -218,10 +236,14 @@ CLOSE MODAL
 document
 .getElementById("closeModal")
 ?.addEventListener(
+
 "click",
+
 ()=>{
 
+
     this.closeModal();
+
 
 }
 
@@ -244,10 +266,14 @@ REFRESH
 document
 .getElementById("btnRefresh")
 ?.addEventListener(
+
 "click",
+
 ()=>{
 
+
     this.load();
+
 
 }
 
@@ -270,10 +296,14 @@ SEARCH
 document
 .getElementById("searchInput")
 ?.addEventListener(
+
 "input",
+
 ()=>{
 
+
     this.applyFilters();
+
 
 }
 
@@ -296,10 +326,14 @@ STATUS FILTER
 document
 .getElementById("statusFilter")
 ?.addEventListener(
+
 "change",
+
 ()=>{
 
+
     this.applyFilters();
+
 
 }
 
@@ -322,10 +356,14 @@ SORT
 document
 .getElementById("sortBy")
 ?.addEventListener(
+
 "change",
+
 ()=>{
 
+
     this.applyFilters();
+
 
 }
 
@@ -348,10 +386,14 @@ UPLOAD COVER
 document
 .getElementById("btnUploadCover")
 ?.addEventListener(
+
 "click",
+
 ()=>{
 
+
     this.uploadCover();
+
 
 }
 
@@ -374,10 +416,14 @@ UPLOAD AUDIO
 document
 .getElementById("btnUploadAudio")
 ?.addEventListener(
+
 "click",
+
 ()=>{
 
+
     this.uploadAudio();
+
 
 }
 
@@ -385,17 +431,9 @@ document
 
 
 
-}
 
-
-
-
-
-
-
-
-
-/*
+    }
+    /*
 =================================================
 OPEN CREATE
 =================================================
@@ -406,23 +444,23 @@ openCreate(){
 
 
 
-this.resetForm();
+    this.resetForm();
 
 
 
-
-this.openModal();
-
+    this.openModal();
 
 
 
-this.showSuccess(
-"فرم ثبت پادکست آماده است"
-);
+    this.showSuccess(
 
+        "فرم ثبت پادکست آماده است"
+
+    );
 
 
 }
+
 
 
 
@@ -442,25 +480,28 @@ openModal(){
 
 
 
-const modal =
+    const modal =
 
-document.getElementById(
-"podcastModal"
-);
+    document.getElementById(
 
+        "podcastModal"
 
-
-
-if(modal){
-
-
-    modal.classList.add(
-        "show"
     );
 
 
-}
 
+
+    if(modal){
+
+
+        modal.classList.add(
+
+            "show"
+
+        );
+
+
+    }
 
 
 }
@@ -484,28 +525,39 @@ closeModal(){
 
 
 
-const modal =
+    const modal =
 
-document.getElementById(
-"podcastModal"
-);
+    document.getElementById(
 
+        "podcastModal"
 
-
-
-if(modal){
-
-
-    modal.classList.remove(
-        "show"
     );
 
 
+
+
+    if(modal){
+
+
+        modal.classList.remove(
+
+            "show"
+
+        );
+
+
+    }
+
+
 }
 
 
 
-}
+
+
+
+
+
 
 /*
 =================================================
@@ -517,14 +569,20 @@ LOAD PODCASTS
 async load(){
 
 
+
 try{
+
 
 
     if(window.Loader){
 
+
         Loader.show(
+
             "در حال دریافت پادکست‌ها..."
+
         );
+
 
     }
 
@@ -532,8 +590,14 @@ try{
 
 
 
-    const result = await API.get(
+
+
+    const result =
+
+    await API.get(
+
         "/dashboard/latest"
+
     );
 
 
@@ -541,9 +605,13 @@ try{
 
 
 
+
     if(
+
         !result ||
+
         !result.success
+
     ){
 
 
@@ -563,9 +631,12 @@ try{
 
 
 
+
     this.podcasts =
 
     result.podcasts || [];
+
+
 
 
 
@@ -578,20 +649,30 @@ try{
 
 
 
+
+
 }
 
 catch(error){
 
 
+
     console.error(
+
         "LOAD PODCAST ERROR:",
+
         error
+
     );
 
 
 
+
+
     this.showError(
+
         error.message
+
     );
 
 
@@ -601,9 +682,12 @@ catch(error){
 finally{
 
 
+
     if(window.Loader){
 
+
         Loader.hide();
+
 
     }
 
@@ -613,16 +697,7 @@ finally{
 
 
 }
-
-
-
-
-
-
-
-
-
-/*
+    /*
 =================================================
 FILTER
 =================================================
@@ -633,40 +708,27 @@ applyFilters(){
 
 
 
-let list = [
+    let list = [
 
-    ...this.podcasts
+        ...this.podcasts
 
-];
-
-
-
-
-
-
-
-const search =
-
-document
-.getElementById(
-"searchInput"
-)
-?.value
-.trim();
+    ];
 
 
 
 
 
 
+    const search =
 
-const status =
+    document
+    .getElementById(
 
-document
-.getElementById(
-"statusFilter"
-)
-?.value;
+        "searchInput"
+
+    )
+    ?.value
+    .trim();
 
 
 
@@ -674,20 +736,171 @@ document
 
 
 
+    const status =
 
-if(search){
+    document
+    .getElementById(
+
+        "statusFilter"
+
+    )
+    ?.value;
 
 
 
-list = list.filter(
 
-item =>
 
-item.title &&
 
-item.title.includes(search)
 
-);
+    if(search){
+
+
+
+        list = list.filter(
+
+            item =>
+
+
+            item.title &&
+
+
+            item.title.includes(search)
+
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+    if(status){
+
+
+
+        list = list.filter(
+
+            item =>
+
+
+            item.status === status
+
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+
+    const sort =
+
+    document
+    .getElementById(
+
+        "sortBy"
+
+    )
+    ?.value;
+
+
+
+
+
+
+
+
+    if(sort === "newest"){
+
+
+
+        list.sort(
+
+            (a,b)=>
+
+            new Date(b.created_at)
+
+            -
+
+            new Date(a.created_at)
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+    if(sort === "oldest"){
+
+
+
+        list.sort(
+
+            (a,b)=>
+
+            new Date(a.created_at)
+
+            -
+
+            new Date(b.created_at)
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+    if(sort === "title"){
+
+
+
+        list.sort(
+
+            (a,b)=>
+
+            (a.title || "")
+
+            .localeCompare(
+
+                b.title || ""
+
+            )
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+    this.render(list);
 
 
 
@@ -695,130 +908,6 @@ item.title.includes(search)
 
 
 
-
-
-
-
-
-if(status){
-
-
-
-list = list.filter(
-
-item =>
-
-item.status === status
-
-);
-
-
-
-}
-
-
-
-
-
-
-
-
-
-const sort =
-
-document
-.getElementById(
-"sortBy"
-)
-?.value;
-
-
-
-
-
-
-
-if(sort === "newest"){
-
-
-
-list.sort(
-
-(a,b)=>
-
-new Date(b.created_at)
-
--
-
-new Date(a.created_at)
-
-);
-
-
-
-}
-
-
-
-
-
-
-
-if(sort === "oldest"){
-
-
-
-list.sort(
-
-(a,b)=>
-
-new Date(a.created_at)
-
--
-
-new Date(b.created_at)
-
-);
-
-
-
-}
-
-
-
-
-
-
-
-if(sort === "title"){
-
-
-
-list.sort(
-
-(a,b)=>
-
-(a.title || "")
-.localeCompare(
-(b.title || "")
-)
-
-);
-
-
-
-}
-
-
-
-
-
-
-this.render(list);
-
-
-
-}
 
 
 
@@ -839,312 +928,328 @@ render(list){
 
 
 
-const tbody =
+    const tbody =
 
-document.getElementById(
-"podcastsTable"
-);
+    document.getElementById(
 
+        "podcastsTable"
 
-
-
+    );
 
 
-if(!tbody){
 
-    return;
+
+
+
+
+    if(!tbody){
+
+        return;
+
+    }
+
+
+
+
+
+
+
+    tbody.innerHTML = "";
+
+
+
+
+
+
+
+
+    const count =
+
+    document.getElementById(
+
+        "podcastCount"
+
+    );
+
+
+
+
+
+
+
+    if(count){
+
+
+
+        count.innerHTML =
+
+        `${list.length} پادکست`;
+
+
+
+    }
+
+
+
+
+
+
+
+
+    if(list.length === 0){
+
+
+
+        tbody.innerHTML = `
+
+
+        <tr>
+
+
+        <td colspan="7"
+
+        class="empty-state">
+
+
+        پادکستی یافت نشد
+
+
+        </td>
+
+
+        </tr>
+
+
+        `;
+
+
+
+        return;
+
+
+    }
+
+
+
+
+
+
+
+
+    list.forEach(
+
+    (podcast,index)=>{
+
+
+
+
+
+        tbody.innerHTML += `
+
+
+        <tr>
+
+
+
+        <td>
+
+        ${index + 1}
+
+        </td>
+
+
+
+
+
+        <td>
+
+        ${
+
+        this.escapeHTML(
+
+            podcast.title || "-"
+
+        )
+
+        }
+
+        </td>
+
+
+
+
+
+
+        <td>
+
+        ${
+
+        podcast.book_name || "-"
+
+        }
+
+        </td>
+
+
+
+
+
+
+        <td>
+
+        ${
+
+        podcast.episode_number || 1
+
+        }
+
+        </td>
+
+
+
+
+
+
+        <td>
+
+
+
+        <span class="badge
+
+        ${
+
+        podcast.status === "active"
+
+        ?
+
+        "badge-success"
+
+        :
+
+        "badge-secondary"
+
+        }
+
+        ">
+
+
+
+        ${
+
+        podcast.status === "active"
+
+        ?
+
+        "منتشر شده"
+
+        :
+
+        "پیش‌نویس"
+
+        }
+
+
+
+        </span>
+
+
+
+        </td>
+
+
+
+
+
+
+
+        <td>
+
+
+        ${
+
+        this.formatDate(
+
+            podcast.created_at
+
+        )
+
+        }
+
+
+        </td>
+
+
+
+
+
+
+
+        <td>
+
+
+        <div class="action-group">
+
+
+
+
+
+        <button
+
+        class="action-btn action-edit"
+
+        onclick="podcastsManager.edit(${podcast.id})"
+
+        >
+
+        ✏️
+
+        </button>
+
+
+
+
+
+
+
+
+        <button
+
+        class="action-btn action-delete"
+
+        onclick="podcastsManager.remove(${podcast.id})"
+
+        >
+
+        🗑️
+
+        </button>
+
+
+
+
+
+        </div>
+
+
+        </td>
+
+
+
+
+
+
+        </tr>
+
+
+        `;
+
+
+
+    });
+
 
 }
 
-
-
-
-
-
-tbody.innerHTML = "";
-
-
-
-
-
-
-
-
-const count =
-
-document.getElementById(
-"podcastCount"
-);
-
-
-
-
-
-
-if(count){
-
-
-
-count.innerHTML =
-
-`${list.length} پادکست`;
-
-
-
-}
-
-
-
-
-
-
-
-
-if(list.length === 0){
-
-
-
-tbody.innerHTML = `
-
-
-<tr>
-
-<td colspan="7"
-
-class="empty-state">
-
-
-پادکستی یافت نشد
-
-
-</td>
-
-
-</tr>
-
-
-`;
-
-
-
-return;
-
-
-}
-
-
-
-
-
-
-
-
-
-list.forEach(
-
-(podcast,index)=>{
-
-
-
-tbody.innerHTML += `
-
-
-<tr>
-
-
-<td>
-
-${index + 1}
-
-</td>
-
-
-
-
-
-<td>
-
-${
-
-this.escapeHTML(
-
-podcast.title || "-"
-
-)
-
-}
-
-</td>
-
-
-
-
-
-
-<td>
-
-${
-
-podcast.book_name || "-"
-
-}
-
-</td>
-
-
-
-
-
-
-<td>
-
-${
-
-podcast.episode_number || 1
-
-}
-
-</td>
-
-
-
-
-
-
-<td>
-
-
-<span class="badge
-
-${
-
-podcast.status === "active"
-
-?
-
-"badge-success"
-
-:
-
-"badge-secondary"
-
-}
-
-">
-
-
-${
-
-podcast.status === "active"
-
-?
-
-"منتشر شده"
-
-:
-
-"پیش‌نویس"
-
-}
-
-
-</span>
-
-
-</td>
-
-
-
-
-
-
-
-
-<td>
-
-
-${
-
-this.formatDate(
-
-podcast.created_at
-
-)
-
-}
-
-
-</td>
-
-
-
-
-
-
-
-
-<td>
-
-
-<div class="action-group">
-
-
-
-<button
-
-class="action-btn action-edit"
-
-onclick="podcastsManager.edit(${podcast.id})"
-
->
-
-✏️
-
-</button>
-
-
-
-
-
-
-<button
-
-class="action-btn action-delete"
-
-onclick="podcastsManager.remove(${podcast.id})"
-
->
-
-🗑️
-
-</button>
-
-
-
-</div>
-
-
-</td>
-
-
-
-
-</tr>
-
-
-`;
-
-
-
-
-}
-
-
-);
-
-
-
-}
 
 
 
@@ -1164,27 +1269,28 @@ formatDate(date){
 
 
 
-if(!date){
+    if(!date){
 
-return "-";
+        return "-";
 
-}
-
-
-
-if(
-window.UI &&
-UI.formatDate
-){
-
-return UI.formatDate(date);
-
-
-}
+    }
 
 
 
-return date;
+
+
+
+    if(
+
+        window.UI &&
+
+        UI.formatDate
+
+    ){
+
+
+
+        return UI.formatDate(date);
 
 
 
@@ -1192,7 +1298,653 @@ return date;
 
 
 
+
+
+
+
+    return date;
+
+
+
+}
+    /*
+=================================================
+UPLOAD COVER
+=================================================
+*/
+
+
+async uploadCover(){
+
+
+try{
+
+
+
+    const input =
+
+    document.getElementById(
+
+        "coverFile"
+
+    );
+
+
+
+
+
+
+    if(
+
+        !input ||
+
+        !input.files.length
+
+    ){
+
+
+        this.showError(
+
+            "ابتدا فایل کاور را انتخاب کنید"
+
+        );
+
+
+        return;
+
+
+    }
+
+
+
+
+
+
+
+    const formData =
+
+    new FormData();
+
+
+
+
+
+
+    formData.append(
+
+        "file",
+
+        input.files[0]
+
+    );
+
+
+
+
+
+
+    formData.append(
+
+        "type",
+
+        "cover"
+
+    );
+
+
+
+
+
+
+
+
+    if(window.Loader){
+
+
+        Loader.show(
+
+            "در حال آپلود کاور..."
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+    const result =
+
+    await API.upload(
+
+        "/media/upload",
+
+        formData
+
+    );
+
+
+
+
+
+
+
+    if(
+
+        !result ||
+
+        !result.success
+
+    ){
+
+
+        throw new Error(
+
+            result?.message ||
+
+            "آپلود کاور ناموفق بود"
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+    const url =
+
+    result.url;
+
+
+
+
+
+
+
+
+    const coverURL =
+
+    document.getElementById(
+
+        "cover_url"
+
+    );
+
+
+
+
+
+
+
+    if(coverURL){
+
+
+        coverURL.value = url;
+
+
+    }
+
+
+
+
+
+
+
+
+    const preview =
+
+    document.getElementById(
+
+        "coverPreview"
+
+    );
+
+
+
+
+
+
+
+    if(preview){
+
+
+
+        preview.src = url;
+
+
+        preview.style.display =
+
+        "block";
+
+
+
+    }
+
+
+
+
+
+
+
+
+    this.showSuccess(
+
+        "کاور با موفقیت آپلود شد"
+
+    );
+
+
+
+
+
+
+}
+
+catch(error){
+
+
+
+    console.error(
+
+        "COVER UPLOAD ERROR:",
+
+        error
+
+    );
+
+
+
+
+
+    this.showError(
+
+        error.message
+
+    );
+
+
+
+}
+
+finally{
+
+
+
+    if(window.Loader){
+
+
+        Loader.hide();
+
+
+    }
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
 /*
+=================================================
+UPLOAD AUDIO
+=================================================
+*/
+
+
+async uploadAudio(){
+
+
+
+try{
+
+
+
+    const input =
+
+    document.getElementById(
+
+        "audioFile"
+
+    );
+
+
+
+
+
+
+
+    if(
+
+        !input ||
+
+        !input.files.length
+
+    ){
+
+
+        this.showError(
+
+            "ابتدا فایل صوتی را انتخاب کنید"
+
+        );
+
+
+        return;
+
+
+    }
+
+
+
+
+
+
+
+    const file =
+
+    input.files[0];
+
+
+
+
+
+
+
+
+    if(
+
+        file.type !== "audio/mpeg"
+
+        &&
+
+        !file.name.toLowerCase()
+
+        .endsWith(".mp3")
+
+    ){
+
+
+
+        this.showError(
+
+            "فقط فایل MP3 مجاز است"
+
+        );
+
+
+        return;
+
+
+    }
+
+
+
+
+
+
+
+
+
+    const formData =
+
+    new FormData();
+
+
+
+
+
+
+
+
+    formData.append(
+
+        "file",
+
+        file
+
+    );
+
+
+
+
+
+
+
+    formData.append(
+
+        "type",
+
+        "audio"
+
+    );
+
+
+
+
+
+
+
+
+    if(window.Loader){
+
+
+        Loader.show(
+
+            "در حال آپلود فایل صوتی..."
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+    const result =
+
+    await API.upload(
+
+        "/media/upload",
+
+        formData
+
+    );
+
+
+
+
+
+
+
+
+    if(
+
+        !result ||
+
+        !result.success
+
+    ){
+
+
+        throw new Error(
+
+            result?.message ||
+
+            "آپلود فایل صوتی ناموفق بود"
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+    const url =
+
+    result.url;
+
+
+
+
+
+
+
+
+    const audioURL =
+
+    document.getElementById(
+
+        "audio_url"
+
+    );
+
+
+
+
+
+
+
+    if(audioURL){
+
+
+        audioURL.value = url;
+
+
+    }
+
+
+
+
+
+
+
+
+    const audio =
+
+    document.getElementById(
+
+        "audioPreview"
+
+    );
+
+
+
+
+
+
+
+
+    if(audio){
+
+
+
+        audio.src = url;
+
+
+        audio.style.display =
+
+        "block";
+
+
+
+    }
+
+
+
+
+
+
+
+
+    this.showSuccess(
+
+        "فایل صوتی با موفقیت آپلود شد"
+
+    );
+
+
+
+
+
+
+
+
+}
+
+catch(error){
+
+
+
+    console.error(
+
+        "AUDIO UPLOAD ERROR:",
+
+        error
+
+    );
+
+
+
+
+
+
+
+    this.showError(
+
+        error.message
+
+    );
+
+
+
+}
+
+finally{
+
+
+
+    if(window.Loader){
+
+
+        Loader.hide();
+
+
+    }
+
+
+}
+
+
+
+}
+    /*
 =================================================
 SAVE PODCAST
 =================================================
@@ -1207,188 +1959,184 @@ try{
 
 
 
-const id =
+    const id =
 
-document
-.getElementById(
-"podcastId"
-)
-?.value;
+    document
+    .getElementById(
 
+        "podcastId"
 
+    )
+    ?.value;
 
 
 
 
 
-const data = {
 
 
 
-title:
+    const data = {
 
-document
-.getElementById("title")
-.value
-.trim(),
 
 
+        title:
 
+        document
+        .getElementById("title")
+        .value
+        .trim(),
 
-book_name:
 
-document
-.getElementById("book_name")
-.value
-.trim(),
 
 
 
+        book_name:
 
-author_name:
+        document
+        .getElementById("book_name")
+        .value
+        .trim(),
 
-document
-.getElementById("author_name")
-.value
-.trim(),
 
 
 
 
-category_name:
+        author_name:
 
-document
-.getElementById("category_name")
-.value
-.trim(),
+        document
+        .getElementById("author_name")
+        .value
+        .trim(),
 
 
 
 
-episode_number:
 
-Number(
+        category_name:
 
-document
-.getElementById("episode_number")
-.value
+        document
+        .getElementById("category_name")
+        .value
+        .trim(),
 
-|| 1
 
-),
 
 
 
+        episode_number:
 
-status:
+        Number(
 
-document
-.getElementById("status")
-.value,
+            document
+            .getElementById("episode_number")
+            .value
 
+            ||
 
+            1
 
+        ),
 
 
 
-description:
 
-document
-.getElementById("description")
-.value
-.trim(),
 
+        status:
 
+        document
+        .getElementById("status")
+        .value,
 
 
-summary:
 
-document
-.getElementById("summary")
-.value
-.trim(),
 
 
 
+        description:
 
-transcript:
+        document
+        .getElementById("description")
+        .value
+        .trim(),
 
-document
-.getElementById("transcript")
-.value
-.trim(),
 
 
 
 
-duration_seconds:
+        summary:
 
-Number(
+        document
+        .getElementById("summary")
+        .value
+        .trim(),
 
-document
-.getElementById("duration_seconds")
-.value
 
-|| 0
 
-),
 
 
+        transcript:
 
+        document
+        .getElementById("transcript")
+        .value
+        .trim(),
 
-tags:
 
-document
-.getElementById("tags")
-.value
-.trim(),
 
 
 
+        duration_seconds:
 
-cover_url:
+        Number(
 
-document
-.getElementById("cover_url")
-.value,
+            document
+            .getElementById("duration_seconds")
+            .value
 
+            ||
 
+            0
 
+        ),
 
-audio_url:
 
-document
-.getElementById("audio_url")
-.value
 
 
 
-};
+        tags:
 
+        document
+        .getElementById("tags")
+        .value
+        .trim(),
 
 
 
 
 
+        cover_url:
 
+        document
+        .getElementById("cover_url")
+        .value,
 
-if(!data.title){
 
 
 
-this.showError(
 
-"عنوان پادکست الزامی است"
 
-);
+        audio_url:
 
+        document
+        .getElementById("audio_url")
+        .value
 
 
-return;
 
 
-}
 
+    };
 
 
 
@@ -1396,142 +2144,202 @@ return;
 
 
 
-if(window.Loader){
 
 
-Loader.show(
+    if(!data.title){
 
-"در حال ذخیره پادکست..."
 
-);
 
+        this.showError(
 
-}
+            "عنوان پادکست الزامی است"
 
+        );
 
 
+        return;
 
 
+    }
 
 
 
-let result;
 
 
 
 
 
+    if(
 
+        !data.audio_url
 
+    ){
 
-if(id){
 
 
+        this.showError(
 
-result = await API.put(
+            "فایل صوتی پادکست انتخاب نشده است"
 
-"/podcasts/" + id,
+        );
 
-data
 
-);
+        return;
 
 
+    }
 
-}
 
-else{
 
 
 
-result = await API.post(
 
-"/podcasts",
 
-data
 
-);
+    if(window.Loader){
 
 
+        Loader.show(
 
-}
+            "در حال ذخیره پادکست..."
 
+        );
 
 
+    }
 
 
 
 
 
-if(
 
-!result ||
 
-!result.success
 
-){
+    let result;
 
 
 
-throw new Error(
 
-result?.message ||
 
-"ثبت پادکست انجام نشد"
 
-);
 
 
+    if(id){
 
-}
 
 
+        result =
 
+        await API.put(
 
+            "/podcasts/" + id,
 
+            data
 
+        );
 
 
-this.showSuccess(
 
-id
+    }
 
-?
+    else{
 
-"پادکست با موفقیت ویرایش شد"
 
-:
 
-"پادکست با موفقیت ثبت شد"
+        result =
 
-);
+        await API.post(
 
+            "/podcasts",
 
+            data
 
+        );
 
 
 
+    }
 
 
-this.closeModal();
 
 
 
 
 
 
+    if(
 
+        !result ||
 
-this.resetForm();
+        !result.success
 
+    ){
 
 
 
+        throw new Error(
 
+            result?.message ||
 
+            "ذخیره پادکست انجام نشد"
 
+        );
 
-await this.load();
+
+
+    }
+
+
+
+
+
+
+
+
+    this.showSuccess(
+
+
+
+        id
+
+        ?
+
+        "پادکست با موفقیت ویرایش شد"
+
+        :
+
+        "پادکست با موفقیت ثبت شد"
+
+
+
+    );
+
+
+
+
+
+
+
+
+    this.closeModal();
+
+
+
+
+
+
+
+
+    this.resetForm();
+
+
+
+
+
+
+
+
+    await this.load();
 
 
 
@@ -1545,23 +2353,24 @@ catch(error){
 
 
 
-console.error(
+    console.error(
 
-"SAVE ERROR:",
+        "SAVE ERROR:",
 
-error
+        error
 
-);
-
-
+    );
 
 
 
-this.showError(
 
-error.message
 
-);
+
+    this.showError(
+
+        error.message
+
+    );
 
 
 
@@ -1571,29 +2380,21 @@ finally{
 
 
 
-if(window.Loader){
-
-Loader.hide();
-
-}
+    if(window.Loader){
 
 
+        Loader.hide();
 
-}
 
+    }
 
 
 }
 
 
 
-
-
-
-
-
-
-/*
+}
+    /*
 =================================================
 EDIT PODCAST
 =================================================
@@ -1608,17 +2409,17 @@ try{
 
 
 
-if(window.Loader){
+    if(window.Loader){
 
 
-Loader.show(
+        Loader.show(
 
-"در حال دریافت اطلاعات..."
+            "در حال دریافت اطلاعات پادکست..."
 
-);
+        );
 
 
-}
+    }
 
 
 
@@ -1627,12 +2428,13 @@ Loader.show(
 
 
 
-const result = await API.get(
+    const result =
 
-"/podcasts/" + id
+    await API.get(
 
-);
+        "/podcasts/" + id
 
+    );
 
 
 
@@ -1640,80 +2442,81 @@ const result = await API.get(
 
 
 
-if(
 
-!result ||
+    if(
 
-!result.success
+        !result ||
 
-){
+        !result.success
 
+    ){
 
 
-throw new Error(
 
-"اطلاعات پادکست دریافت نشد"
+        throw new Error(
 
-);
+            result?.message ||
 
+            "اطلاعات پادکست دریافت نشد"
 
+        );
 
-}
 
 
+    }
 
 
 
 
 
 
-const item =
 
-result.data ||
 
-result.podcast ||
+    const item =
 
-result;
+    result.podcast ||
 
+    result.data ||
 
+    result;
 
 
 
 
 
 
-document
-.getElementById("podcastId")
-.value =
 
-item.id || "";
 
+    document
 
+    .getElementById(
 
+        "podcastId"
 
+    )
 
+    .value =
 
+    item.id || "";
 
 
-document
-.getElementById("title")
-.value =
 
-item.title || "";
 
 
 
 
 
+    document
 
+    .getElementById(
 
+        "title"
 
-document
-.getElementById("book_name")
-.value =
+    )
 
-item.book_name || "";
+    .value =
 
+    item.title || "";
 
 
 
@@ -1721,37 +2524,37 @@ item.book_name || "";
 
 
 
-document
-.getElementById("author_name")
-.value =
 
-item.author_name || "";
+    document
 
+    .getElementById(
 
+        "book_name"
 
+    )
 
+    .value =
 
+    item.book_name || "";
 
 
 
-document
-.getElementById("category_name")
-.value =
 
-item.category_name || "";
 
 
 
 
+    document
 
+    .getElementById(
 
+        "author_name"
 
+    )
 
-document
-.getElementById("episode_number")
-.value =
+    .value =
 
-item.episode_number || 1;
+    item.author_name || "";
 
 
 
@@ -1760,37 +2563,37 @@ item.episode_number || 1;
 
 
 
-document
-.getElementById("status")
-.value =
+    document
 
-item.status || "inactive";
+    .getElementById(
 
+        "category_name"
 
+    )
 
+    .value =
 
+    item.category_name || "";
 
 
 
 
-document
-.getElementById("description")
-.value =
 
-item.description || "";
 
 
 
+    document
 
+    .getElementById(
 
+        "episode_number"
 
+    )
 
+    .value =
 
-document
-.getElementById("summary")
-.value =
+    item.episode_number || 1;
 
-item.summary || "";
 
 
 
@@ -1798,148 +2601,271 @@ item.summary || "";
 
 
 
+    document
 
-document
-.getElementById("transcript")
-.value =
+    .getElementById(
 
-item.transcript || "";
+        "status"
 
+    )
 
+    .value =
 
+    item.status || "inactive";
 
 
 
 
 
-document
-.getElementById("duration_seconds")
-.value =
 
-item.duration_seconds || 0;
 
 
+    document
 
+    .getElementById(
 
+        "description"
 
+    )
 
+    .value =
 
+    item.description || "";
 
-document
-.getElementById("tags")
-.value =
 
-item.tags || "";
 
 
 
 
 
 
+    document
 
+    .getElementById(
 
-document
-.getElementById("cover_url")
-.value =
+        "summary"
 
-item.cover_url || "";
+    )
 
+    .value =
 
+    item.summary || "";
 
 
 
 
 
 
-document
-.getElementById("audio_url")
-.value =
 
-item.audio_url || "";
 
+    document
 
+    .getElementById(
 
+        "transcript"
 
+    )
 
+    .value =
 
+    item.transcript || "";
 
 
 
-if(item.cover_url){
 
 
 
-const img =
 
-document.getElementById(
 
-"coverPreview"
+    document
 
-);
+    .getElementById(
 
+        "duration_seconds"
 
+    )
 
-if(img){
+    .value =
 
+    item.duration_seconds || 0;
 
 
-img.src = item.cover_url;
 
-img.style.display="block";
 
 
 
-}
 
 
+    document
 
-}
+    .getElementById(
 
+        "tags"
 
+    )
 
+    .value =
 
+    item.tags || "";
 
 
 
 
-if(item.audio_url){
 
 
 
-const audio =
 
-document.getElementById(
+    document
 
-"audioPreview"
+    .getElementById(
 
-);
+        "cover_url"
 
+    )
 
+    .value =
 
-if(audio){
+    item.cover_url || "";
 
 
 
-audio.src = item.audio_url;
 
-audio.style.display="block";
 
 
 
-}
 
+    document
 
+    .getElementById(
 
-}
+        "audio_url"
 
+    )
 
+    .value =
 
+    item.audio_url || "";
 
 
 
 
 
-this.openModal();
+
+
+
+
+    /*
+    ==========================
+    COVER PREVIEW
+    ==========================
+    */
+
+
+    if(item.cover_url){
+
+
+
+        const img =
+
+        document
+
+        .getElementById(
+
+            "coverPreview"
+
+        );
+
+
+
+
+
+        if(img){
+
+
+
+            img.src =
+
+            item.cover_url;
+
+
+
+            img.style.display =
+
+            "block";
+
+
+
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    /*
+    ==========================
+    AUDIO PREVIEW
+    ==========================
+    */
+
+
+    if(item.audio_url){
+
+
+
+        const audio =
+
+        document
+
+        .getElementById(
+
+            "audioPreview"
+
+        );
+
+
+
+
+
+        if(audio){
+
+
+
+            audio.src =
+
+            item.audio_url;
+
+
+
+            audio.style.display =
+
+            "block";
+
+
+
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    this.openModal();
+
 
 
 
@@ -1952,11 +2878,23 @@ catch(error){
 
 
 
-this.showError(
+    console.error(
 
-error.message
+        "EDIT ERROR:",
 
-);
+        error
+
+    );
+
+
+
+
+
+    this.showError(
+
+        error.message
+
+    );
 
 
 
@@ -1966,20 +2904,20 @@ finally{
 
 
 
-if(window.Loader){
-
-Loader.hide();
-
-}
+    if(window.Loader){
 
 
-}
-
+        Loader.hide();
 
 
     }
 
 
+}
+
+
+
+}
 
 /*
 =================================================
@@ -1996,106 +2934,113 @@ try{
 
 
 
-const confirmDelete = confirm(
+    const confirmDelete =
 
-"آیا از حذف این پادکست مطمئن هستید؟"
+    confirm(
 
-);
+        "آیا از حذف این پادکست مطمئن هستید؟"
 
+    );
 
 
 
 
 
 
-if(!confirmDelete){
 
-    return;
+    if(!confirmDelete){
 
-}
 
+        return;
 
 
+    }
 
 
 
 
 
-if(window.Loader){
 
 
-Loader.show(
 
-"در حال حذف پادکست..."
+    if(window.Loader){
 
-);
 
+        Loader.show(
 
-}
+            "در حال حذف پادکست..."
 
+        );
 
 
+    }
 
 
 
 
 
-const result = await API.delete(
 
-"/podcasts/" + id
 
-);
 
+    const result =
 
+    await API.delete(
 
+        "/podcasts/" + id
 
+    );
 
 
 
 
-if(
 
-!result ||
 
-!result.success
 
-){
 
+    if(
 
+        !result ||
 
-throw new Error(
+        !result.success
 
-result?.message ||
+    ){
 
-"حذف پادکست انجام نشد"
 
-);
 
+        throw new Error(
 
+            result?.message ||
 
-}
+            "حذف پادکست انجام نشد"
 
+        );
 
 
 
+    }
 
 
 
 
-this.showSuccess(
 
-"پادکست با موفقیت حذف شد"
 
-);
 
 
+    this.showSuccess(
 
+        "پادکست با موفقیت حذف شد"
 
+    );
 
 
 
 
-await this.load();
+
+
+
+
+    await this.load();
+
 
 
 
@@ -2108,21 +3053,25 @@ catch(error){
 
 
 
-console.error(
+    console.error(
 
-"DELETE ERROR:",
+        "DELETE ERROR:",
 
-error
+        error
 
-);
+    );
 
 
 
-this.showError(
 
-error.message
 
-);
+
+
+    this.showError(
+
+        error.message
+
+    );
 
 
 
@@ -2132,108 +3081,377 @@ finally{
 
 
 
-if(window.Loader){
-
-Loader.hide();
-
-}
+    if(window.Loader){
 
 
+        Loader.hide();
 
-}
 
+    }
 
 
 }
 
 
 
-
-
-
-
-
+}
 
 /*
 =================================================
 UPLOAD COVER
 =================================================
 */
+
+
 async uploadCover(){
 
-    try{
 
-        const input = document.getElementById("coverFile");
 
-        if(!input || !input.files.length){
+try{
 
-            this.showError("ابتدا فایل کاور را انتخاب کنید");
 
-            return;
 
-        }
+    const input =
 
-        const formData = new FormData();
+    document.getElementById(
 
-        formData.append("file", input.files[0]);
+        "coverFile"
 
-        formData.append("type","cover");
+    );
 
-        if(window.Loader){
 
-            Loader.show("در حال آپلود کاور...");
 
-        }
 
-        const result = await API.upload(
-            "/media/upload",
-            formData
+
+
+
+
+    if(
+
+        !input ||
+
+        !input.files ||
+
+        !input.files.length
+
+    ){
+
+
+
+        this.showError(
+
+            "ابتدا فایل کاور را انتخاب کنید"
+
         );
 
-        if(!result.success){
 
-            throw new Error(
-                result.message || "آپلود کاور ناموفق بود"
-            );
 
-        }
+        return;
 
-        document.getElementById("cover_url").value = result.url;
-
-        const preview =
-        document.getElementById("coverPreview");
-
-        if(preview){
-
-            preview.src = result.url;
-
-            preview.style.display = "block";
-
-        }
-
-        this.showSuccess("کاور با موفقیت آپلود شد");
 
     }
 
-    catch(error){
 
-        console.error(error);
 
-        this.showError(error.message);
+
+
+
+
+
+
+    const file =
+
+    input.files[0];
+
+
+
+
+
+
+
+
+    if(
+
+        !file.type.startsWith("image/")
+
+    ){
+
+
+
+        this.showError(
+
+            "فقط فایل تصویری مجاز است"
+
+        );
+
+
+
+        return;
+
 
     }
 
-    finally{
 
-        if(window.Loader){
 
-            Loader.hide();
 
-        }
+
+
+
+
+
+    const formData =
+
+    new FormData();
+
+
+
+
+
+
+
+
+    formData.append(
+
+        "file",
+
+        file
+
+    );
+
+
+
+
+
+
+
+
+    formData.append(
+
+        "type",
+
+        "cover"
+
+    );
+
+
+
+
+
+
+
+
+
+    if(window.Loader){
+
+
+
+        Loader.show(
+
+            "در حال آپلود کاور..."
+
+        );
+
 
     }
+
+
+
+
+
+
+
+
+    const result =
+
+    await API.upload(
+
+        "/media/upload",
+
+        formData
+
+    );
+
+
+
+
+
+
+
+
+    if(
+
+        !result ||
+
+        !result.success
+
+    ){
+
+
+
+        throw new Error(
+
+            result?.message ||
+
+            "آپلود کاور ناموفق بود"
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+
+    const url =
+
+    result.url;
+
+
+
+
+
+
+
+
+
+    const coverInput =
+
+    document.getElementById(
+
+        "cover_url"
+
+    );
+
+
+
+
+
+
+
+    if(coverInput){
+
+
+
+        coverInput.value = url;
+
+
+    }
+
+
+
+
+
+
+
+
+
+    const preview =
+
+    document.getElementById(
+
+        "coverPreview"
+
+    );
+
+
+
+
+
+
+
+
+    if(preview){
+
+
+
+        preview.src = url;
+
+
+        preview.style.display =
+
+        "block";
+
+
+    }
+
+
+
+
+
+
+
+
+
+    this.showSuccess(
+
+        "کاور با موفقیت آپلود شد"
+
+    );
+
+
+
+
+
+
 
 }
+
+catch(error){
+
+
+
+    console.error(
+
+        "UPLOAD COVER ERROR:",
+
+        error
+
+    );
+
+
+
+
+
+
+
+
+    this.showError(
+
+        error.message
+
+    );
+
+
+
+}
+
+finally{
+
+
+
+    if(window.Loader){
+
+
+
+        Loader.hide();
+
+
+    }
+
+
+
+}
+
+
+
+        }
+
+
 /*
 =================================================
 UPLOAD AUDIO
@@ -2243,80 +3461,413 @@ UPLOAD AUDIO
 
 async uploadAudio(){
 
-    try{
 
-        const input = document.getElementById("audioFile");
 
-        if(!input || !input.files.length){
+try{
 
-            this.showError("ابتدا فایل صوتی را انتخاب کنید");
 
-            return;
 
-        }
+    const input =
 
-        const formData = new FormData();
+    document.getElementById(
 
-        formData.append("file", input.files[0]);
+        "audioFile"
 
-        formData.append("type","audio");
+    );
 
-        if(window.Loader){
 
-            Loader.show("در حال آپلود فایل صوتی...");
 
-        }
 
-        const result = await API.upload(
-            "/media/upload",
-            formData
+
+
+
+
+    if(
+
+        !input ||
+
+        !input.files ||
+
+        !input.files.length
+
+    ){
+
+
+
+        this.showError(
+
+            "ابتدا فایل صوتی را انتخاب کنید"
+
         );
 
-        if(!result.success){
 
-            throw new Error(
-                result.message || "آپلود فایل صوتی ناموفق بود"
-            );
 
-        }
+        return;
 
-        document.getElementById("audio_url").value = result.url;
-
-        const audio =
-        document.getElementById("audioPreview");
-
-        if(audio){
-
-            audio.src = result.url;
-
-            audio.style.display = "block";
-
-        }
-
-        this.showSuccess("فایل صوتی با موفقیت آپلود شد");
 
     }
 
-    catch(error){
 
-        console.error(error);
 
-        this.showError(error.message);
+
+
+
+
+
+
+    const file =
+
+    input.files[0];
+
+
+
+
+
+
+
+
+
+    const isMP3 =
+
+
+    file.type === "audio/mpeg"
+
+    ||
+
+    file.name
+
+    .toLowerCase()
+
+    .endsWith(".mp3");
+
+
+
+
+
+
+
+
+    if(!isMP3){
+
+
+
+        this.showError(
+
+            "فقط فایل MP3 مجاز است"
+
+        );
+
+
+
+        return;
+
 
     }
 
-    finally{
 
-        if(window.Loader){
 
-            Loader.hide();
 
-        }
+
+
+
+
+
+    /*
+    ==========================
+    SIZE CHECK
+    ==========================
+    */
+
+
+    if(
+
+        file.size >
+
+        50 * 1024 * 1024
+
+    ){
+
+
+
+        this.showError(
+
+            "حجم فایل صوتی نباید بیشتر از 50 مگابایت باشد"
+
+        );
+
+
+
+        return;
+
 
     }
+
+
+
+
+
+
+
+
+
+    const formData =
+
+    new FormData();
+
+
+
+
+
+
+
+
+
+    formData.append(
+
+        "file",
+
+        file
+
+    );
+
+
+
+
+
+
+
+
+    formData.append(
+
+        "type",
+
+        "audio"
+
+    );
+
+
+
+
+
+
+
+
+
+    if(window.Loader){
+
+
+
+        Loader.show(
+
+            "در حال آپلود فایل صوتی..."
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+
+    const result =
+
+    await API.upload(
+
+        "/media/upload",
+
+        formData
+
+    );
+
+
+
+
+
+
+
+
+    if(
+
+        !result ||
+
+        !result.success
+
+    ){
+
+
+
+        throw new Error(
+
+            result?.message ||
+
+            "آپلود فایل صوتی ناموفق بود"
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+
+    const url =
+
+    result.url;
+
+
+
+
+
+
+
+
+
+    const audioInput =
+
+    document.getElementById(
+
+        "audio_url"
+
+    );
+
+
+
+
+
+
+
+
+    if(audioInput){
+
+
+
+        audioInput.value = url;
+
+
+    }
+
+
+
+
+
+
+
+
+
+    const audio =
+
+    document.getElementById(
+
+        "audioPreview"
+
+    );
+
+
+
+
+
+
+
+
+    if(audio){
+
+
+
+        audio.src = url;
+
+
+        audio.style.display =
+
+        "block";
+
+
+
+        audio.load();
+
+
+    }
+
+
+
+
+
+
+
+
+
+    this.showSuccess(
+
+        "فایل صوتی با موفقیت آپلود شد"
+
+    );
+
+
+
+
+
+
 
 }
-    
+
+catch(error){
+
+
+
+    console.error(
+
+        "UPLOAD AUDIO ERROR:",
+
+        error
+
+    );
+
+
+
+
+
+
+
+    this.showError(
+
+        error.message
+
+    );
+
+
+
+}
+
+finally{
+
+
+
+    if(window.Loader){
+
+
+
+        Loader.hide();
+
+
+    }
+
+
+
+}
+
+
+
+}
+
 
 /*
 =================================================
@@ -2329,26 +3880,196 @@ resetForm(){
 
 
 
-const form =
+    const form =
 
-document.getElementById(
+    document.getElementById(
 
-"podcastForm"
+        "podcastForm"
 
-);
-
-
+    );
 
 
 
 
 
 
-if(form){
+
+    if(form){
 
 
 
-form.reset();
+        form.reset();
+
+
+    }
+
+
+
+
+
+
+
+
+    const id =
+
+    document.getElementById(
+
+        "podcastId"
+
+    );
+
+
+
+
+
+
+
+    if(id){
+
+
+
+        id.value = "";
+
+
+    }
+
+
+
+
+
+
+
+
+    const coverURL =
+
+    document.getElementById(
+
+        "cover_url"
+
+    );
+
+
+
+
+
+
+
+    if(coverURL){
+
+
+
+        coverURL.value = "";
+
+
+    }
+
+
+
+
+
+
+
+
+    const audioURL =
+
+    document.getElementById(
+
+        "audio_url"
+
+    );
+
+
+
+
+
+
+
+    if(audioURL){
+
+
+
+        audioURL.value = "";
+
+
+    }
+
+
+
+
+
+
+
+
+    const coverPreview =
+
+    document.getElementById(
+
+        "coverPreview"
+
+    );
+
+
+
+
+
+
+
+    if(coverPreview){
+
+
+
+        coverPreview.src = "";
+
+
+        coverPreview.style.display =
+
+        "none";
+
+
+    }
+
+
+
+
+
+
+
+
+    const audioPreview =
+
+    document.getElementById(
+
+        "audioPreview"
+
+    );
+
+
+
+
+
+
+
+    if(audioPreview){
+
+
+
+        audioPreview.pause();
+
+
+        audioPreview.src = "";
+
+
+        audioPreview.style.display =
+
+        "none";
+
+
+    }
+
+
+
+
+
 
 
 
@@ -2359,174 +4080,12 @@ form.reset();
 
 
 
-
-
-const id =
-
-document.getElementById(
-
-"podcastId"
-
-);
-
-
-
-
-
-
-
-
-if(id){
-
-
-
-id.value="";
-
-
-
-}
-
-
-
-
-
-
-
-
-const cover =
-
-document.getElementById(
-
-"coverPreview"
-
-);
-
-
-
-
-
-
-
-
-if(cover){
-
-
-
-cover.src="";
-
-cover.style.display="none";
-
-
-
-}
-
-
-
-
-
-
-
-
-const audio =
-
-document.getElementById(
-
-"audioPreview"
-
-);
-
-
-
-
-
-
-
-
-if(audio){
-
-
-
-audio.src="";
-
-audio.style.display="none";
-
-
-
-}
-
-
-
-
-
-
-
-
-const coverUrl =
-
-document.getElementById(
-
-"cover_url"
-
-);
-
-
-
-
-
-
-
-
-if(coverUrl){
-
-
-
-coverUrl.value="";
-
-
-
-}
-
-
-
-
-
-
-
-
-const audioUrl =
-
-document.getElementById(
-
-"audio_url"
-
-);
-
-
-
-
-
-
-
-
-if(audioUrl){
-
-
-
-audioUrl.value="";
-
-
-
-}
-
-
-
-}
 
 
 
 /*
 =================================================
-HELPERS
+ESCAPE HTML
 =================================================
 */
 
@@ -2535,32 +4094,47 @@ escapeHTML(value){
 
 
 
-return String(value || "")
+    return String(value || "")
 
-.replace(
-/&/g,
-"&amp;"
-)
+    .replace(
 
-.replace(
-/</g,
-"&lt;"
-)
+        /&/g,
 
-.replace(
-/>/g,
-"&gt;"
-)
+        "&amp;"
 
-.replace(
-/"/g,
-"&quot;"
-)
+    )
 
-.replace(
-/'/g,
-"&#039;"
-);
+    .replace(
+
+        /</g,
+
+        "&lt;"
+
+    )
+
+    .replace(
+
+        />/g,
+
+        "&gt;"
+
+    )
+
+    .replace(
+
+        /"/g,
+
+        "&quot;"
+
+    )
+
+    .replace(
+
+        /'/g,
+
+        "&#039;"
+
+    );
 
 
 
@@ -2576,7 +4150,7 @@ return String(value || "")
 
 /*
 =================================================
-TOAST SUCCESS
+SUCCESS MESSAGE
 =================================================
 */
 
@@ -2585,24 +4159,37 @@ showSuccess(message){
 
 
 
-if(
-window.Toast &&
-Toast.success
-){
+    if(
+
+        window.Toast &&
+
+        Toast.success
+
+    ){
 
 
-Toast.success(message);
+
+        Toast.success(
+
+            message
+
+        );
 
 
-}
+    }
 
-else{
-
-
-alert(message);
+    else{
 
 
-}
+
+        alert(
+
+            message
+
+        );
+
+
+    }
 
 
 
@@ -2618,7 +4205,7 @@ alert(message);
 
 /*
 =================================================
-TOAST ERROR
+ERROR MESSAGE
 =================================================
 */
 
@@ -2627,24 +4214,37 @@ showError(message){
 
 
 
-if(
-window.Toast &&
-Toast.error
-){
+    if(
+
+        window.Toast &&
+
+        Toast.error
+
+    ){
 
 
-Toast.error(message);
+
+        Toast.error(
+
+            message
+
+        );
 
 
-}
+    }
 
-else{
-
-
-alert(message);
+    else{
 
 
-}
+
+        alert(
+
+            message
+
+        );
+
+
+    }
 
 
 
@@ -2669,8 +4269,6 @@ GLOBAL INSTANCE
 
 
 
-
-
 let podcastsManager = null;
 
 
@@ -2682,15 +4280,18 @@ let podcastsManager = null;
 
 document.addEventListener(
 
-"DOMContentLoaded",
+    "DOMContentLoaded",
 
-()=>{
-
-
-    podcastsManager =
-
-    new PodcastsManager();
+    ()=>{
 
 
 
-});
+        podcastsManager =
+
+        new PodcastsManager();
+
+
+
+    }
+
+);

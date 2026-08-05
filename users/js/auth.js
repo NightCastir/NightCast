@@ -43,12 +43,18 @@ const NightCastAuth = {
 
         await this.checkSession();
 
-this.bindGuestLogin();
+
+
+        this.bindGuestLogin();
+
+
 
         return result;
 
 
     },
+
+
 
 
 
@@ -64,6 +70,56 @@ this.bindGuestLogin();
 
 
     async checkSession(){
+
+
+
+        /*
+        ================================
+        GUEST MODE
+        ================================
+        */
+
+
+        if(
+
+            localStorage.getItem(
+
+                "NightCastGuest"
+
+            )
+
+        ){
+
+
+            this.setGuest();
+
+
+            this.updateUI();
+
+
+
+            return {
+
+
+                success:true,
+
+
+                loggedIn:false,
+
+
+                guest:true
+
+
+            };
+
+
+        }
+
+
+
+
+
+
 
 
 
@@ -101,9 +157,11 @@ this.bindGuestLogin();
 
 
 
+
         const result =
 
         await API.me();
+
 
 
 
@@ -147,7 +205,9 @@ this.bindGuestLogin();
 
 
 
+
         this.logout();
+
 
 
 
@@ -189,12 +249,9 @@ this.bindGuestLogin();
 
         await API.login(
 
-
             username,
 
-
             password
-
 
         );
 
@@ -205,6 +262,14 @@ this.bindGuestLogin();
 
 
         if(result.success){
+
+
+
+            localStorage.removeItem(
+
+                "NightCastGuest"
+
+            );
 
 
 
@@ -219,7 +284,9 @@ this.bindGuestLogin();
 
 
 
+
         return result;
+
 
 
     },
@@ -269,6 +336,14 @@ this.bindGuestLogin();
 
 
         API.removeToken();
+
+
+
+        localStorage.removeItem(
+
+            "NightCastGuest"
+
+        );
 
 
 
@@ -523,6 +598,7 @@ this.bindGuestLogin();
 
             button.innerHTML =
 
+
             `
 
             <i class="fa-solid fa-user"></i>
@@ -541,6 +617,7 @@ this.bindGuestLogin();
 
             button.innerHTML =
 
+
             `
 
             <i class="fa-solid fa-right-to-bracket"></i>
@@ -555,7 +632,201 @@ this.bindGuestLogin();
 
 
 
+    },
+
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    GUEST LOGIN BUTTON
+    ====================================
+    */
+
+
+    bindGuestLogin(){
+
+
+
+        const button =
+
+        document.getElementById(
+
+            "skipLoginButton"
+
+        );
+
+
+
+
+
+
+
+        if(button){
+
+
+
+            button.onclick = ()=>{
+
+
+
+                localStorage.setItem(
+
+                    "NightCastGuest",
+
+                    "true"
+
+                );
+
+
+
+
+
+
+                const loginEntry =
+
+                document.getElementById(
+
+                    "loginEntry"
+
+                );
+
+
+
+
+
+
+                if(loginEntry){
+
+
+
+                    loginEntry.style.display="none";
+
+
+                }
+
+
+
+
+
+
+                this.setGuest();
+
+
+
+                this.updateUI();
+
+
+
+
+
+                console.log(
+
+                    "Guest Mode Activated"
+
+                );
+
+
+
+            };
+
+
+        }
+
+
+
+
+
+
+
+
+
+        const skipLink =
+
+        document.getElementById(
+
+            "skipLogin"
+
+        );
+
+
+
+
+
+
+
+
+        if(skipLink){
+
+
+
+            skipLink.onclick=(e)=>{
+
+
+
+                e.preventDefault();
+
+
+
+
+
+                localStorage.setItem(
+
+                    "NightCastGuest",
+
+                    "true"
+
+                );
+
+
+
+
+
+                const modal =
+
+                document.getElementById(
+
+                    "authModal"
+
+                );
+
+
+
+
+
+
+                if(modal){
+
+
+
+                    modal.classList.add(
+
+                        "hidden"
+
+                    );
+
+
+                }
+
+
+
+
+
+            };
+
+
+        }
+
+
+
     }
+
+
 
 
 

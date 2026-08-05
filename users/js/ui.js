@@ -1,22 +1,12 @@
 /* ==================================================
 
-NightCast User UI Manager V2
-
+NightCast User UI Manager V3
 
 File:
-
 /users/js/core/ui.js
 
-
 Responsibility:
-
-ONLY USER INTERFACE
-
-
-Depends:
-
-auth.js
-
+ONLY UI
 
 ================================================== */
 
@@ -24,36 +14,19 @@ auth.js
 const NightCastUI = {
 
 
-
-    /*
-    ====================================
-    INIT
-    ====================================
-    */
-
-
     init(){
-
 
 
         this.initTheme();
 
-
-
         this.bindGlobalEvents();
-
-
 
         this.updateUserUI();
 
 
-
         console.log(
-
             "NightCast UI Ready"
-
         );
-
 
 
     },
@@ -61,59 +34,27 @@ const NightCastUI = {
 
 
 
-
-
-
-
-
-    /*
-    ====================================
-    LOADER
-    ====================================
-    */
 
 
     hideLoader(){
 
 
-
         const loader =
-
         document.getElementById(
-
             "globalLoader"
-
         );
 
 
-
-
-        if(!loader)
-
-        return;
-
-
-
-
-
-
-        setTimeout(()=>{
-
+        if(loader){
 
             loader.classList.add(
-
                 "hidden"
-
             );
 
-
-        },500);
-
+        }
 
 
     },
-
-
 
 
 
@@ -124,29 +65,17 @@ const NightCastUI = {
     showLoader(){
 
 
-
         const loader =
-
         document.getElementById(
-
             "globalLoader"
-
         );
-
-
 
 
         if(loader){
 
-
-
             loader.classList.remove(
-
                 "hidden"
-
             );
-
-
 
         }
 
@@ -160,46 +89,24 @@ const NightCastUI = {
 
 
 
-
-    /*
-    ====================================
-    TOAST SYSTEM
-    ====================================
-    */
-
-
     toast(
-
         message,
-
         type="info"
-
     ){
 
 
-
         const container =
-
         document.getElementById(
-
             "toastContainer"
-
         );
-
-
-
 
 
 
         if(!container){
 
-
-
-            alert(message);
+            console.log(message);
 
             return;
-
-
 
         }
 
@@ -207,105 +114,54 @@ const NightCastUI = {
 
 
 
-
-
-
         const item =
-
         document.createElement(
-
             "div"
-
         );
-
-
 
 
 
         item.className =
-
         `toast toast-${type}`;
 
 
 
-
-
-
-
         item.innerHTML =
-
-
-
         `
-
-        <span>
-
-        ${message}
-
-        </span>
-
+        <span>${message}</span>
         `;
 
 
 
-
-
-
-
-
-
         container.appendChild(
-
             item
-
         );
-
-
-
-
 
 
 
         setTimeout(()=>{
 
-
             item.classList.add(
-
                 "show"
-
             );
-
-
 
         },50);
 
 
 
 
-
-
-
-
         setTimeout(()=>{
 
-
             item.classList.remove(
-
                 "show"
-
             );
-
 
 
             setTimeout(()=>{
 
-
                 item.remove();
 
-
-
             },300);
-
 
 
         },3000);
@@ -322,83 +178,48 @@ const NightCastUI = {
 
 
 
-    /*
-    ====================================
-    THEME
-    ====================================
-    */
-
-
     initTheme(){
 
 
-
         const saved =
-
         localStorage.getItem(
-
             "NightCastTheme"
-
         );
-
-
-
 
 
 
         if(saved==="light"){
 
-
-
             document.body.classList.add(
-
                 "light-theme"
-
             );
-
 
         }
 
 
 
 
-
-        const button =
-
+        const btn =
         document.getElementById(
-
             "themeButton"
-
         );
 
 
 
+        if(btn){
 
 
-        if(button){
-
-
-
-            button.onclick=()=>{
-
-
+            btn.onclick=()=>{
 
                 this.toggleTheme();
 
-
-
             };
-
 
 
         }
 
 
-
-
     },
-
-
 
 
 
@@ -409,46 +230,100 @@ const NightCastUI = {
     toggleTheme(){
 
 
-
         document.body.classList.toggle(
-
             "light-theme"
-
         );
-
-
-
 
 
 
         const mode =
-
         document.body.classList.contains(
-
             "light-theme"
-
         )
-
         ?
-
         "light"
-
         :
-
         "dark";
 
 
 
-
-
-
         localStorage.setItem(
-
             "NightCastTheme",
-
             mode
-
         );
+
+
+    },
+
+
+
+
+
+
+
+
+
+    bindGlobalEvents(){
+
+
+        this.bindMobileMenu();
+
+
+
+
+
+        const login =
+        document.getElementById(
+            "loginButton"
+        );
+
+
+
+        if(login){
+
+
+            login.onclick=()=>{
+
+
+                this.openModal(
+                    "authModal"
+                );
+
+
+            };
+
+
+        }
+
+
+
+
+
+
+
+        const closeAuth =
+        document.getElementById(
+            "closeAuth"
+        );
+
+
+
+        if(closeAuth){
+
+
+            closeAuth.onclick=()=>{
+
+
+                this.closeModal(
+                    "authModal"
+                );
+
+
+            };
+
+
+        }
+
 
 
 
@@ -462,93 +337,59 @@ const NightCastUI = {
 
 
 
-    /*
-    ====================================
-    MOBILE MENU
-    ====================================
-    */
-
-
-    bindMenu(){
-
+    bindMobileMenu(){
 
 
         const open =
-
         document.getElementById(
-
             "mobileMenuButton"
-
         );
 
 
 
         const close =
-
         document.getElementById(
-
-            "closeMenu"
-
+            "closeMobileMenu"
         );
 
 
 
         const menu =
-
         document.getElementById(
-
-            "sideMenu"
-
+            "mobileMenu"
         );
 
 
 
         const overlay =
-
         document.getElementById(
-
-            "menuOverlay"
-
+            "mobileOverlay"
         );
 
 
 
 
 
-
-
-
-        if(open){
-
+        if(open && menu && overlay){
 
 
             open.onclick=()=>{
 
 
-
                 menu.classList.add(
-
                     "active"
-
                 );
-
 
 
                 overlay.classList.add(
-
                     "active"
-
                 );
-
 
 
             };
 
 
         }
-
-
-
 
 
 
@@ -557,34 +398,23 @@ const NightCastUI = {
         if(close){
 
 
-
             close.onclick=()=>{
 
 
-
                 menu.classList.remove(
-
                     "active"
-
                 );
-
 
 
                 overlay.classList.remove(
-
                     "active"
-
                 );
-
 
 
             };
 
 
         }
-
-
-
 
 
 
@@ -593,20 +423,16 @@ const NightCastUI = {
         if(overlay){
 
 
-
             overlay.onclick=()=>{
-
 
 
                 close.click();
 
 
-
             };
 
 
         }
-
 
 
     },
@@ -617,198 +443,54 @@ const NightCastUI = {
 
 
 
-
-
-    /*
-    ====================================
-    GLOBAL EVENTS
-    ====================================
-    */
-
-
-    bindGlobalEvents(){
-
-
-
-        this.bindMenu();
-
-
-
-
-
-
-
-        const login =
-
-        document.getElementById(
-
-            "loginButton"
-
-        );
-
-
-
-
-
-
-        if(login){
-
-
-
-            login.onclick=()=>{
-
-
-
-                if(
-
-                    window.NightCastAuth
-
-                ){
-
-
-
-                    NightCastAuth.openLogin();
-
-
-
-                }
-
-
-
-            };
-
-
-
-        }
-
-
-
-
-
-
-        const closeAuth =
-
-        document.getElementById(
-
-            "closeAuthModal"
-
-        );
-
-
-
-
-
-        if(closeAuth){
-
-
-
-            closeAuth.onclick=()=>{
-
-
-
-                NightCastAuth.closeLogin();
-
-
-
-            };
-
-
-        }
-
-
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    USER HEADER STATE
-    ====================================
-    */
 
 
     updateUserUI(){
 
 
 
-        const button =
-
+        const btn =
         document.getElementById(
-
             "loginButton"
-
         );
 
 
 
+        if(!btn){
 
+            return;
 
-        if(!button)
-
-        return;
-
-
-
-
+        }
 
 
 
 
         if(
-
-            window.NightCastAuth &&
-
+            window.NightCastAuth
+            &&
             NightCastAuth.isLoggedIn()
-
         ){
 
 
-
-            button.innerHTML =
-
-
-
+            btn.innerHTML =
             `
-
             <i class="fa-solid fa-user"></i>
-
             حساب کاربری
-
             `;
 
 
-
         }
-
         else{
 
 
-
-            button.innerHTML =
-
-
-
+            btn.innerHTML =
             `
-
             <i class="fa-solid fa-right-to-bracket"></i>
-
             ورود
-
             `;
 
 
-
         }
-
 
 
     },
@@ -819,44 +501,26 @@ const NightCastUI = {
 
 
 
-
-
-    /*
-    ====================================
-    MODAL HELPERS
-    ====================================
-    */
 
 
     openModal(id){
 
 
-
         const el =
-
         document.getElementById(id);
-
 
 
 
         if(el){
 
-
-
             el.classList.remove(
-
                 "hidden"
-
             );
-
-
 
         }
 
 
-
     },
-
 
 
 
@@ -868,33 +532,21 @@ const NightCastUI = {
     closeModal(id){
 
 
-
         const el =
-
         document.getElementById(id);
-
 
 
 
         if(el){
 
-
-
             el.classList.add(
-
                 "hidden"
-
             );
-
 
         }
 
 
-
     }
-
-
-
 
 
 
@@ -905,9 +557,5 @@ const NightCastUI = {
 
 
 
-
-
-
 window.NightCastUI =
-
 NightCastUI;

@@ -1,21 +1,29 @@
 
+
 <!DOCTYPE html>
+
 <html lang="fa" dir="rtl">
+
 
 <head>
 
+
 <meta charset="UTF-8">
+
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
 <title>
-رادیو NightCast | تجربه‌ای برای شنیدن و یادگیری
+NightCast | رادیو نایت‌کست
 </title>
 
 
+
 <meta name="description"
-content="NightCast - پادکست‌های آموزشی، خلاصه کتاب‌ها و تجربه‌های شنیدنی">
+
+content="رادیو NightCast - پادکست‌های آموزشی، تجربه و رشد فردی">
+
 
 
 <!-- ==========================
@@ -24,14 +32,13 @@ content="NightCast - پادکست‌های آموزشی، خلاصه کتاب‌
 
 
 <link rel="stylesheet"
+
 href="/users/css/user-core.css">
 
 
-<link rel="stylesheet"
-href="/users/css/player.css">
-
 
 <link rel="stylesheet"
+
 href="/users/css/responsive.css">
 
 
@@ -40,7 +47,10 @@ href="/users/css/responsive.css">
 
 
 
+
 <body>
+
+
 
 
 
@@ -50,25 +60,25 @@ href="/users/css/responsive.css">
 
 
 <div id="globalLoader"
+
 class="loader hidden">
 
 
-<div class="loader-circle"></div>
+<div class="loader-box">
+
+
+<div class="spinner"></div>
+
+
+<p>
+
+در حال دریافت اطلاعات...
+
+</p>
 
 
 </div>
 
-
-
-
-
-<!-- ==========================
-     TOAST
-========================== -->
-
-
-<div id="toast"
-class="toast hidden">
 
 </div>
 
@@ -84,7 +94,8 @@ class="toast hidden">
 ========================== -->
 
 
-<header class="main-header">
+<header id="mainHeader">
+
 
 
 <div class="header-container">
@@ -93,20 +104,9 @@ class="toast hidden">
 
 
 
-<!-- LOGO -->
-
-
 <div class="logo">
 
-
-🎙
-
-<span>
-
-NightCast
-
-</span>
-
+Night<span>Cast</span>
 
 </div>
 
@@ -115,8 +115,6 @@ NightCast
 
 
 
-
-<!-- SEARCH -->
 
 
 <div class="search-box">
@@ -128,10 +126,7 @@ type="search"
 
 id="searchInput"
 
-placeholder="جستجوی پادکست، کتاب..."
-
-
->
+placeholder="جستجوی پادکست...">
 
 
 </div>
@@ -142,49 +137,17 @@ placeholder="جستجوی پادکست، کتاب..."
 
 
 
-<!-- USER -->
-
-
-<div id="userPanel"
-class="user-panel hidden">
-
-
-
-<span id="userName">
-
-</span>
-
-
 
 <button
 
-id="logoutBtn"
+class="login-btn"
 
-class="logout-btn">
-
-خروج
-
-</button>
-
-
-</div>
-
-
-
-
-
-<button
-
-id="loginBtn"
-
-class="login-btn">
+id="loginBtn">
 
 
 ورود
 
-
 </button>
-
 
 
 
@@ -199,30 +162,28 @@ class="login-btn">
 
 
 
+
+
+
+
 <!-- ==========================
-     MAIN
-========================== -->
-
-
-<main>
-  <!-- ==========================
-     HERO SECTION
+     HERO
 ========================== -->
 
 
 <section class="hero">
 
 
+
 <div class="hero-content">
+
+
 
 
 
 <h1>
 
-تجربه‌ها را بشنو،
-<br>
-
-دانش را زندگی کن
+رادیو تجربه و یادگیری
 
 </h1>
 
@@ -232,11 +193,11 @@ class="login-btn">
 
 <p>
 
-رادیو NightCast؛
+به NightCast خوش آمدید؛
 
-پادکست‌هایی از خلاصه کتاب‌ها،
+جایی برای شنیدن داستان‌ها،
 
-تجربه‌های ارزشمند و آموزش‌های کاربردی
+تجربه‌ها و آموزش‌هایی که زندگی را بهتر می‌کنند.
 
 </p>
 
@@ -244,42 +205,18 @@ class="login-btn">
 
 
 
-<div class="hero-actions">
-
-
-
-<button
-
-onclick="document.getElementById('podcastSection').scrollIntoView()"
-
-class="primary-btn">
-
-
-🎧 شروع شنیدن
-
-
-</button>
-
-
-
 
 
 <button
 
-onclick="NightCastUI.openPopup('loginPopup')"
+class="gold-btn"
 
-class="secondary-btn">
+onclick="document.getElementById('podcastSection').scrollIntoView()">
 
 
-عضویت رایگان
-
+شروع شنیدن
 
 </button>
-
-
-
-
-</div>
 
 
 
@@ -291,13 +228,7 @@ class="secondary-btn">
 
 </section>
 
-
-
-
-
-
-
-
+     
 
 <!-- ==========================
      CATEGORY SECTION
@@ -307,35 +238,18 @@ class="secondary-btn">
 <section class="category-section">
 
 
-<div class="section-title">
-
-
-<h2>
-
-دسته‌بندی‌ها
-
-</h2>
-
-
-</div>
+<div class="category-scroll">
 
 
 
+<button
+
+class="category-btn active"
+
+data-category="all">
 
 
-<div class="category-list">
-
-
-
-
-
-<button class="category-btn">
-
-
-📚
-
-خلاصه کتاب
-
+همه
 
 </button>
 
@@ -343,27 +257,14 @@ class="secondary-btn">
 
 
 
-<button class="category-btn">
+<button
+
+class="category-btn"
+
+data-category="book">
 
 
-🧠
-
-روانشناسی
-
-
-</button>
-
-
-
-
-
-<button class="category-btn">
-
-
-🎯
-
-موفقیت فردی
-
+کتاب‌ها
 
 </button>
 
@@ -371,13 +272,32 @@ class="secondary-btn">
 
 
 
-<button class="category-btn">
+
+<button
+
+class="category-btn"
+
+data-category="experience">
 
 
-💍
+تجربه‌ها
 
-مهارت‌های زندگی
+</button>
 
+
+
+
+
+
+
+<button
+
+class="category-btn"
+
+data-category="education">
+
+
+آموزشی
 
 </button>
 
@@ -385,22 +305,25 @@ class="secondary-btn">
 
 
 
-<button class="category-btn">
 
 
-🚀
+<button
 
-تجربه و رشد
+class="category-btn"
 
+data-category="growth">
+
+
+رشد فردی
 
 </button>
+
 
 
 
 
 
 </div>
-
 
 
 </section>
@@ -413,158 +336,25 @@ class="secondary-btn">
 
 
 
-<!-- ==========================
-     FEATURE BOX
-========================== -->
-
-
-<section class="feature-section">
-
-
-<div class="feature-card">
-
-
-
-<div class="feature-icon">
-
-🎙
-
-</div>
-
-
-
-
-<div>
-
-
-<h3>
-
-رادیو تجربه‌های شنیدنی
-
-</h3>
-
-
-
-
-<p>
-
-هر قسمت، فرصتی برای یادگیری،
-
-تغییر نگاه و رشد شخصی
-
-</p>
-
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-<div class="feature-card">
-
-
-
-<div class="feature-icon">
-
-📖
-
-</div>
-
-
-
-
-<div>
-
-
-<h3>
-
-خلاصه کتاب‌های ارزشمند
-
-</h3>
-
-
-
-
-<p>
-
-محتوای کاربردی کتاب‌ها در زمان کوتاه
-
-</p>
-
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-<div class="feature-card">
-
-
-
-<div class="feature-icon">
-
-🎧
-
-</div>
-
-
-
-
-<div>
-
-
-<h3>
-
-گوش دادن آسان
-
-</h3>
-
-
-
-
-<p>
-
-هر زمان، هر مکان، با تجربه‌ای متفاوت
-
-</p>
-
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-  </section>
 
 <!-- ==========================
      PODCAST SECTION
 ========================== -->
 
 
-<section id="podcastSection"
-class="podcast-section">
+<section id="podcastSection">
+
+
+
+
 
 
 
 <div class="section-header">
 
+
+
+<div>
 
 
 <h2>
@@ -575,16 +365,14 @@ class="podcast-section">
 
 
 
+<p>
 
-<button
+شنیدن تجربه‌هایی برای رشد بهتر
 
-class="refresh-btn"
+</p>
 
-onclick="NightCastPodcasts.reset()">
 
-🔄 بروزرسانی
-
-</button>
+</div>
 
 
 
@@ -595,37 +383,22 @@ onclick="NightCastPodcasts.reset()">
 
 
 
-
-<!-- PODCAST LIST -->
-
-
-
-<div id="podcastList"
-class="podcast-grid">
 
 
 
 <!--
 
-Cards are generated by:
+این بخش توسط:
 
 /users/js/podcasts.js
 
-
-API:
-
-/public/podcasts?page=1&limit=5
+پر می‌شود
 
 -->
 
 
 
-<div class="loading-box">
-
-در حال دریافت پادکست‌ها...
-
-</div>
-
+<div id="podcastList">
 
 
 </div>
@@ -636,77 +409,132 @@ API:
 
 
 
-
-
-<!-- LOAD MORE -->
-
-
-<div class="load-more-box">
 
 
 <button
 
 id="loadMoreBtn"
 
-class="primary-btn"
-
 onclick="NightCastPodcasts.nextPage()">
 
 
 نمایش پادکست‌های بیشتر
+
+</button>
+
+
+
+
+
+
+
+</section>
+
+
+
+<!-- ==========================
+     FIXED PLAYER
+========================== -->
+
+
+<div id="nightcastPlayer">
+
+
+
+<img
+
+id="playerCover"
+
+class="player-cover"
+
+src="/users/assets/default-cover.jpg"
+
+alt="cover">
+
+
+
+
+
+<div class="player-info">
+
+
+
+<div
+
+id="playerTitle"
+
+class="player-title">
+
+
+NightCast Player
+
+
+</div>
+
+
+
+
+
+<div
+
+id="playerAuthor"
+
+class="player-author">
+
+
+آماده پخش
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="player-controls">
+
+
+
+
+
+<button
+
+id="playerPlayBtn"
+
+class="player-btn">
+
+
+▶
 
 
 </button>
 
 
 
-</div>
 
 
 
 
+<button
 
-</section>
+id="playerPauseBtn"
 
-
-
-
-
+class="player-btn">
 
 
+Ⅱ
 
 
-<!-- ==========================
-     ABOUT NIGHTCAST
-========================== -->
+</button>
 
 
-<section class="about-section">
-
-
-
-<div class="about-card">
-
-
-
-<h2>
-
-چرا NightCast؟
-
-</h2>
-
-
-
-
-<p>
-
-ما تلاش می‌کنیم بهترین تجربه‌های آموزشی،
-
-خلاصه کتاب‌ها و داستان‌های الهام‌بخش را
-
-در قالب پادکست در اختیار شما قرار دهیم.
-
-</p>
 
 
 
@@ -715,7 +543,41 @@ onclick="NightCastPodcasts.nextPage()">
 
 
 
-</section>
+
+
+
+
+
+<div class="player-progress">
+
+
+<span
+
+id="playerProgressBar">
+
+
+</span>
+
+
+</div>
+
+
+
+
+
+<audio
+
+id="nightcastAudio"
+
+preload="metadata">
+
+
+</audio>
+
+
+
+
+</div>
 
 
 
@@ -730,9 +592,13 @@ onclick="NightCastPodcasts.nextPage()">
 ========================== -->
 
 
-<div id="loginPopup"
+<div
+
+id="loginPopup"
 
 class="popup hidden">
+
+
 
 
 
@@ -740,16 +606,21 @@ class="popup hidden">
 
 
 
+
+
 <button
 
-class="close-popup"
+class="popup-close"
 
-data-close="loginPopup">
+id="closeLogin">
+
 
 ×
 
 
 </button>
+
+
 
 
 
@@ -765,26 +636,37 @@ data-close="loginPopup">
 
 
 
-<input
 
-id="loginUsername"
 
-placeholder="نام کاربری"
+<div class="user-form">
 
->
 
 
 
 
 <input
 
-id="loginPassword"
+id="userLoginUsername"
+
+type="text"
+
+placeholder="نام کاربری">
+
+
+
+
+
+
+
+
+<input
+
+id="userLoginPassword"
 
 type="password"
 
-placeholder="رمز عبور"
+placeholder="رمز عبور">
 
->
 
 
 
@@ -793,9 +675,9 @@ placeholder="رمز عبور"
 
 <button
 
-onclick="loginAction()"
+class="primary-btn"
 
-class="primary-btn">
+id="userLoginSubmit">
 
 
 ورود
@@ -807,21 +689,9 @@ class="primary-btn">
 
 
 
-<div class="popup-footer">
+</div>
 
 
-حساب ندارید؟
-
-
-<button
-
-onclick="registerAction()">
-
-
-ثبت نام
-
-
-</button>
 
 
 
@@ -829,125 +699,58 @@ onclick="registerAction()">
 
 
 
+
+
 </div>
 
 
 
-</div>
+
+
 
 
 
 
 <!-- ==========================
-     AUDIO PLAYER
+     USER MESSAGE POPUP
 ========================== -->
 
 
-<div class="audio-player">
-
-
-
-
-
-<!-- AUDIO ENGINE -->
-
-
-<audio id="nightAudio">
-
-</audio>
-
-
-
-
-
-
-
-<div class="player-container">
-
-
-
-
-
-<!-- COVER -->
-
-
-<div class="player-cover-box">
-
-
-
-<img
-
-id="playerCover"
-
-src="/users/assets/default-cover.jpg"
-
-alt="NightCast Player Cover"
-
-
->
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<!-- INFO -->
-
-
-<div class="player-info">
-
-
-
-<h3 id="playerTitle">
-
-پادکستی انتخاب نشده
-
-</h3>
-
-
-
-
-
-<div id="playerTime">
-
-00:00 / 00:00
-
-</div>
-
-
-
-
-
-
-<!-- PROGRESS -->
-
-
 <div
 
-class="progress-container"
+id="messagePopup"
 
-onclick="NightCastPlayer.seek(event)"
+class="popup hidden">
 
->
+
+
+
+
+<div class="popup-box">
+
+
+
+
+
+<button
+
+class="popup-close"
+
+id="closeMessage">
+
+
+×
+
+
+</button>
+
+
 
 
 
 <div
 
-id="playerProgress"
-
-class="progress-bar">
-
-
-</div>
-
+id="messageContent">
 
 
 </div>
@@ -958,86 +761,6 @@ class="progress-bar">
 
 
 </div>
-
-
-
-
-
-
-
-
-
-<!-- CONTROLS -->
-
-
-<div class="player-controls">
-
-
-
-
-
-
-<button
-
-onclick="NightCastPlayer.toggle()"
-
-class="player-btn">
-
-
-▶️
-
-</button>
-
-
-
-
-
-
-<button
-
-onclick="NightCastPlayer.stop()"
-
-class="player-btn">
-
-
-⏹
-
-
-</button>
-
-
-
-
-
-
-<button
-
-onclick="NightCastPlayer.download()"
-
-class="player-btn">
-
-
-⬇️
-
-
-</button>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-</div>
-
-
 
 
 
@@ -1060,26 +783,30 @@ class="player-btn">
 
 
 
-<div>
 
 
 <h3>
 
-NightCast
+NightCast Radio
+
 
 </h3>
 
 
 
+
+
+
+
 <p>
 
-رادیوی تجربه، یادگیری و رشد
+رادیویی برای تجربه، یادگیری و رشد فردی
+
 
 </p>
 
 
 
-</div>
 
 
 
@@ -1088,11 +815,14 @@ NightCast
 <div class="footer-links">
 
 
+
 <a href="#">
 
 درباره ما
 
 </a>
+
+
 
 
 
@@ -1104,6 +834,8 @@ NightCast
 
 
 
+
+
 <a href="#">
 
 قوانین
@@ -1112,6 +844,8 @@ NightCast
 
 
 
+
+
 </div>
 
 
@@ -1119,71 +853,89 @@ NightCast
 
 
 
-<div class="copyright">
+
+
+<p style="margin-top:20px">
 
 
 © NightCast
 
 
-</div>
+</p>
 
 
 
-</footer>
+
+
+
+     </footer>
+
+     
+
+<!-- ==========================
+     JAVASCRIPT CORE
+========================== -->
+
+
+<script src="/users/js/api.js"></script>
+
+
+<script src="/users/js/auth.js"></script>
+
+
+<script src="/users/js/ui.js"></script>
+
+
 
 
 
 <!-- ==========================
-     USER ACTIONS
+     USER FEATURES
 ========================== -->
 
+
+<script src="/users/js/podcasts.js"></script>
+
+
+<script src="/users/js/player.js"></script>
+
+
+<script src="/users/js/app.js"></script>
+     
+     
 
 <script>
 
 
+/* ==================================================
+   NightCast Page Controller
+================================================== */
+
+
+
+document.addEventListener(
+
+"DOMContentLoaded",
+
+()=>{
+
+
+
+
+
 /*
 ====================================
-LOGIN ACTION
+LOGIN BUTTON
 ====================================
 */
 
 
-async function loginAction(){
 
-
-
-const username =
+const loginBtn =
 
 document.getElementById(
 
-"loginUsername"
-
-).value;
-
-
-
-
-
-const password =
-
-document.getElementById(
-
-"loginPassword"
-
-).value;
-
-
-
-
-
-
-const result =
-
-await NightCastAuth.login(
-
-username,
-
-password
+"loginBtn"
 
 );
 
@@ -1191,19 +943,9 @@ password
 
 
 
-if(result.success){
+const loginPopup =
 
-
-
-NightCastUI.success(
-
-"ورود موفق بود"
-
-);
-
-
-
-NightCastUI.closePopup(
+document.getElementById(
 
 "loginPopup"
 
@@ -1211,21 +953,50 @@ NightCastUI.closePopup(
 
 
 
-NightCastAuth.loggedMode();
+
+
+
+const closeLogin =
+
+document.getElementById(
+
+"closeLogin"
+
+);
+
+
+
+
+
+
+
+if(loginBtn){
+
+
+
+loginBtn.addEventListener(
+
+"click",
+
+()=>{
+
+
+if(loginPopup){
+
+
+loginPopup.classList.remove(
+
+"hidden"
+
+);
+
+
+}
 
 
 
 }
 
-else{
-
-
-
-NightCastUI.error(
-
-result.message ||
-
-"ورود ناموفق"
 
 );
 
@@ -1236,7 +1007,41 @@ result.message ||
 
 
 
+
+
+
+
+if(closeLogin){
+
+
+
+closeLogin.addEventListener(
+
+"click",
+
+()=>{
+
+
+
+loginPopup.classList.add(
+
+"hidden"
+
+);
+
+
+
 }
+
+
+
+);
+
+
+
+}
+
+
 
 
 
@@ -1246,20 +1051,57 @@ result.message ||
 
 /*
 ====================================
-REGISTER ACTION
+MESSAGE POPUP CLOSE
 ====================================
 */
 
 
-async function registerAction(){
+
+const closeMessage =
+
+document.getElementById(
+
+"closeMessage"
+
+);
 
 
 
-NightCastUI.toast(
 
-"بخش ثبت نام در حال توسعه است",
+const messagePopup =
 
-"info"
+document.getElementById(
+
+"messagePopup"
+
+);
+
+
+
+
+
+if(closeMessage){
+
+
+
+closeMessage.addEventListener(
+
+"click",
+
+()=>{
+
+
+
+messagePopup.classList.add(
+
+"hidden"
+
+);
+
+
+
+}
+
 
 );
 
@@ -1270,6 +1112,104 @@ NightCastUI.toast(
 
 
 
+
+
+
+
+
+/*
+====================================
+AUTO HIDE POPUP CLICK OUTSIDE
+====================================
+*/
+
+
+
+document.querySelectorAll(
+
+".popup"
+
+).forEach(
+
+popup=>{
+
+
+
+popup.addEventListener(
+
+"click",
+
+(e)=>{
+
+
+
+if(
+
+e.target === popup
+
+){
+
+
+
+popup.classList.add(
+
+"hidden"
+
+);
+
+
+
+}
+
+
+
+}
+
+
+);
+
+
+
+}
+
+);
+
+
+
+
+
+
+
+
+
+/*
+====================================
+START APPLICATION
+====================================
+*/
+
+
+if(
+
+window.NightCastApp &&
+
+typeof NightCastApp.init === "function"
+
+){
+
+
+
+NightCastApp.init();
+
+
+
+}
+
+
+
+
+
+});
 
 
 
@@ -1279,43 +1219,7 @@ NightCastUI.toast(
 
 
 
-
-
-
-
-
-<!-- ==========================
-     JAVASCRIPT FILES
-========================== -->
-
-
-
-<script src="/users/js/api.js"></script>
-
-
-<script src="/users/js/ui.js"></script>
-
-
-<script src="/users/js/auth.js"></script>
-
-
-<script src="/users/js/player.js"></script>
-
-
-<script src="/users/js/podcasts.js"></script>
-
-
-<script src="/users/js/app.js"></script>
-
-
-
-
-
-
 </body>
 
 
 </html>
-  
-  
-  

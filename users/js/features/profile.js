@@ -1,22 +1,24 @@
 /* ==================================================
 
-NightCast Profile Manager V1
+NightCast User Profile Manager V1
 
 File:
- /users/js/features/profile.js
+
+/users/js/features/profile.js
 
 
 Responsibility:
 
-- User Profile Panel
-- Current User Info
-- Logout UI
+- User Profile UI
+- Login Button
+- Profile Panel
+- Logout
 
 
 Depends:
 
 auth.js
-ui.js
+api.js
 
 
 ================================================== */
@@ -42,6 +44,7 @@ const NightCastProfile = {
     init(){
 
 
+
         this.panel =
 
         document.getElementById(
@@ -56,7 +59,9 @@ const NightCastProfile = {
 
         this.bindEvents();
 
-        this.loadUser();
+
+
+        this.update();
 
 
 
@@ -64,9 +69,119 @@ const NightCastProfile = {
 
         console.log(
 
-            "NightCast Profile Loaded"
+            "NightCast Profile Ready"
 
         );
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    UPDATE PROFILE UI
+    ====================================
+    */
+
+
+    update(){
+
+
+
+        const user =
+
+        NightCastAuth.getUser();
+
+
+
+
+
+
+        const name =
+
+        document.getElementById(
+
+            "profileName"
+
+        );
+
+
+
+
+
+
+        const username =
+
+        document.getElementById(
+
+            "profileUsername"
+
+        );
+
+
+
+
+
+
+        if(!user)
+
+        return;
+
+
+
+
+
+
+
+
+        if(name){
+
+
+
+            name.textContent =
+
+            user.full_name ||
+
+            user.username ||
+
+            "کاربر NightCast";
+
+
+        }
+
+
+
+
+
+
+        if(username){
+
+
+
+            username.textContent =
+
+            user.username
+
+            ?
+
+            "@"+user.username
+
+            :
+
+            "@guest";
+
+
+        }
+
+
 
 
 
@@ -91,37 +206,6 @@ const NightCastProfile = {
 
 
 
-        const logoutButton =
-
-        document.getElementById(
-
-            "logoutButton"
-
-        );
-
-
-
-
-
-        if(logoutButton){
-
-
-
-            logoutButton.onclick = ()=>{
-
-
-                this.logout();
-
-
-            };
-
-
-        }
-
-
-
-
-
 
 
         const loginButton =
@@ -136,65 +220,47 @@ const NightCastProfile = {
 
 
 
+
+
         if(loginButton){
 
 
-            loginButton.onclick = ()=>{
+
+            loginButton.onclick=()=>{
 
 
-                if(window.NightCastAuth){
 
 
-                    NightCastAuth.openLogin();
+
+                if(
+
+                    NightCastAuth.isLoggedIn()
+
+                ){
+
+
+
+                    this.open();
+
+
+
+                }
+
+                else{
+
+
+
+                    this.openLogin();
+
 
 
                 }
 
 
+
             };
 
 
-        }
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    LOAD USER
-    ====================================
-    */
-
-
-    async loadUser(){
-
-
-
-        if(
-
-            !window.NightCastAuth
-
-            ||
-
-            !NightCastAuth.isLoggedIn()
-
-        ){
-
-
-            this.showGuest();
-
-
-            return;
-
 
         }
 
@@ -204,105 +270,13 @@ const NightCastProfile = {
 
 
 
-        const result =
-
-        await NightCastAuth.me();
 
 
-
-
-
-
-
-        if(
-
-            !result.success
-
-        ){
-
-
-            this.showGuest();
-
-
-            return;
-
-
-        }
-
-
-
-
-
-
-
-        const user =
-
-        result.user ||
-
-        result.data;
-
-
-
-
-
-
-
-        this.renderUser(
-
-            user
-
-        );
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    RENDER USER
-    ====================================
-    */
-
-
-    renderUser(user){
-
-
-
-        if(!user){
-
-            return;
-
-        }
-
-
-
-
-
-        const name =
+        const logoutButton =
 
         document.getElementById(
 
-            "profileName"
-
-        );
-
-
-
-
-
-        const username =
-
-        document.getElementById(
-
-            "profileUsername"
+            "logoutButton"
 
         );
 
@@ -312,16 +286,46 @@ const NightCastProfile = {
 
 
 
-        if(name){
+        if(logoutButton){
 
 
-            name.innerText =
 
-            user.full_name ||
+            logoutButton.onclick=()=>{
 
-            user.name ||
 
-            "کاربر NightCast";
+
+                NightCastAuth.logout();
+
+
+
+
+
+                this.close();
+
+
+
+
+
+                if(window.NightCastUI){
+
+
+
+                    NightCastUI.toast(
+
+                        "با موفقیت خارج شدید",
+
+                        "success"
+
+                    );
+
+
+
+                }
+
+
+
+            };
+
 
 
         }
@@ -331,92 +335,14 @@ const NightCastProfile = {
 
 
 
-        if(username){
-
-
-            username.innerText =
-
-            "@"+
-
-            (
-
-                user.username ||
-
-                "user"
-
-            );
-
-
-        }
 
 
 
+        const profileLink =
 
+        document.querySelector(
 
-
-        this.updateLoginButton(
-
-            true
-
-        );
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    GUEST
-    ====================================
-    */
-
-
-    showGuest(){
-
-
-
-        this.updateLoginButton(
-
-            false
-
-        );
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    LOGIN BUTTON
-    ====================================
-    */
-
-
-    updateLoginButton(state){
-
-
-
-        const button =
-
-        document.getElementById(
-
-            "loginButton"
+            'a[href="#profile"]'
 
         );
 
@@ -424,53 +350,28 @@ const NightCastProfile = {
 
 
 
-        if(!button){
-
-            return;
-
-        }
+        if(profileLink){
 
 
 
+            profileLink.onclick=(e)=>{
 
 
 
-        if(state){
+                e.preventDefault();
 
 
 
-            button.innerHTML =
+                this.open();
 
 
-            `
 
-            <i class="fa-solid fa-user-check"></i>
-
-            حساب من
-
-            `;
+            };
 
 
 
         }
 
-        else{
-
-
-            button.innerHTML =
-
-
-            `
-
-            <i class="fa-solid fa-user"></i>
-
-            ورود
-
-            `;
-
-
-
-        }
 
 
 
@@ -487,7 +388,7 @@ const NightCastProfile = {
 
     /*
     ====================================
-    OPEN PROFILE
+    OPEN PANEL
     ====================================
     */
 
@@ -496,18 +397,34 @@ const NightCastProfile = {
 
 
 
-        if(this.panel){
+        if(!this.panel)
+
+        return;
 
 
 
-            this.panel.classList.add(
-
-                "active"
-
-            );
 
 
-        }
+        this.update();
+
+
+
+
+
+        this.panel.classList.remove(
+
+            "hidden"
+
+        );
+
+
+
+        this.panel.classList.add(
+
+            "active"
+
+        );
+
 
 
     },
@@ -522,7 +439,7 @@ const NightCastProfile = {
 
     /*
     ====================================
-    CLOSE PROFILE
+    CLOSE PANEL
     ====================================
     */
 
@@ -531,18 +448,28 @@ const NightCastProfile = {
 
 
 
-        if(this.panel){
+        if(!this.panel)
+
+        return;
 
 
 
-            this.panel.classList.remove(
-
-                "active"
-
-            );
 
 
-        }
+        this.panel.classList.remove(
+
+            "active"
+
+        );
+
+
+
+        this.panel.classList.add(
+
+            "hidden"
+
+        );
+
 
 
     },
@@ -557,57 +484,41 @@ const NightCastProfile = {
 
     /*
     ====================================
-    LOGOUT
+    LOGIN MODAL
     ====================================
     */
 
 
-    async logout(){
+    openLogin(){
 
 
 
-        if(window.NightCastAuth){
+        const modal =
 
+        document.getElementById(
 
+            "authModal"
 
-            await NightCastAuth.logout();
-
-
-
-        }
-
-
-
-
-
-
-        this.showGuest();
+        );
 
 
 
 
 
 
-        if(window.NightCastUI){
+        if(modal){
 
 
-            NightCastUI.toast(
 
-                "با موفقیت خارج شدید",
+            modal.classList.remove(
 
-                "success"
+                "hidden"
 
             );
 
 
+
         }
-
-
-
-
-
-
-        this.close();
 
 
 
@@ -625,6 +536,18 @@ const NightCastProfile = {
 
 
 
+
 window.NightCastProfile =
 
 NightCastProfile;
+
+
+
+
+
+
+console.log(
+
+"NightCast Profile V1 Loaded"
+
+);

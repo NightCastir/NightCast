@@ -1,153 +1,301 @@
 /* ==================================================
 
-NightCast User API SDK V2
+NightCast User API Manager V1
 
 File:
 /users/js/api.js
 
+
+Connected To:
+
+Cloudflare Worker API
+D1 Database
+
+
 Responsibility:
-تمام ارتباط Frontend با Worker API
+
+ONLY API COMMUNICATION
+
 
 ================================================== */
 
+
 const NightCastAPI = {
 
+
+
     API_URL:
+
     "https://nightcast-api.tomasgermany2580.workers.dev/api/v1",
 
+
+
+
+
+
     TOKEN_KEY:
+
     "NightCastUserToken",
 
-    DEFAULT_HEADERS: {
-        "Content-Type": "application/json"
+
+
+
+
+
+
+    /*
+    ====================================
+    BUILD URL
+    ====================================
+    */
+
+
+    buildURL(endpoint){
+
+
+        return this.API_URL + endpoint;
+
+
     },
 
-    /* =====================================
-       TOKEN
-    ===================================== */
 
-    getToken() {
+
+
+
+
+
+
+
+    /*
+    ====================================
+    GET TOKEN
+    ====================================
+    */
+
+
+    getToken(){
+
 
         return localStorage.getItem(
+
             this.TOKEN_KEY
+
         );
+
 
     },
 
-    setToken(token) {
 
-        localStorage.setItem(
-            this.TOKEN_KEY,
-            token
-        );
+
+
+
+
+
+
+
+    /*
+    ====================================
+    SAVE TOKEN
+    ====================================
+    */
+
+
+    saveToken(token){
+
+
+
+        if(token){
+
+
+            localStorage.setItem(
+
+                this.TOKEN_KEY,
+
+                token
+
+            );
+
+
+        }
+
 
     },
 
-    removeToken() {
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    REMOVE TOKEN
+    ====================================
+    */
+
+
+    removeToken(){
+
+
 
         localStorage.removeItem(
+
             this.TOKEN_KEY
+
         );
+
 
     },
 
-    isLoggedIn() {
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    LOGIN STATUS
+    ====================================
+    */
+
+
+    isLoggedIn(){
+
+
 
         return !!this.getToken();
 
-    },
 
-    /* =====================================
-       HEADERS
-    ===================================== */
-
-    getHeaders(extra = {}) {
-
-        const headers = {
-            ...this.DEFAULT_HEADERS,
-            ...extra
-        };
-
-        const token = this.getToken();
-
-        if (token) {
-
-            headers.Authorization =
-                "Bearer " + token;
-
-        }
-
-        return headers;
-
-    },
-
-    /* =====================================
-       URL Builder
-    ===================================== */
-
-    buildURL(endpoint) {
-
-        if (
-            endpoint.startsWith("/")
-        ) {
-
-            return this.API_URL + endpoint;
-
-        }
-
-        return this.API_URL + "/" + endpoint;
 
     },
 
 
 
-       /* =====================================
-       MAIN REQUEST HANDLER
 
-       تمام درخواست‌های API
-       از اینجا عبور می‌کنند
 
-    ===================================== */
+
+
+
+
+    /*
+    ====================================
+    REQUEST CORE
+
+    Same Logic As Test Console
+
+    ====================================
+    */
+
 
     async request(
-        endpoint,
-        options = {}
-    ) {
 
-        try {
+        endpoint,
+
+        options={}
+
+    ){
+
+
+
+        try{
+
+
+
+            const config = {
+
+
+                method:
+
+                options.method || "GET",
+
+
+                headers:{
+
+
+                    "Content-Type":
+
+                    "application/json"
+
+
+                }
+
+
+
+            };
+
+
+
+
+
+            const token =
+
+            this.getToken();
+
+
+
+
+
+
+
+            if(token){
+
+
+
+                config.headers.Authorization =
+
+
+                "Bearer " + token;
+
+
+
+            }
+
+
+
+
+
+
+
+
+            if(options.body){
+
+
+
+                config.body =
+
+
+                JSON.stringify(
+
+                    options.body
+
+                );
+
+
+            }
+
+
+
+
+
+
 
 
             const response =
 
+
             await fetch(
+
 
                 this.buildURL(endpoint),
 
-                {
 
-                    method:
-                    options.method || "GET",
+                config
 
-
-                    headers:
-                    this.getHeaders(
-                        options.headers || {}
-                    ),
-
-
-                    body:
-                    options.body
-                    ?
-
-                    JSON.stringify(
-                        options.body
-                    )
-
-                    :
-
-                    undefined
-
-                }
 
             );
 
@@ -155,77 +303,14 @@ const NightCastAPI = {
 
 
 
-            const text =
-
-            await response.text();
 
 
 
+            const data =
 
 
-            let data = {};
+            await response.json();
 
-
-
-
-
-            try {
-
-
-                data =
-                JSON.parse(text);
-
-
-            }
-
-            catch(e){
-
-
-                data = {
-
-                    success:
-                    response.ok,
-
-
-                    message:
-                    text
-
-                };
-
-
-            }
-
-
-
-
-
-
-
-
-            if(!response.ok){
-
-
-                return {
-
-                    success:false,
-
-
-                    status:
-                    response.status,
-
-
-                    message:
-                    data.message ||
-
-                    "API Error",
-
-
-                    data:data
-
-                };
-
-
-            }
 
 
 
@@ -247,7 +332,7 @@ const NightCastAPI = {
 
             console.error(
 
-                "NightCast API Error:",
+                "NightCast API Error",
 
                 error
 
@@ -263,18 +348,15 @@ const NightCastAPI = {
                 success:false,
 
 
-                message:
-                "خطا در ارتباط با سرور",
-
-
-                error:
-                error.message
+                error:error.message
 
 
             };
 
 
+
         }
+
 
 
     },
@@ -284,15 +366,18 @@ const NightCastAPI = {
 
 
 
-    /* =====================================
-       HEALTH CHECK
 
-       تست اتصال Worker
 
-    ===================================== */
+
+    /*
+    ====================================
+    TEST WORKER
+    ====================================
+    */
 
 
     async test(){
+
 
 
         return await this.request(
@@ -305,218 +390,18 @@ const NightCastAPI = {
     },
 
 
+    /*
+====================================
+PUBLIC PODCAST API
 
-   /* =====================================
-   AUTH API
+Connected To:
 
-   Login
-   Register
-   Logout
-   Current User
+/public/podcasts
 
-===================================== */
+====================================
+*/
 
 
-    async login(
-        username,
-        password
-    ){
-
-        const result =
-
-        await this.request(
-
-            "/public/login",
-
-            {
-
-                method:"POST",
-
-                body:{
-
-                    username:
-                    username,
-
-
-                    password:
-                    password
-
-                }
-
-            }
-
-        );
-
-
-
-
-        if(
-
-            result.success &&
-
-            result.token
-
-        ){
-
-
-            this.setToken(
-
-                result.token
-
-            );
-
-
-        }
-
-
-
-
-
-        return result;
-
-
-    },
-
-
-
-
-
-
-
-
-
-    async register(data){
-
-
-        return await this.request(
-
-            "/public/register",
-
-            {
-
-                method:"POST",
-
-                body:data
-
-            }
-
-        );
-
-
-    },
-
-
-
-
-
-
-
-
-
-    async logout(){
-
-
-        const result =
-
-        await this.request(
-
-            "/public/logout",
-
-            {
-
-                method:"POST"
-
-            }
-
-        );
-
-
-
-
-        this.removeToken();
-
-
-
-        return result;
-
-
-    },
-
-
-
-
-
-
-
-
-
-    async me(){
-
-
-        return await this.request(
-
-            "/public/me",
-
-            {
-
-                method:"GET"
-
-            }
-
-        );
-
-
-    },
-
-
-
-
-
-
-
-
-
-    async refreshSession(){
-
-
-        if(
-
-            !this.isLoggedIn()
-
-        ){
-
-            return {
-
-                success:false,
-
-                message:
-                "No token"
-
-            };
-
-        }
-
-
-
-
-
-        return await this.me();
-
-
-    },
-
-
-
-
-   /* =====================================
-   PODCAST API
-
-   Public Podcasts
-   Single Podcast
-   Latest
-   Categories
-
-===================================== */
 
 
 
@@ -526,7 +411,7 @@ const NightCastAPI = {
 
         page = 1,
 
-        limit = 12
+        limit = 5
 
     ){
 
@@ -535,10 +420,13 @@ const NightCastAPI = {
         return await this.request(
 
 
+
             `/public/podcasts?page=${page}&limit=${limit}`
 
 
+
         );
+
 
 
     },
@@ -551,11 +439,16 @@ const NightCastAPI = {
 
 
 
-    async getPodcast(id){
+    async getPodcast(
+
+        id
+
+    ){
 
 
 
         if(!id){
+
 
 
             return {
@@ -564,8 +457,8 @@ const NightCastAPI = {
                 success:false,
 
 
-                message:
-                "Podcast ID required"
+                message:"Podcast ID required"
+
 
 
             };
@@ -581,7 +474,9 @@ const NightCastAPI = {
         return await this.request(
 
 
-            `/public/podcast/${id}`
+
+            "/public/podcasts/" + id
+
 
 
         );
@@ -598,21 +493,20 @@ const NightCastAPI = {
 
 
 
-    async getLatestPodcasts(
-
-        limit = 6
-
-    ){
+    async getLatestPodcasts(){
 
 
 
         return await this.request(
 
 
-            `/public/podcasts/latest?limit=${limit}`
+
+            "/public/podcasts/latest"
+
 
 
         );
+
 
 
     },
@@ -625,21 +519,20 @@ const NightCastAPI = {
 
 
 
-    async getPopularPodcasts(
-
-        limit = 6
-
-    ){
+    async getPopularPodcasts(){
 
 
 
         return await this.request(
 
 
-            `/public/podcasts/popular?limit=${limit}`
+
+            "/public/podcasts/popular"
+
 
 
         );
+
 
 
     },
@@ -652,30 +545,86 @@ const NightCastAPI = {
 
 
 
-    async getPodcastsByCategory(
+    /*
+    ====================================
+    SEARCH API
 
-        categoryId,
+    ====================================
+    */
+
+
+
+
+
+
+
+    async search(
+
+        keyword,
 
         page = 1,
 
-        limit = 12
+        limit = 10
 
     ){
+
+
+
+        if(!keyword){
+
+
+
+            return {
+
+
+                success:false,
+
+
+                message:
+                "Search keyword required"
+
+
+
+            };
+
+
+
+        }
+
+
+
+
 
 
 
         return await this.request(
 
 
-            `/public/podcasts/category/${categoryId}?page=${page}&limit=${limit}`
+
+            `/public/search?q=${encodeURIComponent(keyword)}&page=${page}&limit=${limit}`
+
 
 
         );
 
 
+
     },
 
 
+
+
+
+
+
+
+
+    /*
+    ====================================
+    CATEGORY API
+
+    ====================================
+    */
 
 
 
@@ -690,176 +639,13 @@ const NightCastAPI = {
         return await this.request(
 
 
+
             "/public/categories"
 
 
-        );
-
-
-    },
-
-
-
-
-
-   /* =====================================
-   SEARCH + CONTENT API
-
-   Search
-   Books
-   Authors
-   Tags
-
-===================================== */
-
-
-
-
-
-
-
-    async search(
-
-        query,
-
-        page = 1,
-
-        limit = 12
-
-    ){
-
-
-
-        if(!query){
-
-
-            return {
-
-
-                success:false,
-
-
-                message:
-                "Search query required"
-
-
-            };
-
-
-        }
-
-
-
-
-
-
-        return await this.request(
-
-
-            `/public/search?q=${encodeURIComponent(query)}&page=${page}&limit=${limit}`
-
 
         );
 
-
-
-    },
-
-
-
-
-
-
-
-
-
-    async searchPodcasts(
-
-        query
-
-    ){
-
-
-
-        return await this.search(
-
-            query
-
-        );
-
-
-    },
-
-
-
-
-
-
-
-
-
-    async getBooks(
-
-        page = 1,
-
-        limit = 12
-
-    ){
-
-
-
-        return await this.request(
-
-
-            `/public/books?page=${page}&limit=${limit}`
-
-
-        );
-
-
-    },
-
-
-
-
-
-
-
-
-
-    async getBook(id){
-
-
-
-        if(!id){
-
-
-            return {
-
-
-                success:false,
-
-
-                message:
-                "Book ID required"
-
-
-            };
-
-
-        }
-
-
-
-
-
-        return await this.request(
-
-
-            `/public/book/${id}`
-
-
-        );
 
 
     },
@@ -879,33 +665,13 @@ const NightCastAPI = {
         return await this.request(
 
 
+
             "/public/authors"
 
 
-        );
-
-
-    },
-
-
-
-
-
-
-
-
-
-    async getAuthor(id){
-
-
-
-        return await this.request(
-
-
-            `/public/author/${id}`
-
 
         );
+
 
 
     },
@@ -925,10 +691,13 @@ const NightCastAPI = {
         return await this.request(
 
 
+
             "/public/tags"
 
 
+
         );
+
 
 
     },
@@ -936,29 +705,74 @@ const NightCastAPI = {
 
 
 
-   /* =====================================
-   USER LIBRARY API
+    /*
+====================================
+AUTH API
 
-   Favorites
-   History
-   Saved Items
+Register
+Login
+Me
+Logout
 
-===================================== */
-
-
-
-
-
+====================================
+*/
 
 
-    async getLibrary(){
+
+
+
+
+
+    async register(
+
+        data
+
+    ){
 
 
 
         return await this.request(
 
 
-            "/user/library"
+
+            "/public/register",
+
+
+
+            {
+
+                method:"POST",
+
+
+
+                body:{
+
+
+
+                    username:
+
+                    data.username,
+
+
+
+                    password:
+
+                    data.password,
+
+
+
+                    full_name:
+
+                    data.full_name || ""
+
+
+
+                }
+
+
+
+            }
+
 
 
         );
@@ -968,6 +782,264 @@ const NightCastAPI = {
     },
 
 
+
+
+
+
+
+
+
+    async login(
+
+        username,
+
+        password
+
+    ){
+
+
+
+        const result =
+
+        await this.request(
+
+
+
+            "/public/login",
+
+
+
+            {
+
+                method:"POST",
+
+
+
+                body:{
+
+
+
+                    username:
+
+
+                    username,
+
+
+
+                    password:
+
+
+                    password
+
+
+
+                }
+
+
+
+            }
+
+
+
+        );
+
+
+
+
+
+
+
+
+        if(
+
+
+
+            result.success &&
+
+            result.token
+
+
+
+        ){
+
+
+
+            this.saveToken(
+
+
+
+                result.token
+
+
+
+            );
+
+
+
+        }
+
+
+
+
+
+
+
+        return result;
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    async me(){
+
+
+
+        return await this.request(
+
+
+
+            "/public/me"
+
+
+
+        );
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    async logout(){
+
+
+
+        const result =
+
+        await this.request(
+
+
+
+            "/public/logout",
+
+
+
+            {
+
+                method:"POST"
+
+            }
+
+
+
+        );
+
+
+
+
+
+
+
+        this.removeToken();
+
+
+
+
+
+
+
+        return result;
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    USER SESSION CHECK
+
+    ====================================
+    */
+
+
+
+
+
+
+
+    async checkSession(){
+
+
+
+        if(!this.isLoggedIn()){
+
+
+
+            return {
+
+
+
+                success:false,
+
+                guest:true
+
+
+
+            };
+
+
+
+        }
+
+
+
+
+
+
+
+        return await this.me();
+
+
+
+    },
+
+
+
+
+
+/*
+====================================
+USER PERSONAL DATA API
+
+Favorites
+Library
+History
+Saved
+
+====================================
+*/
 
 
 
@@ -982,7 +1054,9 @@ const NightCastAPI = {
         return await this.request(
 
 
-            "/user/favorites"
+
+            "/public/favorites"
+
 
 
         );
@@ -1007,34 +1081,12 @@ const NightCastAPI = {
 
 
 
-        if(!podcastId){
-
-
-            return {
-
-
-                success:false,
-
-
-                message:
-                "Podcast ID required"
-
-
-            };
-
-
-        }
-
-
-
-
-
-
-
         return await this.request(
 
 
-            "/user/favorite",
+
+            "/public/favorites",
+
 
 
             {
@@ -1042,17 +1094,23 @@ const NightCastAPI = {
                 method:"POST",
 
 
+
                 body:{
 
 
+
                     podcast_id:
+
                     podcastId
+
 
 
                 }
 
 
+
             }
+
 
 
         );
@@ -1080,85 +1138,23 @@ const NightCastAPI = {
         return await this.request(
 
 
-            "/user/favorite/" + podcastId,
+
+            "/public/favorites/" + podcastId,
+
 
 
             {
 
                 method:"DELETE"
 
-            }
-
-
-        );
-
-
-    },
-
-
-
-
-
-
-
-
-
-    async getHistory(){
-
-
-
-        return await this.request(
-
-
-            "/user/history"
-
-
-        );
-
-
-    },
-
-
-
-
-
-
-
-
-
-    async addHistory(
-
-        podcastId
-
-    ){
-
-
-
-        return await this.request(
-
-
-            "/user/history",
-
-
-            {
-
-                method:"POST",
-
-
-                body:{
-
-
-                    podcast_id:
-                    podcastId
-
-
-                }
 
 
             }
 
 
+
         );
+
 
 
     },
@@ -1171,17 +1167,20 @@ const NightCastAPI = {
 
 
 
-    async getSaved(){
+    async getLibrary(){
 
 
 
         return await this.request(
 
 
-            "/user/saved"
+
+            "/public/library"
+
 
 
         );
+
 
 
     },
@@ -1205,7 +1204,9 @@ const NightCastAPI = {
         return await this.request(
 
 
-            "/user/save",
+
+            "/public/library",
+
 
 
             {
@@ -1213,20 +1214,27 @@ const NightCastAPI = {
                 method:"POST",
 
 
+
                 body:{
 
 
+
                     podcast_id:
+
                     podcastId
+
 
 
                 }
 
 
+
             }
 
 
+
         );
+
 
 
     },
@@ -1250,17 +1258,23 @@ const NightCastAPI = {
         return await this.request(
 
 
-            "/user/save/" + podcastId,
+
+            "/public/library/" + podcastId,
+
 
 
             {
 
                 method:"DELETE"
 
+
+
             }
 
 
+
         );
+
 
 
     },
@@ -1268,34 +1282,112 @@ const NightCastAPI = {
 
 
 
-   /* =====================================
-   COMMENTS + DOWNLOAD API
-
-   Comments
-   Downloads
-   User Actions
-
-===================================== */
 
 
 
 
 
+    async getHistory(){
 
 
-    async getComments(
 
-        podcastId,
+        return await this.request(
 
-        page = 1,
 
-        limit = 20
+
+            "/public/history"
+
+
+
+        );
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    async addHistory(
+
+        podcastId
 
     ){
 
 
 
-        if(!podcastId){
+        return await this.request(
+
+
+
+            "/public/history",
+
+
+
+            {
+
+                method:"POST",
+
+
+
+                body:{
+
+
+
+                    podcast_id:
+
+                    podcastId
+
+
+
+                }
+
+
+
+            }
+
+
+
+        );
+
+
+
+    },
+
+
+
+
+
+/*
+====================================
+DOWNLOAD API
+
+Download requires login
+
+====================================
+*/
+
+
+
+
+
+
+
+    async download(
+
+        podcastId
+
+    ){
+
+
+
+        if(!this.isLoggedIn()){
+
 
 
             return {
@@ -1305,10 +1397,13 @@ const NightCastAPI = {
 
 
                 message:
-                "Podcast ID required"
+
+                "Login required"
+
 
 
             };
+
 
 
         }
@@ -1317,10 +1412,57 @@ const NightCastAPI = {
 
 
 
+
+
         return await this.request(
 
 
-            `/public/comments/${podcastId}?page=${page}&limit=${limit}`
+
+            "/public/download/" + podcastId
+
+
+
+        );
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    COMMENTS API
+
+    ====================================
+    */
+
+
+
+
+
+
+
+    async getComments(
+
+        podcastId
+
+    ){
+
+
+
+        return await this.request(
+
+
+
+            "/public/comments/" + podcastId
+
 
 
         );
@@ -1347,7 +1489,8 @@ const NightCastAPI = {
 
 
 
-        if(!podcastId || !text){
+        if(!this.isLoggedIn()){
+
 
 
             return {
@@ -1357,10 +1500,13 @@ const NightCastAPI = {
 
 
                 message:
-                "Comment data required"
+
+                "Login required"
+
 
 
             };
+
 
 
         }
@@ -1369,10 +1515,14 @@ const NightCastAPI = {
 
 
 
+
+
         return await this.request(
 
 
-            "/user/comment",
+
+            "/public/comments",
+
 
 
             {
@@ -1380,24 +1530,33 @@ const NightCastAPI = {
                 method:"POST",
 
 
+
                 body:{
 
 
+
                     podcast_id:
+
                     podcastId,
 
 
+
                     comment:
+
                     text
+
 
 
                 }
 
 
+
             }
 
 
+
         );
+
 
 
     },
@@ -1412,7 +1571,7 @@ const NightCastAPI = {
 
     async deleteComment(
 
-        commentId
+        id
 
     ){
 
@@ -1421,17 +1580,23 @@ const NightCastAPI = {
         return await this.request(
 
 
-            "/user/comment/" + commentId,
+
+            "/public/comments/" + id,
+
 
 
             {
 
                 method:"DELETE"
 
+
+
             }
 
 
+
         );
+
 
 
     },
@@ -1444,73 +1609,47 @@ const NightCastAPI = {
 
 
 
-    /* =====================================
-       DOWNLOAD
+    /*
+    ====================================
+    PROFILE API
 
-       Requires Login
-
-    ===================================== */
-
-
+    ====================================
+    */
 
 
 
 
 
-    async download(
 
-        podcastId
+
+    async updateProfile(
+
+        data
 
     ){
-
-
-
-        if(!this.isLoggedIn()){
-
-
-            return {
-
-
-                success:false,
-
-
-                message:
-                "Login required"
-
-
-            };
-
-
-        }
-
-
-
-
 
 
 
         return await this.request(
 
 
-            "/user/download",
+
+            "/public/profile",
+
 
 
             {
 
-                method:"POST",
+                method:"PUT",
 
 
-                body:{
 
+                body:data
 
-                    podcast_id:
-                    podcastId
-
-
-                }
 
 
             }
+
 
 
         );
@@ -1527,18 +1666,16 @@ const NightCastAPI = {
 
 
 
-    async getDownloadLink(
-
-        podcastId
-
-    ){
+    async getProfile(){
 
 
 
         return await this.request(
 
 
-            `/user/download/${podcastId}`
+
+            "/public/profile"
+
 
 
         );
@@ -1552,63 +1689,90 @@ const NightCastAPI = {
 
 
 
+/*
+====================================
+SETTINGS API
+
+====================================
+*/
 
 
 
-    async report(
 
-        type,
 
-        id,
 
-        reason
 
-    ){
+    async getSettings(){
 
 
 
         return await this.request(
 
 
-            "/user/report",
 
+            "/public/settings"
 
-            {
-
-                method:"POST",
-
-
-                body:{
-
-
-                    type:type,
-
-
-                    id:id,
-
-
-                    reason:reason
-
-
-                }
-
-
-            }
 
 
         );
+
 
 
     },
 
 
 
-/* =====================================
-   API HELPERS
 
-   Utilities
 
-===================================== */
+
+
+
+
+    /*
+    ====================================
+    STATISTICS
+
+    ====================================
+    */
+
+
+
+
+
+
+
+    async getStats(){
+
+
+
+        return await this.request(
+
+
+
+            "/public/stats"
+
+
+
+        );
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    GENERIC HELPERS
+
+    ====================================
+    */
 
 
 
@@ -1626,7 +1790,7 @@ const NightCastAPI = {
 
 
 
-        try {
+        try{
 
 
 
@@ -1635,7 +1799,9 @@ const NightCastAPI = {
 
 
             const token =
+
             this.getToken();
+
 
 
 
@@ -1643,8 +1809,12 @@ const NightCastAPI = {
             if(token){
 
 
+
                 headers.Authorization =
+
+
                 "Bearer " + token;
+
 
 
             }
@@ -1657,21 +1827,33 @@ const NightCastAPI = {
 
             const response =
 
+
             await fetch(
+
 
 
                 this.buildURL(endpoint),
 
 
+
                 {
+
+
 
                     method:"POST",
 
+
+
                     headers:headers,
+
+
 
                     body:formData
 
+
+
                 }
+
 
 
             );
@@ -1687,10 +1869,6 @@ const NightCastAPI = {
 
 
 
-
-
-
-
         }
 
         catch(error){
@@ -1700,11 +1878,12 @@ const NightCastAPI = {
             return {
 
 
+
                 success:false,
 
 
-                message:
-                error.message
+                error:error.message
+
 
 
             };
@@ -1714,22 +1893,6 @@ const NightCastAPI = {
         }
 
 
-    },
-
-
-
-
-
-
-
-
-
-    async ping(){
-
-
-
-        return await this.test();
-
 
     },
 
@@ -1741,31 +1904,551 @@ const NightCastAPI = {
 
 
 
-    handleError(error){
+    /*
+    ====================================
+    HANDLE RESPONSE
+
+    ====================================
+    */
 
 
 
-        console.error(
 
-            "NightCast API Error",
 
-            error
+
+
+    normalizeResponse(
+
+        response
+
+    ){
+
+
+
+        if(!response){
+
+
+
+            return {
+
+
+
+                success:false,
+
+
+                message:
+
+                "Empty response"
+
+
+
+            };
+
+
+
+        }
+
+
+
+
+
+
+
+        if(response.success === undefined){
+
+
+
+            response.success = true;
+
+
+
+        }
+
+
+
+
+
+
+
+        return response;
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    DEBUG
+
+    ====================================
+    */
+
+
+
+
+
+
+
+    debug(){
+
+
+
+        console.log(
+
+
+
+            "NightCast API URL:",
+
+
+
+            this.API_URL
+
+
 
         );
+
+
+
+
+
+        console.log(
+
+
+
+            "Token:",
+
+
+
+            this.getToken()
+
+
+
+        );
+
+
+
+    },
+
+
+
+
+
+
+    
+    
+    /*
+====================================
+END API OBJECT
+
+====================================
+*/
+
+
+
+
+
+
+
+};
+
+
+
+
+
+
+
+
+
+/*
+====================================
+GLOBAL ACCESS
+
+Used By:
+
+auth.js
+podcasts.js
+search.js
+library.js
+profile.js
+player.js
+
+====================================
+*/
+
+
+
+
+
+
+
+window.NightCastAPI =
+
+NightCastAPI;
+
+
+
+
+
+
+
+
+
+/*
+====================================
+AUTO DEBUG
+
+====================================
+*/
+
+
+
+
+
+
+
+console.log(
+
+    "✅ NightCast API Loaded"
+
+);
+
+
+
+
+
+
+
+
+
+/*
+====================================
+OPTIONAL START CHECK
+
+Only when DOM ready
+
+====================================
+*/
+
+
+
+
+
+
+
+document.addEventListener(
+
+    "DOMContentLoaded",
+
+    ()=>{
+
+
+
+        if(window.NightCastAPI){
+
+
+
+            console.log(
+
+
+
+                "API Ready:",
+
+
+
+                NightCastAPI.API_URL
+
+
+
+            );
+
+
+
+        }
+
+
+
+    }
+
+);
+
+
+
+/*
+====================================
+FINAL API TEST HELPERS
+
+Compatible With:
+
+Worker:
+https://nightcast-api.tomasgermany2580.workers.dev
+
+Routes:
+
+/test
+
+/public/podcasts
+
+====================================
+*/
+
+
+
+
+
+
+
+NightCastAPI.testConnection = async function(){
+
+
+
+    return await this.request(
+
+
+
+        "/test"
+
+
+
+    );
+
+
+
+};
+
+
+
+
+
+
+
+
+
+NightCastAPI.getPublicPodcasts = async function(
+
+    page = 1,
+
+    limit = 5
+
+){
+
+
+
+    return await this.request(
+
+
+
+        `/public/podcasts?page=${page}&limit=${limit}`
+
+
+
+    );
+
+
+
+};
+
+
+
+
+
+
+
+
+
+/*
+====================================
+PODCAST DATA MAPPER
+
+Matches Worker JSON:
+
+title
+author_name
+cover_url
+audio_url
+duration_seconds
+
+====================================
+*/
+
+
+
+
+
+
+
+NightCastAPI.mapPodcast = function(
+
+    item
+
+){
+
+
+
+    return {
+
+
+
+        id:
+
+        item.id,
+
+
+
+        title:
+
+        item.title || "بدون عنوان",
+
+
+
+        author:
+
+        item.author_name || "NightCast",
+
+
+
+        book:
+
+        item.book_name || "",
+
+
+
+        category:
+
+        item.category_name || "",
+
+
+
+        description:
+
+        item.description || item.summary || "",
+
+
+
+        audio_url:
+
+        item.audio_url || "",
+
+
+
+        cover_url:
+
+        item.cover_url || "",
+
+
+
+        duration:
+
+        item.duration_seconds || 0,
+
+
+
+        episode:
+
+        item.episode_number || 0,
+
+
+
+        created_at:
+
+        item.created_at
+
+
+
+    };
+
+
+
+};
+
+
+
+
+
+
+
+
+
+/*
+====================================
+SAFE API CHECK
+
+====================================
+*/
+
+
+
+
+
+
+
+NightCastAPI.healthCheck = async function(){
+
+
+
+    try{
+
+
+
+        const result =
+
+        await this.testConnection();
+
+
+
+
 
 
 
         return {
 
 
-            success:false,
+
+            online:
+
+            result.success === true,
 
 
-            message:
-            "خطا در ارتباط با سرور"
+
+            data:
+
+            result
+
 
 
         };
+
+
+
+    }
+
+
+
+    catch(error){
+
+
+
+        return {
+
+
+
+            online:false,
+
+
+
+            error:error.message
+
+
+
+        };
+
 
 
     }
@@ -1782,25 +2465,10 @@ const NightCastAPI = {
 
 
 
-/* =====================================
-   GLOBAL EXPORT
-
-===================================== */
-
-
-window.NightCastAPI = NightCastAPI;
-
-
-
-
-
-
-
-
-
 console.log(
 
-    "✅ NightCast API Loaded"
+    "🚀 NightCast API Final Layer Loaded"
 
 );
-   
+
+    

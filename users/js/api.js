@@ -51,7 +51,7 @@ const API = {
 
         return localStorage.getItem(
 
-            "NightCastUserToken"
+            "NightCastToken"
 
         );
 
@@ -513,7 +513,7 @@ const API = {
             localStorage.setItem(
 
 
-                "NightCastUserToken",
+                "NightCastToken",
 
 
                 result.token
@@ -651,7 +651,7 @@ const API = {
         localStorage.removeItem(
 
 
-            "NightCastUserToken"
+            "NightCastToken"
 
 
         );

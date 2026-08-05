@@ -16,22 +16,19 @@ NightCast | رادیو نایت‌کست
 
 
 <meta name="description"
-content="رادیو نایت‌کست؛ پادکست‌های آموزشی، خلاصه کتاب، تجربه‌های واقعی و رشد فردی">
+content="NightCast | رادیوی تجربه، یادگیری، پادکست و کتاب‌های صوتی">
 
 
 <meta name="theme-color"
 content="#0b1220">
 
 
-
-<!-- Open Graph -->
-
 <meta property="og:title"
 content="NightCast">
 
 
 <meta property="og:description"
-content="رادیوی تجربه، یادگیری و رشد">
+content="رادیوی تجربه، یادگیری و رشد فردی">
 
 
 <meta property="og:type"
@@ -42,8 +39,12 @@ content="website">
 content="/users/assets/images/cover.jpg">
 
 
+<link rel="icon"
+href="/users/assets/images/favicon.png">
 
-<!-- Fonts -->
+
+
+<!-- Font -->
 
 <link rel="preconnect"
 href="https://fonts.googleapis.com">
@@ -66,7 +67,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
 
 
 
-<!-- Styles -->
+<!-- Main CSS -->
 
 <link rel="stylesheet"
 href="/users/css/user-core.css">
@@ -85,9 +86,9 @@ href="/users/css/responsive.css">
 
 
 
-<!-- ================================
+<!-- =========================
 GLOBAL LOADER
-================================ -->
+========================= -->
 
 
 <div id="globalLoader"
@@ -106,7 +107,7 @@ NightCast
 
 
 <p>
-در حال آماده‌سازی تجربه شنیدن...
+در حال آماده‌سازی...
 </p>
 
 
@@ -119,26 +120,26 @@ NightCast
 
 
 
-<!-- ================================
-TOAST SYSTEM
-================================ -->
+<!-- =========================
+TOAST
+========================= -->
 
 
 <div id="toastContainer"
 class="toast-container">
+
 </div>
 
 
 
 
 
-<!-- ================================
+<!-- =========================
 HEADER
-================================ -->
+========================= -->
 
 
-<header class="main-header"
-id="mainHeader">
+<header class="main-header">
 
 
 <div class="header-wrapper">
@@ -151,9 +152,12 @@ class="logo">
 
 <div class="logo-icon">
 
+
 <i class="fa-solid fa-radio"></i>
 
+
 </div>
+
 
 
 
@@ -175,12 +179,14 @@ Night<span>Cast</span>
 </p>
 
 
-
 </div>
 
 
 
 </a>
+
+
+
 
 
 
@@ -204,13 +210,15 @@ placeholder="جستجوی پادکست، کتاب یا نویسنده...">
 
 
 
+
+
 <div class="header-actions">
 
 
 
 <button
-class="icon-button"
-id="themeButton">
+id="themeButton"
+class="icon-button">
 
 
 <i class="fa-solid fa-moon"></i>
@@ -222,9 +230,10 @@ id="themeButton">
 
 
 
+
 <button
-class="icon-button"
-id="notificationButton">
+id="notificationButton"
+class="icon-button">
 
 
 <i class="fa-regular fa-bell"></i>
@@ -236,16 +245,20 @@ id="notificationButton">
 
 
 
+
+
 <button
-class="primary-button"
-id="loginButton">
+id="loginButton"
+class="primary-button">
 
 
 <i class="fa-solid fa-user"></i>
 
 
 <span>
+
 ورود
+
 </span>
 
 
@@ -253,7 +266,9 @@ id="loginButton">
 
 
 
+
 </div>
+
 
 
 
@@ -267,17 +282,20 @@ id="loginButton">
 
 
 
-<!-- ================================
+<!-- =========================
 MOBILE HEADER
-================================ -->
+========================= -->
 
 
-<header class="mobile-header">
+<header
+class="mobile-header"
+id="mobileHeader">
+
 
 
 <button
-class="icon-button"
-id="mobileMenuButton">
+id="mobileMenuButton"
+class="icon-button">
 
 
 <i class="fa-solid fa-bars"></i>
@@ -291,7 +309,9 @@ id="mobileMenuButton">
 
 <div class="mobile-logo">
 
+
 Night<span>Cast</span>
+
 
 </div>
 
@@ -300,8 +320,8 @@ Night<span>Cast</span>
 
 
 <button
-class="icon-button"
-id="mobileSearchButton">
+id="mobileSearchButton"
+class="icon-button">
 
 
 <i class="fa-solid fa-magnifying-glass"></i>
@@ -312,10 +332,20 @@ id="mobileSearchButton">
 
 
 
+
 </header>
-<!-- ================================
+
+
+
+
+
+
+
+
+
+<!-- =========================
 SIDE MENU
-================================ -->
+========================= -->
 
 
 <aside
@@ -323,14 +353,26 @@ id="sideMenu"
 class="side-menu">
 
 
+
+
+
 <div class="side-header">
+
 
 
 <div class="side-logo">
 
+
+<i class="fa-solid fa-radio"></i>
+
+
 Night<span>Cast</span>
 
+
 </div>
+
+
+
 
 
 
@@ -345,13 +387,21 @@ class="icon-button">
 </button>
 
 
+
+
 </div>
 
 
 
 
 
-<nav class="side-navigation">
+
+
+
+<nav
+class="side-navigation">
+
+
 
 
 
@@ -363,11 +413,16 @@ class="active">
 
 
 <span>
+
 خانه
+
 </span>
 
 
 </a>
+
+
+
 
 
 
@@ -380,11 +435,16 @@ class="active">
 
 
 <span>
+
 پادکست‌ها
+
 </span>
 
 
 </a>
+
+
+
 
 
 
@@ -397,7 +457,9 @@ class="active">
 
 
 <span>
+
 کتاب‌های صوتی
+
 </span>
 
 
@@ -407,14 +469,19 @@ class="active">
 
 
 
-<a href="#categories">
+
+
+
+<a href="#categoriesSection">
 
 
 <i class="fa-solid fa-layer-group"></i>
 
 
 <span>
+
 دسته‌بندی‌ها
+
 </span>
 
 
@@ -424,14 +491,19 @@ class="active">
 
 
 
-<a href="#library">
+
+
+
+<a href="#librarySection">
 
 
 <i class="fa-solid fa-bookmark"></i>
 
 
 <span>
+
 کتابخانه من
+
 </span>
 
 
@@ -441,18 +513,25 @@ class="active">
 
 
 
-<a href="#profile">
+
+
+
+<a href="#profilePanel">
 
 
 <i class="fa-solid fa-user"></i>
 
 
 <span>
+
 پروفایل
+
 </span>
 
 
 </a>
+
+
 
 
 
@@ -463,7 +542,13 @@ class="active">
 
 
 
+
+
+
 </aside>
+
+
+
 
 
 
@@ -472,6 +557,7 @@ class="active">
 <div
 id="menuOverlay"
 class="menu-overlay">
+
 
 </div>
 
@@ -483,24 +569,50 @@ class="menu-overlay">
 
 
 
-<!-- ================================
+<!-- =========================
+MAIN CONTENT
+========================= -->
+
+
+<main
+id="mainContent">
+
+
+
+
+
+
+
+<!-- =========================
 HERO SECTION
-================================ -->
+========================= -->
 
 
 <section
+id="heroSection"
 class="hero-section">
 
 
-<div class="hero-container">
 
 
 
-<div class="hero-content">
+<div
+class="hero-container">
 
 
 
-<span class="hero-badge">
+
+
+
+<div
+class="hero-content">
+
+
+
+
+
+<div
+class="hero-badge">
 
 
 <i class="fa-solid fa-sparkles"></i>
@@ -509,7 +621,9 @@ class="hero-section">
 رادیوی تجربه و یادگیری
 
 
-</span>
+</div>
+
+
 
 
 
@@ -521,10 +635,12 @@ class="hero-section">
 
 تجربه‌هایی که
 
+
 <br>
 
 
 زندگی شما را
+
 
 <br>
 
@@ -539,11 +655,14 @@ class="hero-section">
 
 
 
+
+
 <p>
 
 
-در NightCast به مجموعه‌ای از پادکست‌های آموزشی،
-خلاصه کتاب‌ها، تجربه‌های واقعی و داستان‌های الهام‌بخش گوش دهید.
+در NightCast به پادکست‌های آموزشی،
+خلاصه کتاب‌ها و تجربه‌های ارزشمند گوش دهید
+و مسیر رشد خود را بسازید.
 
 
 </p>
@@ -553,7 +672,13 @@ class="hero-section">
 
 
 
-<div class="hero-actions">
+
+
+<div
+class="hero-actions">
+
+
+
 
 
 <button
@@ -568,6 +693,8 @@ class="gold-button">
 
 
 </button>
+
+
 
 
 
@@ -588,11 +715,6 @@ class="outline-button">
 
 
 
-</div>
-
-
-
-
 
 
 </div>
@@ -602,16 +724,28 @@ class="outline-button">
 
 
 
-
-
-<!-- Hero Visual -->
-
-
-<div class="hero-visual">
+</div>
 
 
 
-<div class="hero-circle">
+
+
+
+
+
+
+<!-- HERO VISUAL -->
+
+
+<div
+class="hero-visual">
+
+
+
+
+
+<div
+class="hero-circle">
 
 
 <i class="fa-solid fa-headphones"></i>
@@ -623,7 +757,10 @@ class="outline-button">
 
 
 
-<div class="floating-card card-one">
+
+
+<div
+class="floating-card card-book">
 
 
 <i class="fa-solid fa-book-open"></i>
@@ -644,7 +781,8 @@ class="outline-button">
 
 
 
-<div class="floating-card card-two">
+<div
+class="floating-card card-podcast">
 
 
 <i class="fa-solid fa-microphone-lines"></i>
@@ -664,10 +802,12 @@ class="outline-button">
 
 
 
-<div class="floating-card card-three">
+
+<div
+class="floating-card card-growth">
 
 
-<i class="fa-solid fa-brain"></i>
+<i class="fa-solid fa-chart-line"></i>
 
 
 <span>
@@ -683,10 +823,6 @@ class="outline-button">
 
 
 
-</div>
-
-
-
 
 
 </div>
@@ -696,28 +832,41 @@ class="outline-button">
 
 
 
-<!-- ================================
+     </div>
+
+
+
+
+
+
+
+     
+<!-- =========================
 HERO STATISTICS
-================================ -->
+========================= -->
+
+
+<div
+class="hero-stats">
 
 
 
-<div class="hero-stats">
 
 
+<div
+class="hero-stat-card">
 
 
-
-<div class="hero-stat-card">
-
-
-<div class="stat-icon">
+<div
+class="stat-icon">
 
 
 <i class="fa-solid fa-podcast"></i>
 
 
 </div>
+
+
 
 
 
@@ -732,6 +881,8 @@ id="heroPodcastCount">
 </strong>
 
 
+
+
 <span>
 
 پادکست
@@ -739,6 +890,8 @@ id="heroPodcastCount">
 </span>
 
 
+
+
 </div>
 
 
@@ -751,16 +904,21 @@ id="heroPodcastCount">
 
 
 
-<div class="hero-stat-card">
+
+<div
+class="hero-stat-card">
 
 
-<div class="stat-icon">
+<div
+class="stat-icon">
 
 
 <i class="fa-solid fa-book-open-reader"></i>
 
 
 </div>
+
+
 
 
 
@@ -775,6 +933,8 @@ id="heroBookCount">
 </strong>
 
 
+
+
 <span>
 
 کتاب صوتی
@@ -782,6 +942,8 @@ id="heroBookCount">
 </span>
 
 
+
+
 </div>
 
 
@@ -794,16 +956,21 @@ id="heroBookCount">
 
 
 
-<div class="hero-stat-card">
+
+<div
+class="hero-stat-card">
 
 
-<div class="stat-icon">
+<div
+class="stat-icon">
 
 
 <i class="fa-solid fa-users"></i>
 
 
 </div>
+
+
 
 
 
@@ -818,6 +985,8 @@ id="heroListenerCount">
 </strong>
 
 
+
+
 <span>
 
 شنونده
@@ -825,20 +994,20 @@ id="heroListenerCount">
 </span>
 
 
-</div>
-
 
 
 </div>
-
-
-
-
 
 
 
 </div>
 
+
+
+
+
+
+</div>
 
 
 
@@ -855,24 +1024,29 @@ id="heroListenerCount">
 
 
 
-<!-- ================================
+<!-- =========================
 CATEGORY SECTION
-================================ -->
+========================= -->
 
 
 <section
-id="categories"
+id="categoriesSection"
 class="category-section">
 
 
 
-<div class="section-container">
+
+
+<div
+class="section-container">
 
 
 
 
 
-<div class="section-header">
+<div
+class="section-header">
+
 
 
 <div>
@@ -885,6 +1059,7 @@ class="category-section">
 </h2>
 
 
+
 <p>
 
 موضوع مورد علاقه خود را انتخاب کنید
@@ -895,7 +1070,12 @@ class="category-section">
 </div>
 
 
+
+
+
+
 </div>
+
 
 
 
@@ -905,6 +1085,7 @@ class="category-section">
 
 <div
 class="category-list">
+
 
 
 
@@ -933,6 +1114,8 @@ data-category="all">
 
 
 
+
+
 <button
 class="category-card"
 data-category="book">
@@ -949,6 +1132,7 @@ data-category="book">
 
 
 </button>
+
 
 
 
@@ -979,6 +1163,7 @@ data-category="experience">
 
 
 
+
 <button
 class="category-card"
 data-category="education">
@@ -995,6 +1180,7 @@ data-category="education">
 
 
 </button>
+
 
 
 
@@ -1025,12 +1211,13 @@ data-category="psychology">
 
 
 
+
 <button
 class="category-card"
 data-category="growth">
 
 
-<i class="fa-solid fa-chart-line"></i>
+<i class="fa-solid fa-arrow-trend-up"></i>
 
 
 <span>
@@ -1053,27 +1240,46 @@ data-category="growth">
 
 
 
+
+
+
 </div>
 
 
 
-     </section>
+</section>
 
-<!-- ================================
+
+
+
+
+
+
+
+
+<!-- =========================
 CONTINUE LISTENING
-================================ -->
+========================= -->
 
 
 <section
-id="library"
+id="librarySection"
 class="continue-section">
 
 
-<div class="section-container">
 
 
 
-<div class="section-header">
+<div
+class="section-container">
+
+
+
+
+
+<div
+class="section-header">
+
 
 
 <div>
@@ -1086,14 +1292,18 @@ class="continue-section">
 </h2>
 
 
+
 <p>
 
-آخرین محتوایی که گوش می‌دادید
+آخرین محتوای پخش شده شما
 
 </p>
 
 
+
 </div>
+
+
 
 
 
@@ -1113,7 +1323,12 @@ class="view-all-button">
 
 
 
+
+
+
 </div>
+
+
 
 
 
@@ -1123,20 +1338,29 @@ class="view-all-button">
 
 <div
 id="continueListening"
-class="continue-player-card">
+class="continue-card">
 
 
 
-<div class="empty-player">
 
 
-<div class="empty-player-icon">
+<div
+class="empty-player">
+
+
+
+
+
+<div
+class="empty-player-icon">
 
 
 <i class="fa-solid fa-headphones"></i>
 
 
 </div>
+
+
 
 
 
@@ -1150,29 +1374,30 @@ class="continue-player-card">
 
 
 
+
+
+
 <p>
 
-یک پادکست انتخاب کنید و مسیر شنیدن را شروع کنید.
+یک پادکست انتخاب کنید و تجربه شنیدن را شروع کنید.
 
 </p>
 
 
 
-</div>
-
-
-
-
-</div>
-
-
 
 
 
 </div>
 
 
-</section>
+
+
+
+
+
+
+</div>
 
 
 
@@ -1180,66 +1405,31 @@ class="continue-player-card">
 
 
 
+</div>
 
 
-<!-- ================================
-AI RECOMMENDATION
-================================ -->
+
+
+
+     </section>
+
+
+
+
+
+
+<!-- =========================
+TRENDING PODCASTS
+========================= -->
 
 
 <section
-class="ai-section">
-
-
-<div class="section-container">
+class="trending-section">
 
 
 
-<div class="section-header">
-
-
-<div>
-
-
-<h2>
-
-پیشنهاد ویژه NightCast
-
-</h2>
-
-
-
-<p>
-
-محتوایی که احتمالاً دوست خواهید داشت
-
-</p>
-
-
-
-</div>
-
-
-
-
-
-
-<div class="ai-label">
-
-
-<i class="fa-solid fa-robot"></i>
-
-
-هوش مصنوعی
-
-
-</div>
-
-
-
-
-</div>
-
+<div
+class="section-container">
 
 
 
@@ -1247,86 +1437,7 @@ class="ai-section">
 
 
 <div
-id="aiRecommendation"
-class="ai-card">
-
-
-
-
-
-<div class="ai-empty">
-
-
-<div class="ai-icon">
-
-
-<i class="fa-solid fa-wand-magic-sparkles"></i>
-
-
-</div>
-
-
-
-
-<div>
-
-
-<h3>
-
-در حال یادگیری سلیقه شما
-
-</h3>
-
-
-<p>
-
-با چند شنیدن، پیشنهادهای اختصاصی دریافت خواهید کرد.
-
-</p>
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-</div>
-
-
-
-
-
-</div>
-
-
-</section>
-
-
-
-
-
-
-
-
-
-<!-- ================================
-TRENDING PODCASTS
-================================ -->
-
-
-<section
-class="trending-section">
-
-
-<div class="section-container">
-
-
-
-<div class="section-header">
+class="section-header">
 
 
 
@@ -1355,17 +1466,21 @@ class="trending-section">
 
 
 
+
+
 <button
 class="view-all-button">
 
 
-همه محبوب‌ها
+مشاهده همه
 
 
 <i class="fa-solid fa-arrow-left"></i>
 
 
 </button>
+
+
 
 
 
@@ -1382,22 +1497,44 @@ class="view-all-button">
 
 <div
 id="trendingList"
-class="horizontal-podcast-list">
+class="podcast-horizontal-list">
 
 
 
 
 
-<div class="loading-card">
 
 
-<div class="skeleton-cover"></div>
+<!-- Dynamic Content -->
 
 
-<div class="skeleton-text"></div>
+
+<div
+class="loading-card">
 
 
-<div class="skeleton-text short"></div>
+
+<div
+class="skeleton-cover">
+
+</div>
+
+
+
+
+<div
+class="skeleton-line">
+
+</div>
+
+
+
+
+<div
+class="skeleton-line short">
+
+</div>
+
 
 
 </div>
@@ -1408,16 +1545,32 @@ class="horizontal-podcast-list">
 
 
 
-<div class="loading-card">
+<div
+class="loading-card">
 
 
-<div class="skeleton-cover"></div>
+
+<div
+class="skeleton-cover">
+
+</div>
 
 
-<div class="skeleton-text"></div>
 
 
-<div class="skeleton-text short"></div>
+<div
+class="skeleton-line">
+
+</div>
+
+
+
+
+<div
+class="skeleton-line short">
+
+</div>
+
 
 
 </div>
@@ -1428,16 +1581,32 @@ class="horizontal-podcast-list">
 
 
 
-<div class="loading-card">
+<div
+class="loading-card">
 
 
-<div class="skeleton-cover"></div>
+
+<div
+class="skeleton-cover">
+
+</div>
 
 
-<div class="skeleton-text"></div>
 
 
-<div class="skeleton-text short"></div>
+<div
+class="skeleton-line">
+
+</div>
+
+
+
+
+<div
+class="skeleton-line short">
+
+</div>
+
 
 
 </div>
@@ -1455,6 +1624,7 @@ class="horizontal-podcast-list">
 
 
 </div>
+
 
 
 </section>
@@ -1467,9 +1637,9 @@ class="horizontal-podcast-list">
 
 
 
-<!-- ================================
+<!-- =========================
 LATEST PODCASTS
-================================ -->
+========================= -->
 
 
 <section
@@ -1477,13 +1647,20 @@ id="podcastSection"
 class="podcast-section">
 
 
-<div class="section-container">
+
+
+
+<div
+class="section-container">
 
 
 
 
 
-<div class="section-header">
+<div
+class="section-header">
+
+
 
 
 
@@ -1500,9 +1677,10 @@ class="podcast-section">
 
 <p>
 
-جدیدترین تجربه‌های صوتی NightCast
+جدیدترین محتواهای منتشر شده
 
 </p>
+
 
 
 
@@ -1512,7 +1690,13 @@ class="podcast-section">
 
 
 
-<div class="sort-control">
+
+
+
+
+<div
+class="sort-control">
+
 
 
 <button
@@ -1529,7 +1713,9 @@ id="sortButton">
 
 
 
+
 </div>
+
 
 
 
@@ -1553,25 +1739,51 @@ class="podcast-grid">
 
 
 
-<!-- Dynamic Podcast Cards -->
+
+<!--
+podcasts.js
+این قسمت را با اطلاعات واقعی پر می‌کند
+-->
 
 
 
 
 
-<div class="loading-card large">
+
+<div
+class="loading-card large">
 
 
-<div class="skeleton-cover"></div>
+
+<div
+class="skeleton-cover">
+
+</div>
 
 
-<div class="skeleton-text"></div>
 
 
-<div class="skeleton-text"></div>
+<div
+class="skeleton-line">
+
+</div>
 
 
-<div class="skeleton-text short"></div>
+
+
+<div
+class="skeleton-line">
+
+</div>
+
+
+
+
+<div
+class="skeleton-line short">
+
+</div>
+
 
 
 </div>
@@ -1582,19 +1794,40 @@ class="podcast-grid">
 
 
 
-<div class="loading-card large">
+<div
+class="loading-card large">
 
 
-<div class="skeleton-cover"></div>
+
+<div
+class="skeleton-cover">
+
+</div>
 
 
-<div class="skeleton-text"></div>
 
 
-<div class="skeleton-text"></div>
+<div
+class="skeleton-line">
+
+</div>
 
 
-<div class="skeleton-text short"></div>
+
+
+<div
+class="skeleton-line">
+
+</div>
+
+
+
+
+<div
+class="skeleton-line short">
+
+</div>
+
 
 
 </div>
@@ -1605,19 +1838,40 @@ class="podcast-grid">
 
 
 
-<div class="loading-card large">
+<div
+class="loading-card large">
 
 
-<div class="skeleton-cover"></div>
+
+<div
+class="skeleton-cover">
+
+</div>
 
 
-<div class="skeleton-text"></div>
 
 
-<div class="skeleton-text"></div>
+<div
+class="skeleton-line">
+
+</div>
 
 
-<div class="skeleton-text short"></div>
+
+
+<div
+class="skeleton-line">
+
+</div>
+
+
+
+
+<div
+class="skeleton-line short">
+
+</div>
+
 
 
 </div>
@@ -1627,7 +1881,9 @@ class="podcast-grid">
 
 
 
+
 </div>
+
 
 
 
@@ -1657,42 +1913,64 @@ class="load-more-button">
 </div>
 
 
+
+
 </section>
 
 
-<!-- ================================
+
+
+     
+     <!-- =========================
 FEATURED PODCAST
-================================ -->
+========================= -->
 
 
 <section
 class="featured-section">
 
 
-<div class="section-container">
+
+<div
+class="section-container">
 
 
 
-<div class="featured-card">
+
+
+
+<div
+class="featured-card">
 
 
 
 
 
-<div class="featured-image">
+
+
+<div
+class="featured-image">
+
 
 
 <img
+
 id="featuredCover"
+
 src="/users/assets/images/default-cover.jpg"
+
 alt="NightCast Featured Podcast">
 
 
 
 
 
+
+
 <button
+
 id="featuredPlayButton"
+
 class="featured-play-button">
 
 
@@ -1700,6 +1978,9 @@ class="featured-play-button">
 
 
 </button>
+
+
+
 
 
 
@@ -1714,11 +1995,15 @@ class="featured-play-button">
 
 
 
-<div class="featured-content">
+<div
+class="featured-content">
 
 
 
-<span class="featured-label">
+
+
+<div
+class="featured-label">
 
 
 <i class="fa-solid fa-star"></i>
@@ -1727,7 +2012,9 @@ class="featured-play-button">
 پیشنهاد امروز
 
 
-</span>
+</div>
+
+
 
 
 
@@ -1735,6 +2022,7 @@ class="featured-play-button">
 
 
 <h2
+
 id="featuredTitle">
 
 
@@ -1747,11 +2035,14 @@ id="featuredTitle">
 
 
 
+
+
 <p
+
 id="featuredDescription">
 
 
-هر روز یک قدم برای یادگیری، رشد و بهتر شدن.
+هر روز یک قدم برای یادگیری و رشد فردی.
 
 
 </p>
@@ -1761,7 +2052,12 @@ id="featuredDescription">
 
 
 
-<div class="featured-meta">
+
+
+<div
+class="featured-meta">
+
+
 
 
 
@@ -1779,6 +2075,8 @@ id="featuredDescription">
 
 
 </div>
+
+
 
 
 
@@ -1802,6 +2100,8 @@ id="featuredDescription">
 
 
 
+
+
 </div>
 
 
@@ -1809,9 +2109,14 @@ id="featuredDescription">
 
 
 
+
+
+
 <button
-class="gold-button"
-id="featuredListenButton">
+
+id="featuredListenButton"
+
+class="gold-button">
 
 
 <i class="fa-solid fa-play"></i>
@@ -1825,18 +2130,31 @@ id="featuredListenButton">
 
 
 
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
 </div>
 
 
 
 
 
-</div>
-
-
 
 
 </div>
+
+
+
 
 
 </section>
@@ -1849,23 +2167,37 @@ id="featuredListenButton">
 
 
 
-<!-- ================================
+<!-- =========================
 AUDIO BOOKS
-================================ -->
+========================= -->
 
 
 <section
+
 id="booksSection"
+
 class="books-section">
 
 
-<div class="section-container">
+
+
+
+<div
+
+class="section-container">
 
 
 
 
 
-<div class="section-header">
+
+
+<div
+
+class="section-header">
+
+
+
 
 
 <div>
@@ -1878,11 +2210,13 @@ class="books-section">
 </h2>
 
 
+
 <p>
 
-خلاصه کتاب‌ها و درس‌های ماندگار
+خلاصه کتاب‌ها و تجربه‌های ماندگار
 
 </p>
+
 
 
 </div>
@@ -1891,7 +2225,11 @@ class="books-section">
 
 
 
+
+
+
 <button
+
 class="view-all-button">
 
 
@@ -1905,7 +2243,12 @@ class="view-all-button">
 
 
 
+
+
+
 </div>
+
+
 
 
 
@@ -1914,7 +2257,9 @@ class="view-all-button">
 
 
 <div
+
 id="booksList"
+
 class="books-grid">
 
 
@@ -1922,16 +2267,48 @@ class="books-grid">
 
 
 
-<div class="book-loading-card">
+
+<!--
+library.js
+محتوا را بارگذاری می‌کند
+-->
 
 
-<div class="skeleton-book"></div>
 
 
-<div class="skeleton-text"></div>
 
 
-<div class="skeleton-text short"></div>
+<div
+
+class="book-loading-card">
+
+
+
+<div
+
+class="skeleton-book">
+
+</div>
+
+
+
+
+<div
+
+class="skeleton-line">
+
+</div>
+
+
+
+
+<div
+
+class="skeleton-line short">
+
+</div>
+
+
 
 
 </div>
@@ -1942,16 +2319,38 @@ class="books-grid">
 
 
 
-<div class="book-loading-card">
+
+<div
+
+class="book-loading-card">
 
 
-<div class="skeleton-book"></div>
+
+<div
+
+class="skeleton-book">
+
+</div>
 
 
-<div class="skeleton-text"></div>
 
 
-<div class="skeleton-text short"></div>
+<div
+
+class="skeleton-line">
+
+</div>
+
+
+
+
+<div
+
+class="skeleton-line short">
+
+</div>
+
+
 
 
 </div>
@@ -1962,16 +2361,38 @@ class="books-grid">
 
 
 
-<div class="book-loading-card">
+
+<div
+
+class="book-loading-card">
 
 
-<div class="skeleton-book"></div>
+
+<div
+
+class="skeleton-book">
+
+</div>
 
 
-<div class="skeleton-text"></div>
 
 
-<div class="skeleton-text short"></div>
+<div
+
+class="skeleton-line">
+
+</div>
+
+
+
+
+<div
+
+class="skeleton-line short">
+
+</div>
+
+
 
 
 </div>
@@ -1980,13 +2401,18 @@ class="books-grid">
 
 
 
+
+</div>
+
+
+
+
+
+
+
 </div>
 
 
-
-
-
-</div>
 
 
 </section>
@@ -1999,20 +2425,34 @@ class="books-grid">
 
 
 
-<!-- ================================
-AUTHORS
-================================ -->
+<!-- =========================
+AUTHORS SECTION
+========================= -->
 
 
 <section
+
 class="authors-section">
 
 
-<div class="section-container">
 
 
 
-<div class="section-header">
+<div
+
+class="section-container">
+
+
+
+
+
+
+<div
+
+class="section-header">
+
+
+
 
 
 <div>
@@ -2025,6 +2465,7 @@ class="authors-section">
 </h2>
 
 
+
 <p>
 
 افرادی که تجربه‌های ارزشمند را روایت می‌کنند
@@ -2032,7 +2473,12 @@ class="authors-section">
 </p>
 
 
+
 </div>
+
+
+
+
 
 
 </div>
@@ -2045,23 +2491,41 @@ class="authors-section">
 
 
 <div
+
 id="authorsList"
+
 class="authors-grid">
 
 
 
 
 
-<div class="author-card">
 
 
-<div class="author-avatar">
+<!-- Dynamic Authors -->
+
+
+
+
+
+
+
+<div
+
+class="author-card">
+
+
+
+<div
+
+class="author-avatar">
 
 
 <i class="fa-solid fa-microphone-lines"></i>
 
 
 </div>
+
 
 
 
@@ -2074,9 +2538,11 @@ class="authors-grid">
 
 
 
+
+
 <p>
 
-صداهایی برای تجربه‌های ماندگار
+صداهای ماندگار
 
 </p>
 
@@ -2090,10 +2556,17 @@ class="authors-grid">
 
 
 
-<div class="author-card">
 
 
-<div class="author-avatar">
+<div
+
+class="author-card">
+
+
+
+<div
+
+class="author-avatar">
 
 
 <i class="fa-solid fa-pen-nib"></i>
@@ -2104,11 +2577,14 @@ class="authors-grid">
 
 
 
+
 <h3>
 
 نویسندگان
 
 </h3>
+
+
 
 
 
@@ -2128,42 +2604,6 @@ class="authors-grid">
 
 
 
-<div class="author-card">
-
-
-<div class="author-avatar">
-
-
-<i class="fa-solid fa-users"></i>
-
-
-</div>
-
-
-
-
-<h3>
-
-جامعه شنوندگان
-
-</h3>
-
-
-
-<p>
-
-افرادی علاقه‌مند به رشد و یادگیری
-
-</p>
-
-
-
-</div>
-
-
-
-
-
 
 </div>
 
@@ -2174,6 +2614,10 @@ class="authors-grid">
 
 
 </div>
+
+
+
+
 
 
 </section>
@@ -2181,27 +2625,35 @@ class="authors-grid">
 
 
 
-
-
-
-
-
-<!-- ================================
-REVIEWS
-================================ -->
+     <!-- =========================
+USER REVIEWS
+========================= -->
 
 
 <section
+
 class="reviews-section">
 
 
-<div class="section-container">
+
+
+
+<div
+
+class="section-container">
 
 
 
 
 
-<div class="section-header">
+
+
+<div
+
+class="section-header">
+
+
+
 
 
 <div>
@@ -2214,6 +2666,7 @@ class="reviews-section">
 </h2>
 
 
+
 <p>
 
 تجربه کسانی که NightCast را انتخاب کرده‌اند
@@ -2221,7 +2674,12 @@ class="reviews-section">
 </p>
 
 
+
 </div>
+
+
+
+
 
 
 </div>
@@ -2235,7 +2693,9 @@ class="reviews-section">
 
 
 <div
+
 id="reviewsList"
+
 class="reviews-grid">
 
 
@@ -2244,11 +2704,18 @@ class="reviews-grid">
 
 
 
-<div class="review-card">
+<div
+
+class="review-card">
 
 
 
-<div class="review-stars">
+
+
+
+<div
+
+class="review-stars">
 
 
 <i class="fa-solid fa-star"></i>
@@ -2263,6 +2730,8 @@ class="reviews-grid">
 
 
 </div>
+
+
 
 
 
@@ -2283,16 +2752,25 @@ NightCast باعث شد زمان‌های از دست رفته روزم تبدی
 
 
 
-<div class="review-user">
+<div
+
+class="review-user">
 
 
-<div class="mini-avatar">
+
+
+
+<div
+
+class="mini-avatar">
 
 
 <i class="fa-solid fa-user"></i>
 
 
 </div>
+
+
 
 
 
@@ -2305,9 +2783,6 @@ NightCast باعث شد زمان‌های از دست رفته روزم تبدی
 
 
 
-</div>
-
-
 
 
 </div>
@@ -2319,12 +2794,28 @@ NightCast باعث شد زمان‌های از دست رفته روزم تبدی
 
 
 
-
-<div class="review-card">
-
+</div>
 
 
-<div class="review-stars">
+
+
+
+
+
+
+
+<div
+
+class="review-card">
+
+
+
+
+
+
+<div
+
+class="review-stars">
 
 
 <i class="fa-solid fa-star"></i>
@@ -2345,6 +2836,8 @@ NightCast باعث شد زمان‌های از دست رفته روزم تبدی
 
 
 
+
+
 <p>
 
 
@@ -2359,10 +2852,17 @@ NightCast باعث شد زمان‌های از دست رفته روزم تبدی
 
 
 
-<div class="review-user">
+<div
+
+class="review-user">
 
 
-<div class="mini-avatar">
+
+
+
+<div
+
+class="mini-avatar">
 
 
 <i class="fa-solid fa-user"></i>
@@ -2373,17 +2873,16 @@ NightCast باعث شد زمان‌های از دست رفته روزم تبدی
 
 
 
+
+
 <span>
 
-کاربر عزیز
+کاربر NightCast
 
 </span>
 
 
 
-</div>
-
-
 
 
 </div>
@@ -2393,6 +2892,18 @@ NightCast باعث شد زمان‌های از دست رفته روزم تبدی
 
 
 
+
+
+</div>
+
+
+
+
+
+
+
+
+
 </div>
 
 
@@ -2400,28 +2911,60 @@ NightCast باعث شد زمان‌های از دست رفته روزم تبدی
 
 
 
+
+
 </div>
+
+
+
+
 
 
 </section>
 
-<!-- ================================
+
+
+
+
+
+
+
+
+<!-- =========================
 NEWSLETTER
-================================ -->
+========================= -->
 
 
 <section
+
 class="newsletter-section">
 
 
-<div class="section-container">
-
-
-<div class="newsletter-card">
 
 
 
-<div class="newsletter-icon">
+
+<div
+
+class="section-container">
+
+
+
+
+
+
+<div
+
+class="newsletter-card">
+
+
+
+
+
+
+<div
+
+class="newsletter-icon">
 
 
 <i class="fa-solid fa-envelope-open-text"></i>
@@ -2433,7 +2976,14 @@ class="newsletter-section">
 
 
 
-<div class="newsletter-content">
+
+
+<div
+
+class="newsletter-content">
+
+
+
 
 
 <h2>
@@ -2443,11 +2993,21 @@ class="newsletter-section">
 </h2>
 
 
+
+
+
+
+
 <p>
+
 
 پادکست‌ها و کتاب‌های صوتی جدید را از دست ندهید.
 
+
 </p>
+
+
+
 
 
 
@@ -2457,19 +3017,34 @@ class="newsletter-section">
 
 
 
-<div class="newsletter-form">
+
+
+
+
+<div
+
+class="newsletter-form">
+
+
+
 
 
 <input
+
 id="newsletterEmail"
+
 type="email"
+
 placeholder="ایمیل شما">
 
 
 
 
 
+
+
 <button
+
 id="newsletterButton">
 
 
@@ -2484,6 +3059,18 @@ id="newsletterButton">
 
 
 
+
+
+</div>
+
+
+
+
+
+
+
+
+
 </div>
 
 
@@ -2491,10 +3078,13 @@ id="newsletterButton">
 
 
 
-</div>
 
 
 </div>
+
+
+
+
 
 
 </section>
@@ -2507,26 +3097,41 @@ id="newsletterButton">
 
 
 
-<!-- ================================
+<!-- =========================
 PRO AUDIO PLAYER
-================================ -->
+========================= -->
 
 
 <div
+
 id="nightcastPlayer"
+
 class="nightcast-player">
 
 
 
 
 
-<div class="player-cover-area">
+
+
+<div
+
+class="player-cover-area">
+
+
+
 
 
 <img
+
 id="playerCover"
+
 src="/users/assets/images/default-cover.jpg"
-alt="cover">
+
+alt="NightCast Cover">
+
+
+
 
 
 </div>
@@ -2536,10 +3141,20 @@ alt="cover">
 
 
 
-<div class="player-information">
+
+
+
+<div
+
+class="player-information">
+
+
+
+
 
 
 <h3
+
 id="playerTitle">
 
 
@@ -2551,7 +3166,11 @@ NightCast Player
 
 
 
+
+
+
 <p
+
 id="playerAuthor">
 
 
@@ -2559,6 +3178,10 @@ id="playerAuthor">
 
 
 </p>
+
+
+
+
 
 
 </div>
@@ -2570,11 +3193,21 @@ id="playerAuthor">
 
 
 
-<div class="player-controls">
+
+<div
+
+class="player-controls">
+
+
+
+
 
 
 <button
-id="playerPreviousBtn">
+
+id="playerPreviousBtn"
+
+class="player-control-button">
 
 
 <i class="fa-solid fa-backward-step"></i>
@@ -2586,9 +3219,15 @@ id="playerPreviousBtn">
 
 
 
+
+
+
+
 <button
+
 id="playerPlayBtn"
-class="main-play">
+
+class="player-control-button main-play">
 
 
 <i class="fa-solid fa-play"></i>
@@ -2600,8 +3239,15 @@ class="main-play">
 
 
 
+
+
+
+
 <button
-id="playerNextBtn">
+
+id="playerNextBtn"
+
+class="player-control-button">
 
 
 <i class="fa-solid fa-forward-step"></i>
@@ -2611,6 +3257,11 @@ id="playerNextBtn">
 
 
 
+
+
+
+
+
 </div>
 
 
@@ -2619,14 +3270,23 @@ id="playerNextBtn">
 
 
 
-<div class="player-progress-container">
+
+<div
+
+class="player-progress-container">
+
+
+
 
 
 
 <span
+
 id="playerCurrentTime">
 
+
 00:00
+
 
 </span>
 
@@ -2634,29 +3294,171 @@ id="playerCurrentTime">
 
 
 
+
+
+
 <div
+
 id="playerProgress"
+
 class="player-progress">
 
 
+
 <div
-id="playerProgressBar">
+
+id="playerProgressBar"
+
+class="player-progress-bar">
+
+
 
 </div>
 
 
+
 </div>
+
+
+
 
 
 
 
 
 <span
+
 id="playerDuration">
+
 
 00:00
 
+
 </span>
+
+
+
+
+
+
+</div>
+
+
+
+
+<!-- =========================
+PLAYER EXTRA CONTROLS
+========================= -->
+
+
+<div
+
+class="player-options">
+
+
+
+
+
+<button
+
+id="speedButton"
+
+class="speed-button">
+
+
+1x
+
+
+</button>
+
+
+
+
+
+
+
+
+<div
+
+id="speedMenu"
+
+class="speed-menu hidden">
+
+
+
+
+
+<button
+
+data-speed="0.75">
+
+
+0.75x
+
+
+</button>
+
+
+
+
+
+
+<button
+
+data-speed="1">
+
+
+1x
+
+
+</button>
+
+
+
+
+
+
+<button
+
+data-speed="1.25">
+
+
+1.25x
+
+
+</button>
+
+
+
+
+
+
+<button
+
+data-speed="1.5">
+
+
+1.5x
+
+
+</button>
+
+
+
+
+
+
+<button
+
+data-speed="2">
+
+
+2x
+
+
+</button>
+
+
 
 
 
@@ -2670,54 +3472,39 @@ id="playerDuration">
 
 
 
-<div class="player-options">
+
+<div
+
+class="volume-box">
 
 
-<button
-id="speedButton">
 
-1x
+<i
 
-</button>
+class="fa-solid fa-volume-high">
+
+</i>
+
 
 
 
 
 
 <input
+
 id="playerVolume"
+
 type="range"
+
 min="0"
+
 max="1"
+
 step="0.01"
+
 value="1">
 
 
-
-
-
-
-<button
-id="playerDownloadBtn">
-
-
-<i class="fa-solid fa-download"></i>
-
-
-</button>
-
-
-
-
-
-<button
-id="playerQueueBtn">
-
-
-<i class="fa-solid fa-list"></i>
-
-
-</button>
 
 
 
@@ -2729,9 +3516,75 @@ id="playerQueueBtn">
 
 
 
+
+
+<button
+
+id="playerDownloadBtn"
+
+class="player-icon-button"
+
+title="دانلود">
+
+
+<i
+
+class="fa-solid fa-download">
+
+</i>
+
+
+</button>
+
+
+
+
+
+
+
+
+<button
+
+id="playerQueueBtn"
+
+class="player-icon-button"
+
+title="لیست پخش">
+
+
+<i
+
+class="fa-solid fa-list">
+
+</i>
+
+
+</button>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- AUDIO ENGINE -->
+
+
 <audio
+
 id="nightcastAudio"
+
 preload="metadata">
+
 
 </audio>
 
@@ -2740,6 +3593,9 @@ preload="metadata">
 
 
 
+
+
+
 </div>
 
 
@@ -2750,18 +3606,27 @@ preload="metadata">
 
 
 
-<!-- ================================
+<!-- =========================
 QUEUE PANEL
-================================ -->
+========================= -->
 
 
 <div
+
 id="queuePanel"
+
 class="queue-panel hidden">
 
 
 
-<div class="queue-header">
+
+
+<div
+
+class="queue-header">
+
+
+
 
 
 <h3>
@@ -2772,14 +3637,28 @@ class="queue-panel hidden">
 
 
 
+
+
+
 <button
-id="closeQueue">
+
+id="closeQueue"
+
+class="icon-button">
 
 
-<i class="fa-solid fa-xmark"></i>
+<i
+
+class="fa-solid fa-xmark">
+
+</i>
 
 
 </button>
+
+
+
+
 
 
 
@@ -2790,9 +3669,15 @@ id="closeQueue">
 
 
 
+
 <div
+
 id="queueList"
+
 class="queue-list">
+
+
+
 
 
 <p>
@@ -2802,7 +3687,6 @@ class="queue-list">
 </p>
 
 
-</div>
 
 
 
@@ -2815,29 +3699,53 @@ class="queue-list">
 
 
 
+</div>
 
-<!-- ================================
+
+
+
+
+
+
+
+
+<!-- =========================
 AUTH MODAL
-================================ -->
+========================= -->
 
 
 <div
+
 id="authModal"
+
 class="auth-modal hidden">
 
 
-<div class="auth-box">
+
+
+
+<div
+
+class="auth-box">
+
+
 
 
 
 
 
 <button
+
 id="closeAuthModal"
+
 class="auth-close">
 
 
-<i class="fa-solid fa-xmark"></i>
+<i
+
+class="fa-solid fa-xmark">
+
+</i>
 
 
 </button>
@@ -2848,16 +3756,32 @@ class="auth-close">
 
 
 
-<div class="auth-header">
 
 
-<div class="auth-logo">
+<div
+
+class="auth-header">
 
 
-<i class="fa-solid fa-moon"></i>
+
+
+
+<div
+
+class="auth-logo">
+
+
+<i
+
+class="fa-solid fa-moon">
+
+</i>
 
 
 </div>
+
+
+
 
 
 
@@ -2868,11 +3792,20 @@ class="auth-close">
 </h2>
 
 
+
+
+
+
+
 <p>
 
 تجربه شنیدن خود را ذخیره کنید
 
 </p>
+
+
+
+
 
 
 
@@ -2884,23 +3817,42 @@ class="auth-close">
 
 
 
+
+
+<!-- LOGIN FORM -->
+
+
 <div
-class="auth-form"
-id="loginForm">
+
+id="loginForm"
+
+class="auth-form">
+
+
+
 
 
 
 <input
+
 id="loginUsername"
-placeholder="نام کاربری">
+
+type="text"
+
+placeholder="نام کاربری یا ایمیل">
+
+
 
 
 
 
 
 <input
+
 id="loginPassword"
+
 type="password"
+
 placeholder="رمز عبور">
 
 
@@ -2908,12 +3860,20 @@ placeholder="رمز عبور">
 
 
 
+
+
 <button
+
 id="loginSubmit"
+
 class="primary-auth-button">
 
 
-<i class="fa-solid fa-right-to-bracket"></i>
+<i
+
+class="fa-solid fa-right-to-bracket">
+
+</i>
 
 
 ورود
@@ -2925,6 +3885,8 @@ class="primary-auth-button">
 
 
 
+
+
 </div>
 
 
@@ -2934,40 +3896,70 @@ class="primary-auth-button">
 
 
 
+
+<!-- REGISTER FORM -->
+
+
 <div
-class="auth-form hidden"
-id="registerForm">
+
+id="registerForm"
+
+class="auth-form hidden">
+
+
+
+
 
 
 
 <input
+
 id="registerName"
+
+type="text"
+
 placeholder="نام کامل">
 
 
 
 
 
+
+
 <input
+
 id="registerUsername"
+
+type="text"
+
 placeholder="نام کاربری">
 
 
 
 
 
+
+
 <input
+
 id="registerEmail"
+
 type="email"
+
 placeholder="ایمیل">
 
 
 
 
 
+
+
 <input
+
 id="registerPassword"
+
 type="password"
+
 placeholder="رمز عبور">
 
 
@@ -2975,12 +3967,19 @@ placeholder="رمز عبور">
 
 
 
+
 <button
+
 id="registerSubmit"
+
 class="primary-auth-button">
 
 
-<i class="fa-solid fa-user-plus"></i>
+<i
+
+class="fa-solid fa-user-plus">
+
+</i>
 
 
 ثبت نام
@@ -2990,6 +3989,11 @@ class="primary-auth-button">
 
 
 
+
+
+
+
+
 </div>
 
 
@@ -2998,31 +4002,52 @@ class="primary-auth-button">
 
 
 
-<div class="auth-switch">
+
+
+<div
+
+class="auth-switch">
+
+
+
+
 
 
 <p
+
 id="switchToRegister">
 
 
 حساب ندارید؟
+
 <strong>
+
 ثبت نام کنید
+
 </strong>
 
 
 </p>
+
+
+
+
 
 
 
 <p
+
 id="switchToLogin"
+
 class="hidden">
 
 
 قبلاً ثبت نام کرده‌اید؟
+
 <strong>
+
 ورود
+
 </strong>
 
 
@@ -3030,6 +4055,11 @@ class="hidden">
 
 
 
+
+
+
+
+
 </div>
 
 
@@ -3037,7 +4067,6 @@ class="hidden">
 
 
 
-</div>
 
 
 </div>
@@ -3048,29 +4077,54 @@ class="hidden">
 
 
 
+</div>
 
 
-<!-- ================================
+
+
+
+
+
+     
+
+<!-- =========================
 PROFILE PANEL
-================================ -->
+========================= -->
 
 
 <div
+
 id="profilePanel"
+
 class="profile-panel hidden">
 
 
 
-<div class="profile-header">
 
 
-<div class="profile-avatar">
+
+<div
+
+class="profile-header">
 
 
-<i class="fa-solid fa-user"></i>
+
+
+
+<div
+
+class="profile-avatar">
+
+
+<i
+
+class="fa-solid fa-user">
+
+</i>
 
 
 </div>
+
 
 
 
@@ -3080,23 +4134,32 @@ class="profile-panel hidden">
 
 
 <h3
+
 id="profileName">
 
+
 کاربر NightCast
+
 
 </h3>
 
 
+
+
+
+
 <p
+
 id="profileUsername">
 
+
 @username
+
 
 </p>
 
 
 
-</div>
 
 
 
@@ -3107,14 +4170,32 @@ id="profileUsername">
 
 
 
+</div>
 
-<div class="profile-menu">
+
+
+
+
+
+
+
+
+<div
+
+class="profile-menu">
+
+
+
 
 
 <button>
 
 
-<i class="fa-solid fa-clock-rotate-left"></i>
+<i
+
+class="fa-solid fa-clock-rotate-left">
+
+</i>
 
 
 تاریخچه شنیدن
@@ -3126,10 +4207,16 @@ id="profileUsername">
 
 
 
+
+
 <button>
 
 
-<i class="fa-solid fa-bookmark"></i>
+<i
+
+class="fa-solid fa-bookmark">
+
+</i>
 
 
 ذخیره‌ها
@@ -3141,10 +4228,16 @@ id="profileUsername">
 
 
 
+
+
 <button>
 
 
-<i class="fa-solid fa-heart"></i>
+<i
+
+class="fa-solid fa-heart">
+
+</i>
 
 
 علاقه‌مندی‌ها
@@ -3156,11 +4249,19 @@ id="profileUsername">
 
 
 
+
+
+
 <button
+
 id="logoutButton">
 
 
-<i class="fa-solid fa-right-from-bracket"></i>
+<i
+
+class="fa-solid fa-right-from-bracket">
+
+</i>
 
 
 خروج
@@ -3170,10 +4271,18 @@ id="logoutButton">
 
 
 
+
+
+
+
 </div>
 
 
 
+
+
+
+
 </div>
 
 
@@ -3184,32 +4293,55 @@ id="logoutButton">
 
 
 
-<!-- ================================
+<!-- =========================
 FOOTER
-================================ -->
+========================= -->
 
 
 <footer
+
 class="nightcast-footer">
 
 
-<div class="footer-content">
 
 
 
-<div class="footer-brand">
+
+<div
+
+class="footer-content">
+
+
+
+
+
+
+<div
+
+class="footer-brand">
+
+
+
 
 
 <h2>
 
+
 Night<span>Cast</span>
+
 
 </h2>
 
 
+
+
+
+
 <p>
 
-رادیویی برای تجربه، یادگیری و رشد
+
+رادیویی برای تجربه، یادگیری و رشد فردی
+
 
 </p>
 
@@ -3217,34 +4349,75 @@ Night<span>Cast</span>
 
 
 
-<div class="social-links">
 
 
-<a href="#">
+<div
 
-<i class="fa-brands fa-instagram"></i>
-
-</a>
+class="social-links">
 
 
-<a href="#">
 
-<i class="fa-brands fa-telegram"></i>
-
-</a>
 
 
 <a href="#">
 
-<i class="fa-brands fa-youtube"></i>
+<i
+
+class="fa-brands fa-instagram">
+
+</i>
+
 
 </a>
+
+
+
+
+
+
+
+<a href="#">
+
+<i
+
+class="fa-brands fa-telegram">
+
+</i>
+
+
+</a>
+
+
+
+
+
+
+
+<a href="#">
+
+<i
+
+class="fa-brands fa-youtube">
+
+</i>
+
+
+</a>
+
+
+
+
+
 
 
 </div>
 
 
 
+
+
+
+
 </div>
 
 
@@ -3252,37 +4425,82 @@ Night<span>Cast</span>
 
 
 
-<div class="footer-links">
+
+
+<div
+
+class="footer-links">
+
+
+
 
 
 <h3>
 
+
 دسترسی سریع
+
 
 </h3>
 
 
-<a href="#podcastSection">
-
-پادکست‌ها
-
-</a>
 
 
-<a href="#booksSection">
-
-کتاب‌ها
-
-</a>
 
 
 <a href="#home">
 
+
 خانه
+
 
 </a>
 
 
+
+
+
+
+<a href="#podcastSection">
+
+
+پادکست‌ها
+
+
+</a>
+
+
+
+
+
+
+<a href="#booksSection">
+
+
+کتاب‌ها
+
+
+</a>
+
+
+
+
+
+
+<a href="#librarySection">
+
+
+کتابخانه
+
+
+</a>
+
+
+
+
+
+
+
 </div>
 
 
@@ -3290,6 +4508,8 @@ Night<span>Cast</span>
 
 
 
+
+
 </div>
 
 
@@ -3297,12 +4517,24 @@ Night<span>Cast</span>
 
 
 
-<div class="footer-bottom">
+
+
+
+<div
+
+class="footer-bottom">
+
 
 
 © 2026 NightCast
 
+تمامی حقوق محفوظ است.
+
+
+
 </div>
+
+
 
 
 
@@ -3317,9 +4549,330 @@ Night<span>Cast</span>
 
 
 
-<!-- ================================
-SCRIPTS
-================================ -->
+<!-- =========================
+MOBILE MINI PLAYER
+========================= -->
+
+
+<div
+
+id="mobileMiniPlayer"
+
+class="mobile-mini-player hidden">
+
+
+
+
+
+
+<div
+
+class="mini-info">
+
+
+
+
+
+
+<img
+
+id="miniCover"
+
+src="/users/assets/images/default-cover.jpg"
+
+alt="cover">
+
+
+
+
+
+
+<div>
+
+
+<h4
+
+id="miniTitle">
+
+
+NightCast
+
+
+</h4>
+
+
+
+
+
+
+
+<p
+
+id="miniAuthor">
+
+
+آماده پخش
+
+
+</p>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div
+
+class="mini-controls">
+
+
+
+
+
+<button
+
+id="miniPrevious">
+
+
+<i
+
+class="fa-solid fa-backward-step">
+
+</i>
+
+
+</button>
+
+
+
+
+
+
+
+<button
+
+id="miniPlay">
+
+
+<i
+
+class="fa-solid fa-play">
+
+</i>
+
+
+</button>
+
+
+
+
+
+
+
+<button
+
+id="miniNext">
+
+
+<i
+
+class="fa-solid fa-forward-step">
+
+</i>
+
+
+</button>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- =========================
+MOBILE BOTTOM NAVIGATION
+========================= -->
+
+
+<nav
+
+class="mobile-bottom-nav">
+
+
+
+
+
+
+<a href="#home"
+
+class="bottom-nav-item active">
+
+
+<i
+
+class="fa-solid fa-house">
+
+</i>
+
+
+<span>
+
+
+خانه
+
+
+</span>
+
+
+</a>
+
+
+
+
+
+
+
+
+<a href="#podcastSection"
+
+class="bottom-nav-item">
+
+
+<i
+
+class="fa-solid fa-headphones">
+
+</i>
+
+
+<span>
+
+
+شنیدن
+
+
+</span>
+
+
+</a>
+
+
+
+
+
+
+
+
+<a href="#booksSection"
+
+class="bottom-nav-item">
+
+
+<i
+
+class="fa-solid fa-bookmark">
+
+</i>
+
+
+<span>
+
+
+کتابخانه
+
+
+</span>
+
+
+</a>
+
+
+
+
+
+
+
+
+<a href="#profilePanel"
+
+class="bottom-nav-item">
+
+
+<i
+
+class="fa-solid fa-user">
+
+</i>
+
+
+<span>
+
+
+پروفایل
+
+
+</span>
+
+
+</a>
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+
+
+
+
+
+<!-- =========================
+JAVASCRIPT FILES
+========================= -->
+
 
 
 <script src="/users/js/core/api.js"></script>
@@ -3327,6 +4880,8 @@ SCRIPTS
 <script src="/users/js/core/auth.js"></script>
 
 <script src="/users/js/core/ui.js"></script>
+
+
 
 
 <script src="/users/js/features/podcasts.js"></script>
@@ -3338,6 +4893,8 @@ SCRIPTS
 <script src="/users/js/features/profile.js"></script>
 
 
+
+
 <script src="/users/js/player.js"></script>
 
 <script src="/users/js/app.js"></script>
@@ -3346,12 +4903,14 @@ SCRIPTS
 
 
 
+
+
 </body>
+
 
 </html>
 
 
-     
 
      
      

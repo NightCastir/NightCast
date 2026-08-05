@@ -1,8 +1,12 @@
-
 /* ==================================================
-   NightCast User Authentication Manager
-   File: /users/js/auth.js
-   Version: 2.0 Professional
+   NightCast Authentication Manager V2
+
+   File:
+   /users/js/core/auth.js
+
+   Responsibility:
+   User Identity Management
+
 ================================================== */
 
 
@@ -10,6 +14,9 @@ const NightCastAuth = {
 
 
     user:null,
+
+
+    initialized:false,
 
 
 
@@ -25,14 +32,23 @@ const NightCastAuth = {
     async init(){
 
 
-        if(
+        if(this.initialized){
 
-            !NightCastAPI.isLoggedIn()
+            return;
 
-        ){
+        }
 
 
-            this.guest();
+
+        this.initialized = true;
+
+
+
+
+        if(!NightCastAPI.isLoggedIn()){
+
+
+            this.updateUI();
 
 
             return;
@@ -47,29 +63,16 @@ const NightCastAuth = {
 
         const result =
 
-        await NightCastAPI.me();
+        await this.getCurrentUser();
 
 
 
 
 
-        if(
-
-            result.success &&
-
-            result.user
-
-        ){
+        if(result.success){
 
 
-            this.user =
-
-            result.user;
-
-
-
-            this.logged();
-
+            this.user = result.user;
 
 
         }
@@ -80,10 +83,16 @@ const NightCastAuth = {
             NightCastAPI.removeToken();
 
 
-            this.guest();
+            this.user = null;
 
 
         }
+
+
+
+
+
+        this.updateUI();
 
 
 
@@ -99,35 +108,16 @@ const NightCastAuth = {
 
     /*
     ====================================
-    GUEST MODE
+    GET CURRENT USER
     ====================================
     */
 
 
-    guest(){
+    async getCurrentUser(){
 
 
 
-        const btn =
-
-        document.getElementById(
-
-            "loginBtn"
-
-        );
-
-
-
-        if(btn){
-
-
-            btn.textContent =
-
-            "ورود";
-
-
-        }
-
+        return await NightCastAPI.me();
 
 
 
@@ -143,118 +133,18 @@ const NightCastAuth = {
 
     /*
     ====================================
-    LOGGED MODE
+    LOGIN
     ====================================
     */
 
 
-    logged(){
+    async login(
 
+        username,
 
+        password
 
-        const btn =
-
-        document.getElementById(
-
-            "loginBtn"
-
-        );
-
-
-
-        if(btn){
-
-
-            btn.textContent =
-
-            this.user.full_name ||
-
-            "حساب کاربری";
-
-
-        }
-
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    LOGIN PROCESS
-    ====================================
-    */
-
-
-    async login(){
-
-
-
-        const username =
-
-        document.getElementById(
-
-            "userLoginUsername"
-
-        ).value.trim();
-
-
-
-
-
-        const password =
-
-        document.getElementById(
-
-            "userLoginPassword"
-
-        ).value;
-
-
-
-
-
-
-        if(
-
-            !username ||
-
-            !password
-
-        ){
-
-
-
-            NightCastUI.error(
-
-                "نام کاربری و رمز عبور را وارد کنید"
-
-            );
-
-
-            return;
-
-
-        }
-
-
-
-
-
-
-
-
-        NightCastUI.showLoader();
-
-
+    ){
 
 
 
@@ -272,14 +162,6 @@ const NightCastAuth = {
 
 
 
-        NightCastUI.hideLoader();
-
-
-
-
-
-
-
 
         if(
 
@@ -289,70 +171,11 @@ const NightCastAuth = {
 
 
 
-            this.user =
-
-            result.user;
+            this.user = result.user;
 
 
 
-
-
-            this.logged();
-
-
-
-
-
-            NightCastUI.success(
-
-                "ورود موفق بود"
-
-            );
-
-
-
-
-
-
-            const popup =
-
-            document.getElementById(
-
-                "loginPopup"
-
-            );
-
-
-
-            if(popup){
-
-
-                popup.classList.add(
-
-                    "hidden"
-
-                );
-
-
-            }
-
-
-
-
-
-
-        }
-
-        else{
-
-
-            NightCastUI.error(
-
-                result.message ||
-
-                "ورود ناموفق بود"
-
-            );
+            this.updateUI();
 
 
 
@@ -362,27 +185,9 @@ const NightCastAuth = {
 
 
 
-    },
 
+        return result;
 
-
-
-
-
-
-
-
-    /*
-    ====================================
-    REGISTER
-    ====================================
-    */
-
-
-    async register(data){
-
-
-        return await NightCastAPI.register(data);
 
 
     },
@@ -410,15 +215,279 @@ const NightCastAuth = {
 
 
 
-        this.user=null;
+
+        this.user = null;
 
 
 
-        this.guest();
+
+        this.updateUI();
 
 
 
-        location.reload();
+
+
+        if(window.NightCastUI){
+
+
+
+            NightCastUI.showMessage(
+
+                "از حساب کاربری خارج شدید"
+
+            );
+
+
+
+        }
+
+
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    CHECK LOGIN
+    ====================================
+    */
+
+
+    isLoggedIn(){
+
+
+
+        return NightCastAPI.isLoggedIn();
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    GET USER
+    ====================================
+    */
+
+
+    getUser(){
+
+
+
+        return this.user;
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    UPDATE HEADER UI
+
+    Login Button
+
+    ====================================
+    */
+
+
+    updateUI(){
+
+
+
+        const loginBtn =
+
+        document.getElementById(
+
+            "loginBtn"
+
+        );
+
+
+
+
+
+        if(!loginBtn){
+
+            return;
+
+        }
+
+
+
+
+
+
+        if(this.user){
+
+
+
+            loginBtn.innerHTML =
+
+
+            `
+
+            👤
+
+            ${
+
+                this.user.full_name ||
+
+                this.user.username
+
+            }
+
+            `;
+
+
+
+
+
+            loginBtn.dataset.logged =
+
+            "true";
+
+
+
+
+        }
+
+        else{
+
+
+
+            loginBtn.innerHTML =
+
+            "ورود";
+
+
+
+            loginBtn.dataset.logged =
+
+            "false";
+
+
+
+        }
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    REQUIRE LOGIN
+
+    For protected actions
+
+    ====================================
+    */
+
+
+    requireLogin(){
+
+
+
+        if(this.isLoggedIn()){
+
+
+            return true;
+
+
+        }
+
+
+
+
+
+
+        if(window.NightCastUI){
+
+
+
+            NightCastUI.showMessage(
+
+                "برای ادامه ابتدا وارد حساب شوید"
+
+            );
+
+
+        }
+
+
+
+
+
+        return false;
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    OPENID READY
+
+    Future:
+
+    Google
+    Facebook
+    Apple
+
+    ====================================
+    */
+
+
+    providers:{
+
+
+        google:false,
+
+
+        facebook:false,
+
+
+        apple:false
 
 
 
@@ -435,27 +504,11 @@ const NightCastAuth = {
 
 
 
+window.NightCastAuth = NightCastAuth;
 
 
 
 
-window.NightCastAuth =
-
-NightCastAuth;
-
-
-
-
-
-
-
-
-
-/*
-====================================
-EVENT CONNECTION
-====================================
-*/
 
 
 document.addEventListener(
@@ -465,55 +518,16 @@ document.addEventListener(
 ()=>{
 
 
-
-
-
     NightCastAuth.init();
 
 
 
-
-
-    const loginSubmit =
-
-    document.getElementById(
-
-        "userLoginSubmit"
-
-    );
-
-
-
-
-
-    if(loginSubmit){
-
-
-
-        loginSubmit.addEventListener(
-
-            "click",
-
-            ()=>{
-
-
-                NightCastAuth.login();
-
-
-
-            }
-
-
-        );
-
-
-
-    }
-
-
-
-
-
-
-
 });
+
+
+
+console.log(
+
+"NightCast Auth V2 Loaded"
+
+);

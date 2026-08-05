@@ -1,382 +1,370 @@
-/* ==================================================
-   NightCast User Authentication
-   File: /users/js/auth.js
-   Version: 1.0
-================================================== */
 
+/* ==================================================
+   NightCast User Authentication Manager
+   File: /users/js/auth.js
+   Version: 2.0 Professional
+================================================== */
 
 
 const NightCastAuth = {
 
 
+    user:null,
 
 
 
-/*
-====================================
-CURRENT USER
-====================================
-*/
 
 
-user:null,
+    /*
+    ====================================
+    INIT
+    ====================================
+    */
 
 
+    async init(){
 
 
+        if(
 
+            !NightCastAPI.isLoggedIn()
 
+        ){
 
-/*
-====================================
-INIT AUTH
-====================================
-*/
 
+            this.guest();
 
-async init(){
 
+            return;
 
 
-const token =
+        }
 
-NightCastAPI.getToken();
 
 
 
-if(!token){
 
 
-this.guestMode();
+        const result =
 
+        await NightCastAPI.me();
 
-return;
 
 
-}
 
 
+        if(
 
+            result.success &&
 
-const result =
+            result.user
 
-await NightCastAPI.me();
+        ){
 
 
+            this.user =
 
+            result.user;
 
 
-if(
 
-result.success &&
+            this.logged();
 
-result.user
 
-){
 
+        }
 
+        else{
 
-this.user =
 
-result.user;
+            NightCastAPI.removeToken();
 
 
+            this.guest();
 
-this.loggedMode();
 
+        }
 
 
-}
 
-else{
+    },
 
 
-NightCastAPI.removeToken();
 
 
-this.guestMode();
 
 
-}
 
 
 
-},
+    /*
+    ====================================
+    GUEST MODE
+    ====================================
+    */
 
 
+    guest(){
 
 
 
+        const btn =
 
+        document.getElementById(
 
-/*
-====================================
-GUEST MODE
-====================================
-*/
+            "loginBtn"
 
+        );
 
-guestMode(){
 
 
+        if(btn){
 
-const panel =
 
-document.getElementById(
+            btn.textContent =
 
-"userPanel"
+            "ورود";
 
-);
 
+        }
 
 
-if(panel){
 
 
-panel.classList.add(
+    },
 
-"hidden"
 
-);
 
 
-}
 
 
 
-},
 
 
+    /*
+    ====================================
+    LOGGED MODE
+    ====================================
+    */
 
 
+    logged(){
 
 
 
-/*
-====================================
-LOGGED MODE
-====================================
-*/
+        const btn =
 
+        document.getElementById(
 
-loggedMode(){
+            "loginBtn"
 
+        );
 
 
-const panel =
 
-document.getElementById(
+        if(btn){
 
-"userPanel"
 
-);
+            btn.textContent =
 
+            this.user.full_name ||
 
+            "حساب کاربری";
 
-if(panel){
 
+        }
 
 
-panel.classList.remove(
 
-"hidden"
 
-);
+    },
 
 
 
-}
 
 
 
 
 
 
-const name =
+    /*
+    ====================================
+    LOGIN PROCESS
+    ====================================
+    */
 
-document.getElementById(
 
-"userName"
+    async login(){
 
-);
 
 
+        const username =
 
-if(name){
+        document.getElementById(
 
+            "userLoginUsername"
 
+        ).value.trim();
 
-name.textContent =
 
-this.user.full_name ||
 
-this.user.username;
 
 
+        const password =
 
-}
+        document.getElementById(
 
+            "userLoginPassword"
 
+        ).value;
 
 
 
 
-const role =
 
-document.getElementById(
 
-"userRole"
+        if(
 
-);
+            !username ||
 
+            !password
 
+        ){
 
-if(role){
 
 
+            NightCastUI.error(
 
-role.textContent =
+                "نام کاربری و رمز عبور را وارد کنید"
 
-this.user.role ||
+            );
 
-"listener";
 
+            return;
 
 
-}
+        }
 
 
 
-},
 
 
 
 
 
+        NightCastUI.showLoader();
 
 
-/*
-====================================
-LOGIN
-====================================
-*/
 
 
-async login(
 
-username,
+        const result =
 
-password
+        await NightCastAPI.login(
 
-){
+            username,
 
+            password
 
+        );
 
-const result =
 
-await NightCastAPI.login(
 
-username,
 
-password
 
-);
+        NightCastUI.hideLoader();
 
 
 
 
 
-if(
 
-result.success
 
-){
 
+        if(
 
+            result.success
 
-this.user =
+        ){
 
-result.user;
 
 
+            this.user =
 
-this.loggedMode();
+            result.user;
 
 
 
-}
 
 
+            this.logged();
 
 
-return result;
 
 
 
-},
+            NightCastUI.success(
 
+                "ورود موفق بود"
 
+            );
 
 
 
 
 
-/*
-====================================
-REGISTER
-====================================
-*/
 
+            const popup =
 
-async register(data){
+            document.getElementById(
 
+                "loginPopup"
 
+            );
 
-return await NightCastAPI.register(
 
-data
 
-);
+            if(popup){
 
 
-},
+                popup.classList.add(
 
+                    "hidden"
 
+                );
 
 
+            }
 
 
 
-/*
-====================================
-LOGOUT
-====================================
-*/
 
 
-async logout(){
 
+        }
 
+        else{
 
-await NightCastAPI.logout();
 
+            NightCastUI.error(
 
+                result.message ||
 
-this.user = null;
+                "ورود ناموفق بود"
 
+            );
 
 
-this.guestMode();
 
+        }
 
 
 
 
-location.reload();
 
+    },
 
 
-},
 
 
 
@@ -384,65 +372,57 @@ location.reload();
 
 
 
-/*
-====================================
-CHECK LOGIN
-====================================
-*/
+    /*
+    ====================================
+    REGISTER
+    ====================================
+    */
 
 
-requireLogin(){
+    async register(data){
 
 
+        return await NightCastAPI.register(data);
 
-if(
 
-!NightCastAPI.isLoggedIn()
+    },
 
-){
 
 
 
-const popup =
 
-document.getElementById(
 
-"loginPopup"
 
-);
 
 
+    /*
+    ====================================
+    LOGOUT
+    ====================================
+    */
 
-if(popup){
 
+    async logout(){
 
 
-popup.classList.remove(
 
-"hidden"
+        await NightCastAPI.logout();
 
-);
 
 
+        this.user=null;
 
-}
 
 
+        this.guest();
 
-return false;
 
 
+        location.reload();
 
-}
 
 
-
-return true;
-
-
-
-}
-
+    }
 
 
 
@@ -456,25 +436,24 @@ return true;
 
 
 
+
+
+
+window.NightCastAuth =
+
+NightCastAuth;
+
+
+
+
+
+
+
+
+
 /*
 ====================================
-GLOBAL
-====================================
-*/
-
-
-window.NightCastAuth = NightCastAuth;
-
-
-
-
-
-
-
-
-/*
-====================================
-AUTO START
+EVENT CONNECTION
 ====================================
 */
 
@@ -486,7 +465,54 @@ document.addEventListener(
 ()=>{
 
 
-NightCastAuth.init();
+
+
+
+    NightCastAuth.init();
+
+
+
+
+
+    const loginSubmit =
+
+    document.getElementById(
+
+        "userLoginSubmit"
+
+    );
+
+
+
+
+
+    if(loginSubmit){
+
+
+
+        loginSubmit.addEventListener(
+
+            "click",
+
+            ()=>{
+
+
+                NightCastAuth.login();
+
+
+
+            }
+
+
+        );
+
+
+
+    }
+
+
+
+
 
 
 

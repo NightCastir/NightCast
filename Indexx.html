@@ -1,1 +1,1117 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>
+NightCast | رادیو نایت‌کست
+</title>
+
+
+<link rel="stylesheet" href="users/css/core.css">
+
+<link rel="stylesheet" href="users/css/layout.css">
+
+<link rel="stylesheet" href="users/css/components.css">
+
+<link rel="stylesheet" href="users/css/responsive.css">
+
+
+<!-- ==========================
+SEO META
+========================== -->
+
+
+<meta name="description"
+content="NightCast - رادیویی برای شنیدن کتاب‌ها، تجربه‌ها و آموزش‌های رشد فردی">
+
+
+
+<meta name="keywords"
+content="NightCast, پادکست, کتاب صوتی, رادیو, آموزش, تجربه">
+
+
+
+<meta name="author"
+content="NightCast">
+
+
+
+
+
+
+
+<!-- ==========================
+MOBILE APP READY
+========================== -->
+
+
+<meta name="theme-color"
+content="#111827">
+
+
+
+<meta name="mobile-web-app-capable"
+content="yes">
+
+
+
+<meta name="apple-mobile-web-app-capable"
+content="yes">
+
+
+
+<meta name="apple-mobile-web-app-status-bar-style"
+content="black">
+
+
+
+
+
+
+
+<!-- ==========================
+OPEN GRAPH
+========================== -->
+
+
+<meta property="og:title"
+content="NightCast | رادیو نایت‌کست">
+
+
+
+<meta property="og:description"
+content="تجربه‌ها، کتاب‌ها و آموزش‌ها در قالب پادکست">
+
+
+
+<meta property="og:type"
+content="website">
+
+
+
+<meta property="og:url"
+content="https://www.nightcast.ir">
+
+
+
+<meta property="og:image"
+content="https://www.nightcast.ir/assets/images/nightcast-cover.png">
+
+
+
+
+
+
+
+<!-- ==========================
+PWA (Future APK)
+فعلا غیرفعال
+========================== -->
+
+<!--
+
+<link rel="manifest"
+href="manifest.json">
+
+
+<link rel="apple-touch-icon"
+href="assets/images/icon.png">
+
+
+-->
+
+
+
+
+
+
+
+<!-- ==========================
+FUTURE SERVICE WORKER
+========================== -->
+
+
+<!--
+
+<script>
+
+if(
+"serviceWorker" in navigator
+){
+
+navigator.serviceWorker.register(
+"/service-worker.js"
+);
+
+}
+
+</script>
+
+
+-->
+</head>
+
+
+
+<body>
+
+
+<!-- ==========================
+GLOBAL LOADER
+========================== -->
+
+
+<div id="globalLoader">
+
+
+<div class="loader-box">
+
+
+<div class="spinner"></div>
+
+
+<p>
+لطفاً کمی صبر کنید...
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<!-- ==========================
+APP
+========================== -->
+
+
+<div id="app">
+
+
+
+<!-- ==========================
+HEADER
+========================== -->
+
+
+<header class="user-header">
+
+
+<div class="logo">
+
+
+<span>
+◉
+</span>
+
+
+NightCast
+
+
+</div>
+
+
+
+
+
+<nav>
+
+
+<a href="#">
+خانه
+</a>
+
+
+<a href="#podcasts">
+پادکست‌ها
+</a>
+
+
+<a href="#about">
+درباره ما
+</a>
+
+
+</nav>
+
+
+
+
+
+
+<div class="header-actions">
+
+
+
+<button 
+id="loginBtn"
+class="btn-login">
+
+ورود / ثبت‌نام
+
+</button>
+
+
+
+</div>
+
+
+
+
+</header>
+  <!-- ==========================
+HERO SECTION
+========================== -->
+
+
+<section class="hero" id="about">
+
+
+<div class="hero-content">
+
+
+<h1>
+
+رادیو NightCast
+
+</h1>
+
+
+
+<p>
+
+شنیدن تجربه‌ها، کتاب‌ها و آموزش‌هایی برای رشد فردی و زندگی بهتر
+
+</p>
+
+
+
+
+<button
+
+class="btn-primary"
+
+id="startListeningBtn">
+
+شروع شنیدن
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+<div class="hero-image">
+
+
+<img
+
+src="assets/images/nightcast-cover.png"
+
+alt="NightCast">
+
+
+</div>
+
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+PODCAST SECTION
+========================== -->
+
+
+<section
+
+class="podcast-section"
+
+id="podcasts">
+
+
+
+
+
+<div class="section-header">
+
+
+
+<h2>
+
+آخرین پادکست‌ها
+
+</h2>
+
+
+
+<p>
+
+قسمت‌های جدید رادیو NightCast
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+PODCAST LIST
+========================== -->
+
+
+<div
+
+id="podcastContainer"
+
+class="podcast-container">
+
+
+
+
+
+<!--
+
+Podcast Cards
+
+Dynamic Load From API
+
+-->
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+INFINITE SCROLL LOADER
+========================== -->
+
+
+<div
+
+id="loadMoreLoader"
+
+class="load-more-loader"
+
+style="display:none;">
+
+
+
+<div class="spinner small"></div>
+
+
+
+<p>
+
+در حال دریافت پادکست‌های بیشتر...
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+END MESSAGE
+========================== -->
+
+
+<div
+
+id="endPodcastMessage"
+
+class="end-message"
+
+style="display:none;">
+
+
+
+تمام پادکست‌ها نمایش داده شد
+
+
+
+</div>
+
+
+
+
+
+</section>
+
+  <!-- ==========================
+PODCAST CARD TEMPLATE
+(DYNAMIC)
+========================== -->
+
+
+<template id="podcastTemplate">
+
+
+
+<article class="podcast-card">
+
+
+
+
+
+<div class="podcast-cover">
+
+
+<img
+
+class="podcast-image"
+
+src=""
+
+alt="Podcast Cover">
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="podcast-content">
+
+
+
+<h3 class="podcast-title">
+
+عنوان پادکست
+
+</h3>
+
+
+
+
+
+
+<div class="podcast-meta">
+
+
+
+<span class="book-name">
+
+📚 کتاب
+
+</span>
+
+
+
+<span class="author-name">
+
+✍ نویسنده
+
+</span>
+
+
+
+<span class="episode-number">
+
+قسمت
+
+</span>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<p class="podcast-summary">
+
+
+خلاصه پادکست
+
+</p>
+
+
+
+
+
+
+
+
+<audio
+
+class="audio-player"
+
+controls>
+
+
+</audio>
+
+
+
+
+
+
+
+
+
+<div class="podcast-actions">
+
+
+
+
+
+<button
+
+class="btn-download"
+
+data-action="download">
+
+
+⬇ دانلود
+
+
+</button>
+
+
+
+
+
+
+
+
+<button
+
+class="btn-comment"
+
+data-action="comment">
+
+
+💬 نظرها
+
+
+</button>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+</article>
+
+
+
+</template>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+COMMENT POPUP
+========================== -->
+
+
+<div
+
+class="popup"
+
+id="commentPopup">
+
+
+
+
+
+<div class="popup-content">
+
+
+
+
+
+<button
+
+class="popup-close"
+
+id="closeCommentPopup">
+
+×
+
+
+</button>
+
+
+
+
+
+
+
+<h3>
+
+نظرات کاربران
+
+</h3>
+
+
+
+
+
+
+
+<div
+
+id="commentsList">
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div
+
+class="comment-login-message"
+
+id="commentLoginMessage"
+
+style="display:none;">
+
+
+
+<p>
+
+برای ثبت نظر ابتدا وارد حساب کاربری شوید.
+
+</p>
+
+
+
+
+<button
+
+class="btn-primary"
+
+id="goLoginFromComment">
+
+
+ورود / ثبت‌نام
+
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+LOGIN POPUP
+========================== -->
+
+
+<div
+
+class="popup"
+
+id="loginPopup">
+
+
+
+
+
+<div class="popup-content">
+
+
+
+
+
+<button
+
+class="popup-close"
+
+id="closeLoginPopup">
+
+×
+
+
+</button>
+
+
+
+
+
+
+
+<h3>
+
+ورود به NightCast
+
+</h3>
+
+
+
+
+
+
+
+
+<p>
+
+برای امکانات بیشتر می‌توانید وارد حساب خود شوید.
+
+</p>
+
+
+
+
+
+
+
+<div class="login-options">
+
+
+
+
+
+<button
+
+class="btn-google-login">
+
+
+ورود سریع
+
+
+</button>
+
+
+
+
+
+
+
+
+<button
+
+class="btn-sms-login">
+
+
+ورود با پیامک
+
+
+</button>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+<button
+
+class="skip-login"
+
+
+id="skipLogin">
+
+
+ورود بدون ثبت‌نام
+
+
+</button>
+
+
+
+
+
+
+</div>
+
+
+
+</div>
+  <!-- ==========================
+FOOTER
+========================== -->
+
+
+<footer class="user-footer">
+
+
+<div class="footer-content">
+
+
+
+<div>
+
+
+<h3>
+
+NightCast
+
+</h3>
+
+
+<p>
+
+رادیویی برای شنیدن، یادگیری و تجربه کردن
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="footer-links">
+
+
+<a href="#">
+
+قوانین استفاده
+
+</a>
+
+
+
+<a href="#">
+
+حریم خصوصی
+
+</a>
+
+
+
+<a href="#">
+
+تماس با ما
+
+</a>
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="copyright">
+
+
+© NightCast
+
+تمامی حقوق محفوظ است
+
+
+</div>
+
+
+
+
+
+</footer>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+GLOBAL COMPONENTS
+========================== -->
+
+
+
+<div id="toastContainer"></div>
+
+
+
+
+
+
+<!-- ==========================
+APP ERROR MESSAGE
+========================== -->
+
+
+<div
+
+id="appMessage"
+
+class="app-message"
+
+style="display:none;">
+
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+<!-- END APP -->
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+SCRIPTS
+========================== -->
+
+
+
+<script src="users/js/api.js"></script>
+
+
+<script src="users/js/loader.js"></script>
+
+
+<script src="users/js/auth.js"></script>
+
+
+<script src="users/js/player.js"></script>
+
+
+<script src="users/js/podcasts.js"></script>
+
+
+<script src="users/js/app.js"></script>
+
+
+
+
+
+</body>
+
+
+</html>
 

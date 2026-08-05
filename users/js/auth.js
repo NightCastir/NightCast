@@ -1,50 +1,25 @@
+/* ==================================================
+   NightCast User Authentication
+   File: /users/js/auth.js
+   Version: 1.0
+================================================== */
+
+
+
+const NightCastAuth = {
+
+
+
+
 
 /*
-=================================================
-
-NightCast User Authentication
-
-Responsible for:
-
-- User Session
-- Token Management
-- Guest Access
-- Protected Actions
-
-=================================================
+====================================
+CURRENT USER
+====================================
 */
 
 
-"use strict";
-
-
-
-
-
-
-class UserAuth {
-
-
-
-constructor(){
-
-
-
-    this.user = null;
-
-    this.token =
-
-    localStorage.getItem(
-
-        "NightCastToken"
-
-    );
-
-
-
-}
-
-
+user:null,
 
 
 
@@ -53,9 +28,9 @@ constructor(){
 
 
 /*
-==========================
-INIT USER
-==========================
+====================================
+INIT AUTH
+====================================
 */
 
 
@@ -63,18 +38,151 @@ async init(){
 
 
 
-try{
+const token =
+
+NightCastAPI.getToken();
 
 
 
-if(!this.token){
+if(!token){
+
+
+this.guestMode();
+
+
+return;
+
+
+}
 
 
 
-    this.setGuest();
+
+const result =
+
+await NightCastAPI.me();
 
 
-    return;
+
+
+
+if(
+
+result.success &&
+
+result.user
+
+){
+
+
+
+this.user =
+
+result.user;
+
+
+
+this.loggedMode();
+
+
+
+}
+
+else{
+
+
+NightCastAPI.removeToken();
+
+
+this.guestMode();
+
+
+}
+
+
+
+},
+
+
+
+
+
+
+
+/*
+====================================
+GUEST MODE
+====================================
+*/
+
+
+guestMode(){
+
+
+
+const panel =
+
+document.getElementById(
+
+"userPanel"
+
+);
+
+
+
+if(panel){
+
+
+panel.classList.add(
+
+"hidden"
+
+);
+
+
+}
+
+
+
+},
+
+
+
+
+
+
+
+/*
+====================================
+LOGGED MODE
+====================================
+*/
+
+
+loggedMode(){
+
+
+
+const panel =
+
+document.getElementById(
+
+"userPanel"
+
+);
+
+
+
+if(panel){
+
+
+
+panel.classList.remove(
+
+"hidden"
+
+);
+
 
 
 }
@@ -84,12 +192,93 @@ if(!this.token){
 
 
 
+const name =
+
+document.getElementById(
+
+"userName"
+
+);
+
+
+
+if(name){
+
+
+
+name.textContent =
+
+this.user.full_name ||
+
+this.user.username;
+
+
+
+}
+
+
+
+
+
+
+const role =
+
+document.getElementById(
+
+"userRole"
+
+);
+
+
+
+if(role){
+
+
+
+role.textContent =
+
+this.user.role ||
+
+"listener";
+
+
+
+}
+
+
+
+},
+
+
+
+
+
+
+
+/*
+====================================
+LOGIN
+====================================
+*/
+
+
+async login(
+
+username,
+
+password
+
+){
+
+
 
 const result =
 
-await API.get(
+await NightCastAPI.login(
 
-"/auth/me"
+username,
+
+password
 
 );
 
@@ -97,11 +286,7 @@ await API.get(
 
 
 
-
-
 if(
-
-result &&
 
 result.success
 
@@ -115,63 +300,46 @@ result.user;
 
 
 
+this.loggedMode();
+
+
+
+}
 
 
 
 
-localStorage.setItem(
+return result;
 
-"NightCastUser",
 
-JSON.stringify(
 
-this.user
+},
 
-)
+
+
+
+
+
+
+/*
+====================================
+REGISTER
+====================================
+*/
+
+
+async register(data){
+
+
+
+return await NightCastAPI.register(
+
+data
 
 );
 
 
-
-}
-
-else{
-
-
-this.logoutLocal();
-
-
-}
-
-
-
-}
-
-catch(error){
-
-
-
-console.error(
-
-"AUTH INIT ERROR",
-
-error
-
-);
-
-
-
-this.logoutLocal();
-
-
-
-}
-
-
-
-}
-
-
+},
 
 
 
@@ -180,63 +348,17 @@ this.logoutLocal();
 
 
 /*
-==========================
-IS LOGIN
-==========================
+====================================
+LOGOUT
+====================================
 */
 
 
-isLoggedIn(){
+async logout(){
 
 
 
-return !!this.token;
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/*
-==========================
-GET USER
-==========================
-*/
-
-
-getUser(){
-
-
-
-return this.user;
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/*
-==========================
-SET GUEST
-==========================
-*/
-
-
-setGuest(){
+await NightCastAPI.logout();
 
 
 
@@ -244,9 +366,17 @@ this.user = null;
 
 
 
-}
+this.guestMode();
 
 
+
+
+
+location.reload();
+
+
+
+},
 
 
 
@@ -255,12 +385,9 @@ this.user = null;
 
 
 /*
-==========================
-REQUIRE LOGIN
-
-برای عملیات حساس
-
-==========================
+====================================
+CHECK LOGIN
+====================================
 */
 
 
@@ -270,534 +397,29 @@ requireLogin(){
 
 if(
 
-!this.isLoggedIn()
+!NightCastAPI.isLoggedIn()
 
 ){
 
 
 
-this.redirectLogin();
-
-
-
-return false;
-
-
-
-}
-
-
-
-return true;
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/*
-==========================
-REDIRECT LOGIN
-==========================
-*/
-
-
-redirectLogin(){
-
-
-
-window.location.href =
-
-"login.html";
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/*
-==========================
-LOGOUT
-==========================
-*/
-
-
-async logout(){
-
-
-
-try{
-
-
-
-await API.post(
-
-"/auth/logout",
-
-{}
-
-);
-
-
-
-}
-
-catch(error){
-
-
-
-console.error(
-
-"LOGOUT ERROR",
-
-error
-
-);
-
-
-
-}
-
-finally{
-
-
-
-this.logoutLocal();
-
-
-
-}
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/*
-==========================
-LOCAL LOGOUT
-==========================
-*/
-
-
-logoutLocal(){
-
-
-
-localStorage.removeItem(
-
-"NightCastToken"
-
-);
-
-
-
-
-localStorage.removeItem(
-
-"NightCastUser"
-
-);
-
-
-
-this.token=null;
-
-
-
-this.user=null;
-
-
-
-}
-  // ==========================
-// CHECK DOWNLOAD ACCESS
-// ==========================
-//
-// دانلود فقط برای کاربران ثبت‌نام شده
-// ==========================
-
-
-canDownload(){
-
-
-
-if(
-
-!this.isLoggedIn()
-
-){
-
-
-
-this.redirectLogin();
-
-
-return false;
-
-
-}
-
-
-
-
-return true;
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/*
-==========================
-CHECK COMMENT ACCESS
-
-نظردهی فقط برای کاربران عضو
-==========================
-*/
-
-
-canComment(){
-
-
-
-if(
-
-!this.isLoggedIn()
-
-){
-
-
-
-this.redirectLogin();
-
-
-return false;
-
-
-}
-
-
-
-return true;
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/*
-==========================
-GET TOKEN
-==========================
-*/
-
-
-getToken(){
-
-
-
-return localStorage.getItem(
-
-"NightCastToken"
-
-);
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/*
-==========================
-GET USER NAME
-==========================
-*/
-
-
-getUserName(){
-
-
-
-if(
-
-this.user &&
-
-this.user.full_name
-
-){
-
-
-
-return this.user.full_name;
-
-
-
-}
-
-
-
-
-
-const saved =
-
-localStorage.getItem(
-
-"NightCastUser"
-
-);
-
-
-
-
-
-
-
-if(saved){
-
-
-
-try{
-
-
-
-const user =
-
-JSON.parse(saved);
-
-
-
-
-
-return user.full_name || 
-
-user.username || 
-
-"کاربر";
-
-
-
-}
-
-catch(e){
-
-
-
-return "کاربر";
-
-
-
-}
-
-
-
-}
-
-
-
-
-
-return "مهمان";
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/*
-==========================
-UPDATE HEADER USER
-
-برای index.html
-==========================
-*/
-
-
-updateUserUI(){
-
-
-
-const name =
+const popup =
 
 document.getElementById(
 
-"username"
+"loginPopup"
 
 );
 
 
 
+if(popup){
 
 
 
-if(name){
+popup.classList.remove(
 
-
-
-name.innerText =
-
-this.getUserName();
-
-
-
-}
-
-
-
-
-
-
-
-
-
-const loginButtons =
-
-document.querySelectorAll(
-
-".guest-only"
-
-);
-
-
-
-
-
-
-
-
-const userButtons =
-
-document.querySelectorAll(
-
-".user-only"
-
-);
-
-
-
-
-
-
-
-if(this.isLoggedIn()){
-
-
-
-loginButtons.forEach(
-
-item=>{
-
-
-item.style.display="none";
-
-
-}
-
-);
-
-
-
-
-
-
-
-userButtons.forEach(
-
-item=>{
-
-
-item.style.display="block";
-
-
-}
-
-);
-
-
-
-
-
-}
-
-else{
-
-
-
-loginButtons.forEach(
-
-item=>{
-
-
-item.style.display="block";
-
-
-}
-
-);
-
-
-
-
-
-
-userButtons.forEach(
-
-item=>{
-
-
-item.style.display="none";
-
-
-}
+"hidden"
 
 );
 
@@ -807,8 +429,41 @@ item.style.display="none";
 
 
 
+return false;
+
+
+
 }
 
+
+
+return true;
+
+
+
+}
+
+
+
+
+
+
+};
+
+
+
+
+
+
+
+/*
+====================================
+GLOBAL
+====================================
+*/
+
+
+window.NightCastAuth = NightCastAuth;
 
 
 
@@ -818,9 +473,9 @@ item.style.display="none";
 
 
 /*
-==========================
-AUTO INIT
-==========================
+====================================
+AUTO START
+====================================
 */
 
 
@@ -828,23 +483,10 @@ document.addEventListener(
 
 "DOMContentLoaded",
 
-async()=>{
+()=>{
 
 
-
-window.userAuth =
-
-new UserAuth();
-
-
-
-
-await userAuth.init();
-
-
-
-
-userAuth.updateUserUI();
+NightCastAuth.init();
 
 
 

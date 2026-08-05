@@ -1,6 +1,6 @@
 /* ==================================================
 
-NightCast Podcasts Manager V1
+NightCast Podcast Manager V2
 
 File:
  /users/js/features/podcasts.js
@@ -8,13 +8,13 @@ File:
 
 Responsibility:
 
-- Load podcasts
+- Fetch podcasts
 - Render cards
+- Infinite scroll
 - Play
-- Download
+- Download permission
+- Favorite
 - Comments
-- Favorites
-- Infinite Scroll
 
 
 Depends:
@@ -23,6 +23,7 @@ api.js
 auth.js
 ui.js
 player.js
+library.js
 
 
 ================================================== */
@@ -34,22 +35,15 @@ const NightCastPodcasts = {
 
     page:1,
 
-
-    limit:10,
-
+    limit:12,
 
     loading:false,
 
-
     finished:false,
-
-
-    container:null,
-
 
     podcasts:[],
 
-
+    container:null,
 
 
 
@@ -65,11 +59,12 @@ const NightCastPodcasts = {
     init(){
 
 
-
         this.container =
 
         document.getElementById(
+
             "podcastList"
+
         );
 
 
@@ -79,7 +74,9 @@ const NightCastPodcasts = {
         if(!this.container){
 
             console.warn(
-                "Podcast container not found"
+
+                "Podcast list not found"
+
             );
 
             return;
@@ -92,14 +89,15 @@ const NightCastPodcasts = {
 
         this.load();
 
-        this.infiniteScroll();
-
+        this.bindScroll();
 
 
 
 
         console.log(
-            "NightCast Podcasts Loaded"
+
+            "NightCast Podcast Manager Ready"
+
         );
 
 
@@ -115,7 +113,7 @@ const NightCastPodcasts = {
 
     /*
     ====================================
-    LOAD PODCASTS
+    LOAD DATA
     ====================================
     */
 
@@ -140,17 +138,9 @@ const NightCastPodcasts = {
 
 
 
-        this.loading = true;
 
+        this.loading=true;
 
-
-
-
-        if(window.NightCastUI){
-
-            NightCastUI.showLoader();
-
-        }
 
 
 
@@ -182,17 +172,19 @@ const NightCastPodcasts = {
         ){
 
 
+
             this.loading=false;
 
 
-            if(window.NightCastUI){
 
-                NightCastUI.toast(
-                    "خطا در دریافت پادکست‌ها",
-                    "error"
-                );
+            NightCastUI.toast(
 
-            }
+                "دریافت پادکست‌ها ناموفق بود",
+
+                "error"
+
+            );
+
 
 
             return;
@@ -205,8 +197,10 @@ const NightCastPodcasts = {
 
 
 
-
         const items =
+
+
+        result.data?.items ||
 
         result.data ||
 
@@ -220,20 +214,21 @@ const NightCastPodcasts = {
 
 
 
-        if(items.length === 0){
+        if(
+
+            items.length===0
+
+        ){
 
 
             this.finished=true;
-
 
             this.loading=false;
 
 
             return;
 
-
         }
-
 
 
 
@@ -266,15 +261,6 @@ const NightCastPodcasts = {
 
 
 
-
-        if(window.NightCastUI){
-
-            NightCastUI.hideLoader();
-
-        }
-
-
-
     },
 
 
@@ -301,22 +287,18 @@ const NightCastPodcasts = {
             podcast=>{
 
 
-                const card =
-
-                this.createCard(
-                    podcast
-                );
-
-
-
                 this.container.appendChild(
-                    card
-                );
 
+                    this.createCard(
+
+                        podcast
+
+                    )
+
+                );
 
 
             }
-
 
         );
 
@@ -334,7 +316,7 @@ const NightCastPodcasts = {
 
     /*
     ====================================
-    CREATE CARD
+    CARD
     ====================================
     */
 
@@ -346,7 +328,9 @@ const NightCastPodcasts = {
         const card =
 
         document.createElement(
+
             "article"
+
         );
 
 
@@ -361,154 +345,164 @@ const NightCastPodcasts = {
 
 
 
-        const cover =
-
-        podcast.cover ||
-
-        "/users/assets/images/default-cover.jpg";
-
-
-
-
 
 
 
         card.innerHTML =
 
 
-        `
 
-        <div class="podcast-cover">
+`
 
+<div class="podcast-cover">
 
-            <img
 
-            src="${cover}"
+<img
 
-            alt="${podcast.title || ''}"
+src="${
 
-            loading="lazy">
+podcast.cover ||
 
+"/users/assets/images/default-cover.jpg"
 
-        </div>
+}"
 
+alt="${podcast.title || ""}"
 
+loading="lazy">
 
 
+</div>
 
-        <div class="podcast-content">
 
 
 
-            <h3>
 
-            ${podcast.title || "بدون عنوان"}
+<div class="podcast-content">
 
-            </h3>
 
 
+<h3>
 
+${podcast.title || "بدون عنوان"}
 
+</h3>
 
-            <p class="podcast-author">
 
-            ${podcast.author || "NightCast"}
 
-            </p>
 
+<p class="podcast-author">
 
+${podcast.author || "NightCast"}
 
+</p>
 
 
 
-            <div class="podcast-actions">
 
 
+<div class="podcast-actions">
 
 
 
-                <button
+<button class="play-btn">
 
-                class="play-btn">
+<i class="fa-solid fa-play"></i>
 
-                <i class="fa-solid fa-play"></i>
+پخش
 
-                پخش
+</button>
 
-                </button>
 
 
 
 
+<button class="download-btn">
 
+<i class="fa-solid fa-download"></i>
 
-                <button
+دانلود
 
-                class="download-btn">
+</button>
 
-                <i class="fa-solid fa-download"></i>
 
-                دانلود
 
-                </button>
 
 
+<button class="comment-btn">
 
+<i class="fa-solid fa-comment"></i>
 
+نظر
 
+</button>
 
-                <button
 
-                class="comment-btn">
 
-                <i class="fa-solid fa-comment"></i>
 
-                نظر
 
-                </button>
+<button class="favorite-btn">
 
+<i class="fa-regular fa-heart"></i>
 
+</button>
 
 
 
 
-                <button
+</div>
 
-                class="favorite-btn">
 
-                <i class="fa-regular fa-heart"></i>
 
-                </button>
 
+</div>
 
+`;
 
 
 
 
-            </div>
 
 
 
 
-        </div>
 
+this.events(
 
+    card,
 
-        `;
+    podcast
 
+);
 
 
 
 
 
+return card;
 
 
-        /*
-        ================================
-        EVENTS
-        ================================
-        */
 
+},
+
+ 
+
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    EVENTS
+    ====================================
+    */
+
+
+    events(card,podcast){
 
 
 
@@ -516,15 +510,18 @@ const NightCastPodcasts = {
 
         card
         .querySelector(".play-btn")
-        .onclick = ()=>{
+        .onclick=()=>{
 
 
             this.play(
+
                 podcast
+
             );
 
 
         };
+
 
 
 
@@ -534,15 +531,18 @@ const NightCastPodcasts = {
 
         card
         .querySelector(".download-btn")
-        .onclick = ()=>{
+        .onclick=()=>{
 
 
             this.download(
+
                 podcast
+
             );
 
 
         };
+
 
 
 
@@ -552,15 +552,21 @@ const NightCastPodcasts = {
 
         card
         .querySelector(".comment-btn")
-        .onclick = ()=>{
+        .onclick=()=>{
 
 
-            this.comments(
-                podcast.id
-            );
+            window.location.href =
+
+            "/users/comments.html?id="
+
+            +
+
+            podcast.id;
+
 
 
         };
+
 
 
 
@@ -570,23 +576,19 @@ const NightCastPodcasts = {
 
         card
         .querySelector(".favorite-btn")
-        .onclick = (e)=>{
+        .onclick=(e)=>{
 
 
             this.favorite(
+
                 podcast.id,
+
                 e.currentTarget
+
             );
 
 
         };
-
-
-
-
-
-
-        return card;
 
 
 
@@ -613,25 +615,31 @@ const NightCastPodcasts = {
 
         if(
 
-            window.NightCastPlayer
+            !window.NightCastPlayer
 
         ){
 
-
-
-            NightCastPlayer.load(
-
-                podcast
-
-            );
-
-
-
-            NightCastPlayer.play();
-
-
+            return;
 
         }
+
+
+
+
+
+
+
+        NightCastPlayer.load(
+
+            podcast
+
+        );
+
+
+
+        NightCastPlayer.play();
+
+
 
 
 
@@ -648,19 +656,18 @@ const NightCastPodcasts = {
     /*
     ====================================
     DOWNLOAD
+
+    Login Required
+
     ====================================
     */
 
 
-    download(podcast){
-
-
+    async download(podcast){
 
 
 
         if(
-
-            !window.NightCastAuth ||
 
             !NightCastAuth.isLoggedIn()
 
@@ -668,25 +675,22 @@ const NightCastPodcasts = {
 
 
 
-            if(window.NightCastUI){
+            NightCastUI.toast(
+
+                "برای دانلود ابتدا وارد شوید",
+
+                "warning"
+
+            );
 
 
-                NightCastUI.toast(
 
-                    "برای دانلود ابتدا وارد شوید",
-
-                    "warning"
-
-                );
-
-
-            }
+            NightCastAuth.openLogin();
 
 
 
             return;
 
-
         }
 
 
@@ -696,50 +700,47 @@ const NightCastPodcasts = {
 
 
 
-        if(window.NightCastPlayer){
+        const result =
+
+        await NightCastAPI.download(
+
+            podcast.id
+
+        );
 
 
-            NightCastPlayer.currentPodcast =
-
-            podcast;
 
 
-            NightCastPlayer.download();
+
+
+
+        if(result.success){
+
+
+            window.location.href =
+
+            result.url;
 
 
 
         }
 
+        else{
 
 
-    },
+            NightCastUI.toast(
+
+                result.message ||
+
+                "دانلود امکان پذیر نیست",
+
+                "error"
+
+            );
 
 
+        }
 
-
-
-
-
-
-
-    /*
-    ====================================
-    COMMENTS
-    ====================================
-    */
-
-
-    comments(id){
-
-
-
-        window.location.href =
-
-        "/users/comments.html?id="
-
-        +
-
-        id;
 
 
 
@@ -756,6 +757,9 @@ const NightCastPodcasts = {
     /*
     ====================================
     FAVORITE
+
+    Local First
+
     ====================================
     */
 
@@ -764,12 +768,14 @@ const NightCastPodcasts = {
 
 
 
-        let favorites =
+        let list =
 
         JSON.parse(
 
             localStorage.getItem(
+
                 "NightCastFavorites"
+
             )
 
             ||
@@ -785,18 +791,20 @@ const NightCastPodcasts = {
 
         if(
 
-            favorites.includes(id)
+            list.includes(id)
 
         ){
 
 
-            favorites =
 
-            favorites.filter(
+            list =
 
-                item=>item!==id
+            list.filter(
+
+                x=>x!==id
 
             );
+
 
 
             button.innerHTML =
@@ -804,12 +812,14 @@ const NightCastPodcasts = {
             `<i class="fa-regular fa-heart"></i>`;
 
 
+
         }
 
         else{
 
 
-            favorites.push(id);
+            list.push(id);
+
 
 
             button.innerHTML =
@@ -824,14 +834,11 @@ const NightCastPodcasts = {
 
 
 
-
         localStorage.setItem(
 
             "NightCastFavorites",
 
-            JSON.stringify(
-                favorites
-            )
+            JSON.stringify(list)
 
         );
 
@@ -854,7 +861,7 @@ const NightCastPodcasts = {
     */
 
 
-    infiniteScroll(){
+    bindScroll(){
 
 
 
@@ -865,30 +872,23 @@ const NightCastPodcasts = {
             ()=>{
 
 
+                if(
 
-                const bottom =
+                    window.innerHeight +
 
+                    window.scrollY
 
-                window.innerHeight +
+                    >=
 
-                window.scrollY >=
+                    document.body.offsetHeight - 600
 
-
-                document.body.offsetHeight - 500;
-
-
-
-
-
-                if(bottom){
+                ){
 
 
                     this.load();
 
 
                 }
-
-
 
 
 
@@ -903,9 +903,7 @@ const NightCastPodcasts = {
 
 
 
-
 };
-
 
 
 

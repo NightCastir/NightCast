@@ -1,1104 +1,1448 @@
 /* ==================================================
    NightCast User Podcasts Manager
    File: /users/js/podcasts.js
-
    Version: 2.0
-   Production Ready
 ================================================== */
 
 
 const NightCastPodcasts = {
 
 
-    page: 1,
 
+page: 1,
 
-    limit: 5,
 
+limit: 5,
 
-    podcasts: [],
 
+podcasts: [],
 
-    hasMore: true,
 
+total: 0,
 
-    loading: false,
 
+hasMore: true,
 
 
-    /*
-    ====================================
-    INIT
-    ====================================
-    */
+loading: false,
 
 
-    async init(){
 
 
-        await this.load(true);
 
+/*
+====================================
+INIT
+====================================
+*/
 
-    },
 
+async init(){
 
 
+this.reset();
 
 
-    /*
-    ====================================
-    LOAD PODCASTS
+await this.load();
 
-    append:
-    true  = اضافه کردن
-    false = جایگزینی
-    ====================================
-    */
 
 
-    async load(reset=false){
+},
 
 
 
-        if(this.loading){
 
-            return;
 
-        }
 
 
+/*
+====================================
+LOAD PODCASTS
+====================================
+*/
 
-        if(!this.hasMore && !reset){
 
-            NightCastUI.toast(
+async load(){
 
-                "پادکست دیگری وجود ندارد",
 
-                "info"
 
-            );
+if(this.loading){
 
-            return;
+return;
 
-        }
+}
 
 
 
+if(!this.hasMore && this.page !== 1){
 
-        this.loading = true;
+return;
 
+}
 
 
-        NightCastUI.showLoader();
 
+this.loading = true;
 
 
 
+NightCastUI.showLoader();
 
-        try{
 
 
 
-            const result =
 
-            await NightCastAPI.getPodcasts(
+try{
 
-                this.page,
 
-                this.limit
 
-            );
+const result =
 
+await NightCastAPI.getPodcasts(
 
+this.page,
 
+this.limit
 
+);
 
 
-            if(!result || !result.success){
 
 
 
-                throw new Error(
 
-                    result?.message ||
+console.log(
 
-                    "خطا در دریافت پادکست‌ها"
+"NightCast Podcasts API:",
 
-                );
+result
 
+);
 
-            }
 
 
 
 
 
 
-            const items =
+if(result.success){
 
-            result.podcasts || [];
 
 
+this.total =
 
+result.total || 0;
 
 
 
-            if(reset){
 
 
-                this.podcasts = items;
+this.hasMore =
 
+result.hasMore || false;
 
-            }
 
-            else{
 
 
-                this.podcasts.push(
 
-                    ...items
 
-                );
 
+const newItems =
 
-            }
+result.podcasts || [];
 
 
 
 
 
 
-            this.hasMore =
 
-            result.hasMore !== undefined
+/*
 
-            ?
+صفحه اول:
 
-            result.hasMore
+جایگزینی کامل
 
-            :
 
-            items.length === this.limit;
+صفحات بعد:
 
+اضافه کردن به لیست قبلی
 
+*/
 
 
+if(this.page === 1){
 
 
-            this.render();
+this.podcasts = newItems;
 
 
+}
 
+else{
 
 
+this.podcasts.push(
 
-        }
+...newItems
 
-        catch(error){
+);
 
 
+}
 
-            console.error(
 
-                "Podcast Load Error:",
 
-                error
 
-            );
 
 
 
+this.render();
 
-            NightCastUI.error(
 
-                error.message
 
-                ||
 
-                "خطا در دریافت اطلاعات"
+this.updateLoadMore();
 
-            );
 
 
 
-        }
+}
 
-        finally{
+else{
 
 
 
-            this.loading=false;
+NightCastUI.error(
 
+result.message ||
 
+"خطا در دریافت پادکست‌ها"
 
-            NightCastUI.hideLoader();
+);
 
 
 
-        }
+}
 
 
 
 
-    },
+
+}
+
+catch(error){
+
+
+
+console.error(
+
+error
+
+);
+
+
+
+NightCastUI.error(
+
+"خطا در ارتباط با سرور"
+
+);
+
+
+
+}
+
+
+
+finally{
+
+
+
+this.loading=false;
+
+
+
+NightCastUI.hideLoader();
+
+
+
+}
+
+
+
+},
+
+
+
+
+
+
+
+/*
+====================================
+RENDER
+====================================
+*/
+
+
+render(){
+
+
+
+const container =
+
+document.getElementById(
+
+"podcastList"
+
+);
+
+
+
+
+
+if(!container){
+
+return;
+
+}
+
+
+
+
+
+container.innerHTML="";
+
+
+
+
+
+
+if(
+
+this.podcasts.length === 0
+
+){
+
+
+
+container.innerHTML =
+
+`
+
+<div class="empty-state">
+
+هنوز پادکستی منتشر نشده است
+
+</div>
+
+`;
+
+
+
+return;
+
+
+
+}
+
+
+
+
+
+
+
+this.podcasts.forEach(
+
+podcast => {
+
+
+
+container.innerHTML +=
+
+this.card(podcast);
+
+
+
+}
+
+);
+
+
+
+},
+
+
+
+
+
+
+
+/*
+====================================
+CARD
+====================================
+*/
+
+
+card(p){
+
+
+
+return `
+
+
+
+<div class="podcast-card"
+
+data-id="${p.id}">
+
+
+
+
+
+
+<div class="cover-wrapper">
+
+
+
+<img
+
+class="podcast-cover"
+
+src="${
+
+p.cover_url ||
+
+'/users/assets/default-cover.jpg'
+
+}"
+
+onerror="this.src='/users/assets/default-cover.jpg'"
+
+>
+
+
+
+
+
+<div class="episode-badge">
+
+قسمت ${
+
+p.episode_number || 1
+
+}
+
+</div>
+
+
+
+
+
+<div class="play-overlay"
+
+onclick="NightCastPodcasts.play(${p.id})">
+
+▶
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+<div class="podcast-info">
+
+
+
+
+
+
+<h3 class="podcast-title">
+
+${
+
+p.title || "بدون عنوان"
+
+}
+
+</h3>
+
+
+
+
+
+
+
+<div class="book-info">
+
+📚 ${
+
+p.book_name ||
+
+"بدون کتاب"
+
+}
+
+</div>
+
+
+
+
+
+
+
+<div class="author-info">
+
+✍ ${
+
+p.author_name ||
+
+"نامشخص"
+
+}
+
+</div>
+
+
+
+
+
+
+
+
+<div class="meta">
+
+
+<span>
+
+🎧 ${
+
+p.listen_count || 0
+
+}
+
+</span>
+
+
+
+<span>
+
+⏱ ${
+
+NightCastUI.formatTime(
+
+p.duration_seconds || 0
+
+)
+
+}
+
+</span>
+
+
+
+</div>
+
+
+
+
+
+<p class="podcast-summary">
+
+${
+
+p.summary ||
+
+p.description ||
+
+"بدون توضیحات"
+
+}
+
+</p>
+
+
+
+
+
+
+
+<div class="podcast-actions">
+
+
+
+
+
+<button
+
+class="play-btn"
+
+onclick="NightCastPodcasts.play(${p.id})">
+
+▶ پخش
+
+</button>
+
+
+
+
+
+
+
+<button
+
+class="download-btn"
+
+onclick="NightCastPodcasts.download(${p.id})">
+
+⬇ دانلود
+
+</button>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+`;
+
+
+
+},
+
+
+
+
+
+
+
+
+
+
+
+/*
+====================================
+PLAY PODCAST
+====================================
+*/
+
+
+async play(id){
+
+
+
+const podcast =
+
+this.podcasts.find(
+
+item => item.id == id
+
+);
+
+
+
+
+
+if(!podcast){
+
+
+NightCastUI.error(
+
+"پادکست پیدا نشد"
+
+);
+
+
+return;
+
+
+}
+
+
+
+
+
+
+
+if(
+
+window.NightCastPlayer &&
+
+typeof NightCastPlayer.play === "function"
+
+){
+
+
+
+NightCastPlayer.play(
+
+podcast
+
+);
+
+
+
+}
+
+else{
+
+
+
+NightCastUI.error(
+
+"Player آماده نیست"
+
+);
+
+
+
+}
+
+
+
+},
+
+
+
+
+
+
+
+/*
+====================================
+DOWNLOAD
+====================================
+*/
+
+
+async download(id){
+
+
+
+try{
+
+
+
+NightCastUI.showLoader();
+
+
+
+
+
+const result =
+
+await NightCastAPI.downloadPodcast(
+
+id
+
+);
+
+
+
+
+
+NightCastUI.hideLoader();
+
+
+
+
+
+
+
+
+if(
+
+result.success &&
+
+result.download
+
+){
+
+
+
+const url =
+
+result.download.audio_url;
+
+
+
+
+
+
+if(url){
+
+
+
+window.open(
+
+url,
+
+"_blank"
+
+);
+
+
+
+
+
+NightCastUI.success(
+
+"دانلود شروع شد"
+
+);
+
+
+
+}
+
+else{
+
+
+
+NightCastUI.error(
+
+"آدرس فایل صوتی موجود نیست"
+
+);
+
+
+
+}
+
+
+
+
+
+}
+
+else{
+
+
+
+NightCastUI.error(
+
+result.message ||
+
+"دانلود امکان پذیر نیست"
+
+);
+
+
+
+}
+
+
+
+}
+
+catch(error){
+
+
+
+console.error(error);
+
+
+
+NightCastUI.error(
+
+"خطا در دانلود"
+
+);
+
+
+
+}
+
+
+
+},
+
+
+
+
+
+
+
+/*
+====================================
+NEXT PAGE / LOAD MORE
+====================================
+*/
+
+
+async nextPage(){
+
+
+
+
+
+if(
+
+this.loading
+
+){
+
+
+return;
+
+
+}
+
+
+
+
+
+
+if(
+
+!this.hasMore
+
+){
+
+
+
+NightCastUI.info(
+
+"پادکست بیشتری وجود ندارد"
+
+);
+
+
+
+return;
+
+
+
+}
+
+
+
+
+
+
+
+this.page++;
+
+
+
+
+
+
+await this.load();
+
+
+
+
+},
+
+
+
+
+
+
+
+/*
+====================================
+LOAD MORE BUTTON
+====================================
+*/
+
+
+updateLoadMore(){
+
+
+
+const btn =
+
+document.getElementById(
+
+"loadMoreBtn"
+
+);
+
+
+
+
+
+if(!btn){
+
+return;
+
+}
+
+
+
+
+
+if(
+
+this.hasMore
+
+){
+
+
+
+btn.style.display = "block";
+
+
+btn.disabled = false;
+
+
+
+btn.innerHTML =
+
+"نمایش پادکست‌های بیشتر";
+
+
+
+}
+
+else{
+
+
+
+btn.style.display="none";
+
+
+
+}
+
+
+
+},
+
+
+
+
+
+
+
+/*
+====================================
+RESET
+====================================
+*/
+
+
+reset(){
+
+
+
+this.page = 1;
+
+
+
+this.podcasts = [];
+
+
+
+this.total = 0;
+
+
+
+this.hasMore = true;
+
+
+
+},
    
 
-    /*
-    ====================================
-    RENDER PODCAST CARDS
-    ====================================
-    */
+/*
+====================================
+SEARCH
+====================================
+*/
 
 
-    render(){
+search(keyword){
 
 
 
-        const container =
+keyword =
 
-        document.getElementById(
+keyword.trim().toLowerCase();
 
-            "podcastList"
 
-        );
 
 
 
-        if(!container){
+if(!keyword){
 
-            console.warn(
 
-                "podcastList not found"
 
-            );
+this.render();
 
-            return;
 
-        }
 
+return;
 
 
 
+}
 
 
-        if(this.podcasts.length===0){
 
 
 
-            container.innerHTML = `
 
-            <div class="empty-state">
+const filtered =
 
-                هنوز پادکستی منتشر نشده است
+this.podcasts.filter(
 
-            </div>
+p=>{
 
-            `;
 
 
+return (
 
-            return;
+(p.title || "")
 
-        }
+.toLowerCase()
 
+.includes(keyword)
 
+||
 
 
 
+(p.book_name || "")
 
+.toLowerCase()
 
-        container.innerHTML =
+.includes(keyword)
 
-        this.podcasts
+||
 
-        .map(
 
-            podcast =>
 
-            this.card(podcast)
+(p.author_name || "")
 
-        )
+.toLowerCase()
 
-        .join("");
+.includes(keyword)
 
 
 
+);
 
 
 
+}
 
-        this.updateLoadMore();
+);
 
 
 
 
-    },
 
 
+const container =
 
+document.getElementById(
 
+"podcastList"
 
+);
 
 
 
-    /*
-    ====================================
-    UPDATE LOAD MORE BUTTON
-    ====================================
-    */
 
 
-    updateLoadMore(){
+if(!container){
 
+return;
 
+}
 
-        const btn =
 
-        document.getElementById(
 
-            "loadMoreBtn"
 
-        );
 
+container.innerHTML="";
 
 
-        if(!btn){
 
-            return;
 
-        }
 
 
+if(filtered.length===0){
 
 
 
+container.innerHTML=
 
-        if(this.hasMore){
+`
 
+<div class="empty-state">
 
+نتیجه‌ای پیدا نشد
 
-            btn.style.display="inline-block";
+</div>
 
-            btn.disabled=false;
+`;
 
 
 
-            btn.innerHTML=
+return;
 
-            "نمایش پادکست‌های بیشتر";
 
 
+}
 
-        }
 
-        else{
 
 
 
-            btn.style.display="none";
 
 
-        }
+filtered.forEach(
 
+podcast=>{
 
 
-    },
+container.innerHTML +=
 
+this.card(podcast);
 
 
 
+}
 
+);
 
 
 
+},
 
-    /*
-    ====================================
-    ESCAPE HTML
 
-    Security
-    ====================================
-    */
 
 
-    escape(value){
 
 
 
-        if(value===null || value===undefined){
+/*
+====================================
+CATEGORY FILTER
+====================================
+*/
 
-            return "";
 
-        }
+filterCategory(category){
 
 
 
-        return String(value)
+if(
 
-        .replace(
+category === "all"
 
-            /&/g,
+){
 
-            "&amp;"
 
-        )
 
-        .replace(
+this.render();
 
-            /</g,
 
-            "&lt;"
 
-        )
+return;
 
-        .replace(
 
-            />/g,
 
-            "&gt;"
+}
 
-        )
 
-        .replace(
 
-            /"/g,
 
-            "&quot;"
 
-        )
 
-        .replace(
+const filtered =
 
-            /'/g,
+this.podcasts.filter(
 
-            "&#039;"
+p=>{
 
-        );
 
 
+return (
 
-    },
+p.category_name &&
 
+p.category_name
 
+.toLowerCase()
 
+.includes(
 
+category.toLowerCase()
 
+)
 
+);
 
 
 
-    /*
-    ====================================
-    CARD TEMPLATE
-    ====================================
-    */
+}
 
+);
 
-    card(p){
 
 
 
-        const title =
 
-        this.escape(
 
-            p.title || "بدون عنوان"
 
-        );
+const container =
 
+document.getElementById(
 
+"podcastList"
 
+);
 
-        const summary =
 
-        this.escape(
 
-            p.summary ||
 
-            "بدون توضیحات"
 
-        );
+if(!container){
 
+return;
 
+}
 
 
 
-        const cover =
 
-        p.cover_url ||
 
-        "/users/assets/default-cover.jpg";
+container.innerHTML="";
 
 
 
 
 
 
+filtered.forEach(
 
-        return `
+podcast=>{
 
 
 
-        <article class="podcast-card">
+container.innerHTML +=
 
+this.card(podcast);
 
 
 
+}
 
+);
 
-            <div class="cover-wrapper">
 
 
+},
 
-                <img
 
-                class="podcast-cover"
 
-                src="${cover}"
 
-                loading="lazy"
 
-                onerror="this.src='/users/assets/default-cover.jpg'"
 
-                >
 
+/*
+====================================
+INFINITE SCROLL READY
+====================================
+*/
 
 
+enableInfiniteScroll(){
 
 
 
-                <span class="episode-badge">
+window.addEventListener(
 
-                قسمت ${
+"scroll",
 
-                    p.episode_number || 1
+()=>{
 
-                }
 
-                </span>
 
 
 
-            </div>
+const nearBottom =
 
+window.innerHeight +
 
+window.scrollY >=
 
+document.body.offsetHeight - 300;
 
 
 
 
 
 
-            <div class="podcast-info">
 
+if(
 
+nearBottom &&
 
+this.hasMore &&
 
+!this.loading
 
-                <h3 class="podcast-title">
+){
 
-                    ${title}
 
-                </h3>
 
+this.nextPage();
 
 
 
+}
 
 
 
-                <div class="meta">
 
 
+}
 
-                    <span>
+);
 
-                    🎧 ${
 
-                        p.listen_count || 0
 
-                    }
+},
 
-                    </span>
 
-
-
-
-
-                    <span>
-
-                    ⏱ ${
-
-                    NightCastUI.formatTime(
-
-                        p.duration_seconds || 0
-
-                    )
-
-                    }
-
-                    </span>
-
-
-
-                </div>
-
-
-
-
-
-
-
-
-
-                <p class="podcast-summary">
-
-                    ${summary}
-
-                </p>
-
-
-
-
-
-
-
-
-
-                <div class="podcast-actions">
-
-
-
-
-
-                    <button
-
-                    class="play-btn"
-
-                    onclick="NightCastPodcasts.play(${p.id})"
-
-                    >
-
-                    ▶ پخش
-
-                    </button>
-
-
-
-
-
-
-
-
-                    <button
-
-                    class="download-btn"
-
-                    onclick="NightCastPodcasts.download(${p.id})"
-
-                    >
-
-                    ⬇ دانلود
-
-                    </button>
-
-
-
-
-
-                </div>
-
-
-
-
-
-
-
-            </div>
-
-
-
-
-
-        </article>
-
-
-
-        `;
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    PLAY PODCAST
-    ====================================
-    */
-
-
-    play(id){
-
-
-
-        const podcast =
-
-        this.podcasts.find(
-
-            item =>
-
-            item.id == id
-
-        );
-
-
-
-
-
-        if(!podcast){
-
-
-
-            NightCastUI.error(
-
-                "پادکست پیدا نشد"
-
-            );
-
-
-            return;
-
-        }
-
-
-
-
-
-
-        if(window.NightCastPlayer){
-
-
-
-            NightCastPlayer.play(
-
-                podcast
-
-            );
-
-
-        }
-
-        else{
-
-
-
-            NightCastUI.error(
-
-                "Player آماده نیست"
-
-            );
-
-
-        }
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    DOWNLOAD PODCAST
-    ====================================
-    */
-
-
-    async download(id){
-
-
-
-        try{
-
-
-
-            NightCastUI.showLoader();
-
-
-
-
-            const result =
-
-            await NightCastAPI.downloadPodcast(
-
-                id
-
-            );
-
-
-
-
-
-
-            if(
-
-                result.success &&
-
-                result.download &&
-
-                result.download.audio_url
-
-            ){
-
-
-
-                window.open(
-
-                    result.download.audio_url,
-
-                    "_blank"
-
-                );
-
-
-
-
-                NightCastUI.success(
-
-                    "دانلود شروع شد"
-
-                );
-
-
-
-            }
-
-            else{
-
-
-
-                NightCastUI.error(
-
-                    result.message ||
-
-                    "دانلود امکان پذیر نیست"
-
-                );
-
-
-            }
-
-
-
-        }
-
-        catch(error){
-
-
-
-            NightCastUI.error(
-
-                "خطا در دانلود"
-
-            );
-
-
-        }
-
-        finally{
-
-
-            NightCastUI.hideLoader();
-
-
-        }
-
-
-
-    },
-
-    /*
-    ====================================
-    NEXT PAGE
-    ====================================
-    */
-
-
-    async nextPage(){
-
-
-
-        if(
-
-            this.loading ||
-
-            !this.hasMore
-
-        ){
-
-            return;
-
-        }
-
-
-
-
-
-
-        this.page++;
-
-
-
-
-        await this.load(false);
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    RESET LIST
-    ====================================
-    */
-
-
-    async reset(){
-
-
-
-        this.page = 1;
-
-
-
-        this.hasMore = true;
-
-
-
-        this.podcasts = [];
-
-
-
-        await this.load(true);
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    INFINITE SCROLL READY
-
-    فعال سازی در آینده
-    ====================================
-    */
-
-
-    enableInfiniteScroll(){
-
-
-
-        window.addEventListener(
-
-            "scroll",
-
-            ()=>{
-
-
-
-                if(this.loading){
-
-                    return;
-
-                }
-
-
-
-
-
-
-                const scrollPosition =
-
-                window.innerHeight +
-
-                window.scrollY;
-
-
-
-
-
-                const pageHeight =
-
-                document.body.offsetHeight;
-
-
-
-
-
-
-                if(
-
-                    scrollPosition >=
-
-                    pageHeight - 300
-
-                ){
-
-
-
-                    this.nextPage();
-
-
-
-                }
-
-
-
-
-
-            }
-
-        );
-
-
-
-    }
 
 
 
 
 
 };
+
 
 
 
@@ -1128,7 +1472,7 @@ NightCastPodcasts;
 
 /*
 ====================================
-START APPLICATION
+START
 ====================================
 */
 
@@ -1140,13 +1484,144 @@ document.addEventListener(
 ()=>{
 
 
-    NightCastPodcasts.init();
 
 
-    // فعلا خاموش است
-    // بعد از تست فعال می‌کنیم
 
-    // NightCastPodcasts.enableInfiniteScroll();
+NightCastPodcasts.init();
+
+
+
+
+
+NightCastPodcasts.enableInfiniteScroll();
+
+
+
+
+
+
+const search =
+
+document.getElementById(
+
+"searchInput"
+
+);
+
+
+
+
+
+
+if(search){
+
+
+
+search.addEventListener(
+
+"input",
+
+e=>{
+
+
+
+NightCastPodcasts.search(
+
+e.target.value
+
+);
+
+
+
+}
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+document.querySelectorAll(
+
+".category-btn"
+
+)
+
+.forEach(
+
+btn=>{
+
+
+
+btn.addEventListener(
+
+"click",
+
+()=>{
+
+
+
+document
+
+.querySelectorAll(
+
+".category-btn"
+
+)
+
+.forEach(
+
+b=>
+
+b.classList.remove(
+
+"active"
+
+)
+
+);
+
+
+
+
+
+
+
+btn.classList.add(
+
+"active"
+
+);
+
+
+
+
+
+
+NightCastPodcasts.filterCategory(
+
+btn.dataset.category
+
+);
+
+
+
+}
+
+);
+
+
+
+}
+
+);
+
 
 
 });

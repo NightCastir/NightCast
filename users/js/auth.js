@@ -43,7 +43,7 @@ const NightCastAuth = {
 
         await this.checkSession();
 
-
+this.bindGuestLogin();
 
         return result;
 

@@ -9,157 +9,30 @@
 
 
 <title>
-NightCast | رادیو نایت‌کست
+رادیو NightCast
 </title>
 
 
-<link rel="stylesheet" href="users/css/core.css">
-
-<link rel="stylesheet" href="users/css/layout.css">
-
-<link rel="stylesheet" href="users/css/components.css">
-
-<link rel="stylesheet" href="users/css/responsive.css">
-
-
-<!-- ==========================
-SEO META
-========================== -->
-
-
 <meta name="description"
-content="NightCast - رادیویی برای شنیدن کتاب‌ها، تجربه‌ها و آموزش‌های رشد فردی">
+content="رادیو NightCast - پادکست‌های صوتی آموزشی، تجربه و کتاب">
 
 
+<!-- USER CSS -->
 
-<meta name="keywords"
-content="NightCast, پادکست, کتاب صوتی, رادیو, آموزش, تجربه">
+<link rel="stylesheet" href="users/css/user-core.css">
 
+<link rel="stylesheet" href="users/css/user-layout.css">
 
+<link rel="stylesheet" href="users/css/user-components.css">
 
-<meta name="author"
-content="NightCast">
+<link rel="stylesheet" href="users/css/user-responsive.css">
 
 
-
-
-
-
-
-<!-- ==========================
-MOBILE APP READY
-========================== -->
-
-
-<meta name="theme-color"
-content="#111827">
-
-
-
-<meta name="mobile-web-app-capable"
-content="yes">
-
-
-
-<meta name="apple-mobile-web-app-capable"
-content="yes">
-
-
-
-<meta name="apple-mobile-web-app-status-bar-style"
-content="black">
-
-
-
-
-
-
-
-<!-- ==========================
-OPEN GRAPH
-========================== -->
-
-
-<meta property="og:title"
-content="NightCast | رادیو نایت‌کست">
-
-
-
-<meta property="og:description"
-content="تجربه‌ها، کتاب‌ها و آموزش‌ها در قالب پادکست">
-
-
-
-<meta property="og:type"
-content="website">
-
-
-
-<meta property="og:url"
-content="https://www.nightcast.ir">
-
-
-
-<meta property="og:image"
-content="https://www.nightcast.ir/assets/images/nightcast-cover.png">
-
-
-
-
-
-
-
-<!-- ==========================
-PWA (Future APK)
-فعلا غیرفعال
-========================== -->
-
-<!--
-
-<link rel="manifest"
-href="manifest.json">
-
-
-<link rel="apple-touch-icon"
-href="assets/images/icon.png">
-
-
--->
-
-
-
-
-
-
-
-<!-- ==========================
-FUTURE SERVICE WORKER
-========================== -->
-
-
-<!--
-
-<script>
-
-if(
-"serviceWorker" in navigator
-){
-
-navigator.serviceWorker.register(
-"/service-worker.js"
-);
-
-}
-
-</script>
-
-
--->
 </head>
 
 
+<body data-page="home">
 
-<body>
 
 
 <!-- ==========================
@@ -167,13 +40,11 @@ GLOBAL LOADER
 ========================== -->
 
 
-<div id="globalLoader">
+<div id="globalLoader"
+class="loader-container">
 
 
-<div class="loader-box">
-
-
-<div class="spinner"></div>
+<div class="loader"></div>
 
 
 <p>
@@ -184,19 +55,6 @@ GLOBAL LOADER
 </div>
 
 
-</div>
-
-
-
-
-
-
-<!-- ==========================
-APP
-========================== -->
-
-
-<div id="app">
 
 
 
@@ -210,14 +68,11 @@ HEADER
 
 <div class="logo">
 
-
 <span>
 ◉
 </span>
 
-
 NightCast
-
 
 </div>
 
@@ -228,19 +83,26 @@ NightCast
 <nav>
 
 
-<a href="#">
+<a href="#home">
+
 خانه
+
 </a>
 
 
 <a href="#podcasts">
+
 پادکست‌ها
+
 </a>
 
 
 <a href="#about">
+
 درباره ما
+
 </a>
+
 
 
 </nav>
@@ -253,32 +115,39 @@ NightCast
 <div class="header-actions">
 
 
+<button
+id="btnLogin"
+class="btn btn-primary">
 
-<button 
-id="loginBtn"
-class="btn-login">
 
-ورود / ثبت‌نام
+ورود / ثبت نام
+
 
 </button>
-
 
 
 </div>
 
 
 
-
 </header>
-  <!-- ==========================
-HERO SECTION
+
+
+
+
+
+<!-- ==========================
+MAIN
 ========================== -->
 
 
-<section class="hero" id="about">
+<main id="home">
 
 
-<div class="hero-content">
+
+<!-- HERO -->
+
+<section class="hero">
 
 
 <h1>
@@ -291,43 +160,9 @@ HERO SECTION
 
 <p>
 
-شنیدن تجربه‌ها، کتاب‌ها و آموزش‌هایی برای رشد فردی و زندگی بهتر
+صدای تجربه، کتاب و یادگیری
 
 </p>
-
-
-
-
-<button
-
-class="btn-primary"
-
-id="startListeningBtn">
-
-شروع شنیدن
-
-</button>
-
-
-
-</div>
-
-
-
-
-
-<div class="hero-image">
-
-
-<img
-
-src="assets/images/nightcast-cover.png"
-
-alt="NightCast">
-
-
-</div>
-
 
 
 
@@ -337,26 +172,13 @@ alt="NightCast">
 
 
 
-
-
-
-
 <!-- ==========================
-PODCAST SECTION
+PODCAST LIST
 ========================== -->
 
 
-<section
-
-class="podcast-section"
-
-id="podcasts">
-
-
-
-
-
-<div class="section-header">
+<section id="podcasts"
+class="podcast-section">
 
 
 
@@ -368,235 +190,91 @@ id="podcasts">
 
 
 
-<p>
-
-قسمت‌های جدید رادیو NightCast
-
-</p>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<!-- ==========================
-PODCAST LIST
-========================== -->
-
-
-<div
-
-id="podcastContainer"
-
-class="podcast-container">
-
-
+<div id="podcastContainer"
+class="podcast-grid">
 
 
 
 <!--
 
 Podcast Cards
-
-Dynamic Load From API
+با JS ساخته می‌شوند
 
 -->
 
 
 
-
-
-
-
 </div>
 
 
 
 
 
-
-
-
-
-<!-- ==========================
-INFINITE SCROLL LOADER
-========================== -->
-
-
-<div
-
-id="loadMoreLoader"
-
-class="load-more-loader"
-
+<div id="loadingMore"
+class="loading-more"
 style="display:none;">
 
-
-
-<div class="spinner small"></div>
-
-
-
-<p>
 
 در حال دریافت پادکست‌های بیشتر...
 
-</p>
-
-
 
 </div>
-
-
-
-
-
-
-
-
-
-<!-- ==========================
-END MESSAGE
-========================== -->
-
-
-<div
-
-id="endPodcastMessage"
-
-class="end-message"
-
-style="display:none;">
-
-
-
-تمام پادکست‌ها نمایش داده شد
-
-
-
-</div>
-
 
 
 
 
 </section>
 
-  <!-- ==========================
-PODCAST CARD TEMPLATE
-(DYNAMIC)
+
+
+
+
+</main>
+<!-- ==========================
+FIXED AUDIO PLAYER
 ========================== -->
 
 
-<template id="podcastTemplate">
+<div id="audioPlayer"
+class="audio-player">
 
 
-
-<article class="podcast-card">
-
+<div class="player-info">
 
 
-
-
-<div class="podcast-cover">
-
-
-<img
-
-class="podcast-image"
-
+<img id="playerCover"
 src=""
+alt="cover">
 
-alt="Podcast Cover">
+
+<div>
+
+
+<h4 id="playerTitle">
+
+NightCast
+
+</h4>
+
+
+<span id="playerEpisode">
+
+انتخاب پادکست
+
+</span>
 
 
 </div>
 
 
-
-
-
-
-
-
-<div class="podcast-content">
-
-
-
-<h3 class="podcast-title">
-
-عنوان پادکست
-
-</h3>
-
-
-
-
-
-
-<div class="podcast-meta">
-
-
-
-<span class="book-name">
-
-📚 کتاب
-
-</span>
-
-
-
-<span class="author-name">
-
-✍ نویسنده
-
-</span>
-
-
-
-<span class="episode-number">
-
-قسمت
-
-</span>
-
-
-
 </div>
-
-
-
-
-
-
-
-
-
-<p class="podcast-summary">
-
-
-خلاصه پادکست
-
-</p>
-
-
-
 
 
 
 
 
 <audio
-
-class="audio-player"
-
+id="mainAudio"
 controls>
 
 
@@ -605,189 +283,14 @@ controls>
 
 
 
-
-
-
-
-
-<div class="podcast-actions">
-
-
-
-
-
 <button
-
-class="btn-download"
-
-data-action="download">
+id="btnDownload"
+class="btn btn-download">
 
 
 ⬇ دانلود
 
-
 </button>
-
-
-
-
-
-
-
-
-<button
-
-class="btn-comment"
-
-data-action="comment">
-
-
-💬 نظرها
-
-
-</button>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-</article>
-
-
-
-</template>
-
-
-
-
-
-
-
-
-
-<!-- ==========================
-COMMENT POPUP
-========================== -->
-
-
-<div
-
-class="popup"
-
-id="commentPopup">
-
-
-
-
-
-<div class="popup-content">
-
-
-
-
-
-<button
-
-class="popup-close"
-
-id="closeCommentPopup">
-
-×
-
-
-</button>
-
-
-
-
-
-
-
-<h3>
-
-نظرات کاربران
-
-</h3>
-
-
-
-
-
-
-
-<div
-
-id="commentsList">
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div
-
-class="comment-login-message"
-
-id="commentLoginMessage"
-
-style="display:none;">
-
-
-
-<p>
-
-برای ثبت نظر ابتدا وارد حساب کاربری شوید.
-
-</p>
-
-
-
-
-<button
-
-class="btn-primary"
-
-id="goLoginFromComment">
-
-
-ورود / ثبت‌نام
-
-
-</button>
-
-
-
-</div>
-
-
-
-
-
-
-</div>
 
 
 
@@ -807,33 +310,22 @@ LOGIN POPUP
 
 
 <div
-
-class="popup"
-
-id="loginPopup">
+id="loginPopup"
+class="popup">
 
 
 
-
-
-<div class="popup-content">
-
-
+<div class="popup-box">
 
 
 
 <button
-
 class="popup-close"
+data-close="loginPopup">
 
-id="closeLoginPopup">
-
-×
-
+✕
 
 </button>
-
-
 
 
 
@@ -848,17 +340,11 @@ id="closeLoginPopup">
 
 
 
-
-
-
-
 <p>
 
-برای امکانات بیشتر می‌توانید وارد حساب خود شوید.
+برای امکانات بیشتر وارد شوید
 
 </p>
-
-
 
 
 
@@ -868,57 +354,137 @@ id="closeLoginPopup">
 
 
 
+<a
+href="users/pages/login.html"
+class="btn btn-primary">
 
 
-<button
+ورود با ایمیل
 
-class="btn-google-login">
-
-
-ورود سریع
-
-
-</button>
-
-
-
+</a>
 
 
 
 
 
 <button
-
-class="btn-sms-login">
+id="btnSmsLogin"
+class="btn btn-secondary">
 
 
 ورود با پیامک
 
-
 </button>
 
 
 
-
-
-
 </div>
-
-
 
 
 
 
 
 <button
-
-class="skip-login"
-
-
-id="skipLogin">
+id="btnSkipLogin"
+class="skip-login">
 
 
-ورود بدون ثبت‌نام
+فعلاً بدون ورود ادامه می‌دهم
+
+
+</button>
+
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+PODCAST DETAIL POPUP
+========================== -->
+
+
+<div
+id="podcastPopup"
+class="popup">
+
+
+
+<div class="popup-box large">
+
+
+
+<button
+class="popup-close"
+data-close="podcastPopup">
+
+✕
+
+</button>
+
+
+
+
+
+<img
+id="detailCover"
+class="detail-cover"
+src=""
+alt="cover">
+
+
+
+
+
+
+<h2
+id="detailTitle">
+
+</h2>
+
+
+
+
+
+
+<div
+id="detailInfo">
+
+
+</div>
+
+
+
+
+
+
+<p
+id="detailSummary">
+
+
+</p>
+
+
+
+
+
+<button
+id="btnPlayPodcast"
+class="btn btn-primary">
+
+
+▶ پخش پادکست
 
 
 </button>
@@ -927,39 +493,21 @@ id="skipLogin">
 
 
 
-
-</div>
-
-
-
-</div>
-  <!-- ==========================
-FOOTER
-========================== -->
+<button
+id="btnComment">
 
 
-<footer class="user-footer">
+💬 ثبت نظر
 
 
-<div class="footer-content">
+</button>
 
 
 
-<div>
 
 
-<h3>
-
-NightCast
-
-</h3>
-
-
-<p>
-
-رادیویی برای شنیدن، یادگیری و تجربه کردن
-
-</p>
+<div
+id="commentsPreview">
 
 
 </div>
@@ -967,66 +515,10 @@ NightCast
 
 
 
-
-
-
-<div class="footer-links">
-
-
-<a href="#">
-
-قوانین استفاده
-
-</a>
-
-
-
-<a href="#">
-
-حریم خصوصی
-
-</a>
-
-
-
-<a href="#">
-
-تماس با ما
-
-</a>
-
-
-
 </div>
 
 
-
-
-
 </div>
-
-
-
-
-
-
-
-
-<div class="copyright">
-
-
-© NightCast
-
-تمامی حقوق محفوظ است
-
-
-</div>
-
-
-
-
-
-</footer>
 
 
 
@@ -1037,33 +529,105 @@ NightCast
 
 
 <!-- ==========================
-GLOBAL COMPONENTS
-========================== -->
-
-
-
-<div id="toastContainer"></div>
-
-
-
-
-
-
-<!-- ==========================
-APP ERROR MESSAGE
+COMMENT LOGIN POPUP
 ========================== -->
 
 
 <div
+id="commentLoginPopup"
+class="popup">
 
-id="appMessage"
 
+
+<div class="popup-box">
+
+
+
+<button
+class="popup-close"
+data-close="commentLoginPopup">
+
+✕
+
+</button>
+
+
+
+
+
+
+<h3>
+
+ثبت نظر
+
+</h3>
+
+
+
+
+
+
+<p>
+
+برای ثبت نظر ابتدا باید وارد حساب کاربری شوید.
+
+</p>
+
+
+
+
+
+
+<a
+href="users/pages/login.html"
+class="btn btn-primary">
+
+
+ورود / ثبت نام
+
+
+</a>
+
+
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+TOAST
+========================== -->
+
+
+<div
+id="toastContainer">
+
+
+</div>
+
+
+
+<!-- ==========================
+APP STATES
+========================== -->
+
+
+<div id="appMessage"
 class="app-message"
-
 style="display:none;">
 
 
-
 </div>
 
 
@@ -1072,8 +636,46 @@ style="display:none;">
 
 
 
+
+<!-- ==========================
+EMPTY PODCAST STATE
+========================== -->
+
+
+<template id="emptyPodcastTemplate">
+
+
+<div class="empty-state">
+
+
+<div class="empty-icon">
+
+🎙
+
 </div>
-<!-- END APP -->
+
+
+
+<h3>
+
+هنوز پادکستی منتشر نشده است
+
+</h3>
+
+
+
+<p>
+
+به زودی با محتوای جدید همراه شما هستیم.
+
+</p>
+
+
+
+</div>
+
+
+</template>
 
 
 
@@ -1081,6 +683,151 @@ style="display:none;">
 
 
 
+
+<!-- ==========================
+PODCAST CARD TEMPLATE
+========================== -->
+
+
+<template id="podcastCardTemplate">
+
+
+<article class="podcast-card">
+
+
+
+<div class="podcast-cover-box">
+
+
+<img
+class="podcast-cover"
+src=""
+alt="NightCast">
+
+
+</div>
+
+
+
+
+
+
+<div class="podcast-content">
+
+
+
+<h3 class="podcast-title">
+
+</h3>
+
+
+
+
+
+<div class="podcast-meta">
+
+
+<span class="book-name">
+
+</span>
+
+
+<span class="episode-number">
+
+</span>
+
+
+
+</div>
+
+
+
+
+
+
+<p class="podcast-summary">
+
+</p>
+
+
+
+
+
+
+
+<div class="podcast-actions">
+
+
+
+<button
+class="btn play-btn">
+
+
+▶ گوش دادن
+
+
+</button>
+
+
+
+
+
+<button
+class="btn detail-btn">
+
+
+جزئیات
+
+
+</button>
+
+
+
+
+
+<button
+class="btn download-btn">
+
+
+⬇ دانلود
+
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+</article>
+
+
+</template>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+INFINITE SCROLL SENSOR
+========================== -->
+
+
+<div
+id="scrollObserver">
+
+
+  </div>
 
 
 <!-- ==========================
@@ -1088,25 +835,21 @@ SCRIPTS
 ========================== -->
 
 
-
 <script src="users/js/api.js"></script>
-
-
-<script src="users/js/loader.js"></script>
-
 
 <script src="users/js/auth.js"></script>
 
+<script src="users/js/loader.js"></script>
+
+<script src="users/js/modal.js"></script>
 
 <script src="users/js/player.js"></script>
 
-
 <script src="users/js/podcasts.js"></script>
 
+<script src="users/js/infinite-scroll.js"></script>
 
 <script src="users/js/app.js"></script>
-
-
 
 
 

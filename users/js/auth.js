@@ -1,649 +1,256 @@
 /* ==================================================
-
-NightCast Authentication Manager V2
-
-
-File:
-
+NightCast User Authentication Manager V2
 /users/js/core/auth.js
-
-
-Responsibility:
-
-ONLY USER AUTH
-
-
-Features:
-
-- Login
-- Register
-- Guest Mode
-- Session Check
-- Permission Control
-
-
 ================================================== */
-
 
 const NightCastAuth = {
 
+    currentUser: null,
 
+    async init() {
 
-    currentUser:null,
-
-
-    mode:"guest",
-
-
-
-
-
-
-
-    /*
-    ====================================
-    INIT
-    ====================================
-    */
-
-
-    async init(){
-
+        this.bindEvents();
 
         await this.checkSession();
 
-
-
-        console.log(
-
-            "NightCast Auth Ready"
-
-        );
-
-
     },
 
+    bindEvents() {
 
+        const skipBtn = document.getElementById("skipLoginButton");
+        if (skipBtn) {
+            skipBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                this.enterGuestMode();
+            });
+        }
 
+        const loginBtn = document.getElementById("loginButton");
+        if (loginBtn) {
+            loginBtn.addEventListener("click", () => {
+                this.openLogin();
+            });
+        }
 
+        const closeBtn = document.getElementById("closeAuth");
+        if (closeBtn) {
+            closeBtn.addEventListener("click", () => {
+                this.closeLogin();
+            });
+        }
 
+        const loginForm = document.getElementById("loginForm");
 
+        if (loginForm) {
 
+            loginForm.addEventListener("submit", async (e) => {
 
+                e.preventDefault();
 
-    /*
-    ====================================
-    CHECK SESSION
-    ====================================
-    */
+                const username =
+                    document.getElementById("loginUsername").value.trim();
 
+                const password =
+                    document.getElementById("loginPassword").value;
 
-    async checkSession(){
+                const result =
+                    await this.login(username, password);
 
+                if (result.success) {
 
+                    NightCastUI.toast(
+                        "ورود با موفقیت انجام شد",
+                        "success"
+                    );
 
-        if(
+                    this.closeLogin();
 
-            !NightCastAPI.isLoggedIn()
+                    this.hideEntry();
 
-        ){
+                } else {
 
+                    NightCastUI.toast(
+                        result.message || "ورود ناموفق",
+                        "error"
+                    );
 
-            this.setGuest();
+                }
 
-
-            return false;
-
+            });
 
         }
 
+    },
 
+    async checkSession() {
 
+        if (!window.NightCastAPI) {
 
+            this.enterGuestMode();
 
-
-
-
-        const result =
-
-        await NightCastAPI.me();
-
-
-
-
-
-
-
-
-        if(
-
-            result.success
-
-        ){
-
-
-
-            this.setUser(
-
-                result.user ||
-
-                result.data
-
-            );
-
-
-
-            return true;
-
-
+            return;
 
         }
 
+        if (!NightCastAPI.isLoggedIn()) {
 
+            this.enterGuestMode();
 
+            return;
 
+        }
 
+        const result = await NightCastAPI.me();
 
+        if (result.success) {
 
-        this.logoutLocal();
+            this.currentUser = result.user || result.data;
 
+            this.hideEntry();
 
+            NightCastUI.updateUserUI();
 
-        this.setGuest();
+        } else {
 
+            this.logoutLocal();
 
+            this.enterGuestMode();
 
-        return false;
-
-
+        }
 
     },
 
+    async login(username, password) {
 
+        if (!window.NightCastAPI) {
 
+            return {
+                success: false,
+                message: "API آماده نیست."
+            };
 
-
-
-
-
-
-    /*
-    ====================================
-    LOGIN
-    ====================================
-    */
-
-
-    async login(
-
-        username,
-
-        password
-
-    ){
-
-
+        }
 
         const result =
+            await NightCastAPI.login(username, password);
 
-        await NightCastAPI.login(
-
-            username,
-
-            password
-
-        );
-
-
-
-
-
-
-
-        if(
-
-            result.success
-
-            &&
-
-            result.token
-
-        ){
-
-
+        if (result.success) {
 
             await this.checkSession();
 
-
-
         }
-
-
-
-
-
 
         return result;
 
-
-
     },
 
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    REGISTER
-    ====================================
-    */
-
-
-    async register(data){
-
-
-
-        return await NightCastAPI.register(
-
-            data
-
-        );
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    LOGOUT
-    ====================================
-    */
-
-
-    async logout(){
-
-
-
-        try{
-
-
-
-            await NightCastAPI.logout();
-
-
-
-        }
-
-        catch(e){
-
-
-
-            console.warn(e);
-
-
-
-        }
-
-
-
-
-
+    logout() {
 
         this.logoutLocal();
 
-
-
-        this.setGuest();
-
-
+        this.enterGuestMode();
 
     },
 
+    logoutLocal() {
 
+        if (window.NightCastAPI) {
 
+            NightCastAPI.removeToken();
 
+        }
 
-
-
-
-
-    /*
-    ====================================
-    REMOVE LOCAL SESSION
-    ====================================
-    */
-
-
-    logoutLocal(){
-
-
-
-        NightCastAPI.removeToken();
-
-
-
-        this.currentUser=null;
-
-
+        this.currentUser = null;
 
     },
 
+    enterGuestMode() {
 
-
-
-
-
-
-
-
-    /*
-    ====================================
-    GUEST
-    ====================================
-    */
-
-
-    setGuest(){
-
-
-
-        this.mode="guest";
-
-
-
-        this.currentUser={
-
-
-
-            id:null,
-
-
-            username:"guest",
-
-
-            role:"guest"
-
-
-
+        this.currentUser = {
+            role: "guest"
         };
 
+        this.hideEntry();
 
+        if (window.NightCastUI) {
 
+            NightCastUI.updateUserUI();
 
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    USER
-    ====================================
-    */
-
-
-    setUser(user){
-
-
-
-        this.mode="user";
-
-
-        this.currentUser=user;
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    STATUS
-    ====================================
-    */
-
-
-    isLoggedIn(){
-
-
-        return (
-
-            this.mode==="user"
-
-        );
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    isGuest(){
-
-
-        return (
-
-            this.mode==="guest"
-
-        );
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    PERMISSIONS
-    ====================================
-    */
-
-
-
-    canDownload(){
-
-
-        return this.isLoggedIn();
-
-
-
-    },
-
-
-
-
-
-    canComment(){
-
-
-        return this.isLoggedIn();
-
-
-
-    },
-
-
-
-
-
-    canSave(){
-
-
-        return this.isLoggedIn();
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    OPEN LOGIN
-
-    Called from:
-
-    Download
-    Comment
-    Save
-
-    ====================================
-    */
-
-
-    openLogin(){
-
-
-
-        const modal =
-
-        document.getElementById(
-
-            "authModal"
-
-        );
-
-
-
-        if(modal){
-
-
-
-            modal.classList.remove(
-
-                "hidden"
-
+            NightCastUI.toast(
+                "به صورت مهمان وارد شدید",
+                "info"
             );
-
 
         }
 
-
-
     },
 
+    hideEntry() {
 
+        const entry =
+            document.getElementById("loginEntry");
 
+        if (entry) {
 
-
-
-
-
-
-    closeLogin(){
-
-
-
-        const modal =
-
-        document.getElementById(
-
-            "authModal"
-
-        );
-
-
-
-        if(modal){
-
-
-
-            modal.classList.add(
-
-                "hidden"
-
-            );
-
+            entry.classList.add("hidden");
 
         }
 
+    },
 
+    showEntry() {
+
+        const entry =
+            document.getElementById("loginEntry");
+
+        if (entry) {
+
+            entry.classList.remove("hidden");
+
+        }
 
     },
 
+    openLogin() {
 
+        if (window.NightCastUI) {
 
+            NightCastUI.openModal("authModal");
 
+        }
 
+    },
 
+    closeLogin() {
 
+        if (window.NightCastUI) {
 
+            NightCastUI.closeModal("authModal");
 
-    /*
-    ====================================
-    USER DATA
-    ====================================
-    */
+        }
 
+    },
 
-    getUser(){
+    isLoggedIn() {
 
+        if (!window.NightCastAPI) return false;
 
+        return NightCastAPI.isLoggedIn();
+
+    },
+
+    canDownload() {
+
+        return this.isLoggedIn();
+
+    },
+
+    getUser() {
 
         return this.currentUser;
 
-
-
     }
-
-
-
-
 
 };
 
-
-
-
-
-
-
-
-
-window.NightCastAuth =
-
-NightCastAuth;
+window.NightCastAuth = NightCastAuth;

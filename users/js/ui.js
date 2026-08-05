@@ -1,238 +1,237 @@
 /* ==================================================
-   NightCast User UI Manager
+   NightCast User Interface Manager
    File: /users/js/ui.js
-   Version: 1.0
+   Version: 2.0 Professional
 ================================================== */
-
 
 
 const NightCastUI = {
 
 
 
+    /*
+    ====================================
+    LOADER
+    ====================================
+    */
 
-/*
-====================================
-SHOW TOAST
-====================================
-*/
 
+    showLoader(){
 
-toast(
 
-message,
+        const loader =
 
-type="success"
+        document.getElementById(
 
-){
+            "globalLoader"
 
+        );
 
 
-const box =
 
-document.getElementById(
+        if(loader){
 
-"toast"
 
-);
+            loader.classList.remove(
 
+                "hidden"
 
+            );
 
-if(!box){
 
-return;
+        }
 
-}
 
+    },
 
 
-box.textContent = message;
 
 
 
-box.className =
 
-"toast";
 
 
+    hideLoader(){
 
 
-if(type==="error"){
+        const loader =
 
+        document.getElementById(
 
+            "globalLoader"
 
-box.style.background =
+        );
 
-"#ff5555";
 
 
+        if(loader){
 
-box.style.color =
 
-"#fff";
+            loader.classList.add(
 
+                "hidden"
 
+            );
 
-}
 
-else if(type==="info"){
+        }
 
 
+    },
 
-box.style.background =
 
-"#00d4ff";
 
 
 
-box.style.color =
 
-"#000";
 
 
 
-}
+    /*
+    ====================================
+    TOAST MESSAGE
+    ====================================
+    */
 
-else{
 
+    toast(
 
+        message,
 
-box.style.background =
+        type="success"
 
-"#00ff88";
+    ){
 
 
 
-box.style.color =
+        let toast =
 
-"#000";
+        document.getElementById(
 
+            "nightToast"
 
+        );
 
-}
 
 
 
 
+        if(!toast){
 
-setTimeout(()=>{
 
 
+            toast =
 
-box.classList.remove(
+            document.createElement(
 
-"hidden"
+                "div"
 
-);
+            );
 
 
 
-},50);
+            toast.id =
 
+            "nightToast";
 
 
 
+            toast.className =
 
+            "toast";
 
-setTimeout(()=>{
 
 
+            document.body.appendChild(
 
-box.classList.add(
+                toast
 
-"hidden"
+            );
 
-);
 
 
+        }
 
-},3000);
 
 
 
-},
 
 
 
+        toast.textContent =
 
+        message;
 
 
 
-/*
-====================================
-LOADER
-====================================
-*/
 
 
-showLoader(){
+        toast.classList.remove(
 
+            "success",
 
+            "error"
 
-const loader =
+        );
 
-document.getElementById(
 
-"globalLoader"
 
-);
 
 
+        toast.classList.add(
 
-if(loader){
+            type
 
+        );
 
 
-loader.classList.remove(
 
-"hidden"
 
-);
 
+        toast.classList.remove(
 
+            "hidden"
 
-}
+        );
 
 
 
-},
 
 
 
 
+        clearTimeout(
 
+            this.toastTimer
 
-hideLoader(){
+        );
 
 
 
-const loader =
 
-document.getElementById(
 
-"globalLoader"
+        this.toastTimer =
 
-);
+        setTimeout(()=>{
 
 
 
-if(loader){
+            toast.classList.add(
 
+                "hidden"
 
+            );
 
-loader.classList.add(
 
-"hidden"
 
-);
+        },3500);
 
 
 
-}
 
 
+    },
 
-},
 
 
 
@@ -241,82 +240,86 @@ loader.classList.add(
 
 
 
+    /*
+    ====================================
+    SUCCESS
+    ====================================
+    */
 
-/*
-====================================
-OPEN POPUP
-====================================
-*/
 
+    success(message){
 
-openPopup(id){
 
 
+        this.toast(
 
-const popup =
+            message,
 
-document.getElementById(id);
+            "success"
 
+        );
 
 
-if(popup){
 
+    },
 
 
-popup.classList.remove(
 
-"hidden"
 
-);
 
 
 
-}
 
 
+    /*
+    ====================================
+    ERROR
+    ====================================
+    */
 
-},
 
+    error(message){
 
 
 
+        this.toast(
 
+            message,
 
+            "error"
 
-/*
-====================================
-CLOSE POPUP
-====================================
-*/
+        );
 
 
-closePopup(id){
+    },
 
 
 
-const popup =
 
-document.getElementById(id);
 
 
 
-if(popup){
 
 
+    /*
+    ====================================
+    CONFIRM
+    ====================================
+    */
 
-popup.classList.add(
 
-"hidden"
+    confirm(message){
 
-);
 
+        return window.confirm(
 
+            message
 
-}
+        );
 
 
+    },
 
-},
 
 
 
@@ -324,158 +327,153 @@ popup.classList.add(
 
 
 
-/*
-====================================
-CONFIRM LOGIN
-====================================
-*/
 
+    /*
+    ====================================
+    FORMAT TIME
+    ====================================
+    */
 
-needLogin(){
 
+    formatTime(seconds){
 
 
-this.toast(
 
-"برای استفاده از این بخش ابتدا وارد شوید",
+        if(
 
-"info"
+            !seconds ||
 
-);
+            isNaN(seconds)
 
+        ){
 
 
-this.openPopup(
+            return "00:00";
 
-"loginPopup"
 
-);
+        }
 
 
 
-},
 
 
 
 
+        seconds =
 
+        Math.floor(
 
+            seconds
 
-/*
-====================================
-SUCCESS MESSAGE
-====================================
-*/
+        );
 
 
-success(message){
 
 
 
-this.toast(
+        const min =
 
-message,
+        Math.floor(
 
-"success"
+            seconds / 60
 
-);
+        );
 
 
 
-},
 
 
+        const sec =
 
+        seconds % 60;
 
 
 
 
-/*
-====================================
-ERROR MESSAGE
-====================================
-*/
 
 
-error(message){
 
+        return (
 
+            String(min)
 
-this.toast(
+            .padStart(
 
-message,
+                2,
 
-"error"
+                "0"
 
-);
+            )
 
+            +
 
+            ":"
 
-},
+            +
 
+            String(sec)
 
+            .padStart(
 
+                2,
 
+                "0"
 
+            )
 
+        );
 
-/*
-====================================
-FORMAT TIME
-====================================
-*/
 
 
-formatTime(seconds){
+    },
 
 
 
-if(!seconds){
 
-return "00:00";
 
-}
 
 
 
-const min =
 
-Math.floor(
+    /*
+    ====================================
+    EMPTY STATE
+    ====================================
+    */
 
-seconds / 60
 
-);
+    empty(
 
+        container,
 
+        message
 
-const sec =
+    ){
 
-Math.floor(
 
-seconds % 60
 
-);
+        if(container){
 
 
+            container.innerHTML =
 
 
-return (
+            `
 
-String(min).padStart(2,"0")
+            <div class="empty-state">
 
-+
+            ${message}
 
-":"
+            </div>
 
-+
+            `;
 
-String(sec).padStart(2,"0")
 
-);
 
+        }
 
 
-},
+    },
 
 
 
@@ -483,74 +481,64 @@ String(sec).padStart(2,"0")
 
 
 
-/*
-====================================
-EMPTY STATE
-====================================
-*/
 
 
-showEmpty(id){
+    /*
+    ====================================
+    SAFE HTML
+    ====================================
+    */
 
 
+    escape(text){
 
-const element =
 
-document.getElementById(id);
 
+        if(!text){
 
+            return "";
 
-if(element){
+        }
 
 
 
-element.classList.remove(
+        return text
 
-"hidden"
+        .toString()
 
-);
+        .replace(
 
+            /[&<>"']/g,
 
+            function(char){
 
-}
 
 
+                return {
 
-},
+                    "&":"&amp;",
 
+                    "<":"&lt;",
 
+                    ">":"&gt;",
 
+                    '"':"&quot;",
 
+                    "'":"&#039;"
 
+                }[char];
 
 
-hide(id){
 
+            }
 
+        );
 
-const element =
 
-document.getElementById(id);
+    }
 
 
 
-if(element){
-
-
-
-element.classList.add(
-
-"hidden"
-
-);
-
-
-
-}
-
-
-
-}
 
 
 
@@ -562,50 +550,9 @@ element.classList.add(
 
 
 
-window.NightCastUI = NightCastUI;
 
 
 
+window.NightCastUI =
 
-
-
-
-
-/*
-====================================
-GLOBAL EVENTS
-====================================
-*/
-
-
-document.addEventListener(
-
-"click",
-
-(e)=>{
-
-
-
-const close =
-
-e.target.dataset.close;
-
-
-
-if(close){
-
-
-
-NightCastUI.closePopup(
-
-close
-
-);
-
-
-
-}
-
-
-
-});
+NightCastUI;

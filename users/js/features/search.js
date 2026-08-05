@@ -3,19 +3,19 @@
 NightCast Search Manager V1
 
 File:
- /users/js/features/search.js
+
+/users/js/features/search.js
 
 
 Responsibility:
 
-- Header Search
-- Local Search
-- Search Result UI
+- Search podcasts
+- Filter user content
 
 
 Depends:
 
-ui.js
+api.js
 podcasts.js
 
 
@@ -27,11 +27,6 @@ const NightCastSearch = {
 
 
     input:null,
-
-
-    resultBox:null,
-
-
 
 
 
@@ -58,8 +53,8 @@ const NightCastSearch = {
 
 
 
-        if(!this.input){
 
+        if(!this.input){
 
             console.warn(
 
@@ -67,9 +62,7 @@ const NightCastSearch = {
 
             );
 
-
             return;
-
 
         }
 
@@ -77,11 +70,9 @@ const NightCastSearch = {
 
 
 
-        this.createResultBox();
 
+        this.bind();
 
-
-        this.bindEvents();
 
 
 
@@ -89,7 +80,7 @@ const NightCastSearch = {
 
         console.log(
 
-            "NightCast Search Loaded"
+            "NightCast Search Ready"
 
         );
 
@@ -107,65 +98,17 @@ const NightCastSearch = {
 
     /*
     ====================================
-    CREATE RESULT BOX
+    BIND
     ====================================
     */
 
 
-    createResultBox(){
-
-
-
-        this.resultBox =
-
-        document.createElement(
-
-            "div"
-
-        );
-
-
-
-
-
-        this.resultBox.className =
-
-        "search-results";
-
-
-
-
-
-        this.input.parentElement.appendChild(
-
-            this.resultBox
-
-        );
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    EVENTS
-    ====================================
-    */
-
-
-    bindEvents(){
+    bind(){
 
 
 
         this.input.addEventListener(
+
 
             "input",
 
@@ -186,41 +129,6 @@ const NightCastSearch = {
 
 
 
-
-
-        document.addEventListener(
-
-            "click",
-
-            (e)=>{
-
-
-
-                if(
-
-                    !this.resultBox.contains(e.target)
-
-                    &&
-
-                    e.target !== this.input
-
-                ){
-
-
-                    this.hide();
-
-
-                }
-
-
-
-            }
-
-
-        );
-
-
-
     },
 
 
@@ -233,25 +141,86 @@ const NightCastSearch = {
 
     /*
     ====================================
-    SEARCH ENGINE
+    SEARCH
     ====================================
     */
 
 
-    search(keyword){
+    async search(keyword){
 
 
 
         if(!keyword){
 
 
-            this.hide();
+
+            if(window.NightCastPodcasts){
+
+
+
+                const grid =
+
+                document.getElementById(
+
+                    "podcastGrid"
+
+                );
+
+
+
+                if(grid){
+
+
+
+                    grid.innerHTML="";
+
+
+                }
+
+
+
+
+                NightCastPodcasts.page=1;
+
+                NightCastPodcasts.hasMore=true;
+
+
+                NightCastPodcasts.load();
+
+
+
+            }
+
 
 
             return;
 
 
+
         }
+
+
+
+
+
+
+
+
+        const result =
+
+        await API.get(
+
+            "/public/podcasts?search="
+
+            +
+
+            encodeURIComponent(keyword)
+
+        );
+
+
+
+
 
 
 
@@ -259,100 +228,23 @@ const NightCastSearch = {
 
         if(
 
-            !window.NightCastPodcasts
+            result.success &&
+
+            result.podcasts
 
         ){
 
 
-            return;
+
+            this.renderResult(
+
+                result.podcasts
+
+            );
+
 
 
         }
-
-
-
-
-
-
-
-        const data =
-
-        NightCastPodcasts.podcasts;
-
-
-
-
-
-
-
-
-        const results =
-
-        data.filter(
-
-            item=>{
-
-
-                const title =
-
-                (
-
-                    item.title ||
-
-                    ""
-
-                ).toLowerCase();
-
-
-
-
-
-                const author =
-
-                (
-
-                    item.author ||
-
-                    ""
-
-                ).toLowerCase();
-
-
-
-
-
-                const text =
-
-                keyword.toLowerCase();
-
-
-
-
-
-                return (
-
-                    title.includes(text)
-
-                    ||
-
-                    author.includes(text)
-
-                );
-
-
-
-            }
-
-
-        );
-
-
-
-
-
-
-
-        this.render(results);
 
 
 
@@ -368,47 +260,23 @@ const NightCastSearch = {
 
     /*
     ====================================
-    RENDER RESULTS
+    RENDER SEARCH RESULT
+
     ====================================
     */
 
 
-    render(results){
+    renderResult(items){
 
 
 
-        this.resultBox.innerHTML = "";
+        const grid =
 
+        document.getElementById(
 
+            "podcastGrid"
 
-
-
-
-        if(results.length===0){
-
-
-
-            this.resultBox.innerHTML =
-
-            `
-
-            <div class="search-empty">
-
-            نتیجه‌ای پیدا نشد
-
-            </div>
-
-            `;
-
-
-
-            this.show();
-
-
-            return;
-
-
-        }
+        );
 
 
 
@@ -416,10 +284,37 @@ const NightCastSearch = {
 
 
 
+        if(!grid)
 
-        results.slice(0,5)
+        return;
 
-        .forEach(
+
+
+
+
+
+        grid.innerHTML="";
+
+
+
+
+
+
+
+        const template =
+
+        document.getElementById(
+
+            "podcastCardTemplate"
+
+        );
+
+
+
+
+
+
+        items.forEach(
 
             podcast=>{
 
@@ -427,11 +322,21 @@ const NightCastSearch = {
 
 
 
-                const item =
+                const card =
 
-                document.createElement(
+                template.content.cloneNode(true);
 
-                    "div"
+
+
+
+
+
+
+                const img =
+
+                card.querySelector(
+
+                    ".podcast-image"
 
                 );
 
@@ -440,52 +345,19 @@ const NightCastSearch = {
 
 
 
-                item.className =
-
-                "search-item";
+                if(img){
 
 
 
+                    img.src =
+
+                    podcast.cover_url ||
+
+                    "/users/assets/images/default-cover.jpg";
 
 
 
-                item.innerHTML =
-
-
-                `
-
-                <img
-
-                src="${
-
-                podcast.cover ||
-
-                '/users/assets/images/default-cover.jpg'
-
-                }">
-
-
-
-                <div>
-
-
-                <strong>
-
-                ${podcast.title}
-
-                </strong>
-
-
-                <small>
-
-                ${podcast.author || "NightCast"}
-
-                </small>
-
-
-                </div>
-
-                `;
+                }
 
 
 
@@ -494,48 +366,118 @@ const NightCastSearch = {
 
 
 
-                item.onclick = ()=>{
+                const title =
+
+                card.querySelector(
+
+                    ".podcast-title"
+
+                );
 
 
-                    if(
-
-                        window.NightCastPlayer
-
-                    ){
 
 
 
-                        NightCastPlayer.load(
+                if(title){
+
+
+
+                    title.textContent =
+
+                    podcast.title;
+
+
+                }
+
+
+
+
+
+
+
+
+
+                const author =
+
+                card.querySelector(
+
+                    ".podcast-author"
+
+                );
+
+
+
+
+
+                if(author){
+
+
+
+                    author.textContent =
+
+                    podcast.author_name ||
+
+                    "NightCast";
+
+
+                }
+
+
+
+
+
+
+
+
+
+                const play =
+
+                card.querySelector(
+
+                    ".play-button"
+
+                );
+
+
+
+
+
+
+
+                if(play){
+
+
+
+                    play.onclick=()=>{
+
+
+
+                        NightCastPlayer.play(
 
                             podcast
 
                         );
 
 
-                        NightCastPlayer.play();
+
+                    };
 
 
 
-                    }
-
-
-
-                    this.hide();
-
-
-
-                };
+                }
 
 
 
 
 
 
-                this.resultBox.appendChild(
 
-                    item
+                grid.appendChild(
+
+                    card
 
                 );
+
 
 
 
@@ -546,72 +488,7 @@ const NightCastSearch = {
 
 
 
-
-
-
-
-        this.show();
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    SHOW / HIDE
-    ====================================
-    */
-
-
-    show(){
-
-
-
-        this.resultBox.classList.add(
-
-            "active"
-
-        );
-
-
-
-    },
-
-
-
-
-
-
-
-
-    hide(){
-
-
-
-        if(this.resultBox){
-
-
-            this.resultBox.classList.remove(
-
-                "active"
-
-            );
-
-
-        }
-
-
     }
-
-
 
 
 
@@ -628,3 +505,14 @@ const NightCastSearch = {
 window.NightCastSearch =
 
 NightCastSearch;
+
+
+
+
+
+
+console.log(
+
+"NightCast Search V1 Loaded"
+
+);

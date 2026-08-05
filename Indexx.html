@@ -1,50 +1,53 @@
 <!DOCTYPE html>
+
 <html lang="fa" dir="rtl">
+
 
 <head>
 
+
 <meta charset="UTF-8">
+
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
 <title>
-رادیو NightCast
+NightCast | رادیو تجربه
 </title>
 
 
-<meta name="description"
-content="رادیو NightCast - پادکست‌های صوتی آموزشی، تجربه و کتاب">
 
-
-<!-- USER CSS -->
+<!-- User CSS -->
 
 <link rel="stylesheet" href="users/css/user-core.css">
 
-<link rel="stylesheet" href="users/css/user-layout.css">
+<link rel="stylesheet" href="users/css/player.css">
 
-<link rel="stylesheet" href="users/css/user-components.css">
+<link rel="stylesheet" href="users/css/responsive.css">
 
-<link rel="stylesheet" href="users/css/user-responsive.css">
 
 
 </head>
 
 
-<body data-page="home">
+
+<body data-auth="optional">
 
 
 
 <!-- ==========================
-GLOBAL LOADER
+GLOBAL LOADING
 ========================== -->
 
 
-<div id="globalLoader"
-class="loader-container">
+<div id="globalLoader" class="loader hidden">
 
 
-<div class="loader"></div>
+<div class="loader-box">
+
+
+<div class="spinner"></div>
 
 
 <p>
@@ -55,6 +58,10 @@ class="loader-container">
 </div>
 
 
+</div>
+
+
+
 
 
 
@@ -63,16 +70,35 @@ HEADER
 ========================== -->
 
 
-<header class="user-header">
+<header id="mainHeader">
+
+
+<div class="header-container">
+
 
 
 <div class="logo">
 
-<span>
-◉
-</span>
+🎙 NightCast
 
-NightCast
+</div>
+
+
+
+
+<div class="search-box">
+
+
+<input
+
+type="search"
+
+id="searchInput"
+
+placeholder="جستجوی پادکست..."
+
+>
+
 
 </div>
 
@@ -80,54 +106,21 @@ NightCast
 
 
 
-<nav>
-
-
-<a href="#home">
-
-خانه
-
-</a>
-
-
-<a href="#podcasts">
-
-پادکست‌ها
-
-</a>
-
-
-<a href="#about">
-
-درباره ما
-
-</a>
-
-
-
-</nav>
-
-
-
-
-
-
-<div class="header-actions">
-
-
 <button
-id="btnLogin"
-class="btn btn-primary">
 
+id="loginBtn"
 
-ورود / ثبت نام
+class="login-btn"
 
+>
+
+ورود
 
 </button>
 
 
-</div>
 
+</div>
 
 
 </header>
@@ -136,18 +129,19 @@ class="btn btn-primary">
 
 
 
+
+
+
+
 <!-- ==========================
-MAIN
+HERO
 ========================== -->
 
 
-<main id="home">
-
-
-
-<!-- HERO -->
-
 <section class="hero">
+
+
+<div class="hero-content">
 
 
 <h1>
@@ -157,13 +151,24 @@ MAIN
 </h1>
 
 
-
 <p>
 
-صدای تجربه، کتاب و یادگیری
+تجربه‌ها، کتاب‌ها و داستان‌هایی برای رشد فردی
 
 </p>
 
+
+
+<button id="startListening">
+
+
+شروع گوش دادن
+
+</button>
+
+
+
+</div>
 
 
 </section>
@@ -172,14 +177,19 @@ MAIN
 
 
 
+
+
+
 <!-- ==========================
-PODCAST LIST
+MAIN CONTENT
 ========================== -->
 
 
-<section id="podcasts"
-class="podcast-section">
+<main>
 
+
+
+<section id="podcastSection">
 
 
 <h2>
@@ -190,18 +200,13 @@ class="podcast-section">
 
 
 
-<div id="podcastContainer"
-class="podcast-grid">
+<div
 
+id="podcastContainer"
 
+class="podcast-grid"
 
-<!--
-
-Podcast Cards
-با JS ساخته می‌شوند
-
--->
-
+>
 
 
 </div>
@@ -210,13 +215,17 @@ Podcast Cards
 
 
 
-<div id="loadingMore"
-class="loading-more"
-style="display:none;">
+
+<div
+
+id="scrollLoading"
+
+class="scroll-loading hidden"
+
+>
 
 
-در حال دریافت پادکست‌های بیشتر...
-
+در حال دریافت تجربه‌های جدید...
 
 </div>
 
@@ -228,40 +237,42 @@ style="display:none;">
 
 
 
-
 </main>
+
+
+
+
+
+
+
 <!-- ==========================
-FIXED AUDIO PLAYER
+AUDIO PLAYER
 ========================== -->
 
 
 <div id="audioPlayer"
-class="audio-player">
+
+class="audio-player hidden">
 
 
 <div class="player-info">
 
 
-<img id="playerCover"
+<img
+
+id="playerCover"
+
 src=""
-alt="cover">
+
+>
 
 
 <div>
 
 
-<h4 id="playerTitle">
+<h3 id="playerTitle">
 
-NightCast
-
-</h4>
-
-
-<span id="playerEpisode">
-
-انتخاب پادکست
-
-</span>
+</h3>
 
 
 </div>
@@ -274,26 +285,17 @@ NightCast
 
 
 <audio
-id="mainAudio"
-controls>
 
+id="mainAudio"
+
+controls
+
+>
 
 </audio>
 
 
 
-
-<button
-id="btnDownload"
-class="btn btn-download">
-
-
-⬇ دانلود
-
-</button>
-
-
-
 </div>
 
 
@@ -305,76 +307,127 @@ class="btn btn-download">
 
 
 <!-- ==========================
-LOGIN POPUP
+POPUP AREA
 ========================== -->
 
 
 <div
-id="loginPopup"
-class="popup">
+
+id="popupContainer"
+
+class="popup hidden"
+
+>
 
 
-
-<div class="popup-box">
-
+<div class="popup-content">
 
 
-<button
-class="popup-close"
-data-close="loginPopup">
+<button id="closePopup">
 
-✕
-
+×
 </button>
 
 
+<div id="popupBody">
+
+</div>
 
 
-
-<h3>
-
-ورود به NightCast
-
-</h3>
+</div>
 
 
-
-
-<p>
-
-برای امکانات بیشتر وارد شوید
-
-</p>
+</div>
 
 
 
 
 
-<div class="login-options">
 
 
 
-<a
-href="users/pages/login.html"
-class="btn btn-primary">
+<!-- USER JS -->
 
 
-ورود با ایمیل
+<script src="users/js/api.js"></script>
 
-</a>
+<script src="users/js/auth.js"></script>
 
+<script src="users/js/ui.js"></script>
 
+<script src="users/js/player.js"></script>
 
-
-
-<button
-id="btnSmsLogin"
-class="btn btn-secondary">
+<script src="users/js/podcasts.js"></script>
 
 
-ورود با پیامک
 
-</button>
+
+<script>
+
+
+document.addEventListener(
+
+"DOMContentLoaded",
+
+()=>{
+
+
+console.log(
+
+"NightCast User App Loaded"
+
+);
+
+
+}
+
+);
+
+
+</script>
+
+
+
+</body>
+
+
+</html>
+<!-- ==========================
+ADVANCED HEADER CONTENT
+========================== -->
+
+
+<div id="mobileMenu"
+
+class="mobile-menu hidden">
+
+
+<div class="menu-item">
+
+خانه
+
+</div>
+
+
+<div class="menu-item">
+
+آخرین پادکست‌ها
+
+</div>
+
+
+<div class="menu-item">
+
+دسته‌بندی‌ها
+
+</div>
+
+
+<div class="menu-item">
+
+کتابخانه من
+
+</div>
 
 
 
@@ -384,24 +437,60 @@ class="btn btn-secondary">
 
 
 
-<button
-id="btnSkipLogin"
-class="skip-login">
 
 
-فعلاً بدون ورود ادامه می‌دهم
+<!-- ==========================
+CATEGORY BAR
+========================== -->
 
+
+<section class="category-section">
+
+
+<div class="category-scroll">
+
+
+
+<button class="category-btn active">
+
+همه
+
+</button>
+
+
+<button class="category-btn">
+
+رشد فردی
+
+</button>
+
+
+<button class="category-btn">
+
+کتاب‌ها
+
+</button>
+
+
+<button class="category-btn">
+
+تجربه‌ها
+
+</button>
+
+
+<button class="category-btn">
+
+مهارت زندگی
 
 </button>
 
 
 
-
 </div>
 
 
-</div>
-
+</section>
 
 
 
@@ -411,191 +500,84 @@ class="skip-login">
 
 
 <!-- ==========================
-PODCAST DETAIL POPUP
+FEATURED AREA
 ========================== -->
 
 
-<div
-id="podcastPopup"
-class="popup">
+<section class="featured">
+
+
+<div class="featured-box">
 
 
 
-<div class="popup-box large">
+<div class="featured-text">
+
+
+<span>
+
+پیشنهاد NightCast
+
+</span>
 
 
 
-<button
-class="popup-close"
-data-close="podcastPopup">
+<h2>
 
-✕
-
-</button>
-
-
-
-
-
-<img
-id="detailCover"
-class="detail-cover"
-src=""
-alt="cover">
-
-
-
-
-
-
-<h2
-id="detailTitle">
+امروز یک تجربه جدید گوش کنید
 
 </h2>
 
 
 
-
-
-
-<div
-id="detailInfo">
-
-
-</div>
-
-
-
-
-
-
-<p
-id="detailSummary">
-
-
-</p>
-
-
-
-
-
-<button
-id="btnPlayPodcast"
-class="btn btn-primary">
-
-
-▶ پخش پادکست
-
-
-</button>
-
-
-
-
-
-<button
-id="btnComment">
-
-
-💬 ثبت نظر
-
-
-</button>
-
-
-
-
-
-<div
-id="commentsPreview">
-
-
-</div>
-
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<!-- ==========================
-COMMENT LOGIN POPUP
-========================== -->
-
-
-<div
-id="commentLoginPopup"
-class="popup">
-
-
-
-<div class="popup-box">
-
-
-
-<button
-class="popup-close"
-data-close="commentLoginPopup">
-
-✕
-
-</button>
-
-
-
-
-
-
-<h3>
-
-ثبت نظر
-
-</h3>
-
-
-
-
-
-
 <p>
 
-برای ثبت نظر ابتدا باید وارد حساب کاربری شوید.
+هر روز با داستان‌ها، کتاب‌ها و تجربه‌های ارزشمند همراه شوید.
 
 </p>
 
 
 
 
+<button
+
+id="featuredPlay"
+
+>
+
+▶ پخش آخرین تجربه
+
+</button>
 
 
-<a
-href="users/pages/login.html"
-class="btn btn-primary">
+</div>
 
 
-ورود / ثبت نام
 
 
-</a>
+
+<div class="featured-image">
 
 
+<img
+
+src="assets/images/nightcast-cover.png"
+
+alt="NightCast"
+
+onerror="this.style.display='none'"
+
+>
+
+
+</div>
 
 
 
 </div>
 
 
-</div>
+</section>
 
 
 
@@ -606,103 +588,47 @@ class="btn btn-primary">
 
 
 <!-- ==========================
-TOAST
+PODCAST TEMPLATE
 ========================== -->
 
 
-<div
-id="toastContainer">
-
-
-</div>
-
-
-
-<!-- ==========================
-APP STATES
-========================== -->
-
-
-<div id="appMessage"
-class="app-message"
-style="display:none;">
-
-
-</div>
-
-
-
-
-
-
-
-
-<!-- ==========================
-EMPTY PODCAST STATE
-========================== -->
-
-
-<template id="emptyPodcastTemplate">
-
-
-<div class="empty-state">
-
-
-<div class="empty-icon">
-
-🎙
-
-</div>
-
-
-
-<h3>
-
-هنوز پادکستی منتشر نشده است
-
-</h3>
-
-
-
-<p>
-
-به زودی با محتوای جدید همراه شما هستیم.
-
-</p>
-
-
-
-</div>
-
-
-</template>
-
-
-
-
-
-
-
-
-<!-- ==========================
-PODCAST CARD TEMPLATE
-========================== -->
-
-
-<template id="podcastCardTemplate">
+<template id="podcastTemplate">
 
 
 <article class="podcast-card">
 
 
 
-<div class="podcast-cover-box">
+<div class="cover-wrapper">
+
 
 
 <img
+
 class="podcast-cover"
+
 src=""
-alt="NightCast">
+
+alt="cover"
+
+>
+
+
+
+
+<div class="episode-badge">
+
+قسمت
+
+<span class="episode-number">
+
+1
+
+</span>
+
+
+</div>
+
 
 
 </div>
@@ -712,11 +638,13 @@ alt="NightCast">
 
 
 
-<div class="podcast-content">
+<div class="podcast-info">
 
 
 
 <h3 class="podcast-title">
+
+عنوان پادکست
 
 </h3>
 
@@ -724,15 +652,21 @@ alt="NightCast">
 
 
 
-<div class="podcast-meta">
+<div class="meta">
+
 
 
 <span class="book-name">
 
+📚 کتاب
+
 </span>
 
 
-<span class="episode-number">
+
+<span class="author-name">
+
+✍ نویسنده
 
 </span>
 
@@ -747,6 +681,8 @@ alt="NightCast">
 
 <p class="podcast-summary">
 
+خلاصه پادکست
+
 </p>
 
 
@@ -760,37 +696,38 @@ alt="NightCast">
 
 
 <button
-class="btn play-btn">
 
+class="play-btn"
+
+>
 
 ▶ گوش دادن
 
-
 </button>
 
 
 
 
-
 <button
-class="btn detail-btn">
 
+class="download-btn"
 
-جزئیات
-
-
-</button>
-
-
-
-
-
-<button
-class="btn download-btn">
-
+>
 
 ⬇ دانلود
 
+</button>
+
+
+
+
+<button
+
+class="comment-btn"
+
+>
+
+💬 نظرات
 
 </button>
 
@@ -800,9 +737,10 @@ class="btn download-btn">
 
 
 
-
-
 </div>
+
+
+
 
 
 </article>
@@ -819,37 +757,1249 @@ class="btn download-btn">
 
 
 <!-- ==========================
-INFINITE SCROLL SENSOR
+NO DATA MESSAGE
 ========================== -->
 
 
 <div
-id="scrollObserver">
+
+id="emptyState"
+
+class="empty-state hidden"
+
+>
 
 
-  </div>
+🎙 هنوز پادکستی منتشر نشده است.
+
+
+</div>
+
+
+
+
+
+
+
 
 
 <!-- ==========================
-SCRIPTS
+ERROR MESSAGE
 ========================== -->
 
 
-<script src="users/js/api.js"></script>
+<div
 
-<script src="users/js/auth.js"></script>
+id="errorState"
 
-<script src="users/js/loader.js"></script>
+class="error-state hidden"
 
-<script src="users/js/modal.js"></script>
+>
 
-<script src="users/js/player.js"></script>
 
-<script src="users/js/podcasts.js"></script>
+خطایی در دریافت اطلاعات رخ داد.
 
-<script src="users/js/infinite-scroll.js"></script>
 
-<script src="users/js/app.js"></script>
+</div>
+
+<!-- ==========================
+USER AREA
+========================== -->
+
+
+<section id="userPanel"
+
+class="user-panel hidden">
+
+
+<div class="user-info">
+
+
+<img
+
+id="userAvatar"
+
+src=""
+
+alt="user"
+
+
+>
+
+
+
+<div>
+
+
+<h3 id="userName">
+
+کاربر
+
+</h3>
+
+
+<span id="userRole">
+
+Listener
+
+</span>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+<button
+
+id="logoutBtn"
+
+>
+
+خروج
+
+</button>
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+LOGIN POPUP
+========================== -->
+
+
+<div
+
+id="loginPopup"
+
+class="popup hidden"
+
+>
+
+
+<div class="popup-box">
+
+
+
+<button
+
+class="popup-close"
+
+data-close="loginPopup"
+
+>
+
+×
+</button>
+
+
+
+<h2>
+
+ورود به NightCast
+
+</h2>
+
+
+
+
+<p>
+
+برای استفاده از امکانات بیشتر وارد شوید.
+
+</p>
+
+
+
+
+
+
+<button
+
+id="openLoginPage"
+
+class="primary-btn"
+
+>
+
+ورود / ثبت نام
+
+</button>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+DOWNLOAD POPUP
+========================== -->
+
+
+<div
+
+id="downloadPopup"
+
+class="popup hidden"
+
+>
+
+
+<div class="popup-box">
+
+
+
+<button
+
+class="popup-close"
+
+data-close="downloadPopup"
+
+>
+
+×
+
+</button>
+
+
+
+<h2>
+
+دانلود پادکست
+
+</h2>
+
+
+
+<p id="downloadMessage">
+
+
+برای دانلود ابتدا وارد حساب کاربری شوید.
+
+
+</p>
+
+
+
+
+
+<button
+
+id="downloadConfirm"
+
+class="primary-btn"
+
+>
+
+ادامه
+
+</button>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+COMMENT CREATE POPUP
+========================== -->
+
+
+<div
+
+id="commentPopup"
+
+class="popup hidden"
+
+>
+
+
+<div class="popup-box">
+
+
+
+<button
+
+class="popup-close"
+
+data-close="commentPopup"
+
+>
+
+×
+
+</button>
+
+
+
+
+<h2>
+
+نظر شما
+
+</h2>
+
+
+
+
+
+<textarea
+
+id="commentText"
+
+placeholder="نظر خود را بنویسید..."
+
+rows="5"
+
+></textarea>
+
+
+
+
+
+
+<button
+
+id="submitComment"
+
+class="primary-btn"
+
+>
+
+ارسال نظر
+
+</button>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+COMMENTS VIEW POPUP
+========================== -->
+
+
+<div
+
+id="commentsViewPopup"
+
+class="popup hidden"
+
+>
+
+
+<div class="popup-box large">
+
+
+
+<button
+
+class="popup-close"
+
+data-close="commentsViewPopup"
+
+>
+
+×
+
+</button>
+
+
+
+
+<h2>
+
+نظرات کاربران
+
+</h2>
+
+
+
+
+<div
+
+id="commentsList"
+
+>
+
+
+<!-- Comments API Result -->
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+TOAST MESSAGE
+========================== -->
+
+
+<div
+
+id="toast"
+
+class="toast hidden"
+
+>
+
+</div>
+
+
+
+
+
+
+
+
+<!-- ==========================
+FOOTER
+========================== -->
+
+
+<footer class="main-footer">
+
+
+<div>
+
+
+<h3>
+
+NightCast
+
+</h3>
+
+
+
+<p>
+
+رادیویی برای تجربه، یادگیری و رشد
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+<div class="footer-links">
+
+
+<a href="#">
+
+درباره ما
+
+</a>
+
+
+
+<a href="#">
+
+قوانین
+
+</a>
+
+
+
+<a href="#">
+
+تماس
+
+</a>
+
+
+
+</div>
+
+
+
+  </footer>
+
+<!-- ==========================
+SKELETON LOADING TEMPLATE
+========================== -->
+
+
+<template id="skeletonTemplate">
+
+
+<div class="podcast-card skeleton-card">
+
+
+<div class="skeleton cover-skeleton"></div>
+
+
+
+<div class="skeleton-text">
+
+
+<div class="skeleton line large"></div>
+
+
+<div class="skeleton line"></div>
+
+
+<div class="skeleton line small"></div>
+
+
+</div>
+
+
+
+</div>
+
+
+</template>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+APPLICATION EVENTS
+========================== -->
+
+
+<script>
+
+
+// =====================================
+// GLOBAL APP STATE
+// =====================================
+
+
+window.NightCastApp = {
+
+
+page:1,
+
+
+limit:5,
+
+
+loading:false,
+
+
+hasMore:true,
+
+
+currentPodcast:null,
+
+
+user:null
+
+
+};
+
+
+
+
+
+
+
+
+// =====================================
+// CLOSE POPUPS
+// =====================================
+
+
+document.addEventListener(
+
+"click",
+
+function(e){
+
+
+
+if(
+
+e.target.dataset.close
+
+){
+
+
+
+const popup =
+
+document.getElementById(
+
+e.target.dataset.close
+
+);
+
+
+
+if(popup){
+
+
+popup.classList.add(
+
+"hidden"
+
+);
+
+
+}
+
+
+
+}
+
+
+
+}
+
+);
+
+
+
+
+
+
+
+
+
+// =====================================
+// LOGIN REQUEST
+// =====================================
+
+
+document
+
+.getElementById(
+
+"loginBtn"
+
+)
+
+?.addEventListener(
+
+"click",
+
+()=>{
+
+
+const popup =
+
+document.getElementById(
+
+"loginPopup"
+
+);
+
+
+
+if(popup){
+
+
+popup.classList.remove(
+
+"hidden"
+
+);
+
+
+}
+
+
+
+}
+
+);
+
+
+
+
+
+
+
+
+
+// =====================================
+// OPEN LOGIN PAGE
+// =====================================
+
+
+document
+
+.getElementById(
+
+"openLoginPage"
+
+)
+
+?.addEventListener(
+
+"click",
+
+()=>{
+
+
+window.location.href =
+
+"users/login.html";
+
+
+}
+
+);
+
+
+
+
+
+
+
+
+
+// =====================================
+// DOWNLOAD EVENT
+// =====================================
+
+
+document
+
+.addEventListener(
+
+"click",
+
+function(e){
+
+
+
+if(
+
+e.target.classList.contains(
+
+"download-btn"
+
+)
+
+){
+
+
+
+const token =
+
+localStorage.getItem(
+
+"NightCastUserToken"
+
+);
+
+
+
+if(!token){
+
+
+
+document
+
+.getElementById(
+
+"downloadPopup"
+
+)
+
+.classList.remove(
+
+"hidden"
+
+);
+
+
+
+return;
+
+
+}
+
+
+
+const id =
+
+e.target.closest(
+
+".podcast-card"
+
+)
+
+.dataset.id;
+
+
+
+
+if(window.downloadPodcast){
+
+
+
+window.downloadPodcast(id);
+
+
+}
+
+
+
+}
+
+
+
+}
+
+);
+
+
+
+
+
+
+
+
+
+// =====================================
+// COMMENT EVENT
+// =====================================
+
+
+document
+
+.addEventListener(
+
+"click",
+
+function(e){
+
+
+
+if(
+
+e.target.classList.contains(
+
+"comment-btn"
+
+)
+
+){
+
+
+
+const token =
+
+localStorage.getItem(
+
+"NightCastUserToken"
+
+);
+
+
+
+
+if(!token){
+
+
+
+document
+
+.getElementById(
+
+"loginPopup"
+
+)
+
+.classList.remove(
+
+"hidden"
+
+);
+
+
+
+return;
+
+
+}
+
+
+
+
+
+const card =
+
+e.target.closest(
+
+".podcast-card"
+
+);
+
+
+
+window.NightCastApp.currentPodcast =
+
+card.dataset.id;
+
+
+
+
+document
+
+.getElementById(
+
+"commentPopup"
+
+)
+
+.classList.remove(
+
+"hidden"
+
+);
+
+
+
+}
+
+
+
+}
+
+);
+
+
+
+
+
+
+
+
+
+// =====================================
+// START BUTTON
+// =====================================
+
+
+document
+
+.getElementById(
+
+"startListening"
+
+)
+
+?.addEventListener(
+
+"click",
+
+()=>{
+
+
+document
+
+.getElementById(
+
+"podcastSection"
+
+)
+
+.scrollIntoView({
+
+behavior:"smooth"
+
+});
+
+
+}
+
+);
+
+
+
+
+
+
+
+
+
+// =====================================
+// FEATURED PLAY
+// =====================================
+
+
+document
+
+.getElementById(
+
+"featuredPlay"
+
+)
+
+?.addEventListener(
+
+"click",
+
+()=>{
+
+
+const first =
+
+document.querySelector(
+
+".play-btn"
+
+);
+
+
+
+if(first){
+
+
+first.click();
+
+
+}
+
+
+
+}
+
+);
+
+
+
+
+
+
+  </script>
+
+<!-- ==========================
+PWA CONFIG
+========================== -->
+
+
+<link rel="manifest" href="users/manifest.json">
+
+
+
+<meta name="theme-color" content="#111111">
+
+
+
+
+
+<!-- ==========================
+SERVICE WORKER
+========================== -->
+
+
+<script>
+
+
+// =====================================
+// REGISTER SERVICE WORKER
+// =====================================
+
+
+if(
+
+"serviceWorker" in navigator
+
+){
+
+
+
+window.addEventListener(
+
+"load",
+
+()=>{
+
+
+navigator.serviceWorker
+
+.register(
+
+"users/service-worker.js"
+
+)
+
+.then(
+
+()=>{
+
+
+console.log(
+
+"NightCast PWA Ready"
+
+);
+
+
+}
+
+)
+
+.catch(
+
+error=>{
+
+
+console.log(
+
+"Service Worker Error",
+
+error
+
+);
+
+
+}
+
+);
+
+
+
+}
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// =====================================
+// INITIAL LOADING
+// =====================================
+
+
+window.addEventListener(
+
+"load",
+
+()=>{
+
+
+
+const loader =
+
+document.getElementById(
+
+"globalLoader"
+
+);
+
+
+
+if(loader){
+
+
+
+setTimeout(
+
+()=>{
+
+
+loader.classList.add(
+
+"hidden"
+
+);
+
+
+
+},
+
+500
+
+);
+
+
+
+}
+
+
+
+});
+
+
+
+</script>
+
+
+
+
+
+
 
 
 

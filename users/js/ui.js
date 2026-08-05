@@ -1,19 +1,29 @@
-
 /* ==================================================
-   NightCast UI Manager V2
+
+   NightCast User UI Manager V1
+
 
    File:
+
    /users/js/core/ui.js
 
+
    Responsibility:
-   UI Components Manager
+
+   ONLY USER INTERFACE CONTROL
+
 
 ================================================== */
 
+
+
+
+
 const NightCastUI = {
 
-    loader:null,
-    toast:null,
+
+
+
 
     /*
     ====================================
@@ -21,14 +31,36 @@ const NightCastUI = {
     ====================================
     */
 
+
     init(){
 
-        this.loader =
-        document.getElementById("globalLoader");
 
-        this.createToast();
+
+        this.initTheme();
+
+
+
+        this.initMobileMenu();
+
+
+
+        this.initModals();
+
+
+
+        this.hideLoader();
+
+
 
     },
+
+
+
+
+
+
+
+
 
     /*
     ====================================
@@ -36,230 +68,775 @@ const NightCastUI = {
     ====================================
     */
 
-    showLoader(){
 
-        if(this.loader){
+    showLoader(message="در حال آماده‌سازی..."){
 
-            this.loader.classList.remove("hidden");
 
-        }
 
-    },
+        const loader =
 
-    hideLoader(){
+        document.getElementById(
 
-        if(this.loader){
-
-            this.loader.classList.add("hidden");
-
-        }
-
-    },
-
-    /*
-    ====================================
-    TOAST
-    ====================================
-    */
-
-    createToast(){
-
-        if(document.getElementById("nightToast")){
-
-            this.toast =
-            document.getElementById("nightToast");
-
-            return;
-
-        }
-
-        this.toast =
-        document.createElement("div");
-
-        this.toast.id = "nightToast";
-
-        this.toast.style.position = "fixed";
-        this.toast.style.bottom = "90px";
-        this.toast.style.left = "50%";
-        this.toast.style.transform = "translateX(-50%)";
-        this.toast.style.background = "#111";
-        this.toast.style.color = "#fff";
-        this.toast.style.padding = "12px 22px";
-        this.toast.style.borderRadius = "12px";
-        this.toast.style.zIndex = "99999";
-        this.toast.style.display = "none";
-        this.toast.style.boxShadow = "0 6px 20px rgba(0,0,0,.35)";
-        this.toast.style.maxWidth = "90%";
-        this.toast.style.textAlign = "center";
-
-        document.body.appendChild(this.toast);
-
-    },
-
-    /*
-    ====================================
-    SHOW MESSAGE
-    ====================================
-    */
-
-    showMessage(message,type="info"){
-
-        if(!this.toast){
-
-            this.createToast();
-
-        }
-
-        this.toast.innerText = message;
-
-        switch(type){
-
-            case "success":
-
-                this.toast.style.background="#16a34a";
-
-                break;
-
-            case "error":
-
-                this.toast.style.background="#dc2626";
-
-                break;
-
-            case "warning":
-
-                this.toast.style.background="#d97706";
-
-                break;
-
-            default:
-
-                this.toast.style.background="#111";
-
-        }
-
-        this.toast.style.display="block";
-
-        clearTimeout(this.toast.timer);
-
-        this.toast.timer =
-        setTimeout(()=>{
-
-            this.toast.style.display="none";
-
-        },3000);
-
-    },
-
-    /*
-    ====================================
-    POPUP
-    ====================================
-    */
-
-    openPopup(id){
-
-        const popup =
-        document.getElementById(id);
-
-        if(!popup){
-
-            return;
-
-        }
-
-        popup.classList.remove("hidden");
-
-    },
-
-    closePopup(id){
-
-        const popup =
-        document.getElementById(id);
-
-        if(!popup){
-
-            return;
-
-        }
-
-        popup.classList.add("hidden");
-
-    },
-
-    /*
-    ====================================
-    FORMAT TIME
-    ====================================
-    */
-
-    formatTime(seconds){
-
-        if(!seconds){
-
-            return "00:00";
-
-        }
-
-        seconds = Math.floor(seconds);
-
-        const m =
-        Math.floor(seconds/60);
-
-        const s =
-        seconds%60;
-
-        return (
-
-            String(m).padStart(2,"0")
-
-            +":"
-
-            +
-
-            String(s).padStart(2,"0")
+            "globalLoader"
 
         );
 
-    },
 
-    /*
-    ====================================
-    BUTTON LOADING
-    ====================================
-    */
 
-    buttonLoading(btn,state=true){
 
-        if(!btn){
+
+        if(!loader)
 
             return;
 
+
+
+
+
+
+
+        const text =
+
+        loader.querySelector("p");
+
+
+
+
+
+        if(text)
+
+            text.innerText = message;
+
+
+
+
+
+        loader.classList.remove(
+
+            "hidden"
+
+        );
+
+
+
+    },
+
+
+
+
+
+
+
+
+    hideLoader(){
+
+
+
+        const loader =
+
+        document.getElementById(
+
+            "globalLoader"
+
+        );
+
+
+
+
+
+        if(loader){
+
+
+
+            loader.classList.add(
+
+                "hidden"
+
+            );
+
+
+
         }
 
-        if(state){
 
-            btn.disabled=true;
 
-            btn.dataset.oldText=btn.innerHTML;
+    },
 
-            btn.innerHTML="...";
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    TOAST SYSTEM
+    ====================================
+    */
+
+
+    toast(
+
+        message,
+
+        type="info"
+
+    ){
+
+
+
+        const container =
+
+        document.getElementById(
+
+            "toastContainer"
+
+        );
+
+
+
+
+
+        if(!container)
+
+            return;
+
+
+
+
+
+
+
+        const item =
+
+        document.createElement(
+
+            "div"
+
+        );
+
+
+
+
+
+
+        item.className =
+
+        "toast toast-"+type;
+
+
+
+
+
+
+
+        item.innerHTML =
+
+
+
+        `
+
+        <span>
+
+        ${message}
+
+        </span>
+
+        `;
+
+
+
+
+
+
+
+        container.appendChild(
+
+            item
+
+        );
+
+
+
+
+
+
+
+
+        setTimeout(()=>{
+
+
+
+            item.classList.add(
+
+                "show"
+
+            );
+
+
+
+        },50);
+
+
+
+
+
+
+
+
+
+        setTimeout(()=>{
+
+
+
+            item.classList.remove(
+
+                "show"
+
+            );
+
+
+
+
+
+            setTimeout(()=>{
+
+
+                item.remove();
+
+
+            },300);
+
+
+
+
+        },3000);
+
+
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    THEME SYSTEM
+
+    Day / Night
+
+    ====================================
+    */
+
+
+    initTheme(){
+
+
+
+        const saved =
+
+        localStorage.getItem(
+
+            "NightCastTheme"
+
+        );
+
+
+
+
+
+        if(saved==="light"){
+
+
+
+            document.body.classList.add(
+
+                "light-mode"
+
+            );
+
+
 
         }
 
-        else{
 
-            btn.disabled=false;
 
-            btn.innerHTML=btn.dataset.oldText;
+
+
+
+
+
+        const button =
+
+        document.getElementById(
+
+            "themeButton"
+
+        );
+
+
+
+
+
+
+
+        if(button){
+
+
+
+            button.addEventListener(
+
+                "click",
+
+                ()=>{
+
+
+                    this.toggleTheme();
+
+
+                }
+
+
+            );
+
+
 
         }
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    toggleTheme(){
+
+
+
+        document.body.classList.toggle(
+
+            "light-mode"
+
+        );
+
+
+
+
+
+        const light =
+
+        document.body.classList.contains(
+
+            "light-mode"
+
+        );
+
+
+
+
+
+
+        localStorage.setItem(
+
+            "NightCastTheme",
+
+            light
+
+            ?
+
+            "light"
+
+            :
+
+            "dark"
+
+
+        );
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    MOBILE MENU
+    ====================================
+    */
+
+
+    initMobileMenu(){
+
+
+
+        const open =
+
+        document.getElementById(
+
+            "mobileMenuButton"
+
+        );
+
+
+
+
+
+        const close =
+
+        document.getElementById(
+
+            "closeMenu"
+
+        );
+
+
+
+
+
+        const overlay =
+
+        document.getElementById(
+
+            "menuOverlay"
+
+        );
+
+
+
+
+
+
+        if(open){
+
+
+
+            open.onclick = ()=>{
+
+
+                this.openMenu();
+
+
+
+            };
+
+
+
+        }
+
+
+
+
+
+
+        if(close){
+
+
+
+            close.onclick = ()=>{
+
+
+                this.closeMenu();
+
+
+
+            };
+
+
+        }
+
+
+
+
+
+
+        if(overlay){
+
+
+
+            overlay.onclick = ()=>{
+
+
+                this.closeMenu();
+
+
+
+            };
+
+
+        }
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    openMenu(){
+
+
+
+        document.body.classList.add(
+
+            "menu-open"
+
+        );
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    closeMenu(){
+
+
+
+        document.body.classList.remove(
+
+            "menu-open"
+
+        );
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    MODALS
+    ====================================
+    */
+
+
+    initModals(){
+
+
+
+        const closeButtons =
+
+        document.querySelectorAll(
+
+            "[data-close-modal]"
+
+        );
+
+
+
+
+
+
+        closeButtons.forEach(btn=>{
+
+
+
+            btn.addEventListener(
+
+                "click",
+
+                ()=>{
+
+
+                    const modal =
+
+                    btn.closest(
+
+                        ".modal"
+
+                    );
+
+
+
+                    if(modal)
+
+                        this.closeModal(
+
+                            modal.id
+
+                        );
+
+
+
+                }
+
+
+            );
+
+
+
+        });
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    openModal(id){
+
+
+
+        const modal =
+
+        document.getElementById(
+
+            id
+
+        );
+
+
+
+
+
+        if(modal){
+
+
+
+            modal.classList.remove(
+
+                "hidden"
+
+            );
+
+
+
+        }
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    closeModal(id){
+
+
+
+        const modal =
+
+        document.getElementById(
+
+            id
+
+        );
+
+
+
+
+
+        if(modal){
+
+
+
+            modal.classList.add(
+
+                "hidden"
+
+            );
+
+
+
+        }
+
+
 
     }
 
+
+
+
+
+
 };
 
+
+
+
+
+
+
+
+
+/*
+====================================
+
+GLOBAL ACCESS
+
+====================================
+*/
+
+
 window.NightCastUI = NightCastUI;
+
+
+
+
+
+
+
+
+
+/*
+====================================
+
+AUTO START
+
+====================================
+*/
+
 
 document.addEventListener(
 
@@ -267,8 +844,21 @@ document.addEventListener(
 
 ()=>{
 
+
     NightCastUI.init();
 
-});
 
-console.log("NightCast UI V2 Loaded");
+}
+
+);
+
+
+
+
+
+
+console.log(
+
+"NightCast UI V1 Loaded"
+
+);

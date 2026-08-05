@@ -1,8 +1,12 @@
-
 /* ==================================================
-   NightCast User API Manager
-   File: /users/js/api.js
-   Version: 2.0 Professional
+   NightCast User API Manager V2
+
+   File:
+   /users/js/core/api.js
+
+   Responsibility:
+   ONLY API Communication
+
 ================================================== */
 
 
@@ -15,17 +19,25 @@ const NightCastAPI = {
     ====================================
     */
 
+
     baseURL:
 
     "https://nightcast-api.tomasgermany2580.workers.dev/api/v1",
 
 
 
+
+
     /*
     ====================================
     TOKEN KEY
+
+    IMPORTANT:
+    User Authentication Only
+
     ====================================
     */
+
 
     tokenKey:
 
@@ -34,9 +46,12 @@ const NightCastAPI = {
 
 
 
+
+
+
     /*
     ====================================
-    TOKEN MANAGEMENT
+    GET TOKEN
     ====================================
     */
 
@@ -54,6 +69,18 @@ const NightCastAPI = {
     },
 
 
+
+
+
+
+
+
+
+    /*
+    ====================================
+    SAVE TOKEN
+    ====================================
+    */
 
 
     setToken(token){
@@ -80,6 +107,18 @@ const NightCastAPI = {
 
 
 
+
+
+
+
+
+    /*
+    ====================================
+    REMOVE TOKEN
+    ====================================
+    */
+
+
     removeToken(){
 
 
@@ -95,6 +134,18 @@ const NightCastAPI = {
 
 
 
+
+
+
+
+
+    /*
+    ====================================
+    CHECK LOGIN
+    ====================================
+    */
+
+
     isLoggedIn(){
 
 
@@ -102,6 +153,10 @@ const NightCastAPI = {
 
 
     },
+
+
+
+
 
 
 
@@ -122,11 +177,6 @@ const NightCastAPI = {
 
             "Content-Type":
 
-            "application/json",
-
-
-            "Accept":
-
             "application/json"
 
 
@@ -134,10 +184,15 @@ const NightCastAPI = {
 
 
 
+
+
         if(auth){
 
 
-            const token = this.getToken();
+            const token =
+
+            this.getToken();
+
 
 
 
@@ -156,10 +211,15 @@ const NightCastAPI = {
 
 
 
+
+
         return headers;
 
 
     },
+
+
+
 
 
 
@@ -173,7 +233,14 @@ const NightCastAPI = {
     */
 
 
-    async request(endpoint, options={}){
+    async request(
+
+        endpoint,
+
+        options={}
+
+    ){
+
 
 
         try{
@@ -185,25 +252,17 @@ const NightCastAPI = {
 
                 this.baseURL + endpoint,
 
-                {
-
-
-                    ...options,
-
-
-                    headers:
-
-                    options.headers || this.headers(false)
-
-
-                }
+                options
 
             );
 
 
 
 
+
             let data;
+
+
 
 
 
@@ -218,24 +277,22 @@ const NightCastAPI = {
 
             }
 
-            catch(e){
+            catch(error){
 
 
-                data = {
-
+                data={
 
                     success:false,
-
 
                     message:
 
                     "Invalid server response"
 
-
                 };
 
 
             }
+
 
 
 
@@ -264,11 +321,10 @@ const NightCastAPI = {
 
 
 
-                };
+                    };
 
 
             }
-
 
 
 
@@ -282,6 +338,18 @@ const NightCastAPI = {
         }
 
         catch(error){
+
+
+
+            console.error(
+
+                "NightCast API Error:",
+
+                error
+
+            );
+
+
 
 
 
@@ -301,6 +369,7 @@ const NightCastAPI = {
                 error.message
 
 
+
             };
 
 
@@ -318,9 +387,10 @@ const NightCastAPI = {
 
 
 
+
     /*
     ====================================
-    TEST
+    TEST API
     ====================================
     */
 
@@ -328,7 +398,7 @@ const NightCastAPI = {
     async test(){
 
 
-        return await this.request(
+        return this.request(
 
             "/test",
 
@@ -338,6 +408,45 @@ const NightCastAPI = {
 
             }
 
+        );
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    PODCAST LIST
+    ====================================
+    */
+
+
+    async getPodcasts(
+
+        page=1,
+
+        limit=5
+
+    ){
+
+
+
+        return this.request(
+
+            `/public/podcasts?page=${page}&limit=${limit}`,
+
+            {
+
+                method:"GET"
+
+            }
 
         );
 
@@ -354,24 +463,34 @@ const NightCastAPI = {
 
     /*
     ====================================
-    PUBLIC PODCAST LIST
+    REGISTER
     ====================================
     */
 
 
-    async getPodcasts(page=1,limit=5){
+    async register(data){
 
 
-        return await this.request(
 
+        return this.request(
 
-            `/public/podcasts?page=${page}&limit=${limit}`,
-
+            "/public/register",
 
             {
 
 
-                method:"GET"
+                method:"POST",
+
+
+                headers:
+
+                this.headers(),
+
+
+                body:
+
+                JSON.stringify(data)
+
 
 
             }
@@ -381,6 +500,7 @@ const NightCastAPI = {
 
 
     },
+
 
 
 
@@ -396,7 +516,13 @@ const NightCastAPI = {
     */
 
 
-    async login(username,password){
+    async login(
+
+        username,
+
+        password
+
+    ){
 
 
 
@@ -404,9 +530,7 @@ const NightCastAPI = {
 
         await this.request(
 
-
             "/public/login",
-
 
             {
 
@@ -416,7 +540,7 @@ const NightCastAPI = {
 
                 headers:
 
-                this.headers(false),
+                this.headers(),
 
 
                 body:
@@ -432,8 +556,8 @@ const NightCastAPI = {
                 })
 
 
-            }
 
+            }
 
 
         );
@@ -466,6 +590,7 @@ const NightCastAPI = {
 
 
 
+
         return result;
 
 
@@ -490,12 +615,11 @@ const NightCastAPI = {
     async me(){
 
 
-        return await this.request(
 
+        return this.request(
 
             "/public/me",
 
-
             {
 
 
@@ -507,6 +631,7 @@ const NightCastAPI = {
                 this.headers(true)
 
 
+
             }
 
 
@@ -523,72 +648,22 @@ const NightCastAPI = {
 
 
 
+
     /*
     ====================================
-    REGISTER
+    DOWNLOAD PODCAST
     ====================================
     */
 
 
-    async register(data){
-
-
-        return await this.request(
-
-
-            "/public/register",
-
-
-            {
-
-
-                method:"POST",
-
-
-                headers:
-
-                this.headers(false),
-
-
-                body:
-
-                JSON.stringify(data)
+    async download(id){
 
 
 
-            }
-
-
-
-        );
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    DOWNLOAD
-    ====================================
-    */
-
-
-    async downloadPodcast(id){
-
-
-        return await this.request(
-
+        return this.request(
 
             "/public/download/" + id,
 
-
             {
 
 
@@ -607,7 +682,9 @@ const NightCastAPI = {
         );
 
 
+
     },
+
 
 
 
@@ -631,9 +708,7 @@ const NightCastAPI = {
 
         await this.request(
 
-
             "/public/logout",
-
 
             {
 
@@ -650,12 +725,14 @@ const NightCastAPI = {
             }
 
 
-
         );
 
 
 
+
+
         this.removeToken();
+
 
 
 
@@ -667,21 +744,21 @@ const NightCastAPI = {
 
 
 
-
 };
 
 
 
 
 
-window.NightCastAPI =
 
-NightCastAPI;
+window.NightCastAPI = NightCastAPI;
+
+
 
 
 
 console.log(
 
-"NightCast API Core Loaded"
+"NightCast API V2 Loaded"
 
 );

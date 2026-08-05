@@ -1,19 +1,31 @@
 /* ==================================================
 
-   NightCast User Application Controller V2
+NightCast User Application Core V1
 
-   File:
-   /users/js/app.js
+File:
+ /users/js/app.js
 
-   Responsibility:
 
-   ONLY:
-   - Application Startup
-   - Module Initialization
-   - Global Events
+Responsibility:
+
+- Application Bootstrap
+- Module Initialization
+
+
+Modules:
+
+api.js
+auth.js
+ui.js
+podcasts.js
+search.js
+library.js
+profile.js
+player.js
+comments.js
+
 
 ================================================== */
-
 
 
 const NightCastApp = {
@@ -22,7 +34,7 @@ const NightCastApp = {
 
     /*
     ====================================
-    INIT
+    INIT APPLICATION
     ====================================
     */
 
@@ -30,268 +42,285 @@ const NightCastApp = {
     async init(){
 
 
+
         console.log(
-            "NightCast App Starting..."
+
+            "🚀 NightCast Starting..."
+
         );
 
 
 
-        this.bindGlobalEvents();
 
 
 
-        await this.checkSession();
 
+        /*
+        ================================
+        GLOBAL SYSTEM
+        ================================
+        */
 
 
         this.hideLoader();
 
 
 
+
+
+
+
+
+
+        /*
+        ================================
+        UI CORE
+        ================================
+        */
+
+
+        if(
+
+            window.NightCastUI
+
+        ){
+
+
+            NightCastUI.init();
+
+
+        }
+
+
+
+
+
+
+
+
+
+        /*
+        ================================
+        AUTH SYSTEM
+        ================================
+        */
+
+
+        if(
+
+            window.NightCastAuth
+
+        ){
+
+
+            await NightCastAuth.init();
+
+
+        }
+
+
+
+
+
+
+
+
+
+        /*
+        ================================
+        PODCASTS
+        ================================
+        */
+
+
+        if(
+
+            window.NightCastPodcasts
+
+        ){
+
+
+            NightCastPodcasts.init();
+
+
+        }
+
+
+
+
+
+
+
+
+
+        /*
+        ================================
+        SEARCH
+        ================================
+        */
+
+
+        if(
+
+            window.NightCastSearch
+
+        ){
+
+
+            NightCastSearch.init();
+
+
+        }
+
+
+
+
+
+
+
+
+
+        /*
+        ================================
+        LIBRARY
+        ================================
+        */
+
+
+        if(
+
+            window.NightCastLibrary
+
+        ){
+
+
+            NightCastLibrary.init();
+
+
+        }
+
+
+
+
+
+
+
+
+
+        /*
+        ================================
+        PROFILE
+        ================================
+        */
+
+
+        if(
+
+            window.NightCastProfile
+
+        ){
+
+
+            NightCastProfile.init();
+
+
+        }
+
+
+
+
+
+
+
+
+
+        /*
+        ================================
+        PLAYER
+        ================================
+        */
+
+
+        if(
+
+            window.NightCastPlayer
+
+        ){
+
+
+            NightCastPlayer.init();
+
+
+        }
+
+
+
+
+
+
+
+
+
+        /*
+        ================================
+        COMMENTS
+
+        فقط صفحات مربوط به نظر
+
+        ================================
+        */
+
+
+        if(
+
+            window.NightCastComments
+
+            &&
+
+            document.getElementById(
+
+                "commentsList"
+
+            )
+
+        ){
+
+
+            NightCastComments.init();
+
+
+        }
+
+
+
+
+
+
+
+
+
+        /*
+        ================================
+        READY
+        ================================
+        */
+
+
+        document.body.classList.add(
+
+            "app-ready"
+
+        );
+
+
+
+
+
         console.log(
-            "NightCast App Ready"
+
+            "✅ NightCast Ready"
+
         );
-
-
-
-    },
-
-
-
-
-
-
-    /*
-    ====================================
-    GLOBAL EVENTS
-    ====================================
-    */
-
-
-    bindGlobalEvents(){
-
-
-
-        /*
-        Start Listening Button
-        */
-
-
-        const startButton =
-
-        document.getElementById(
-            "startListeningButton"
-        );
-
-
-
-        if(startButton){
-
-
-            startButton.addEventListener(
-                "click",
-
-                ()=>{
-
-
-                    const section =
-
-                    document.getElementById(
-                        "podcastSection"
-                    );
-
-
-                    if(section){
-
-                        section.scrollIntoView({
-
-                            behavior:"smooth"
-
-                        });
-
-                    }
-
-
-                }
-
-            );
-
-
-        }
-
-
-
-
-
-
-        /*
-        Explore Button
-        */
-
-
-        const exploreButton =
-
-        document.getElementById(
-            "exploreButton"
-        );
-
-
-
-        if(exploreButton){
-
-
-            exploreButton.addEventListener(
-
-                "click",
-
-                ()=>{
-
-
-                    window.scrollTo({
-
-                        top:0,
-
-                        behavior:"smooth"
-
-                    });
-
-
-                }
-
-            );
-
-
-        }
-
-
-
-
-
-
-        /*
-        Login Button
-
-        handled by Auth module
-
-        */
-
-
-        const loginButton =
-
-        document.getElementById(
-            "loginButton"
-        );
-
-
-
-        if(loginButton){
-
-
-            loginButton.addEventListener(
-
-                "click",
-
-                ()=>{
-
-
-                    if(
-                        window.NightCastAuth
-                    ){
-
-                        NightCastAuth.openLogin();
-
-
-                    }
-
-
-                }
-
-
-            );
-
-
-        }
-
-
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    SESSION CHECK
-    ====================================
-    */
-
-
-    async checkSession(){
-
-
-
-        if(
-            !window.NightCastAuth
-        ){
-
-            return;
-
-
-        }
-
-
-
-
-        if(
-            NightCastAuth.isLoggedIn()
-        ){
-
-
-
-            const user =
-
-            await NightCastAuth.getCurrentUser();
-
-
-
-
-
-            if(user.success){
-
-
-
-                console.log(
-
-                    "User Active:",
-
-                    user.data
-
-                );
-
-
-            }
-
-
-        }
-
-        else{
-
-
-            console.log(
-
-                "Guest Mode"
-
-            );
-
-
-        }
 
 
 
@@ -327,25 +356,31 @@ const NightCastApp = {
 
 
 
-        if(loader){
 
+        if(!loader){
 
-
-            setTimeout(()=>{
-
-
-                loader.classList.add(
-
-                    "hidden"
-
-                );
-
-
-            },500);
-
-
+            return;
 
         }
+
+
+
+
+
+
+
+        setTimeout(()=>{
+
+
+            loader.classList.add(
+
+                "hidden"
+
+            );
+
+
+
+        },500);
 
 
 
@@ -365,10 +400,9 @@ const NightCastApp = {
 
 
 
-
 /*
 ====================================
-AUTO START
+START
 ====================================
 */
 
@@ -392,12 +426,7 @@ document.addEventListener(
 
 
 
-window.NightCastApp = NightCastApp;
 
+window.NightCastApp =
 
-
-console.log(
-
-"NightCast app.js Loaded"
-
-);
+NightCastApp;

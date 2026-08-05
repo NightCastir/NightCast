@@ -1,25 +1,40 @@
 /* ==================================================
 
-   NightCast User Authentication Manager V1
+NightCast Authentication Manager V2
 
 
-   File:
+File:
 
-   /users/js/core/auth.js
+/users/js/core/auth.js
 
 
-   Responsibility:
+Responsibility:
 
-   ONLY USER AUTHENTICATION
+ONLY USER AUTH
+
+
+Features:
+
+- Login
+- Register
+- Guest Mode
+- Session Check
+- Permission Control
 
 
 ================================================== */
 
 
-
-
-
 const NightCastAuth = {
+
+
+
+    currentUser:null,
+
+
+    mode:"guest",
+
+
 
 
 
@@ -32,11 +47,18 @@ const NightCastAuth = {
     */
 
 
-    init(){
+    async init(){
 
 
-        this.checkSession();
+        await this.checkSession();
 
+
+
+        console.log(
+
+            "NightCast Auth Ready"
+
+        );
 
 
     },
@@ -51,10 +73,7 @@ const NightCastAuth = {
 
     /*
     ====================================
-    CHECK USER SESSION
-
-    Called on startup
-
+    CHECK SESSION
     ====================================
     */
 
@@ -63,22 +82,17 @@ const NightCastAuth = {
 
 
 
-        if(!NightCastAPI.isLoggedIn()){
+        if(
 
+            !NightCastAPI.isLoggedIn()
+
+        ){
 
 
             this.setGuest();
 
 
-
-            return {
-
-
-                loggedIn:false
-
-
-            };
-
+            return false;
 
 
         }
@@ -100,35 +114,26 @@ const NightCastAuth = {
 
 
 
-        if(result.success){
 
+        if(
 
+            result.success
 
-            this.currentUser =
-
-            result.user || result.data;
+        ){
 
 
 
             this.setUser(
 
-                this.currentUser
+                result.user ||
+
+                result.data
 
             );
 
 
 
-            return {
-
-
-                loggedIn:true,
-
-
-                user:this.currentUser
-
-
-
-            };
+            return true;
 
 
 
@@ -140,31 +145,15 @@ const NightCastAuth = {
 
 
 
-        else{
+        this.logoutLocal();
 
 
 
-            this.logoutLocal();
+        this.setGuest();
 
 
 
-            this.setGuest();
-
-
-
-            return {
-
-
-                loggedIn:false
-
-
-            };
-
-
-
-        }
-
-
+        return false;
 
 
 
@@ -180,25 +169,7 @@ const NightCastAuth = {
 
     /*
     ====================================
-    CURRENT USER
-    ====================================
-    */
-
-
-    currentUser:null,
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
     LOGIN
-
     ====================================
     */
 
@@ -209,7 +180,6 @@ const NightCastAuth = {
 
         password
 
-
     ){
 
 
@@ -218,12 +188,9 @@ const NightCastAuth = {
 
         await NightCastAPI.login(
 
-
             username,
 
-
             password
-
 
         );
 
@@ -235,11 +202,11 @@ const NightCastAuth = {
 
         if(
 
+            result.success
 
-            result.success &&
+            &&
 
             result.token
-
 
         ){
 
@@ -273,7 +240,6 @@ const NightCastAuth = {
     /*
     ====================================
     REGISTER
-
     ====================================
     */
 
@@ -282,7 +248,7 @@ const NightCastAuth = {
 
 
 
-        return NightCastAPI.register(
+        return await NightCastAPI.register(
 
             data
 
@@ -303,12 +269,36 @@ const NightCastAuth = {
     /*
     ====================================
     LOGOUT
-
     ====================================
     */
 
 
-    logout(){
+    async logout(){
+
+
+
+        try{
+
+
+
+            await NightCastAPI.logout();
+
+
+
+        }
+
+        catch(e){
+
+
+
+            console.warn(e);
+
+
+
+        }
+
+
+
 
 
 
@@ -332,8 +322,7 @@ const NightCastAuth = {
 
     /*
     ====================================
-    LOCAL LOGOUT
-
+    REMOVE LOCAL SESSION
     ====================================
     */
 
@@ -346,7 +335,7 @@ const NightCastAuth = {
 
 
 
-        this.currentUser = null;
+        this.currentUser=null;
 
 
 
@@ -362,10 +351,7 @@ const NightCastAuth = {
 
     /*
     ====================================
-    GUEST MODE
-
-    User can browse
-
+    GUEST
     ====================================
     */
 
@@ -374,7 +360,12 @@ const NightCastAuth = {
 
 
 
-        this.currentUser = {
+        this.mode="guest";
+
+
+
+        this.currentUser={
+
 
 
             id:null,
@@ -391,6 +382,7 @@ const NightCastAuth = {
 
 
 
+
     },
 
 
@@ -403,8 +395,7 @@ const NightCastAuth = {
 
     /*
     ====================================
-    SET USER
-
+    USER
     ====================================
     */
 
@@ -413,7 +404,10 @@ const NightCastAuth = {
 
 
 
-        this.currentUser = user;
+        this.mode="user";
+
+
+        this.currentUser=user;
 
 
 
@@ -430,7 +424,6 @@ const NightCastAuth = {
     /*
     ====================================
     STATUS
-
     ====================================
     */
 
@@ -438,8 +431,11 @@ const NightCastAuth = {
     isLoggedIn(){
 
 
+        return (
 
-        return NightCastAPI.isLoggedIn();
+            this.mode==="user"
+
+        );
 
 
 
@@ -450,11 +446,17 @@ const NightCastAuth = {
 
 
 
+
+
+
     isGuest(){
 
 
+        return (
 
-        return !this.isLoggedIn();
+            this.mode==="guest"
+
+        );
 
 
 
@@ -470,14 +472,39 @@ const NightCastAuth = {
 
     /*
     ====================================
-    DOWNLOAD PERMISSION
-
+    PERMISSIONS
     ====================================
     */
 
 
+
     canDownload(){
 
+
+        return this.isLoggedIn();
+
+
+
+    },
+
+
+
+
+
+    canComment(){
+
+
+        return this.isLoggedIn();
+
+
+
+    },
+
+
+
+
+
+    canSave(){
 
 
         return this.isLoggedIn();
@@ -496,39 +523,83 @@ const NightCastAuth = {
 
     /*
     ====================================
-    REQUIRE LOGIN
+    OPEN LOGIN
 
-    Used before:
+    Called from:
 
     Download
+    Comment
     Save
-    Favorite
 
     ====================================
     */
 
 
-    requireLogin(){
+    openLogin(){
 
 
 
-        if(this.isLoggedIn()){
+        const modal =
+
+        document.getElementById(
+
+            "authModal"
+
+        );
 
 
 
-            return true;
+        if(modal){
 
+
+
+            modal.classList.remove(
+
+                "hidden"
+
+            );
 
 
         }
 
 
 
+    },
 
 
 
 
-        return false;
+
+
+
+
+
+    closeLogin(){
+
+
+
+        const modal =
+
+        document.getElementById(
+
+            "authModal"
+
+        );
+
+
+
+        if(modal){
+
+
+
+            modal.classList.add(
+
+                "hidden"
+
+            );
+
+
+        }
 
 
 
@@ -544,8 +615,7 @@ const NightCastAuth = {
 
     /*
     ====================================
-    GET USER
-
+    USER DATA
     ====================================
     */
 
@@ -562,6 +632,8 @@ const NightCastAuth = {
 
 
 
+
+
 };
 
 
@@ -572,52 +644,6 @@ const NightCastAuth = {
 
 
 
-/*
-====================================
+window.NightCastAuth =
 
-GLOBAL ACCESS
-
-====================================
-*/
-
-
-window.NightCastAuth = NightCastAuth;
-
-
-
-
-
-/*
-====================================
-
-AUTO START
-
-====================================
-*/
-
-
-document.addEventListener(
-
-"DOMContentLoaded",
-
-()=>{
-
-
-    NightCastAuth.init();
-
-
-
-}
-
-);
-
-
-
-
-
-
-console.log(
-
-"NightCast Auth V1 Loaded"
-
-);
+NightCastAuth;

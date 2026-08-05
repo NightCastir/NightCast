@@ -1,29 +1,17 @@
 /* ==================================================
    NightCast User Application Controller
    File: /users/js/app.js
-   Version: 1.0
+   Version: 2.0
 ================================================== */
-
 
 
 const NightCastApp = {
 
 
 
-version:"1.0",
-
-
-
-ready:false,
-
-
-
-
-
-
 /*
 ====================================
-INITIALIZE APPLICATION
+INIT APPLICATION
 ====================================
 */
 
@@ -31,74 +19,51 @@ INITIALIZE APPLICATION
 async init(){
 
 
+console.log(
+"NightCast User App Starting..."
+);
+
+
 
 try{
 
 
-
-console.log(
-
-"🎙 NightCast User App Starting..."
-
-);
-
-
-
-
-
-// Start Authentication
-
+// Auth
 
 if(
-
-window.NightCastAuth
-
+window.NightCastAuth &&
+typeof NightCastAuth.init === "function"
 ){
-
 
 await NightCastAuth.init();
 
-
 }
 
 
 
 
-
-// Start Player
-
+// Player
 
 if(
-
-window.NightCastPlayer
-
+window.NightCastPlayer &&
+typeof NightCastPlayer.init === "function"
 ){
-
 
 NightCastPlayer.init();
 
-
 }
 
 
 
 
-
-
-// Start Podcasts
-
+// Podcasts
 
 if(
-
-window.NightCastPodcasts
-
+window.NightCastPodcasts &&
+typeof NightCastPodcasts.init === "function"
 ){
 
-
-
-await NightCastPodcasts.init();
-
-
+NightCastPodcasts.init();
 
 }
 
@@ -106,28 +71,16 @@ await NightCastPodcasts.init();
 
 
 
+// UI
 
-
-this.bindEvents();
-
-
-
-
-
-
-this.ready=true;
-
+this.bindGlobalEvents();
 
 
 
 
 console.log(
-
-"✔ NightCast User App Ready"
-
+"NightCast User App Ready"
 );
-
-
 
 
 
@@ -136,26 +89,15 @@ console.log(
 catch(error){
 
 
-
 console.error(
-
-"NightCast Init Error:",
-
+"NightCast App Error:",
 error
-
 );
-
-
-
-NightCastUI.error(
-
-"خطا در راه‌اندازی برنامه"
-
-);
-
 
 
 }
+
+
 
 
 
@@ -174,7 +116,7 @@ GLOBAL EVENTS
 */
 
 
-bindEvents(){
+bindGlobalEvents(){
 
 
 
@@ -183,30 +125,200 @@ LOGIN BUTTON
 */
 
 
-const loginBtn =
-
+const loginSubmit =
 document.getElementById(
-
-"loginBtn"
-
+"userLoginSubmit"
 );
 
 
 
+if(loginSubmit){
 
-if(loginBtn){
+
+loginSubmit.onclick = async ()=>{
+
+
+const username =
+document.getElementById(
+"userLoginUsername"
+).value.trim();
+
+
+
+const password =
+document.getElementById(
+"userLoginPassword"
+).value;
+
+
+
+if(
+!username ||
+!password
+){
+
+
+NightCastUI.showMessage(
+"نام کاربری و رمز عبور را وارد کنید"
+);
+
+
+return;
+
+}
+
+
+
+const result =
+await NightCastAuth.login(
+username,
+password
+);
+
+
+
+if(result.success){
+
+
+NightCastUI.showMessage(
+"ورود موفق بود"
+);
+
+
+
+document
+.getElementById(
+"loginPopup"
+)
+.classList.add(
+"hidden"
+);
+
+
+
+location.reload();
+
+
+
+}
+
+else{
+
+
+NightCastUI.showMessage(
+result.message ||
+"ورود ناموفق بود"
+);
+
+
+
+}
+
+
+
+};
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+PLAYER BUTTONS
+*/
+
+
+const playBtn =
+document.getElementById(
+"playerPlayBtn"
+);
+
+
+
+if(playBtn){
+
+
+playBtn.onclick=()=>{
+
+
+NightCastPlayer.toggle();
+
+
+};
+
+
+
+}
+
+
+
+
+
+const pauseBtn =
+document.getElementById(
+"playerPauseBtn"
+);
+
+
+
+if(pauseBtn){
+
+
+pauseBtn.onclick=()=>{
+
+
+NightCastPlayer.pause();
+
+
+};
+
+
+}
+
+
+
+
+
+
+
+
+
+/*
+LOGIN POPUP
+*/
+
+
+const loginBtn =
+document.getElementById(
+"loginBtn"
+);
+
+
+
+const popup =
+document.getElementById(
+"loginPopup"
+);
+
+
+
+if(loginBtn && popup){
 
 
 
 loginBtn.onclick=()=>{
 
 
-NightCastUI.openPopup(
-
-"loginPopup"
-
+popup.classList.remove(
+"hidden"
 );
-
 
 
 };
@@ -220,38 +332,25 @@ NightCastUI.openPopup(
 
 
 
-
-
-/*
-LOGOUT BUTTON
-*/
-
-
-const logoutBtn =
-
+const close =
 document.getElementById(
-
-"logoutBtn"
-
+"closeLogin"
 );
 
 
 
+if(close){
 
 
-if(logoutBtn){
+close.onclick=()=>{
 
 
-
-logoutBtn.onclick=()=>{
-
-
-NightCastAuth.logout();
-
+popup.classList.add(
+"hidden"
+);
 
 
 };
-
 
 
 }
@@ -262,43 +361,35 @@ NightCastAuth.logout();
 
 
 
+
 /*
-PLAYER CLICK
+OUTSIDE CLICK POPUP CLOSE
 */
 
 
-document.addEventListener(
+document
+.querySelectorAll(".popup")
+.forEach(
+popup=>{
 
+
+popup.addEventListener(
 "click",
-
 (e)=>{
 
 
+if(e.target===popup){
 
-const play =
 
-e.target.closest(
-
-".play-btn"
-
+popup.classList.add(
+"hidden"
 );
-
-
-
-if(play){
-
-
-
-console.log(
-
-"Play clicked"
-
-);
-
 
 
 }
 
+
+});
 
 
 });
@@ -308,123 +399,10 @@ console.log(
 
 
 
-},
-
-
-
-
-
-
-
-/*
-====================================
-SEARCH
-====================================
-*/
-
-
-search(keyword){
-
-
-
-if(
-
-!keyword
-
-){
-
-return;
-
 }
 
 
 
-console.log(
-
-"Search:",
-
-keyword
-
-);
-
-
-
-// آینده:
-// اتصال به API Search
-
-
-
-},
-
-
-
-
-
-
-
-/*
-====================================
-REFRESH USER DATA
-====================================
-*/
-
-
-async refreshUser(){
-
-
-
-if(
-
-window.NightCastAuth
-
-){
-
-
-
-await NightCastAuth.init();
-
-
-
-}
-
-
-
-},
-
-
-
-
-
-
-
-/*
-====================================
-APP INFO
-====================================
-*/
-
-
-info(){
-
-
-
-return {
-
-
-name:"NightCast",
-
-version:this.version,
-
-
-mode:"User"
-
-
-
-};
-
-
-
-}
 
 
 
@@ -434,36 +412,21 @@ mode:"User"
 
 
 
-
-
-
-window.NightCastApp = NightCastApp;
-
-
+window.NightCastApp =
+NightCastApp;
 
 
 
 
 
-
-
-/*
-====================================
-BOOT
-====================================
-*/
 
 
 document.addEventListener(
-
 "DOMContentLoaded",
-
 ()=>{
 
 
-
 NightCastApp.init();
-
 
 
 });

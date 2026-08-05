@@ -2159,276 +2159,81 @@ Loader.hide();
 UPLOAD COVER
 =================================================
 */
-
-
 async uploadCover(){
 
+    try{
 
+        const input = document.getElementById("coverFile");
 
-try{
+        if(!input || !input.files.length){
 
+            this.showError("ابتدا فایل کاور را انتخاب کنید");
 
+            return;
 
-const input =
+        }
 
-document.getElementById(
+        const formData = new FormData();
 
-"coverFile"
+        formData.append("file", input.files[0]);
 
-);
+        formData.append("type","cover");
 
+        if(window.Loader){
 
+            Loader.show("در حال آپلود کاور...");
 
+        }
 
+        const result = await API.upload(
+            "/media/upload",
+            formData
+        );
 
+        if(!result.success){
 
+            throw new Error(
+                result.message || "آپلود کاور ناموفق بود"
+            );
 
+        }
 
-if(
+        document.getElementById("cover_url").value = result.url;
 
-!input ||
+        const preview =
+        document.getElementById("coverPreview");
 
-!input.files.length
+        if(preview){
 
-){
+            preview.src = result.url;
 
+            preview.style.display = "block";
 
+        }
 
-this.showError(
+        this.showSuccess("کاور با موفقیت آپلود شد");
 
-"ابتدا فایل کاور را انتخاب کنید"
+    }
 
-);
+    catch(error){
 
+        console.error(error);
 
+        this.showError(error.message);
 
-return;
+    }
 
+    finally{
 
-}
+        if(window.Loader){
 
+            Loader.hide();
 
+        }
 
-
-
-
-
-
-const formData =
-
-new FormData();
-
-
-
-
-
-
-
-formData.append(
-
-"file",
-
-input.files[0]
-
-);
-
-
-
-
-
-
-
-
-if(window.Loader){
-
-
-
-Loader.show(
-
-"در حال آپلود کاور..."
-
-);
-
-
+    }
 
 }
-
-
-
-
-
-
-
-
-const result = await API.upload(
-
-"/upload/image",
-
-formData
-
-);
-
-
-
-
-
-
-
-
-if(
-
-!result ||
-
-!result.success
-
-){
-
-
-
-throw new Error(
-
-result?.message ||
-
-"آپلود کاور ناموفق بود"
-
-);
-
-
-
-}
-
-
-
-
-
-
-
-
-const url =
-
-result.url ||
-
-result.data?.url;
-
-
-
-
-
-
-
-
-document
-.getElementById(
-"cover_url"
-)
-.value =
-
-url;
-
-
-
-
-
-
-
-
-const preview =
-
-document.getElementById(
-
-"coverPreview"
-
-);
-
-
-
-
-
-
-
-
-if(preview){
-
-
-
-preview.src = url;
-
-preview.style.display="block";
-
-
-
-}
-
-
-
-
-
-
-
-
-this.showSuccess(
-
-"کاور با موفقیت آپلود شد"
-
-);
-
-
-
-
-
-
-}
-
-catch(error){
-
-
-
-console.error(
-
-"COVER UPLOAD ERROR:",
-
-error
-
-);
-
-
-
-this.showError(
-
-error.message
-
-);
-
-
-
-}
-
-finally{
-
-
-
-if(window.Loader){
-
-Loader.hide();
-
-}
-
-
-
-}
-
-
-
-}
-
-
-
-
-
-
-
-
-
 /*
 =================================================
 UPLOAD AUDIO
@@ -2438,271 +2243,80 @@ UPLOAD AUDIO
 
 async uploadAudio(){
 
+    try{
 
+        const input = document.getElementById("audioFile");
 
-try{
+        if(!input || !input.files.length){
 
+            this.showError("ابتدا فایل صوتی را انتخاب کنید");
 
+            return;
 
-const input =
+        }
 
-document.getElementById(
+        const formData = new FormData();
 
-"audioFile"
+        formData.append("file", input.files[0]);
 
-);
+        formData.append("type","audio");
 
+        if(window.Loader){
 
+            Loader.show("در حال آپلود فایل صوتی...");
 
+        }
 
+        const result = await API.upload(
+            "/media/upload",
+            formData
+        );
 
+        if(!result.success){
 
+            throw new Error(
+                result.message || "آپلود فایل صوتی ناموفق بود"
+            );
 
+        }
 
-if(
+        document.getElementById("audio_url").value = result.url;
 
-!input ||
+        const audio =
+        document.getElementById("audioPreview");
 
-!input.files.length
+        if(audio){
 
-){
+            audio.src = result.url;
 
+            audio.style.display = "block";
 
+        }
 
-this.showError(
+        this.showSuccess("فایل صوتی با موفقیت آپلود شد");
 
-"ابتدا فایل صوتی را انتخاب کنید"
+    }
 
-);
+    catch(error){
 
+        console.error(error);
 
+        this.showError(error.message);
 
-return;
+    }
 
+    finally{
+
+        if(window.Loader){
+
+            Loader.hide();
+
+        }
+
+    }
 
 }
-
-
-
-
-
-
-
-
-const formData =
-
-new FormData();
-
-
-
-
-
-
-
-
-formData.append(
-
-"file",
-
-input.files[0]
-
-);
-
-
-
-
-
-
-
-
-if(window.Loader){
-
-
-
-Loader.show(
-
-"در حال آپلود فایل صوتی..."
-
-);
-
-
-
-}
-
-
-
-
-
-
-
-
-const result = await API.upload(
-
-"/upload/audio",
-
-formData
-
-);
-
-
-
-
-
-
-
-
-if(
-
-!result ||
-
-!result.success
-
-){
-
-
-
-throw new Error(
-
-result?.message ||
-
-"آپلود فایل صوتی ناموفق بود"
-
-);
-
-
-
-}
-
-
-
-
-
-
-
-
-const url =
-
-result.url ||
-
-result.data?.url;
-
-
-
-
-
-
-
-
-document
-.getElementById(
-"audio_url"
-)
-.value =
-
-url;
-
-
-
-
-
-
-
-
-const audio =
-
-document.getElementById(
-
-"audioPreview"
-
-);
-
-
-
-
-
-
-
-
-if(audio){
-
-
-
-audio.src = url;
-
-audio.style.display="block";
-
-
-
-}
-
-
-
-
-
-
-
-
-this.showSuccess(
-
-"فایل صوتی با موفقیت آپلود شد"
-
-);
-
-
-
-
-
-
-}
-
-catch(error){
-
-
-
-console.error(
-
-"AUDIO UPLOAD ERROR:",
-
-error
-
-);
-
-
-
-this.showError(
-
-error.message
-
-);
-
-
-
-}
-
-finally{
-
-
-
-if(window.Loader){
-
-Loader.hide();
-
-}
-
-
-
-}
-
-
-
-}
-
-
-
-
-
-
-
+    
 
 /*
 =================================================

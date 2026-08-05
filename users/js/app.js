@@ -1,12 +1,29 @@
 /* ==================================================
 
-NightCast User Application Core V2
+NightCast User Application Bootstrap V2
 
 File:
- /users/js/app.js
+
+/users/js/app.js
+
 
 Responsibility:
-Application Bootstrap
+
+ONLY START APPLICATION
+
+
+Load Order:
+
+api.js
+auth.js
+ui.js
+podcasts.js
+search.js
+library.js
+profile.js
+player.js
+comments.js
+
 
 ================================================== */
 
@@ -15,197 +32,262 @@ const NightCastApp = {
 
 
 
+    /*
+    ====================================
+    INIT
+    ====================================
+    */
+
+
     async init(){
 
 
+
         console.log(
+
             "🚀 NightCast Starting..."
+
         );
 
 
 
-        try{
 
 
 
-            /*
-            UI
-            */
+        /*
+        ================================
+        UI
+        ================================
+        */
 
-            if(window.NightCastUI){
 
-                NightCastUI.init();
+        if(window.NightCastUI){
 
-            }
 
 
-
-
-
-
-
-            /*
-            AUTH
-
-            Guest allowed
-
-            */
-
-            if(window.NightCastAuth){
-
-                await NightCastAuth.init();
-
-            }
-
-
-
-
-
-
-
-
-            /*
-            FEATURES
-            */
-
-
-
-            const modules = [
-
-
-                "NightCastPodcasts",
-
-
-                "NightCastSearch",
-
-
-                "NightCastLibrary",
-
-
-                "NightCastProfile",
-
-
-                "NightCastComments"
-
-
-            ];
-
-
-
-
-
-
-
-            modules.forEach(
-                
-                module=>{
-
-
-                    if(
-                        window[module]
-                        &&
-                        typeof window[module].init === "function"
-                    ){
-
-                        window[module].init();
-
-                    }
-
-
-                }
-
-            );
-
-
-
-
-
-
-
-
-            /*
-            PLAYER
-
-            only once
-
-            */
-
-            if(
-
-                window.NightCastPlayer
-
-                &&
-
-                !window.NightCastPlayer.started
-
-            ){
-
-
-                NightCastPlayer.init();
-
-
-                NightCastPlayer.started=true;
-
-
-            }
-
-
-
-
-
-
-
-
-
-
-            document.body.classList.add(
-                "app-ready"
-            );
-
-
-
-
-            this.hideLoader();
-
-
-
-            console.log(
-                "✅ NightCast Ready"
-            );
-
-
+            NightCastUI.init();
 
 
 
         }
 
-        catch(error){
 
 
 
-            console.error(
-                "NightCast Init Error:",
-                error
-            );
 
 
 
-            this.hideLoader();
+
+
+        /*
+        ================================
+        AUTH
+        ================================
+        */
+
+
+        if(window.NightCastAuth){
 
 
 
-            if(window.NightCastUI){
-
-                NightCastUI.toast(
-                    "خطا در آماده‌سازی برنامه",
-                    "error"
-                );
-
-            }
+            await NightCastAuth.init();
 
 
 
         }
+
+
+
+
+
+
+
+
+
+        /*
+        ================================
+        PLAYER
+
+        اول پلیر آماده شود
+
+        ================================
+        */
+
+
+        if(window.NightCastPlayer){
+
+
+
+            NightCastPlayer.init();
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+        /*
+        ================================
+        PODCASTS
+        ================================
+        */
+
+
+        if(window.NightCastPodcasts){
+
+
+
+            NightCastPodcasts.init();
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+        /*
+        ================================
+        SEARCH
+        ================================
+        */
+
+
+        if(window.NightCastSearch){
+
+
+
+            NightCastSearch.init();
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+        /*
+        ================================
+        LIBRARY
+        ================================
+        */
+
+
+        if(window.NightCastLibrary){
+
+
+
+            NightCastLibrary.init();
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+        /*
+        ================================
+        PROFILE
+        ================================
+        */
+
+
+        if(window.NightCastProfile){
+
+
+
+            NightCastProfile.init();
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+        /*
+        ================================
+        COMMENTS
+        ================================
+        */
+
+
+        if(
+
+            window.NightCastComments
+
+            &&
+
+            document.getElementById(
+
+                "commentsList"
+
+            )
+
+        ){
+
+
+
+            NightCastComments.init();
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+        /*
+        ================================
+        REMOVE LOADING
+        ================================
+        */
+
+
+        this.ready();
+
+
+
+
+
+
+        console.log(
+
+            "✅ NightCast Ready"
+
+        );
 
 
 
@@ -218,15 +300,39 @@ const NightCastApp = {
 
 
 
-    hideLoader(){
+
+    /*
+    ====================================
+    READY STATE
+    ====================================
+    */
+
+
+    ready(){
+
+
+
+        document.body.classList.add(
+
+            "app-ready"
+
+        );
+
+
+
 
 
 
         const loader =
 
         document.getElementById(
+
             "globalLoader"
+
         );
+
+
+
 
 
 
@@ -234,12 +340,25 @@ const NightCastApp = {
         if(loader){
 
 
-            loader.classList.add(
-                "hidden"
-            );
+
+            setTimeout(()=>{
+
+
+
+                loader.classList.add(
+
+                    "hidden"
+
+                );
+
+
+
+            },300);
+
 
 
         }
+
 
 
     }
@@ -255,22 +374,48 @@ const NightCastApp = {
 
 
 
-window.NightCastApp = NightCastApp;
 
-
-
+/*
+====================================
+START
+====================================
+*/
 
 
 document.addEventListener(
 
-"DOMContentLoaded",
+    "DOMContentLoaded",
 
-()=>{
-
-
-    NightCastApp.init();
+    ()=>{
 
 
-}
+
+        NightCastApp.init();
+
+
+
+    }
+
+
+);
+
+
+
+
+
+
+
+
+window.NightCastApp =
+
+NightCastApp;
+
+
+
+
+
+console.log(
+
+"NightCast App V2 Loaded"
 
 );

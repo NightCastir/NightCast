@@ -1,19 +1,24 @@
-/*
-=================================================
+/* ==================================================
 
-NightCast User Panel
-Login Manager
+NightCast Login Controller V2
 
-Responsible for:
+File:
+users/js/login.js
 
-- Email Login
-- SMS Login
-- Token Save
+
+Responsibilities:
+
+- OpenID Authentication
+- Guest Login
+- Token Storage
+- User State
 - Redirect
-- Messages
 
-=================================================
-*/
+
+================================================== */
+
+
+(function(){
 
 
 "use strict";
@@ -22,104 +27,99 @@ Responsible for:
 
 
 
+const Login = {
 
 
-class LoginManager {
 
+    config:{
 
 
-constructor(){
+        redirect:"/users/",
 
 
+        openidEndpoint:
+        "/api/v1/auth/openid"
 
-    this.init();
 
+    },
 
 
-}
 
 
 
 
 
 
+    init(){
 
 
+        console.log(
+            "NightCast Login Ready"
+        );
 
-/*
-==========================
-INIT
-==========================
-*/
 
 
-init(){
+        this.bind();
 
 
 
-    this.bindEvents();
+    },
 
 
 
-    this.hideLoader();
 
 
 
-}
 
 
 
+    bind(){
 
 
 
+        const openIdButton =
 
+        document.getElementById(
+            "openIdLogin"
+        );
 
 
-/*
-==========================
-EVENTS
-==========================
-*/
 
 
-bindEvents(){
 
+        const guestButton =
 
+        document.getElementById(
+            "guestLogin"
+        );
 
 
 
 
 
-/*
---------------------------
-EMAIL LOGIN
---------------------------
-*/
 
 
-document
+        if(openIdButton){
 
-.getElementById(
 
-"btnEmailLogin"
 
-)
+            openIdButton.addEventListener(
 
-?.addEventListener(
+                "click",
 
-"click",
+                ()=>{
 
-()=>{
 
+                    this.openID();
 
-this.emailLogin();
 
+                }
 
-}
+            );
 
-);
 
 
+        }
 
 
 
@@ -127,122 +127,106 @@ this.emailLogin();
 
 
 
-/*
---------------------------
-SMS SEND
---------------------------
-*/
 
+        if(guestButton){
 
-document
 
-.getElementById(
 
-"btnSendSMS"
+            guestButton.addEventListener(
 
-)
+                "click",
 
-?.addEventListener(
+                ()=>{
 
-"click",
 
-()=>{
+                    this.guest();
 
 
-this.sendSMS();
+                }
 
+            );
 
-}
 
-);
 
+        }
 
 
 
+    },
 
 
 
 
 
-/*
---------------------------
-SMS VERIFY
---------------------------
-*/
 
 
-document
 
-.getElementById(
 
-"btnVerifySMS"
+    openID(){
 
-)
 
-?.addEventListener(
 
-"click",
+        this.loading(true);
 
-()=>{
 
 
-this.verifySMS();
 
 
-}
+        /*
+        
+        مرحله اول:
 
-);
+        انتقال به سرویس OpenID
+        
+        مثال:
 
+        Google OAuth
+        Apple Sign In
+        Auth0
+        
+        */
 
 
+        const url =
 
+        this.config.openidEndpoint;
 
 
 
 
 
-/*
---------------------------
-TABS
---------------------------
-*/
 
+        /*
+        
+        در نسخه واقعی:
 
-document
+        window.location.href=url;
 
-.querySelectorAll(
 
-".auth-tab"
+        فعلا حالت آماده تست
+        
+        */
 
-)
 
-.forEach(
 
-tab=>{
 
 
-tab.addEventListener(
+        setTimeout(()=>{
 
-"click",
 
-()=>{
 
+            this.fakeOpenID();
 
-this.changeTab(
 
-tab.dataset.tab
 
-);
+        },1200);
 
 
-}
 
-);
 
+    },
 
-}
 
-);
 
 
 
@@ -250,49 +234,50 @@ tab.dataset.tab
 
 
 
+    fakeOpenID(){
 
-}
 
 
+        /*
+        
+        شبیه سازی پاسخ OpenID
+        
+        بعدا با Worker API جایگزین می‌شود
+        
+        */
 
 
 
 
 
+        const user = {
 
 
-/*
-==========================
-CHANGE TAB
-==========================
-*/
 
+            id:
 
-changeTab(tabId){
+            "openid_user_001",
 
 
 
-document
+            name:
 
-.querySelectorAll(
+            "NightCast User",
 
-".auth-tab"
 
-)
 
-.forEach(
+            provider:
 
-item=>{
+            "openid",
 
 
-item.classList.remove(
 
-"active"
+            role:
 
-);
+            "listener"
 
+        };
 
-});
 
 
 
@@ -300,980 +285,302 @@ item.classList.remove(
 
 
 
+        const token =
 
-document
 
-.querySelectorAll(
 
-".auth-form"
+        "NC_" +
 
-)
+        Date.now();
 
-.forEach(
 
-form=>{
 
 
-form.classList.remove(
 
-"active"
 
-);
 
 
-});
+        this.saveSession(
 
+            user,
 
+            token
 
+        );
 
 
 
 
 
-const tab =
 
-document.querySelector(
 
-`[data-tab="${tabId}"]`
+        this.redirect();
 
-);
 
 
+    },
 
 
 
 
-if(tab){
 
 
 
-tab.classList.add(
 
-"active"
 
-);
+    guest(){
 
 
-}
 
+        const guestUser = {
 
 
 
+            id:
 
+            "guest_" + Date.now(),
 
 
 
-const form =
+            name:
 
-document.getElementById(
+            "مهمان NightCast",
 
-tabId
 
-);
 
+            provider:
 
+            "guest",
 
 
 
+            role:
 
-if(form){
+            "guest"
 
 
+        };
 
-form.classList.add(
 
-"active"
 
-);
 
 
-}
 
 
 
-}
+        this.saveSession(
 
 
+            guestUser,
 
 
+            null
 
 
+        );
 
 
 
-/*
-==========================
-EMAIL LOGIN
-==========================
-*/
 
 
-async emailLogin(){
 
+        this.redirect();
 
 
-try{
 
+    },
 
 
-const username =
 
-document
 
-.getElementById(
 
-"loginUsername"
 
-)
 
-.value
 
-.trim();
 
+    saveSession(
+        user,
+        token
+    ){
 
 
 
 
 
+        localStorage.setItem(
 
 
-const password =
+            "NightCastUser",
 
-document
 
-.getElementById(
+            JSON.stringify(user)
 
-"loginPassword"
 
-)
+        );
 
-.value;
 
 
 
 
 
+        if(token){
 
 
 
-if(
+            localStorage.setItem(
 
-!username ||
 
-!password
+                "NightCastToken",
 
-){
 
+                token
 
 
-this.error(
+            );
 
-"نام کاربری و رمز عبور الزامی است"
 
-);
 
+        }
 
-return;
 
 
-}
 
 
+        else{
 
 
+            localStorage.removeItem(
 
+                "NightCastToken"
 
+            );
 
 
-this.showLoader(
+        }
 
-"در حال ورود..."
 
-);
 
 
 
 
 
 
+    },
 
 
-const result =
 
-await API.post(
 
-"/auth/login",
 
-{
 
 
-username,
 
-password
 
+    redirect(){
 
-}
 
-);
 
+        setTimeout(()=>{
 
 
 
+            window.location.href =
 
+            this.config.redirect;
 
 
 
+        },500);
 
-if(
 
-!result ||
 
-!result.success
+    },
 
-){
 
 
 
-throw new Error(
 
-result.message ||
 
-"ورود ناموفق بود"
 
-);
 
 
-}
+    loading(status){
 
 
 
+        const loader =
 
+        document.getElementById(
 
+            "authLoader"
 
+        );
 
 
-localStorage.setItem(
 
-"NightCastToken",
 
-result.token
 
-);
+        if(!loader){
 
+            return;
 
+        }
 
 
 
 
 
 
-localStorage.setItem(
 
-"NightCastUser",
+        if(status){
 
-JSON.stringify(
 
-result.user
 
-)
+            loader.classList.remove(
 
-);
+                "hidden"
 
+            );
 
 
+        }
 
+        else{
 
 
 
+            loader.classList.add(
 
-this.success(
+                "hidden"
 
-"ورود موفق بود"
+            );
 
-);
 
+        }
 
 
 
 
+    }
 
 
 
-setTimeout(
 
-()=>{
 
 
-window.location.href=
 
-"../index.html";
+};
 
 
-},
 
-800
 
-);
 
 
 
+window.NightCastLogin = Login;
 
 
 
 
-}
-
-catch(error){
-
-
-
-console.error(
-
-"LOGIN ERROR",
-
-error
-
-);
-
-
-
-this.error(
-
-error.message
-
-);
-
-
-}
-
-finally{
-
-
-this.hideLoader();
-
-
-}
-
-
-
-  }
-  
-
-/*
-==========================
-SEND SMS
-==========================
-*/
-
-
-async sendSMS(){
-
-
-
-try{
-
-
-
-const phone =
-
-document
-
-.getElementById(
-
-"phoneNumber"
-
-)
-
-.value
-
-.trim();
-
-
-
-
-
-
-
-if(!phone){
-
-
-
-this.error(
-
-"شماره موبایل را وارد کنید"
-
-);
-
-
-
-return;
-
-
-}
-
-
-
-
-
-
-
-
-this.showLoader(
-
-"در حال ارسال کد..."
-
-);
-
-
-
-
-
-
-
-
-/*
-
-فعلاً آماده اتصال به API پیامک است.
-
-بعداً آدرس API شما اینجا قرار می‌گیرد.
-
-مثال:
-
-await API.post(
-"/auth/sms/send",
-{
- phone: phone
-}
-)
-
-*/
-
-
-
-
-
-
-
-this.success(
-
-"در نسخه بعدی کد پیامک ارسال خواهد شد"
-
-);
-
-
-
-
-
-
-}
-
-catch(error){
-
-
-
-console.error(
-
-"SMS SEND ERROR",
-
-error
-
-);
-
-
-
-this.error(
-
-error.message
-
-);
-
-
-
-}
-
-finally{
-
-
-this.hideLoader();
-
-
-}
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/*
-==========================
-VERIFY SMS
-==========================
-*/
-
-
-async verifySMS(){
-
-
-
-try{
-
-
-
-const phone =
-
-document
-
-.getElementById(
-
-"phoneNumber"
-
-)
-
-.value
-
-.trim();
-
-
-
-
-
-
-const code =
-
-document
-
-.getElementById(
-
-"smsCode"
-
-)
-
-.value
-
-.trim();
-
-
-
-
-
-
-
-
-if(
-
-!phone ||
-
-!code
-
-){
-
-
-
-this.error(
-
-"شماره و کد تأیید را وارد کنید"
-
-);
-
-
-
-return;
-
-
-}
-
-
-
-
-
-
-
-
-
-this.showLoader(
-
-"در حال بررسی کد..."
-
-);
-
-
-
-
-
-
-
-
-/*
-
-محل اتصال API پیامک شما
-
-مثال آینده:
-
-const result = await API.post(
-"/auth/sms/verify",
-{
- phone,
- code
-}
-);
-
-
-*/
-
-
-
-
-
-
-
-this.error(
-
-"سیستم پیامک هنوز فعال نشده است"
-
-);
-
-
-
-
-
-
-
-}
-
-catch(error){
-
-
-
-console.error(
-
-"SMS VERIFY ERROR",
-
-error
-
-);
-
-
-
-this.error(
-
-error.message
-
-);
-
-
-
-}
-
-finally{
-
-
-this.hideLoader();
-
-
-}
-
-
-}
-
-
-
-
-
-
-
-
-
-/*
-==========================
-OPENAI LOGIN
-==========================
-*/
-
-
-openAILogin(){
-
-
-
-/*
-
-رزرو برای OAuth آینده
-
-بعد از مشخص شدن روش احراز هویت OpenAI
-
-فعال می‌شود.
-
-
-*/
-
-
-
-this.error(
-
-"ورود OpenAI در حال آماده‌سازی است"
-
-);
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/*
-==========================
-GOOGLE LOGIN
-==========================
-*/
-
-
-googleLogin(){
-
-
-
-this.error(
-
-"ورود Google در نسخه بعد اضافه خواهد شد"
-
-);
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/*
-==========================
-LOADER
-==========================
-*/
-
-
-showLoader(message){
-
-
-
-const loader =
-
-document.getElementById(
-
-"globalLoader"
-
-);
-
-
-
-
-
-
-if(loader){
-
-
-
-loader.classList.add(
-
-"active"
-
-);
-
-
-
-const text =
-
-loader.querySelector(
-
-"p"
-
-);
-
-
-
-
-
-
-if(text && message){
-
-
-
-text.innerText = message;
-
-
-}
-
-
-
-}
-
-
-
-}
-
-
-
-
-
-
-
-
-
-hideLoader(){
-
-
-
-const loader =
-
-document.getElementById(
-
-"globalLoader"
-
-);
-
-
-
-
-
-
-if(loader){
-
-
-
-loader.classList.remove(
-
-"active"
-
-);
-
-
-
-}
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/*
-==========================
-MESSAGES
-==========================
-*/
-
-
-success(message){
-
-
-
-if(
-
-window.Toast &&
-
-Toast.success
-
-){
-
-
-
-Toast.success(message);
-
-
-
-}
-
-else{
-
-
-alert(message);
-
-
-}
-
-
-
-}
-
-
-
-
-
-
-
-
-
-error(message){
-
-
-
-if(
-
-window.Toast &&
-
-Toast.error
-
-){
-
-
-
-Toast.error(message);
-
-
-
-}
-
-else{
-
-
-alert(message);
-
-
-}
-
-
-
-}
-
-
-
-}
-
-
-
-
-
-
-
-
-
-/*
-==========================
-START
-==========================
-*/
 
 
 document.addEventListener(
@@ -1283,11 +590,15 @@ document.addEventListener(
 ()=>{
 
 
-
-window.loginManager =
-
-new LoginManager();
-
+    Login.init();
 
 
 });
+
+
+
+
+
+
+
+})();

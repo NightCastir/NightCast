@@ -3,1394 +3,43 @@
 NightCast Audio Player V2
 
 File:
-
 users/js/player.js
 
-
-Compatible With:
-
-users/index.html
-
-
-Features:
-
-- Audio Control
+Responsibility:
+- Audio control
 - Play / Pause
 - Progress
-- Seek
 - Volume
 - Speed
-- Queue Ready
-- Local Storage History
-- Mobile Bottom Player Sync
-- Error Handling
+- Queue
+- Podcast integration
 
 ================================================== */
 
 
-const NightCastPlayer = {
+(function(){
 
+"use strict";
 
 
-    audio:null,
+// ================================
+// PLAYER STATE
+// ================================
 
-    current:null,
+const Player = {
 
-    queue:[],
 
-    currentIndex:-1,
+audio:null,
 
+current:null,
 
+queue:[],
 
+index:0,
 
+speed:1,
 
-    /* ==========================================
-    INIT
-    ========================================== */
-
-
-    init(){
-
-
-
-        this.audio =
-
-        document.getElementById(
-
-            "nightcastAudio"
-
-        );
-
-
-
-
-
-        if(!this.audio){
-
-
-            console.warn(
-
-                "NightCast audio element not found"
-
-            );
-
-
-            return;
-
-
-        }
-
-
-
-
-
-        this.bindEvents();
-
-
-        this.restoreVolume();
-
-
-        console.log(
-
-            "NightCast Player V2 Ready"
-
-        );
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /* ==========================================
-    LOAD PODCAST
-    ========================================== */
-
-
-    play(podcast){
-
-
-
-        if(!podcast){
-
-            return;
-
-        }
-
-
-
-
-
-
-        if(!podcast.audio_url){
-
-
-
-            this.toast(
-
-                "فایل صوتی موجود نیست",
-
-                "error"
-
-            );
-
-
-            return;
-
-
-        }
-
-
-
-
-
-
-
-        this.current = podcast;
-
-
-
-
-
-
-        this.audio.src =
-
-        podcast.audio_url;
-
-
-
-
-
-
-        this.audio.load();
-
-
-
-
-
-
-        this.audio.play()
-
-        .catch(()=>{});
-
-
-
-
-
-
-        this.updateInfo();
-
-
-        this.saveHistory();
-
-
-
-        this.show();
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /* ==========================================
-    UPDATE UI
-    ========================================== */
-
-
-    updateInfo(){
-
-
-
-        if(!this.current)
-
-        return;
-
-
-
-
-
-        const title =
-
-        document.getElementById(
-
-            "playerTitle"
-
-        );
-
-
-
-
-
-        const author =
-
-        document.getElementById(
-
-            "playerAuthor"
-
-        );
-
-
-
-
-
-        const cover =
-
-        document.getElementById(
-
-            "playerCover"
-
-        );
-
-
-
-
-
-
-        if(title)
-
-        title.textContent =
-
-        this.current.title ||
-
-        "NightCast";
-
-
-
-
-
-
-
-        if(author)
-
-        author.textContent =
-
-        this.current.author_name ||
-
-        "NightCast";
-
-
-
-
-
-
-
-
-        if(cover)
-
-        cover.src =
-
-        this.current.cover_url ||
-
-        "/users/assets/images/default-cover.jpg";
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /* ==========================================
-    EVENTS
-    ========================================== */
-
-
-    bindEvents(){
-
-
-
-        const playButton =
-
-        document.getElementById(
-
-            "playerPlayBtn"
-
-        );
-
-
-
-
-
-        if(playButton){
-
-
-
-            playButton.onclick=()=>{
-
-
-                this.toggle();
-
-
-            };
-
-
-        }
-
-
-
-
-
-
-
-        const bottomPlay =
-
-        document.getElementById(
-
-            "bottomPlayButton"
-
-        );
-
-
-
-
-
-
-        if(bottomPlay){
-
-
-
-            bottomPlay.onclick=()=>{
-
-
-                this.toggle();
-
-
-            };
-
-
-        }
-
-
-
-
-
-
-
-        this.audio.addEventListener(
-
-            "play",
-
-            ()=>{
-
-
-                this.updatePlayState(true);
-
-
-            }
-
-        );
-
-
-
-
-
-
-
-
-        this.audio.addEventListener(
-
-            "pause",
-
-            ()=>{
-
-
-                this.updatePlayState(false);
-
-
-            }
-
-        );
-
-
-
-
-
-
-
-
-
-        this.audio.addEventListener(
-
-            "timeupdate",
-
-            ()=>{
-
-
-                this.updateProgress();
-
-
-            }
-
-        );
-
-
-
-
-
-
-
-
-        this.audio.addEventListener(
-
-            "loadedmetadata",
-
-            ()=>{
-
-
-                this.updateDuration();
-
-
-            }
-
-        );
-
-
-
-
-
-
-
-        this.audio.addEventListener(
-
-            "ended",
-
-            ()=>{
-
-
-                this.next();
-
-
-            }
-
-        );
-
-
-
-
-
-
-
-
-
-        this.audio.addEventListener(
-
-            "error",
-
-            ()=>{
-
-
-                this.toast(
-
-                    "خطا در پخش فایل صوتی",
-
-                    "error"
-
-                );
-
-
-            }
-
-        );
-
-
-
-
-
-
-
-
-
-        const progress =
-
-        document.getElementById(
-
-            "playerProgressContainer"
-
-        );
-
-
-
-
-
-        if(progress){
-
-
-
-            progress.onclick=(event)=>{
-
-
-                this.seek(event,progress);
-
-
-            };
-
-
-        }
-
-
-
-
-
-
-
-
-        const volume =
-
-        document.getElementById(
-
-            "playerVolume"
-
-        );
-
-
-
-
-
-
-        if(volume){
-
-
-
-            volume.oninput=()=>{
-
-
-                this.audio.volume =
-
-                volume.value;
-
-
-
-                localStorage.setItem(
-
-                    "NightCastVolume",
-
-                    volume.value
-
-                );
-
-
-            };
-
-
-        }
-
-
-
-
-
-
-
-
-        const speed =
-
-        document.getElementById(
-
-            "speedButton"
-
-        );
-
-
-
-
-
-
-
-        if(speed){
-
-
-
-            speed.onclick=()=>{
-
-
-                this.changeSpeed(speed);
-
-
-            };
-
-
-        }
-
-
-
-
-
-
-
-
-        const next =
-
-        document.getElementById(
-
-            "nextButton"
-
-        );
-
-
-
-
-
-        if(next){
-
-
-
-            next.onclick=()=>{
-
-
-                this.next();
-
-
-            };
-
-
-        }
-
-
-
-
-
-
-
-        const previous =
-
-        document.getElementById(
-
-            "previousButton"
-
-        );
-
-
-
-
-
-        if(previous){
-
-
-
-            previous.onclick=()=>{
-
-
-                this.previous();
-
-
-            };
-
-
-        }
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /* ==========================================
-    TOGGLE
-    ========================================== */
-
-
-    toggle(){
-
-
-
-        if(!this.audio.src)
-
-        return;
-
-
-
-
-
-
-        if(this.audio.paused){
-
-
-            this.audio.play();
-
-
-        }
-
-        else{
-
-
-            this.audio.pause();
-
-
-        }
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /* ==========================================
-    PLAY ICON
-    ========================================== */
-
-
-    updatePlayState(state){
-
-
-
-        const icon =
-
-        document.querySelector(
-
-            "#playerPlayBtn i"
-
-        );
-
-
-
-
-
-        const bottomIcon =
-
-        document.querySelector(
-
-            "#bottomPlayButton i"
-
-        );
-
-
-
-
-
-
-
-        const className = state
-
-        ?
-
-        "fa-solid fa-pause"
-
-        :
-
-        "fa-solid fa-play";
-
-
-
-
-
-
-        if(icon)
-
-        icon.className = className;
-
-
-
-
-
-
-        if(bottomIcon)
-
-        bottomIcon.className = className;
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /* ==========================================
-    PROGRESS
-    ========================================== */
-
-
-    updateProgress(){
-
-
-
-        if(!this.audio.duration)
-
-        return;
-
-
-
-
-
-        const percent =
-
-        (
-
-            this.audio.currentTime /
-
-            this.audio.duration
-
-        ) * 100;
-
-
-
-
-
-
-
-        const bar =
-
-        document.getElementById(
-
-            "playerProgressBar"
-
-        );
-
-
-
-
-
-
-        if(bar)
-
-        bar.style.width =
-
-        percent+"%";
-
-
-
-
-
-
-
-
-        const current =
-
-        document.getElementById(
-
-            "playerCurrentTime"
-
-        );
-
-
-
-
-
-        if(current)
-
-        current.textContent =
-
-        this.formatTime(
-
-            this.audio.currentTime
-
-        );
-
-
-
-    },
-
-
-
-
-
-
-
-
-    updateDuration(){
-
-
-
-        const duration =
-
-        document.getElementById(
-
-            "playerDuration"
-
-        );
-
-
-
-
-
-        if(duration)
-
-        duration.textContent =
-
-        this.formatTime(
-
-            this.audio.duration
-
-        );
-
-
-    },
-
-
-
-
-
-
-
-
-
-    seek(event,element){
-
-
-
-        if(!this.audio.duration)
-
-        return;
-
-
-
-
-
-
-        const rect =
-
-        element.getBoundingClientRect();
-
-
-
-
-
-        const percent =
-
-        (
-
-            event.clientX -
-
-            rect.left
-
-        )
-
-        /
-
-        rect.width;
-
-
-
-
-
-
-
-        this.audio.currentTime =
-
-        this.audio.duration *
-
-        percent;
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /* ==========================================
-    SPEED
-    ========================================== */
-
-
-    changeSpeed(button){
-
-
-
-        const speeds =
-
-        [
-
-            1,
-
-            1.25,
-
-            1.5,
-
-            2
-
-        ];
-
-
-
-
-
-
-        let index =
-
-        speeds.indexOf(
-
-            this.audio.playbackRate
-
-        );
-
-
-
-
-
-        index++;
-
-
-
-
-
-
-        if(index>=speeds.length)
-
-        index=0;
-
-
-
-
-
-
-
-        this.audio.playbackRate =
-
-        speeds[index];
-
-
-
-
-
-        button.textContent =
-
-        speeds[index]+"x";
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /* ==========================================
-    NEXT / PREVIOUS
-    ========================================== */
-
-
-    next(){
-
-
-
-        if(
-
-            this.currentIndex <
-
-            this.queue.length-1
-
-        ){
-
-
-
-            this.currentIndex++;
-
-
-            this.play(
-
-                this.queue[this.currentIndex]
-
-            );
-
-
-        }
-
-
-    },
-
-
-
-
-
-
-    previous(){
-
-
-
-        if(
-
-            this.audio.currentTime > 5
-
-        ){
-
-
-            this.audio.currentTime=0;
-
-
-            return;
-
-
-        }
-
-
-
-
-
-
-        if(this.currentIndex>0){
-
-
-
-            this.currentIndex--;
-
-
-            this.play(
-
-                this.queue[this.currentIndex]
-
-            );
-
-
-        }
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /* ==========================================
-    STORAGE
-    ========================================== */
-
-
-    saveHistory(){
-
-
-
-        if(!this.current)
-
-        return;
-
-
-
-
-
-
-        localStorage.setItem(
-
-            "NightCastLastPodcast",
-
-            JSON.stringify(
-
-                this.current
-
-            )
-
-        );
-
-
-    },
-
-
-
-
-
-
-    restoreVolume(){
-
-
-
-        const volume =
-
-        localStorage.getItem(
-
-            "NightCastVolume"
-
-        );
-
-
-
-
-
-        if(volume)
-
-        this.audio.volume = volume;
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /* ==========================================
-    SHOW
-    ========================================== */
-
-
-    show(){
-
-
-
-        const player =
-
-        document.getElementById(
-
-            "nightcastPlayer"
-
-        );
-
-
-
-
-
-        if(player)
-
-        player.classList.add(
-
-            "active"
-
-        );
-
-
-    },
-
-
-
-
-
-
-
-
-
-    formatTime(seconds){
-
-
-
-        if(
-
-            !seconds ||
-
-            isNaN(seconds)
-
-        )
-
-        return "00:00";
-
-
-
-
-
-
-        const m =
-
-        Math.floor(
-
-            seconds/60
-
-        );
-
-
-
-
-
-        const s =
-
-        Math.floor(
-
-            seconds%60
-
-        );
-
-
-
-
-
-
-        return (
-
-            String(m).padStart(2,"0")
-
-            +
-
-            ":"
-
-            +
-
-            String(s).padStart(2,"0")
-
-        );
-
-
-    },
-
-
-
-
-
-
-
-
-
-    toast(message,type){
-
-
-
-        if(window.NightCastUI){
-
-
-            NightCastUI.toast(
-
-                message,
-
-                type
-
-            );
-
-
-        }
-
-        else{
-
-
-            console.log(message);
-
-
-        }
-
-
-    }
-
+isPlaying:false
 
 
 
@@ -1399,35 +48,821 @@ const NightCastPlayer = {
 
 
 
-
-
-
-window.NightCastPlayer =
-
-NightCastPlayer;
-
-
-
-
+// ================================
+// DOM READY
+// ================================
 
 document.addEventListener(
-
 "DOMContentLoaded",
+initPlayer
+);
 
+
+
+
+
+function initPlayer(){
+
+
+Player.audio =
+document.getElementById(
+"nightcastAudio"
+);
+
+
+
+if(!Player.audio){
+
+console.error(
+"NightCast Player: Audio element not found"
+);
+
+return;
+
+}
+
+
+
+bindEvents();
+
+
+console.log(
+"NightCast Player Ready"
+);
+
+
+
+}
+
+
+
+
+
+
+// ================================
+// EVENTS
+// ================================
+
+
+function bindEvents(){
+
+
+
+const playBtn =
+document.getElementById(
+"playerPlayBtn"
+);
+
+
+
+if(playBtn){
+
+playBtn.addEventListener(
+"click",
+togglePlay
+);
+
+}
+
+
+
+
+
+const volume =
+document.getElementById(
+"playerVolume"
+);
+
+
+
+if(volume){
+
+volume.addEventListener(
+"input",
 ()=>{
 
+Player.audio.volume =
+volume.value;
 
-    NightCastPlayer.init();
+}
+
+);
+
+}
+
+
+
+
+
+
+const progress =
+document.getElementById(
+"playerProgressContainer"
+);
+
+
+
+if(progress){
+
+progress.addEventListener(
+"click",
+seek
+);
+
+}
+
+
+
+
+
+const speed =
+document.getElementById(
+"speedButton"
+);
+
+
+
+if(speed){
+
+speed.addEventListener(
+"click",
+changeSpeed
+);
+
+}
+
+
+
+
+
+Player.audio.addEventListener(
+"timeupdate",
+updateProgress
+);
+
+
+
+
+Player.audio.addEventListener(
+"loadedmetadata",
+()=>{
+
+updateDuration();
+
+}
+);
+
+
+
+Player.audio.addEventListener(
+"ended",
+playNext
+);
+
+
+
+}
+
+
+
+
+
+
+
+// ================================
+// LOAD PODCAST
+// ================================
+
+
+function loadPodcast(podcast){
+
+
+if(!podcast || !podcast.audio_url){
+
+console.error(
+"Invalid podcast"
+);
+
+return;
+
+}
+
+
+
+Player.current =
+podcast;
+
+
+
+Player.audio.src =
+podcast.audio_url;
+
+
+
+const cover =
+document.getElementById(
+"playerCover"
+);
+
+
+
+if(cover){
+
+cover.src =
+podcast.cover_url ||
+"/users/assets/images/default-cover.jpg";
+
+}
+
+
+
+
+const title =
+document.getElementById(
+"playerTitle"
+);
+
+
+
+if(title){
+
+title.textContent =
+podcast.title || "NightCast";
+
+}
+
+
+
+
+const author =
+document.getElementById(
+"playerAuthor"
+);
+
+
+
+if(author){
+
+author.textContent =
+podcast.author_name ||
+"NightCast";
+
+}
+
+
+
+Player.audio.load();
+
+
+play();
+
+
+
+}
+
+
+
+
+
+
+
+// ================================
+// PLAY
+// ================================
+
+
+function play(){
+
+
+Player.audio.play()
+.then(()=>{
+
+
+Player.isPlaying =
+true;
+
+
+updatePlayButton();
+
+
+})
+.catch(error=>{
+
+console.log(
+"Play blocked:",
+error
+);
 
 
 });
 
 
 
+}
 
 
-console.log(
 
-"NightCast Player V2 Loaded"
+
+
+
+
+// ================================
+// PAUSE
+// ================================
+
+
+function pause(){
+
+
+Player.audio.pause();
+
+
+Player.isPlaying =
+false;
+
+
+updatePlayButton();
+
+
+
+}
+
+
+
+
+
+
+
+// ================================
+// TOGGLE
+// ================================
+
+
+function togglePlay(){
+
+
+
+if(!Player.current){
+
+return;
+
+}
+
+
+
+if(Player.audio.paused){
+
+play();
+
+}
+
+else{
+
+pause();
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+// ================================
+// BUTTON ICON
+// ================================
+
+
+function updatePlayButton(){
+
+
+
+const icon =
+document.getElementById(
+"playerPlayIcon"
+);
+
+
+
+if(!icon){
+
+return;
+
+}
+
+
+
+if(Player.isPlaying){
+
+icon.className =
+"fa-solid fa-pause";
+
+}
+
+else{
+
+icon.className =
+"fa-solid fa-play";
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+// ================================
+// TIME FORMAT
+// ================================
+
+
+function formatTime(seconds){
+
+
+
+if(!seconds || isNaN(seconds)){
+
+return "00:00";
+
+}
+
+
+
+const min =
+Math.floor(seconds / 60);
+
+
+
+const sec =
+Math.floor(seconds % 60);
+
+
+
+return (
+
+String(min)
+.padStart(2,"0")
+
++
+
+":"
+
++
+
+String(sec)
+.padStart(2,"0")
 
 );
+
+
+}
+
+
+
+
+
+
+
+// ================================
+// UPDATE PROGRESS
+// ================================
+
+
+function updateProgress(){
+
+
+
+const current =
+document.getElementById(
+"playerCurrentTime"
+);
+
+
+
+if(current){
+
+current.textContent =
+formatTime(
+Player.audio.currentTime
+);
+
+}
+
+
+
+
+const percent =
+
+(Player.audio.currentTime /
+Player.audio.duration)
+*
+100;
+
+
+
+const bar =
+document.getElementById(
+"playerProgressBar"
+);
+
+
+
+if(bar){
+
+bar.style.width =
+(percent || 0)
++
+"%";
+
+}
+
+
+
+
+}
+
+
+
+
+
+
+
+// ================================
+// DURATION
+// ================================
+
+
+function updateDuration(){
+
+
+const duration =
+document.getElementById(
+"playerDuration"
+);
+
+
+
+if(duration){
+
+duration.textContent =
+formatTime(
+Player.audio.duration
+);
+
+}
+
+
+}
+
+
+
+
+
+
+
+// ================================
+// SEEK
+// ================================
+
+
+function seek(e){
+
+
+const box =
+e.currentTarget;
+
+
+
+const width =
+box.clientWidth;
+
+
+
+const click =
+e.offsetX;
+
+
+
+const percent =
+click / width;
+
+
+
+Player.audio.currentTime =
+
+Player.audio.duration *
+percent;
+
+
+
+}
+
+
+
+
+
+
+
+// ================================
+// SPEED
+// ================================
+
+
+function changeSpeed(){
+
+
+Player.speed += 0.5;
+
+
+if(Player.speed > 2){
+
+Player.speed = 0.5;
+
+}
+
+
+
+Player.audio.playbackRate =
+Player.speed;
+
+
+
+const btn =
+document.getElementById(
+"speedButton"
+);
+
+
+
+if(btn){
+
+btn.textContent =
+Player.speed+"x";
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+// ================================
+// NEXT
+// ================================
+
+
+function playNext(){
+
+
+if(
+Player.queue.length === 0
+){
+
+pause();
+
+return;
+
+}
+
+
+
+Player.index++;
+
+
+
+if(
+Player.index >= Player.queue.length
+){
+
+Player.index=0;
+
+}
+
+
+
+loadPodcast(
+
+Player.queue[
+Player.index
+]
+
+);
+
+
+
+}
+
+
+
+
+
+
+// ================================
+// PREVIOUS
+// ================================
+
+
+function playPrevious(){
+
+
+
+if(
+Player.audio.currentTime > 5
+){
+
+Player.audio.currentTime=0;
+
+return;
+
+}
+
+
+
+Player.index--;
+
+
+
+if(Player.index < 0){
+
+Player.index =
+Player.queue.length-1;
+
+}
+
+
+
+if(Player.queue.length){
+
+loadPodcast(
+Player.queue[Player.index]
+);
+
+}
+
+
+
+}
+
+
+
+
+
+
+// ================================
+// PUBLIC API
+// ================================
+
+
+window.NightCastPlayer = {
+
+
+playPodcast:
+loadPodcast,
+
+
+play,
+pause,
+
+
+setQueue:function(list){
+
+
+Player.queue =
+list || [];
+
+
+Player.index=0;
+
+
+},
+
+
+getCurrent:function(){
+
+return Player.current;
+
+}
+
+
+};
+
+
+
+
+
+})();

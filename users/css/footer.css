@@ -1,0 +1,325 @@
+/* ==================================================
+
+NightCast User Footer CSS V2
+
+File:
+users/css/footer.css
+
+Includes:
+- Main Footer
+- Brand
+- Links
+- Social
+- Copyright
+
+================================================== */
+
+
+/* ================================================
+MAIN FOOTER
+================================================ */
+
+
+.nightcast-footer{
+
+    margin-top:80px;
+
+    padding:60px 0 0;
+
+    background:
+
+    linear-gradient(
+        180deg,
+        var(--bg-main),
+        #060b14
+    );
+
+    border-top:
+
+    1px solid var(--border);
+
+}
+
+
+
+
+
+body.light-theme .nightcast-footer{
+
+    background:
+
+    linear-gradient(
+        180deg,
+        var(--bg-main),
+        #edf2f8
+    );
+
+}
+
+
+
+
+
+/* ================================================
+FOOTER CONTAINER
+================================================ */
+
+
+.footer-container{
+
+    display:grid;
+
+    grid-template-columns:
+
+    1.5fr 1fr;
+
+    gap:60px;
+
+    padding-bottom:40px;
+
+}
+
+
+
+
+
+/* ================================================
+FOOTER BRAND
+================================================ */
+
+
+.footer-brand h2{
+
+    font-size:36px;
+
+    font-weight:900;
+
+    margin-bottom:15px;
+
+}
+
+
+
+
+
+.footer-brand h2 span{
+
+    color:var(--primary);
+
+}
+
+
+
+
+
+.footer-brand p{
+
+    max-width:350px;
+
+    line-height:2;
+
+}
+
+
+
+
+
+/* ================================================
+SOCIAL
+================================================ */
+
+
+.footer-social{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    margin-top:25px;
+
+}
+
+
+
+
+
+.footer-social a{
+
+    width:42px;
+
+    height:42px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:var(--bg-card);
+
+    border:
+
+    1px solid var(--border);
+
+    color:var(--text);
+
+    transition:var(--transition);
+
+}
+
+
+
+
+
+.footer-social a:hover{
+
+    color:var(--primary);
+
+    border-color:var(--primary);
+
+    transform:translateY(-3px);
+
+}
+
+
+
+
+
+/* ================================================
+FOOTER LINKS
+================================================ */
+
+
+.footer-links{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:14px;
+
+}
+
+
+
+
+
+.footer-links h3{
+
+    font-size:20px;
+
+    margin-bottom:10px;
+
+}
+
+
+
+
+
+.footer-links a{
+
+    color:var(--text-soft);
+
+    transition:var(--transition);
+
+}
+
+
+
+
+
+.footer-links a:hover{
+
+    color:var(--primary);
+
+    padding-right:5px;
+
+}
+
+
+
+
+
+/* ================================================
+FOOTER BOTTOM
+================================================ */
+
+
+.footer-bottom{
+
+    border-top:
+
+    1px solid var(--border);
+
+    padding:20px;
+
+    text-align:center;
+
+    color:var(--text-soft);
+
+    font-size:14px;
+
+}
+
+
+
+
+
+/* ================================================
+MOBILE
+================================================ */
+
+
+@media(max-width:768px){
+
+
+    .nightcast-footer{
+
+        padding-top:40px;
+
+        margin-top:50px;
+
+    }
+
+
+
+    .footer-container{
+
+        grid-template-columns:1fr;
+
+        gap:35px;
+
+        text-align:center;
+
+    }
+
+
+
+    .footer-brand p{
+
+        margin:auto;
+
+    }
+
+
+
+    .footer-social{
+
+        justify-content:center;
+
+    }
+
+
+
+    .footer-links{
+
+        align-items:center;
+
+    }
+
+
+}

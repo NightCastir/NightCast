@@ -1,55 +1,562 @@
 /* ==================================================
 
-NightCast User Authentication Manager V2
+NightCast User Auth Manager V1
 
 File:
-
-/users/js/auth.js
-
+users/assets/js/core/auth.js
 
 Responsibility:
+- User authentication
+- Token management
+- Session check
+- Logout
+- User state
 
-ONLY USER AUTHENTICATION
-
-
-Depends:
-
-api.js
-
+API:
+Cloudflare Worker V5
 
 ================================================== */
 
 
-const NightCastAuth = {
+const AuthManager = {
 
 
-    currentUser:null,
+    TOKEN_KEY : "NightCastUserToken",
 
 
-
-
-
-    /*
-    ====================================
-    INIT
-    ====================================
-    */
-
-
-    async init(){
-
-
-        const result =
-
-        await this.checkSession();
+    USER_KEY : "NightCastUser",
 
 
 
-        this.bindGuestLogin();
+    API_URL :
+
+    "https://nightcast-api.tomasgermany2580.workers.dev/api/v1",
 
 
 
-        return result;
+    // ==========================================
+    // SAVE LOGIN SESSION
+    // ==========================================
+
+    saveSession(data){
+
+
+        if(!data || !data.token){
+
+            return false;
+
+        }
+
+
+
+        localStorage.setItem(
+
+            this.TOKEN_KEY,
+
+            data.token
+
+        );
+
+
+
+        if(data.user){
+
+            localStorage.setItem(
+
+                this.USER_KEY,
+
+                JSON.stringify(data.user)
+
+            );
+
+        }
+
+
+        return true;
+
+    },
+
+
+
+
+    // ==========================================
+    // GET TOKEN
+    // ==========================================
+
+    getToken(){
+
+
+        return localStorage.getItem(
+
+            this.TOKEN_KEY
+
+        );
+
+
+    },
+
+
+
+
+
+    // ==========================================
+    // GET CURRENT USER FROM STORAGE
+    // ==========================================
+
+    getUser(){
+
+
+        const user =
+
+        localStorage.getItem(
+
+            this.USER_KEY
+
+        );
+
+
+        try{
+
+            return user
+
+            ?
+
+            JSON.parse(user)
+
+            :
+
+            null;
+
+
+        }
+
+        catch(e){
+
+            return null;
+
+        }
+
+    },
+
+
+
+
+
+    // ==========================================
+    // CHECK LOGIN STATE
+    // ==========================================
+
+    isLoggedIn(){
+
+
+        return !!this.getToken();
+
+
+    },
+
+
+
+
+
+    // ==========================================
+    // AUTH HEADER
+    // ==========================================
+
+    headers(){
+
+
+        const token = this.getToken();
+
+
+
+        const headers = {
+
+
+            "Content-Type":
+
+            "application/json"
+
+
+        };
+
+
+
+        if(token){
+
+
+            headers["Authorization"] =
+
+            "Bearer " + token;
+
+
+        }
+
+
+        return headers;
+
+
+    },
+
+
+
+
+
+
+    // ==========================================
+    // LOGIN
+    // ==========================================
+
+    async login(username,password){
+
+
+        try{
+
+
+            const response =
+
+            await fetch(
+
+                this.API_URL +
+
+                "/public/login",
+
+                {
+
+                    method:"POST",
+
+
+                    headers:{
+
+
+                        "Content-Type":
+
+                        "application/json"
+
+
+                    },
+
+
+                    body:JSON.stringify({
+
+                        username,
+
+                        password
+
+                    })
+
+
+                }
+
+            );
+
+
+
+            const data =
+
+            await response.json();
+
+
+
+            if(
+
+                data.success
+
+                &&
+
+                data.token
+
+            ){
+
+
+                this.saveSession(data);
+
+
+            }
+
+
+
+            return data;
+
+
+
+        }
+
+        catch(error){
+
+
+
+            return {
+
+                success:false,
+
+                message:error.message
+
+
+            };
+
+
+        }
+
+
+
+    },
+
+
+
+
+
+
+    // ==========================================
+    // REGISTER
+    // ==========================================
+
+    async register(payload){
+
+
+        try{
+
+
+            const response =
+
+            await fetch(
+
+                this.API_URL +
+
+                "/public/register",
+
+                {
+
+                    method:"POST",
+
+
+                    headers:{
+
+
+                        "Content-Type":
+
+                        "application/json"
+
+
+                    },
+
+
+                    body:
+
+                    JSON.stringify(payload)
+
+
+                }
+
+            );
+
+
+
+            return await response.json();
+
+
+
+        }
+
+        catch(error){
+
+
+            return {
+
+
+                success:false,
+
+                message:error.message
+
+
+            };
+
+
+        }
+
+
+
+    },
+
+
+
+
+
+
+
+    // ==========================================
+    // GET CURRENT USER FROM SERVER
+    // ==========================================
+
+    async me(){
+
+
+        const token = this.getToken();
+
+
+
+        if(!token){
+
+
+            return {
+
+
+                success:false,
+
+                message:"No token"
+
+
+            };
+
+
+        }
+
+
+
+
+
+        try{
+
+
+            const response =
+
+            await fetch(
+
+                this.API_URL +
+
+                "/auth/me",
+
+                {
+
+                    method:"GET",
+
+
+                    headers:
+
+                    this.headers()
+
+
+                }
+
+            );
+
+
+
+            const data =
+
+            await response.json();
+
+
+
+
+
+            if(
+
+                data.success
+
+                &&
+
+                data.user
+
+            ){
+
+
+                localStorage.setItem(
+
+                    this.USER_KEY,
+
+                    JSON.stringify(data.user)
+
+                );
+
+
+            }
+
+
+
+            return data;
+
+
+
+        }
+
+        catch(error){
+
+
+            return {
+
+
+                success:false,
+
+                message:error.message
+
+
+            };
+
+
+        }
+
+
+    },
+
+
+
+
+
+
+
+    // ==========================================
+    // CHECK SERVER SESSION
+    // ==========================================
+
+    async status(){
+
+
+        try{
+
+
+            const response =
+
+            await fetch(
+
+                this.API_URL +
+
+                "/auth/status",
+
+                {
+
+                    method:"GET",
+
+
+                    headers:
+
+                    this.headers()
+
+
+                }
+
+            );
+
+
+
+            return await response.json();
+
+
+        }
+
+        catch(error){
+
+
+            return {
+
+                success:false,
+
+                message:error.message
+
+            };
+
+
+        }
+
 
 
     },
@@ -61,167 +568,67 @@ const NightCastAuth = {
 
 
 
+    // ==========================================
+    // LOGOUT
+    // ==========================================
 
-    /*
-    ====================================
-    CHECK SESSION
-    ====================================
-    */
-
-
-    async checkSession(){
+    async logout(){
 
 
-
-        /*
-        ================================
-        GUEST MODE
-        ================================
-        */
+        try{
 
 
-        if(
+            await fetch(
 
-            localStorage.getItem(
+                this.API_URL +
 
-                "NightCastGuest"
+                "/auth/logout",
 
-            )
+                {
 
-        ){
+                    method:"POST",
 
+                    headers:
 
-            this.setGuest();
-
-
-            this.updateUI();
+                    this.headers()
 
 
+                }
 
-            return {
-
-
-                success:true,
-
-
-                loggedIn:false,
-
-
-                guest:true
-
-
-            };
+            );
 
 
         }
 
+        catch(e){}
 
 
 
+        localStorage.removeItem(
 
+            this.TOKEN_KEY
 
+        );
 
 
 
-        if(!API.isLoggedIn()){
+        localStorage.removeItem(
 
+            this.USER_KEY
 
-
-            this.setGuest();
-
-
-
-            this.updateUI();
-
-
-
-            return {
-
-
-                success:true,
-
-
-                loggedIn:false,
-
-
-                guest:true
-
-
-            };
-
-
-        }
-
-
-
-
-
-
-
-        const result =
-
-        await API.me();
-
-
-
-
-
-
-
-        if(result.success){
-
-
-
-            this.currentUser =
-
-            result.user || result.data;
-
-
-
-            this.updateUI();
-
-
-
-            return {
-
-
-                success:true,
-
-
-                loggedIn:true,
-
-
-                user:this.currentUser
-
-
-            };
-
-
-
-        }
-
-
-
-
-
-
-
-        this.logout();
-
+        );
 
 
 
         return {
 
 
-            success:false,
+            success:true,
 
-
-            loggedIn:false
+            message:"Logged out"
 
 
         };
-
 
 
     },
@@ -232,49 +639,44 @@ const NightCastAuth = {
 
 
 
+    // ==========================================
+    // REQUIRE LOGIN
+    // برای صفحات محافظت شده
+    // ==========================================
+
+    async requireLogin(){
 
 
-    /*
-    ====================================
-    LOGIN
-    ====================================
-    */
+
+        if(!this.isLoggedIn()){
 
 
-    async login(username,password){
+            return false;
+
+
+        }
+
 
 
 
         const result =
 
-        await API.login(
-
-            username,
-
-            password
-
-        );
+        await this.status();
 
 
 
 
+        if(
+
+            !result.authenticated
+
+        ){
 
 
-
-        if(result.success){
-
+            this.logout();
 
 
-            localStorage.removeItem(
-
-                "NightCastGuest"
-
-            );
-
-
-
-            await this.checkSession();
-
+            return false;
 
 
         }
@@ -282,551 +684,10 @@ const NightCastAuth = {
 
 
 
-
-
-
-        return result;
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    REGISTER
-    ====================================
-    */
-
-
-    async register(data){
-
-
-
-        return await API.register(data);
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    LOGOUT
-    ====================================
-    */
-
-
-    logout(){
-
-
-
-        API.removeToken();
-
-
-
-        localStorage.removeItem(
-
-            "NightCastGuest"
-
-        );
-
-
-
-        this.setGuest();
-
-
-
-        this.updateUI();
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    GUEST
-    ====================================
-    */
-
-
-    setGuest(){
-
-
-
-        this.currentUser = {
-
-
-            id:null,
-
-
-            username:"guest",
-
-
-            role:"guest"
-
-
-
-        };
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    STATUS
-    ====================================
-    */
-
-
-    isLoggedIn(){
-
-
-
-        return API.isLoggedIn();
-
-
-
-    },
-
-
-
-
-
-
-
-
-    isGuest(){
-
-
-
-        return !this.isLoggedIn();
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    DOWNLOAD PERMISSION
-    ====================================
-    */
-
-
-    canDownload(){
-
-
-
-        return this.isLoggedIn();
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    REQUIRE LOGIN
-    ====================================
-    */
-
-
-    requireLogin(){
-
-
-
-        if(this.isLoggedIn()){
-
-
-
-            return true;
-
-
-
-        }
-
-
-
-
-
-
-        if(window.NightCastUI){
-
-
-
-            NightCastUI.toast(
-
-
-                "برای دانلود ابتدا وارد حساب شوید",
-
-
-                "warning"
-
-
-            );
-
-
-        }
-
-
-
-
-
-
-        return false;
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    GET USER
-    ====================================
-    */
-
-
-    getUser(){
-
-
-
-        return this.currentUser;
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    UPDATE HEADER UI
-    ====================================
-    */
-
-
-    updateUI(){
-
-
-
-        const button =
-
-        document.getElementById(
-
-            "loginButton"
-
-        );
-
-
-
-
-
-
-        if(!button)
-
-        return;
-
-
-
-
-
-
-
-        if(this.isLoggedIn()){
-
-
-
-            button.innerHTML =
-
-
-            `
-
-            <i class="fa-solid fa-user"></i>
-
-            حساب کاربری
-
-            `;
-
-
-
-        }
-
-        else{
-
-
-
-            button.innerHTML =
-
-
-            `
-
-            <i class="fa-solid fa-right-to-bracket"></i>
-
-            ورود
-
-            `;
-
-
-
-        }
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    GUEST LOGIN BUTTON
-    ====================================
-    */
-
-
-    bindGuestLogin(){
-
-
-
-        const button =
-
-        document.getElementById(
-
-            "skipLoginButton"
-
-        );
-
-
-
-
-
-
-
-        if(button){
-
-
-
-            button.onclick = ()=>{
-
-
-
-                localStorage.setItem(
-
-                    "NightCastGuest",
-
-                    "true"
-
-                );
-
-
-
-
-
-
-                const loginEntry =
-
-                document.getElementById(
-
-                    "loginEntry"
-
-                );
-
-
-
-
-
-
-                if(loginEntry){
-
-
-
-                    loginEntry.style.display="none";
-
-
-                }
-
-
-
-
-
-
-                this.setGuest();
-
-
-
-                this.updateUI();
-
-
-
-
-
-                console.log(
-
-                    "Guest Mode Activated"
-
-                );
-
-
-
-            };
-
-
-        }
-
-
-
-
-
-
-
-
-
-        const skipLink =
-
-        document.getElementById(
-
-            "skipLogin"
-
-        );
-
-
-
-
-
-
-
-
-        if(skipLink){
-
-
-
-            skipLink.onclick=(e)=>{
-
-
-
-                e.preventDefault();
-
-
-
-
-
-                localStorage.setItem(
-
-                    "NightCastGuest",
-
-                    "true"
-
-                );
-
-
-
-
-
-                const modal =
-
-                document.getElementById(
-
-                    "authModal"
-
-                );
-
-
-
-
-
-
-                if(modal){
-
-
-
-                    modal.classList.add(
-
-                        "hidden"
-
-                    );
-
-
-                }
-
-
-
-
-
-            };
-
-
-        }
-
+        return true;
 
 
     }
-
-
 
 
 
@@ -835,19 +696,16 @@ const NightCastAuth = {
 
 
 
+// ==========================================
+// GLOBAL EXPORT
+// ==========================================
 
-
-
-
-window.NightCastAuth = NightCastAuth;
-
-
-
+window.AuthManager = AuthManager;
 
 
 
 console.log(
 
-"NightCast Auth V2 Loaded"
+"NightCast User Auth Loaded"
 
 );

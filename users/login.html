@@ -4,9 +4,7 @@
 
 <head>
 
-
 <meta charset="UTF-8">
-
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -24,14 +22,11 @@ NightCast | ورود
 <link rel="stylesheet" href="css/login.css">
 
 
-
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 
-
 </head>
-
 
 
 
@@ -39,21 +34,33 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 
 
 
-
-
-
-<!-- AUTH LOADER -->
+<!-- =========================
+AUTH LOADER
+========================= -->
 
 
 <div id="authLoader" class="auth-loader hidden">
 
 
+<div class="loader-box">
+
+
 <div class="loader-circle"></div>
 
 
-<p>
-در حال اتصال به NightCast...
+<h3>
+NightCast
+</h3>
+
+
+<p id="loaderText">
+
+در حال اتصال...
+
 </p>
+
+
+</div>
 
 
 </div>
@@ -64,9 +71,13 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 
 
 
+<!-- =========================
+LOGIN PAGE
+========================= -->
 
 
 <main class="login-page">
+
 
 
 
@@ -82,9 +93,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 
 <!-- BRAND -->
 
-
 <div class="login-brand">
-
 
 
 <div class="brand-icon">
@@ -92,8 +101,6 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 <i class="fa-solid fa-radio"></i>
 
 </div>
-
-
 
 
 
@@ -105,13 +112,11 @@ Night<span>Cast</span>
 
 
 
-
 <p>
 
 رادیوی تجربه، یادگیری و رشد فردی
 
 </p>
-
 
 
 </div>
@@ -140,10 +145,10 @@ Night<span>Cast</span>
 
 <p>
 
-برای استفاده از امکانات NightCast وارد شوید یا به عنوان مهمان ادامه دهید.
+برای تجربه کامل NightCast وارد شوید  
+یا بدون حساب ادامه دهید.
 
 </p>
-
 
 
 </div>
@@ -156,14 +161,16 @@ Night<span>Cast</span>
 
 
 
-<!-- OPEN ID -->
+<!-- OPENID BUTTON -->
 
 
 <button
 
 id="openIdLogin"
 
-class="login-openid">
+class="login-openid"
+
+type="button">
 
 
 <i class="fa-brands fa-google"></i>
@@ -171,13 +178,12 @@ class="login-openid">
 
 <span>
 
-ورود با OpenID
+ورود با Google
 
 </span>
 
 
 </button>
-
 
 
 
@@ -205,14 +211,16 @@ class="login-openid">
 
 
 
-<!-- GUEST -->
+<!-- GUEST LOGIN -->
 
 
 <button
 
 id="guestLogin"
 
-class="login-guest">
+class="login-guest"
+
+type="button">
 
 
 <i class="fa-solid fa-headphones"></i>
@@ -220,12 +228,32 @@ class="login-guest">
 
 <span>
 
-ادامه بدون ورود
+ادامه به عنوان مهمان
 
 </span>
 
 
 </button>
+
+
+
+
+
+
+
+
+
+<!-- STATUS MESSAGE -->
+
+
+<div
+
+id="loginMessage"
+
+class="login-status">
+
+
+</div>
 
 
 
@@ -244,13 +272,19 @@ class="login-guest">
 
 
 
-<div>
+
+<div class="feature">
+
 
 <i class="fa-solid fa-cloud"></i>
 
+
 <span>
-ذخیره تجربه شنیدن
+
+ذخیره تاریخچه شنیدن
+
 </span>
+
 
 </div>
 
@@ -258,13 +292,20 @@ class="login-guest">
 
 
 
-<div>
+
+
+<div class="feature">
+
 
 <i class="fa-solid fa-download"></i>
 
+
 <span>
+
 دانلود پادکست‌ها
+
 </span>
+
 
 </div>
 
@@ -272,21 +313,20 @@ class="login-guest">
 
 
 
-<div>
+
+
+<div class="feature">
+
 
 <i class="fa-solid fa-heart"></i>
 
+
 <span>
-ساخت کتابخانه شخصی
+
+کتابخانه شخصی
+
 </span>
 
-</div>
-
-
-
-
-
-
 
 </div>
 
@@ -295,9 +335,20 @@ class="login-guest">
 
 
 
+</div>
 
 
-<footer>
+
+
+
+
+
+
+
+<!-- FOOTER -->
+
+
+<footer class="login-footer">
 
 
 <p>
@@ -323,8 +374,6 @@ class="login-guest">
 
 
 
-
-
 </main>
 
 
@@ -334,10 +383,7 @@ class="login-guest">
 
 
 
-
-
 <script src="js/login.js"></script>
-
 
 
 

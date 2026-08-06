@@ -1,52 +1,56 @@
+
 /* ==================================================
 
-NightCast User Player CSS V2
+NightCast User Player CSS V3
+
+Compact Professional Audio Player
 
 File:
 users/css/player.css
 
-Includes:
-- Fixed Audio Player
-- Player Controls
-- Progress Bar
-- Queue Panel
-- Mobile Adaptation
-
 ================================================== */
 
 
-/* ================================================
-FIXED AUDIO PLAYER
-================================================ */
+
+/* ==================================================
+FIXED PLAYER CONTAINER
+================================================== */
 
 
 .audio-player{
 
     position:fixed;
 
-    bottom:0;
-
     left:0;
 
     right:0;
 
-    z-index:1000;
+    bottom:0;
+
+    z-index:1200;
+
 
     background:
 
-    rgba(18,27,47,.92);
+    rgba(12,18,32,.88);
 
-    backdrop-filter:blur(18px);
 
-    border-top:1px solid var(--border);
+    backdrop-filter:
+
+    blur(20px);
+
+
+    border-top:
+
+    1px solid var(--border);
+
 
     box-shadow:
 
-    0 -10px 35px rgba(0,0,0,.35);
+    0 -8px 30px rgba(0,0,0,.35);
+
 
 }
-
-
 
 
 
@@ -54,7 +58,7 @@ body.light-theme .audio-player{
 
     background:
 
-    rgba(255,255,255,.92);
+    rgba(255,255,255,.90);
 
 }
 
@@ -62,21 +66,28 @@ body.light-theme .audio-player{
 
 
 
+/* ==================================================
+MAIN PLAYER ROW
+================================================== */
+
+
 .player-main{
 
-    width:min(1200px,92%);
+
+    width:min(1200px,94%);
+
+    height:72px;
 
     margin:auto;
 
-    min-height:90px;
 
     display:flex;
 
     align-items:center;
 
-    gap:20px;
 
-    padding:14px 0;
+    gap:14px;
+
 
 }
 
@@ -84,38 +95,79 @@ body.light-theme .audio-player{
 
 
 
-/* ================================================
-PLAYER COVER
-================================================ */
+
+/* ==================================================
+TRACK GROUP
+
+Cover + Info
+
+================================================== */
+
+
+.player-track{
+
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+
+    min-width:220px;
+
+    max-width:280px;
+
+
+}
+
+
+
+
+
+
+/* ==================================================
+COVER
+
+Small Professional
+
+================================================== */
 
 
 .player-cover{
 
-    width:65px;
 
-    height:65px;
+    width:48px;
+
+    height:48px;
+
 
     flex-shrink:0;
 
-    border-radius:14px;
+
+    border-radius:12px;
+
 
     overflow:hidden;
 
+
     background:var(--bg-soft);
 
+
 }
-
-
 
 
 
 .player-cover img{
 
+
     width:100%;
 
     height:100%;
 
+
     object-fit:cover;
+
 
 }
 
@@ -123,16 +175,17 @@ PLAYER COVER
 
 
 
-/* ================================================
-PLAYER INFO
-================================================ */
+/* ==================================================
+TITLE INFO
+
+================================================== */
 
 
 .player-info{
 
-    min-width:160px;
 
-    max-width:240px;
+    overflow:hidden;
+
 
 }
 
@@ -140,23 +193,44 @@ PLAYER INFO
 
 .player-info h3{
 
-    font-size:16px;
+
+    font-size:14px;
+
+
+    font-weight:700;
+
 
     white-space:nowrap;
 
+
     overflow:hidden;
+
 
     text-overflow:ellipsis;
 
+
+    margin:0;
+
+
 }
+
 
 
 
 .player-info p{
 
-    font-size:13px;
 
     margin-top:3px;
+
+
+    font-size:12px;
+
+
+    color:var(--text-soft);
+
+
+    white-space:nowrap;
+
 
 }
 
@@ -164,18 +238,29 @@ PLAYER INFO
 
 
 
-/* ================================================
-CONTROLS
-================================================ */
+/* ==================================================
+END SECTION 1
+================================================== */
+/* ==================================================
+PLAYER CONTROLS
+================================================== */
 
 
 .player-controls{
+
 
     display:flex;
 
     align-items:center;
 
-    gap:10px;
+    justify-content:center;
+
+
+    gap:8px;
+
+
+    flex-shrink:0;
+
 
 }
 
@@ -185,17 +270,17 @@ CONTROLS
 
 .player-btn{
 
-    width:42px;
 
-    height:42px;
+    width:34px;
+
+    height:34px;
+
 
     border:none;
 
+
     border-radius:50%;
 
-    background:var(--bg-soft);
-
-    color:var(--text);
 
     display:flex;
 
@@ -203,7 +288,30 @@ CONTROLS
 
     justify-content:center;
 
-    transition:var(--transition);
+
+    background:transparent;
+
+
+    color:var(--text);
+
+
+    cursor:pointer;
+
+
+    transition:.25s;
+
+
+}
+
+
+
+
+
+.player-btn i{
+
+
+    font-size:14px;
+
 
 }
 
@@ -213,7 +321,12 @@ CONTROLS
 
 .player-btn:hover{
 
+
     color:var(--primary);
+
+
+    background:var(--bg-soft);
+
 
 }
 
@@ -221,13 +334,21 @@ CONTROLS
 
 
 
+
+
+/* MAIN PLAY BUTTON */
+
+
 .player-btn.main{
 
-    width:52px;
 
-    height:52px;
+    width:46px;
+
+    height:46px;
+
 
     background:
+
 
     linear-gradient(
         135deg,
@@ -235,7 +356,14 @@ CONTROLS
         #008cff
     );
 
+
     color:#fff;
+
+
+    box-shadow:
+
+    0 5px 18px rgba(0,150,255,.35);
+
 
 }
 
@@ -243,22 +371,45 @@ CONTROLS
 
 
 
-/* ================================================
+.player-btn.main i{
+
+
+    font-size:17px;
+
+
+}
+
+
+
+
+
+
+
+/* ==================================================
 PROGRESS AREA
-================================================ */
+
+Compact
+
+================================================== */
 
 
 .player-progress-area{
 
+
     flex:1;
+
 
     display:flex;
 
+
     align-items:center;
 
-    gap:10px;
 
-    min-width:180px;
+    gap:8px;
+
+
+    min-width:150px;
+
 
 }
 
@@ -268,11 +419,15 @@ PROGRESS AREA
 
 .player-progress-area span{
 
-    font-size:12px;
+
+    font-size:11px;
+
 
     color:var(--text-soft);
 
-    min-width:38px;
+
+    min-width:32px;
+
 
 }
 
@@ -280,19 +435,28 @@ PROGRESS AREA
 
 
 
+
+
 .progress-container{
 
-    height:6px;
+
+    height:4px;
+
 
     flex:1;
 
-    background:var(--bg-soft);
 
     border-radius:20px;
 
+
     overflow:hidden;
 
+
+    background:var(--bg-soft);
+
+
     cursor:pointer;
+
 
 }
 
@@ -302,11 +466,18 @@ PROGRESS AREA
 
 .progress-bar{
 
+
     height:100%;
+
 
     width:0;
 
+
+    border-radius:20px;
+
+
     background:
+
 
     linear-gradient(
         90deg,
@@ -314,7 +485,9 @@ PROGRESS AREA
         var(--gold)
     );
 
-    border-radius:20px;
+
+    transition:.15s;
+
 
 }
 
@@ -322,34 +495,73 @@ PROGRESS AREA
 
 
 
-/* ================================================
-OPTIONS
-================================================ */
+
+
+/* ==================================================
+PLAYER OPTIONS
+
+================================================== */
 
 
 .player-options{
 
+
     display:flex;
+
 
     align-items:center;
 
-    gap:10px;
+
+    gap:8px;
+
 
 }
+
+
 
 
 
 .player-options button{
 
+
+    width:32px;
+
+    height:32px;
+
+
     border:none;
+
 
     background:transparent;
 
+
     color:var(--text);
+
+
+    border-radius:50%;
+
 
     cursor:pointer;
 
+
 }
+
+
+
+
+
+.player-options button:hover{
+
+
+    background:var(--bg-soft);
+
+
+    color:var(--primary);
+
+
+}
+
+
 
 
 
@@ -357,13 +569,25 @@ OPTIONS
 
 #speedButton{
 
-    padding:6px 12px;
+
+    width:auto;
+
+
+    padding:5px 10px;
+
 
     border-radius:10px;
 
+
     background:var(--bg-soft);
 
+
+    font-size:12px;
+
+
 }
+
+
 
 
 
@@ -371,9 +595,15 @@ OPTIONS
 
 #playerVolume{
 
-    width:90px;
+
+    width:70px;
+
+
+    height:4px;
+
 
     accent-color:var(--primary);
+
 
 }
 
@@ -381,34 +611,49 @@ OPTIONS
 
 
 
-/* ================================================
+
+
+/* ==================================================
 QUEUE PANEL
-================================================ */
+
+================================================== */
 
 
 .queue-panel{
 
+
     position:fixed;
+
 
     left:20px;
 
-    bottom:110px;
 
-    width:340px;
+    bottom:90px;
 
-    max-height:450px;
+
+    width:320px;
+
+
+    max-height:420px;
+
 
     overflow:auto;
 
+
     background:var(--bg-card);
+
 
     border:1px solid var(--border);
 
-    border-radius:var(--radius-lg);
+
+    border-radius:18px;
+
 
     box-shadow:var(--shadow);
 
-    z-index:1200;
+
+    z-index:1300;
+
 
 }
 
@@ -418,35 +663,21 @@ QUEUE PANEL
 
 .queue-header{
 
+
     display:flex;
+
 
     align-items:center;
 
+
     justify-content:space-between;
 
-    padding:18px;
+
+    padding:15px;
+
 
     border-bottom:1px solid var(--border);
 
-}
-
-
-
-
-
-.queue-header button{
-
-    width:36px;
-
-    height:36px;
-
-    border:none;
-
-    border-radius:10px;
-
-    background:var(--bg-soft);
-
-    color:var(--text);
 
 }
 
@@ -456,42 +687,33 @@ QUEUE PANEL
 
 .queue-list{
 
-    padding:15px;
+
+    padding:12px;
+
 
 }
 
 
 
-
-
-.queue-list p{
-
-    text-align:center;
-
-}
-
-
-
-
-
-/* ================================================
-QUEUE ITEM READY
-================================================ */
 
 
 .queue-item{
 
+
     display:flex;
+
 
     align-items:center;
 
-    gap:12px;
 
-    padding:12px;
+    gap:10px;
+
+
+    padding:10px;
+
 
     border-radius:12px;
 
-    transition:var(--transition);
 
 }
 
@@ -499,10 +721,12 @@ QUEUE ITEM READY
 
 
 
-.queue-item:hover,
-.queue-item.active{
+.queue-item.active,
+.queue-item:hover{
 
-    background:rgba(0,212,255,.1);
+
+    background:rgba(0,212,255,.08);
+
 
 }
 
@@ -512,23 +736,27 @@ QUEUE ITEM READY
 
 .queue-item img{
 
-    width:45px;
 
-    height:45px;
+    width:40px;
 
-    border-radius:10px;
+
+    height:40px;
+
+
+    border-radius:8px;
+
 
     object-fit:cover;
 
-}
+
+        }
 
 
 
-
-
-/* ================================================
+/* ==================================================
 MOBILE PLAYER
-================================================ */
+Compact App Style
+================================================== */
 
 
 @media(max-width:768px){
@@ -536,125 +764,684 @@ MOBILE PLAYER
 
     .audio-player{
 
+
         bottom:70px;
 
+
+        border-radius:18px 18px 0 0;
+
+
     }
+
+
 
 
 
     .player-main{
 
+
         width:94%;
 
-        min-height:auto;
 
-        flex-wrap:wrap;
+        height:64px;
 
-        gap:12px;
 
-        padding:12px 0;
+        gap:10px;
+
 
     }
 
+
+
+
+
+    /* Cover */
 
 
     .player-cover{
 
-        width:55px;
 
-        height:55px;
+        width:42px;
+
+        height:42px;
+
+
+        border-radius:10px;
+
 
     }
+
+
+
+
+
+    /* Track */
+
+
+    .player-track{
+
+
+        min-width:0;
+
+
+        flex:1;
+
+
+        gap:8px;
+
+
+    }
+
+
 
 
 
     .player-info{
 
-        flex:1;
 
-        max-width:none;
+        min-width:0;
+
 
     }
 
+
+
+
+
+    .player-info h3{
+
+
+        font-size:13px;
+
+
+    }
+
+
+
+
+
+    .player-info p{
+
+
+        font-size:11px;
+
+
+    }
+
+
+
+
+
+
+
+    /* Controls */
 
 
     .player-controls{
 
-        order:3;
 
-        width:100%;
+        gap:4px;
 
-        justify-content:center;
 
     }
 
+
+
+
+
+    .player-btn{
+
+
+        width:30px;
+
+
+        height:30px;
+
+
+    }
+
+
+
+
+
+    .player-btn:not(.main){
+
+
+        display:none;
+
+
+    }
+
+
+
+
+
+    .player-btn.main{
+
+
+        width:42px;
+
+
+        height:42px;
+
+
+    }
+
+
+
+
+
+    .player-btn.main i{
+
+
+        font-size:15px;
+
+
+    }
+
+
+
+
+
+
+
+
+    /* Progress */
 
 
     .player-progress-area{
 
-        order:4;
 
-        width:100%;
+        position:absolute;
+
+
+        left:12px;
+
+
+        right:12px;
+
+
+        bottom:3px;
+
+
+        height:3px;
+
 
     }
 
+
+
+
+
+    .player-progress-area span{
+
+
+        display:none;
+
+
+    }
+
+
+
+
+
+    .progress-container{
+
+
+        height:3px;
+
+
+        width:100%;
+
+
+    }
+
+
+
+
+
+
+
+    /* Options */
 
 
     .player-options{
 
-        order:5;
 
-        width:100%;
+        display:none;
 
-        justify-content:center;
 
     }
 
 
 
-    #playerVolume{
-
-        width:120px;
-
-    }
 
 
 }
 
 
 
+
+
+
+
+
+/* ==================================================
+SMALL MOBILE
+================================================== */
 
 
 @media(max-width:480px){
 
 
-    .player-info h3{
+    .audio-player{
 
-        font-size:14px;
+
+        bottom:65px;
+
 
     }
 
 
 
-    .player-options{
+
+
+    .player-main{
+
+
+        height:60px;
+
+
+    }
+
+
+
+
+
+    .player-cover{
+
+
+        width:38px;
+
+
+        height:38px;
+
+
+    }
+
+
+
+
+
+    .player-info h3{
+
+
+        font-size:12px;
+
+
+    }
+
+
+
+
+
+    .player-info p{
+
 
         display:none;
 
+
     }
 
 
 
-    .queue-panel{
 
-        left:10px;
 
-        right:10px;
+    .player-btn.main{
 
-        width:auto;
 
-        bottom:130px;
+        width:38px;
+
+
+        height:38px;
+
 
     }
 
 
 }
+
+
+
+
+
+
+
+
+/* ==================================================
+SAFE AREA FOR MOBILE DEVICES
+
+iPhone / Android Edge
+
+================================================== */
+
+
+@supports(padding:env(safe-area-inset-bottom)){
+
+
+    .audio-player{
+
+
+        padding-bottom:
+
+        env(safe-area-inset-bottom);
+
+
+    }
+
+
+}
+
+
+
+
+
+
+
+/* ==================================================
+PLAYER ANIMATIONS
+Professional Polish
+================================================== */
+
+
+/* ===============================
+PLAYING STATE
+Add class:
+.player-playing
+=============================== */
+
+
+.audio-player.player-playing .player-cover img{
+
+
+    animation:
+
+    coverPulse 4s linear infinite;
+
+
+}
+
+
+
+
+
+
+@keyframes coverPulse{
+
+
+    0%{
+
+        transform:scale(1);
+
+    }
+
+
+    50%{
+
+        transform:scale(1.04);
+
+    }
+
+
+    100%{
+
+        transform:scale(1);
+
+    }
+
+
+}
+
+
+
+
+
+
+
+
+/* ===============================
+PLAY BUTTON ACTIVE
+=============================== */
+
+
+.audio-player.player-playing 
+.player-btn.main{
+
+
+    box-shadow:
+
+
+    0 0 0 6px rgba(0,212,255,.12),
+    0 8px 25px rgba(0,150,255,.45);
+
+
+}
+
+
+
+
+
+
+
+
+/* ===============================
+EQUALIZER EFFECT
+
+Optional
+=============================== */
+
+
+.player-playing 
+.player-info:after{
+
+
+    content:"";
+
+
+    display:inline-block;
+
+
+    width:18px;
+
+    height:10px;
+
+
+    margin-right:8px;
+
+
+    background:
+
+
+    linear-gradient(
+        90deg,
+        transparent 0%,
+        var(--primary) 20%,
+        transparent 40%,
+        var(--primary) 60%,
+        transparent 80%
+    );
+
+
+    animation:
+
+    equalizer 1s infinite;
+
+
+}
+
+
+
+
+@keyframes equalizer{
+
+
+    0%{
+
+        opacity:.3;
+
+        transform:scaleX(.7);
+
+    }
+
+
+    50%{
+
+        opacity:1;
+
+        transform:scaleX(1);
+
+    }
+
+
+    100%{
+
+        opacity:.3;
+
+        transform:scaleX(.7);
+
+    }
+
+
+}
+
+
+
+
+
+
+
+/* ===============================
+SMOOTH OPEN QUEUE
+=============================== */
+
+
+.queue-panel{
+
+
+    animation:
+
+    queueShow .25s ease;
+
+
+}
+
+
+
+@keyframes queueShow{
+
+
+    from{
+
+
+        opacity:0;
+
+
+        transform:
+
+        translateY(20px);
+
+
+    }
+
+
+
+    to{
+
+
+        opacity:1;
+
+
+        transform:
+
+        translateY(0);
+
+
+    }
+
+
+}
+
+
+
+
+
+
+
+
+/* ===============================
+LIGHT MODE IMPROVEMENT
+=============================== */
+
+
+body.light-theme .player-btn{
+
+
+    color:#1c2438;
+
+
+}
+
+
+
+body.light-theme .player-cover{
+
+
+    box-shadow:
+
+    0 5px 15px rgba(0,0,0,.12);
+
+
+}
+
+
+
+
+
+
+
+/* ===============================
+HOVER DESKTOP
+=============================== */
+
+
+@media(min-width:769px){
+
+
+.player-main{
+
+
+    transition:.3s;
+
+
+}
+
+
+
+.audio-player:hover{
+
+
+    box-shadow:
+
+
+    0 -12px 40px rgba(0,0,0,.45);
+
+
+}
+
+
+}
+
+
+
+
+

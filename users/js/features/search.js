@@ -1,94 +1,97 @@
-/* ==================================================
+/*
+=================================================
 
-NightCast Search Manager V1
+NightCast Search Module
 
 File:
+users/js/features/search.js
 
-/users/js/features/search.js
+Responsibilities:
 
+- Main search
+- Mobile search
+- Search overlay control
+- Search result rendering
+- API communication
 
-Responsibility:
+Dependencies:
 
-- Search podcasts
-- Filter user content
+- api.js
+- ui.js
 
+=================================================
+*/
 
-Depends:
 
-api.js
-podcasts.js
+(function(){
 
+"use strict";
 
-================================================== */
 
 
-const NightCastSearch = {
+window.NightCast = window.NightCast || {};
 
 
 
-    input:null,
 
 
+const Search = {
 
-    /*
-    ====================================
-    INIT
-    ====================================
-    */
 
 
-    init(){
 
 
+/*
+=================================================
+CONFIG
+=================================================
+*/
 
-        this.input =
 
-        document.getElementById(
+config:{
 
-            "searchInput"
 
-        );
+minCharacters:2,
 
 
+delay:400,
 
 
+activeClass:"active"
 
 
-        if(!this.input){
+},
 
-            console.warn(
 
-                "Search input not found"
 
-            );
 
-            return;
 
-        }
 
 
+state:{
 
 
+timer:null,
 
 
-        this.bind();
+query:"",
 
 
+results:[],
 
 
+isOpen:false
 
 
-        console.log(
+},
 
-            "NightCast Search Ready"
 
-        );
 
 
 
-    },
 
 
+elements:{},
 
 
 
@@ -96,399 +99,900 @@ const NightCastSearch = {
 
 
 
-    /*
-    ====================================
-    BIND
-    ====================================
-    */
+/*
+=================================================
+INIT
+=================================================
+*/
 
 
-    bind(){
+init(){
 
 
+this.cacheElements();
 
-        this.input.addEventListener(
 
+this.bindEvents();
 
-            "input",
 
-            ()=>{
+console.log(
+"NightCast Search Initialized"
+);
 
 
-                this.search(
+},
 
-                    this.input.value.trim()
 
-                );
 
 
-            }
 
 
-        );
 
+/*
+=================================================
+CACHE DOM
+=================================================
+*/
 
 
-    },
+cacheElements(){
 
 
 
+this.elements.searchInput =
+document.getElementById(
+"searchInput"
+);
 
 
 
+this.elements.mobileInput =
+document.getElementById(
+"mobileSearchInput"
+);
 
 
 
-    /*
-    ====================================
-    SEARCH
-    ====================================
-    */
+this.elements.overlay =
+document.getElementById(
+"searchOverlay"
+);
 
 
-    async search(keyword){
 
+this.elements.results =
+document.getElementById(
+"searchResults"
+);
 
 
-        if(!keyword){
 
+this.elements.closeButton =
+document.getElementById(
+"closeSearch"
+);
 
 
-            if(window.NightCastPodcasts){
 
+},
 
 
-                const grid =
 
-                document.getElementById(
 
-                    "podcastGrid"
 
-                );
 
 
+/*
+=================================================
+EVENTS
+=================================================
+*/
 
-                if(grid){
 
+bindEvents(){
 
 
-                    grid.innerHTML="";
 
+if(this.elements.searchInput){
 
-                }
 
+this.elements.searchInput.addEventListener(
+"input",
+(e)=>{
 
 
+this.handleTyping(
+e.target.value
+);
 
-                NightCastPodcasts.page=1;
 
-                NightCastPodcasts.hasMore=true;
+});
 
 
-                NightCastPodcasts.load();
+}
 
 
 
-            }
 
 
 
-            return;
+if(this.elements.mobileInput){
 
 
+this.elements.mobileInput.addEventListener(
+"input",
+(e)=>{
 
-        }
 
+this.handleTyping(
+e.target.value
+);
 
 
+});
 
 
+}
 
 
 
-        const result =
 
-        await API.get(
 
-            "/public/podcasts?search="
 
-            +
+if(this.elements.closeButton){
 
-            encodeURIComponent(keyword)
 
-        );
+this.elements.closeButton.addEventListener(
+"click",
+()=>{
 
 
+this.close();
 
 
+});
 
 
+}
 
 
 
-        if(
+document.querySelectorAll(
+'[data-action="open-search"]'
+)
+.forEach(btn=>{
 
-            result.success &&
 
-            result.podcasts
+btn.addEventListener(
+"click",
+()=>{
 
-        ){
 
+this.open();
 
 
-            this.renderResult(
+});
 
-                result.podcasts
 
-            );
+});
 
 
 
-        }
+},
 
 
 
-    },
 
 
 
 
+/*
+=================================================
+OPEN SEARCH
+=================================================
+*/
 
 
+open(){
 
 
 
-    /*
-    ====================================
-    RENDER SEARCH RESULT
+if(!this.elements.overlay)
+return;
 
-    ====================================
-    */
 
 
-    renderResult(items){
+this.elements.overlay.classList.remove(
+"hidden"
+);
 
 
 
-        const grid =
+this.state.isOpen=true;
 
-        document.getElementById(
 
-            "podcastGrid"
 
-        );
+document.body.classList.add(
+"search-open"
+);
 
 
 
+},
 
 
 
 
-        if(!grid)
 
-        return;
 
 
+/*
+=================================================
+CLOSE SEARCH
+=================================================
+*/
 
 
+close(){
 
 
-        grid.innerHTML="";
 
+if(!this.elements.overlay)
+return;
 
 
 
+this.elements.overlay.classList.add(
+"hidden"
+);
 
 
 
-        const template =
+this.state.isOpen=false;
 
-        document.getElementById(
 
-            "podcastCardTemplate"
 
-        );
+document.body.classList.remove(
+"search-open"
+);
 
 
 
+},
 
 
 
-        items.forEach(
 
-            podcast=>{
 
 
 
+/*
+=================================================
+TYPING HANDLER
+=================================================
+*/
 
 
-                const card =
+handleTyping(value){
 
-                template.content.cloneNode(true);
 
 
+clearTimeout(
+this.state.timer
+);
 
 
 
+const query =
+value.trim();
 
 
-                const img =
 
-                card.querySelector(
 
-                    ".podcast-image"
 
-                );
+this.state.query=query;
 
 
 
 
 
+if(query.length <
+this.config.minCharacters){
 
-                if(img){
 
+this.clearResults();
 
 
-                    img.src =
+return;
 
-                    podcast.cover_url ||
 
-                    "/users/assets/images/default-cover.jpg";
+}
 
 
 
-                }
 
 
 
 
+this.state.timer =
+setTimeout(()=>{
 
 
+this.search(
+query
+);
 
 
-                const title =
+},
+this.config.delay);
 
-                card.querySelector(
 
-                    ".podcast-title"
 
-                );
+},
 
 
 
 
 
-                if(title){
 
 
+/*
+=================================================
+SEARCH REQUEST
+=================================================
+*/
 
-                    title.textContent =
 
-                    podcast.title;
+async search(query){
 
 
-                }
+try{
 
 
+this.showLoading();
 
 
 
 
 
+let response =
+await NightCastAPI.get(
+"/search?q="+
+encodeURIComponent(query)
+);
 
 
-                const author =
 
-                card.querySelector(
 
-                    ".podcast-author"
 
-                );
+this.state.results =
+response.data ||
+response.results ||
+[];
 
 
 
 
 
-                if(author){
+this.renderResults();
 
 
 
-                    author.textContent =
 
-                    podcast.author_name ||
+}
+catch(error){
 
-                    "NightCast";
 
 
-                }
+console.error(
+"Search Error:",
+error
+);
 
 
 
+this.showError();
 
 
 
+}
 
 
 
-                const play =
+},
 
-                card.querySelector(
 
-                    ".play-button"
 
-                );
 
 
 
 
+/*
+=================================================
+LOADING
+=================================================
+*/
 
 
+showLoading(){
 
-                if(play){
 
+if(!this.elements.results)
+return;
 
 
-                    play.onclick=()=>{
+this.elements.results.innerHTML=`
 
+<div class="search-loading">
 
+<i class="fa-solid fa-spinner fa-spin"></i>
 
-                        NightCastPlayer.play(
+در حال جستجو...
 
-                            podcast
+</div>
 
-                        );
+`;
 
+},
+/*
+=================================================
+ERROR STATE
+=================================================
+*/
 
 
-                    };
+showError(){
 
 
+if(!this.elements.results)
+return;
 
-                }
 
 
+this.elements.results.innerHTML=`
 
+<div class="search-empty">
 
+<i class="fa-solid fa-circle-exclamation"></i>
 
+<p>
+خطا در دریافت نتایج جستجو
+</p>
 
+</div>
 
-                grid.appendChild(
+`;
 
-                    card
+},
 
-                );
 
 
 
 
-            }
 
 
-        );
+/*
+=================================================
+RENDER RESULTS
+=================================================
+*/
 
 
+renderResults(){
 
-    }
+
+
+if(!this.elements.results)
+return;
+
+
+
+
+if(!this.state.results.length){
+
+
+this.elements.results.innerHTML=`
+
+<div class="search-empty">
+
+<i class="fa-solid fa-magnifying-glass"></i>
+
+<p>
+نتیجه‌ای پیدا نشد
+</p>
+
+</div>
+
+`;
+
+return;
+
+
+}
+
+
+
+
+
+
+this.elements.results.innerHTML = "";
+
+
+
+
+
+this.state.results.forEach(item=>{
+
+
+const card =
+this.createResultCard(item);
+
+
+
+this.elements.results.appendChild(
+card
+);
+
+
+
+});
+
+
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+CREATE RESULT CARD
+=================================================
+*/
+
+
+createResultCard(item){
+
+
+
+const card =
+document.createElement(
+"article"
+);
+
+
+
+card.className =
+"search-result-card";
+
+
+
+
+
+const type =
+item.type ||
+"podcast";
+
+
+
+
+
+
+const title =
+item.title ||
+item.name ||
+"بدون عنوان";
+
+
+
+
+
+const cover =
+item.cover ||
+item.image ||
+"/users/assets/images/default-cover.jpg";
+
+
+
+
+
+
+const author =
+item.author ||
+item.author_name ||
+"NightCast";
+
+
+
+
+
+
+card.innerHTML = `
+
+<div class="search-result-cover">
+
+
+<img
+
+src="${cover}"
+
+alt="${title}"
+
+loading="lazy">
+
+
+</div>
+
+
+
+
+<div class="search-result-info">
+
+
+<h4>
+
+${title}
+
+</h4>
+
+
+
+<p>
+
+${author}
+
+</p>
+
+
+
+<span class="search-result-type">
+
+${this.getTypeLabel(type)}
+
+</span>
+
+
+
+</div>
+
+`;
+
+
+
+
+
+
+
+card.addEventListener(
+"click",
+()=>{
+
+
+this.selectResult(
+item
+);
+
+
+});
+
+
+
+
+
+return card;
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+TYPE LABEL
+=================================================
+*/
+
+
+getTypeLabel(type){
+
+
+
+const labels={
+
+
+podcast:"پادکست",
+
+
+book:"کتاب صوتی",
+
+
+author:"نویسنده"
+
+
+
+};
+
+
+
+
+
+return labels[type] ||
+"محتوا";
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+RESULT SELECT
+=================================================
+*/
+
+
+selectResult(item){
+
+
+
+console.log(
+"Selected Search Result:",
+item
+);
+
+
+
+
+
+/*
+اگر پادکست باشد
+مستقیماً به Player ارسال می‌شود
+*/
+
+
+if(
+item.type === "podcast" &&
+window.NightCast &&
+NightCast.Player
+){
+
+
+
+NightCast.Player.load(
+item
+);
+
+
+
+this.close();
+
+
+
+return;
+
+
+}
+
+
+
+
+
+
+/*
+در آینده:
+Book page
+Author page
+
+*/
+
+
+
+
+if(item.url){
+
+
+window.location.href =
+item.url;
+
+
+}
+
+
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+CLEAR RESULTS
+=================================================
+*/
+
+
+clearResults(){
+
+
+
+if(!this.elements.results)
+return;
+
+
+
+this.elements.results.innerHTML="";
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+SET QUERY
+=================================================
+*/
+
+
+setQuery(value){
+
+
+
+if(this.elements.searchInput){
+
+
+this.elements.searchInput.value =
+value;
+
+
+}
+
+
+
+if(this.elements.mobileInput){
+
+
+this.elements.mobileInput.value =
+value;
+
+
+}
+
+
+
+this.handleTyping(
+value
+);
+
+
+
+}
+
+
 
 
 
@@ -502,17 +1006,18 @@ const NightCastSearch = {
 
 
 
-window.NightCastSearch =
-
-NightCastSearch;
-
-
-
-
+/*
+=================================================
+EXPORT
+=================================================
+*/
 
 
-console.log(
+window.NightCast.Search =
+Search;
 
-"NightCast Search V1 Loaded"
 
-);
+
+
+})();
+    

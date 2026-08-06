@@ -1,688 +1,539 @@
 /* ==================================================
 
-NightCast User API Manager V1
+NightCast User API Core
 
 File:
-
-/users/js/api.js
-
+ /users/js/api.js
 
 Responsibility:
+- Worker Connection
+- Fetch Manager
+- Token Handling
+- Error Handling
 
-ONLY API COMMUNICATION
-
-
-Worker:
-
-nightcast-api.tomasgermany2580.workers.dev
-
+API Version:
+V5
 
 ================================================== */
+
+
+(function(){
+
+"use strict";
+
+
+// ================================================
+// API BASE URL
+// ================================================
+
+
+const API_CONFIG = {
+
+
+BASE_URL:
+
+"https://nightcast-api.tomasgermany2580.workers.dev/api/v1",
+
+
+
+TOKEN_KEY:
+
+"NightCastUserToken"
+
+
+
+};
+
+
+
+
+// ================================================
+// TOKEN MANAGER
+// ================================================
+
+
+const TokenManager = {
+
+
+
+get(){
+
+
+return localStorage.getItem(
+
+API_CONFIG.TOKEN_KEY
+
+);
+
+
+},
+
+
+
+set(token){
+
+
+if(!token){
+
+return;
+
+}
+
+
+localStorage.setItem(
+
+API_CONFIG.TOKEN_KEY,
+
+token
+
+);
+
+
+},
+
+
+
+remove(){
+
+
+localStorage.removeItem(
+
+API_CONFIG.TOKEN_KEY
+
+);
+
+
+},
+
+
+
+exists(){
+
+
+return !!this.get();
+
+
+}
+
+
+};
+
+
+
+
+
+// ================================================
+// REQUEST CORE
+// ================================================
+
+
+async function request(
+
+endpoint,
+
+options={}
+
+){
+
+
+
+const url =
+
+API_CONFIG.BASE_URL + endpoint;
+
+
+
+const token =
+
+TokenManager.get();
+
+
+
+
+const headers = {
+
+
+"Content-Type":
+
+"application/json"
+
+
+
+};
+
+
+
+
+
+// Authorization
+
+if(token){
+
+
+headers.Authorization =
+
+"Bearer " + token;
+
+
+}
+
+
+
+
+
+const config = {
+
+
+method:
+
+options.method || "GET",
+
+
+
+headers:
+
+
+
+{
+
+...headers,
+
+...(options.headers || {})
+
+}
+
+
+
+};
+
+
+
+
+
+// Body
+
+if(options.body){
+
+
+config.body =
+
+typeof options.body === "string"
+
+?
+
+options.body
+
+:
+
+JSON.stringify(options.body);
+
+
+
+}
+
+
+
+
+
+try{
+
+
+
+const response =
+
+await fetch(
+
+url,
+
+config
+
+);
+
+
+
+
+
+let data;
+
+
+
+try{
+
+
+data =
+
+await response.json();
+
+
+
+}
+
+catch(e){
+
+
+data = {
+
+
+success:false,
+
+
+message:
+
+"Invalid server response"
+
+
+
+};
+
+
+}
+
+
+
+
+
+if(!response.ok){
+
+
+
+return {
+
+
+success:false,
+
+
+status:
+
+response.status,
+
+
+message:
+
+data.message ||
+
+"Request failed",
+
+
+
+data:data
+
+
+
+};
+
+
+
+}
+
+
+
+
+
+return data;
+
+
+
+}
+
+catch(error){
+
+
+
+console.error(
+
+"NightCast API Error:",
+
+error
+
+);
+
+
+
+return {
+
+
+success:false,
+
+
+message:
+
+"Connection error",
+
+
+error:
+
+error.message
+
+
+
+};
+
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+// ================================================
+// PUBLIC API METHODS
+// ================================================
 
 
 const API = {
 
 
-    /*
-    ====================================
-    BASE URL
-    ====================================
-    */
 
 
-    base:
 
-    "https://nightcast-api.tomasgermany2580.workers.dev/api/v1",
+// -------------------------------
+// GET
+// -------------------------------
 
 
+get(endpoint){
 
 
+return request(
 
+endpoint,
 
-    /*
-    ====================================
-    TOKEN
-    ====================================
-    */
+{
 
+method:"GET"
 
-    token(){
+}
 
+);
 
-        return localStorage.getItem(
 
-            "NightCastToken"
+},
 
-        );
 
 
-    },
 
 
+// -------------------------------
+// POST
+// -------------------------------
 
 
+post(
 
+endpoint,
 
+data={}
 
-    /*
-    ====================================
-    HEADERS
-    ====================================
-    */
+){
 
 
-    headers(json=false){
+return request(
 
+endpoint,
 
-        const headers = {};
+{
 
+method:"POST",
 
 
-        if(json){
+body:data
 
 
-            headers[
+}
 
-                "Content-Type"
+);
 
-            ] = "application/json";
 
+},
 
-        }
 
 
 
 
+// -------------------------------
+// PUT
+// -------------------------------
 
 
-        const token = this.token();
+put(
 
+endpoint,
 
+data={}
 
+){
 
-        if(token){
 
+return request(
 
-            headers[
+endpoint,
 
-                "Authorization"
+{
 
-            ] =
+method:"PUT",
 
-            "Bearer " + token;
 
+body:data
 
-        }
 
+}
 
+);
 
 
+},
 
 
-        return headers;
 
 
-    },
 
+// -------------------------------
+// DELETE
+// -------------------------------
 
 
+delete(endpoint){
 
 
+return request(
 
+endpoint,
 
+{
 
-    /*
-    ====================================
-    GET REQUEST
-    ====================================
-    */
+method:"DELETE"
 
+}
 
-    async get(endpoint){
+);
 
 
+},
 
-        try{
 
 
-            const response =
 
-            await fetch(
 
 
-                this.base + endpoint,
+// -------------------------------
+// TOKEN
+// -------------------------------
 
 
-                {
+token:
 
-                    method:"GET",
 
-                    headers:this.headers()
+TokenManager
 
-                }
 
-
-            );
-
-
-
-
-
-
-            return await response.json();
-
-
-
-        }
-
-
-        catch(error){
-
-
-
-            return {
-
-
-                success:false,
-
-
-                error:error.message
-
-
-            };
-
-
-        }
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    POST REQUEST
-    ====================================
-    */
-
-
-    async post(endpoint,data){
-
-
-
-        try{
-
-
-
-            const response =
-
-            await fetch(
-
-
-                this.base + endpoint,
-
-
-                {
-
-
-                    method:"POST",
-
-
-                    headers:this.headers(true),
-
-
-                    body:
-
-                    JSON.stringify(data)
-
-
-                }
-
-
-            );
-
-
-
-
-
-
-
-            return await response.json();
-
-
-
-
-        }
-
-
-
-        catch(error){
-
-
-
-            return {
-
-
-                success:false,
-
-
-                error:error.message
-
-
-            };
-
-
-        }
-
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    PUT REQUEST
-    ====================================
-    */
-
-
-    async put(endpoint,data){
-
-
-
-        try{
-
-
-
-            const response =
-
-            await fetch(
-
-
-                this.base + endpoint,
-
-
-                {
-
-
-                    method:"PUT",
-
-
-                    headers:this.headers(true),
-
-
-                    body:
-
-                    JSON.stringify(data)
-
-
-                }
-
-
-            );
-
-
-
-
-
-            return await response.json();
-
-
-
-
-        }
-
-
-
-        catch(error){
-
-
-
-            return {
-
-
-                success:false,
-
-
-                error:error.message
-
-
-            };
-
-
-        }
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    DELETE REQUEST
-    ====================================
-    */
-
-
-    async delete(endpoint){
-
-
-
-        try{
-
-
-
-            const response =
-
-            await fetch(
-
-
-                this.base + endpoint,
-
-
-                {
-
-
-                    method:"DELETE",
-
-
-                    headers:this.headers()
-
-
-                }
-
-
-            );
-
-
-
-
-
-
-            return await response.json();
-
-
-
-
-        }
-
-
-
-        catch(error){
-
-
-
-            return {
-
-
-                success:false,
-
-
-                error:error.message
-
-
-            };
-
-
-        }
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    LOGIN
-    ====================================
-    */
-
-
-    async login(username,password){
-
-
-
-        const result =
-
-        await this.post(
-
-
-            "/public/login",
-
-
-            {
-
-
-                username,
-
-
-                password
-
-
-            }
-
-
-        );
-
-
-
-
-
-
-        if(
-
-
-            result.success &&
-
-            result.token
-
-
-        ){
-
-
-
-            localStorage.setItem(
-
-
-                "NightCastToken",
-
-
-                result.token
-
-
-            );
-
-
-        }
-
-
-
-
-
-
-        return result;
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    REGISTER
-    ====================================
-    */
-
-
-    async register(data){
-
-
-
-        return await this.post(
-
-
-            "/public/register",
-
-
-            data
-
-
-        );
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    CURRENT USER
-    ====================================
-    */
-
-
-    async me(){
-
-
-
-        return await this.get(
-
-
-            "/public/me"
-
-
-        );
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    PODCASTS
-    ====================================
-    */
-
-
-    async podcasts(page=1,limit=5){
-
-
-
-        return await this.get(
-
-
-            `/public/podcasts?page=${page}&limit=${limit}`
-
-
-        );
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    LOGOUT LOCAL
-    ====================================
-    */
-
-
-    removeToken(){
-
-
-
-        localStorage.removeItem(
-
-
-            "NightCastToken"
-
-
-        );
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    LOGIN STATUS
-    ====================================
-    */
-
-
-    isLoggedIn(){
-
-
-
-        return !!this.token();
-
-
-
-    }
 
 
 
@@ -694,16 +545,21 @@ const API = {
 
 
 
+// ================================================
+// GLOBAL EXPORT
+// ================================================
 
-window.API = API;
 
-
-
+window.NightCastAPI = API;
 
 
 
 console.log(
 
-    "NightCast API V1 Loaded"
+"NightCast API Loaded"
 
 );
+
+
+
+})();

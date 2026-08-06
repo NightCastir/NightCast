@@ -1,321 +1,473 @@
 /* ==================================================
 
-NightCast User Podcasts Manager V1
+NightCast User Podcasts Manager V2
 
 File:
+users/js/features/podcasts.js
 
-/users/js/features/podcasts.js
+Responsibility
 
+✔ Load Podcasts
+✔ Render Cards
+✔ Infinite Scroll
+✔ Queue Builder
+✔ Search Integration
+✔ Player Integration
+✔ Library Integration
+✔ Error Handling
 
-Responsibility:
-
-- Load podcasts from Worker API
-- Render podcast cards
-- Connect player actions
-
-
-Depends:
+Depends
 
 api.js
-auth.js
 player.js
-
+library.js
+ui.js
 
 ================================================== */
 
+"use strict";
 
 const NightCastPodcasts = {
 
+    grid:null,
 
+    template:null,
 
-    page:1,
+    trigger:null,
 
-
-    limit:5,
-
+    observer:null,
 
     loading:false,
 
+    page:1,
+
+    limit:6,
 
     hasMore:true,
 
+    items:[],
 
 
 
-
-
-    /*
-    ====================================
-    INIT
-    ====================================
-    */
-
+    /* ==========================================
+       INIT
+    ========================================== */
 
     init(){
 
-
-
-        this.load();
-
-        this.bindScroll();
-
-
-
-        console.log(
-
-            "NightCast Podcasts Ready"
-
+        this.grid =
+        document.getElementById(
+            "podcastGrid"
         );
 
+        this.template =
+        document.getElementById(
+            "podcastCardTemplate"
+        );
+
+        this.trigger =
+        document.getElementById(
+            "podcastLoadingTrigger"
+        );
+
+        if(
+            !this.grid ||
+            !this.template
+        ){
+
+            console.error(
+                "Podcast container not found."
+            );
+
+            return;
+
+        }
+
+        this.createObserver();
+
+        this.loadFirstPage();
+
+        console.log(
+            "NightCast Podcasts Ready"
+        );
 
     },
 
 
 
+    /* ==========================================
+       FIRST LOAD
+    ========================================== */
+
+    async loadFirstPage(){
+
+        this.page = 1;
+
+        this.items = [];
+
+        this.hasMore = true;
+
+        this.grid.innerHTML = "";
+
+        this.showSkeleton();
+
+        await this.load();
+
+    },
 
 
 
-
-
-
-    /*
-    ====================================
-    LOAD PODCASTS
-    ====================================
-    */
-
+    /* ==========================================
+       LOAD NEXT PAGE
+    ========================================== */
 
     async load(){
 
-
-
-        if(this.loading || !this.hasMore)
-
-        return;
-
-
-
-
+        if(
+            this.loading ||
+            !this.hasMore
+        ){
+            return;
+        }
 
         this.loading = true;
 
+        try{
 
+            const result =
+            await API.podcasts(
 
+                this.page,
 
-
-
-        const result =
-
-        await API.podcasts(
-
-
-            this.page,
-
-
-            this.limit
-
-
-        );
-
-
-
-
-
-
-        if(
-
-            result.success &&
-
-            result.podcasts
-
-        ){
-
-
-
-            this.render(
-
-                result.podcasts
+                this.limit
 
             );
 
+            this.removeSkeleton();
 
+            if(!result.success){
 
+                this.renderError(
+                    result.message ||
+                    "خطا در دریافت اطلاعات"
+                );
 
+                this.loading=false;
 
+                return;
+
+            }
+
+            const podcasts =
+            result.podcasts || [];
+
+            if(
+                this.page===1 &&
+                podcasts.length===0
+            ){
+
+                this.renderEmpty();
+
+                this.loading=false;
+
+                return;
+
+            }
+
+            this.items.push(
+
+                ...podcasts
+
+            );
+
+            this.render(
+                podcasts
+            );
 
             this.hasMore =
-
-            result.hasMore;
-
-
-
-
+            Boolean(
+                result.hasMore
+            );
 
             this.page++;
 
-
-
+            this.updatePlayerQueue();
 
         }
 
-        else{
+        catch(error){
 
+            console.error(error);
 
-
-            console.error(
-
-                "Podcast API Error",
-
-                result
-
+            this.renderError(
+                error.message
             );
 
-
         }
-
-
-
-
-
 
         this.loading=false;
 
-
-
-
-
     },
 
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    RENDER
-    ====================================
-    */
-
+        /* ==========================================
+       RENDER PODCASTS
+    ========================================== */
 
     render(items){
 
 
+        if(
+            !Array.isArray(items) ||
+            items.length===0
+        ){
 
-        const grid =
+            return;
 
-        document.getElementById(
-
-            "podcastGrid"
-
-        );
-
-
-
-
-
-
-        if(!grid)
-
-        return;
-
-
-
-
-
-
-        const template =
-
-        document.getElementById(
-
-            "podcastCardTemplate"
-
-        );
-
-
-
-
-
-
-
-        if(!template)
-
-        return;
-
-
-
-
-
-
-
-
-        // حذف skeleton ها
-
-        const skeletons =
-
-        grid.querySelectorAll(
-
-            ".skeleton"
-
-        );
-
-
-
-        skeletons.forEach(
-
-            el=>el.remove()
-
-        );
-
-
-
-
-
-
+        }
 
 
 
         items.forEach(
-
+            
             podcast=>{
 
 
-
-                const card =
-
-                template.content.cloneNode(true);
-
-
-
-
-
-
-
-                const img =
-
-                card.querySelector(
-
-                    ".podcast-image"
-
+                const fragment =
+                this.template.content.cloneNode(
+                    true
                 );
 
 
 
+                const card =
+                fragment.querySelector(
+                    ".podcast-card"
+                );
 
 
 
-                if(img){
+                if(!card){
+
+                    console.warn(
+                        "Podcast card template invalid"
+                    );
+
+                    return;
+
+                }
 
 
 
-                    img.src =
+                /*
+                =================================
+                DATA ATTRIBUTES
+                =================================
+                */
 
+
+                card.dataset.id =
+                podcast.id || "";
+
+
+
+                card.dataset.title =
+                podcast.title || "";
+
+
+
+                card.dataset.audio =
+                podcast.audio_url || "";
+
+
+
+                card.dataset.cover =
+                podcast.cover_url || "";
+
+
+
+                card.dataset.author =
+                podcast.author_name || "";
+
+
+
+                card.dataset.duration =
+                podcast.duration_seconds || 0;
+
+
+
+
+                /*
+                =================================
+                IMAGE
+                =================================
+                */
+
+
+                const image =
+                card.querySelector(
+                    ".podcast-image"
+                );
+
+
+                if(image){
+
+
+                    image.src =
                     podcast.cover_url ||
 
                     "/users/assets/images/default-cover.jpg";
+
+
+                    image.alt =
+                    podcast.title || "NightCast";
+
+
+                }
+
+
+
+
+                /*
+                =================================
+                TITLE
+                =================================
+                */
+
+
+                const title =
+                card.querySelector(
+                    ".podcast-title"
+                );
+
+
+                if(title){
+
+                    title.textContent =
+                    podcast.title ||
+
+                    "بدون عنوان";
+
+                }
+
+
+
+
+
+                /*
+                =================================
+                AUTHOR
+                =================================
+                */
+
+
+                const author =
+                card.querySelector(
+                    ".podcast-author"
+                );
+
+
+                if(author){
+
+
+                    author.textContent =
+                    podcast.author_name ||
+
+                    "NightCast";
+
+
+                }
+
+
+
+
+
+
+
+                /*
+                =================================
+                BOOK
+                =================================
+                */
+
+
+                const book =
+                card.querySelector(
+                    ".podcast-book"
+                );
+
+
+                if(book){
+
+
+                    book.textContent =
+                    podcast.book_name ||
+
+                    "";
+
+
+                }
+
+
+
+
+
+
+
+
+                /*
+                =================================
+                CATEGORY
+                =================================
+                */
+
+
+                const category =
+                card.querySelector(
+                    ".podcast-category"
+                );
+
+
+                if(category){
+
+
+                    category.textContent =
+                    podcast.category_name ||
+
+                    "";
+
+
+                }
+
+
+
+
+
+
+
+
+                /*
+                =================================
+                DESCRIPTION
+                =================================
+                */
+
+
+                const description =
+                card.querySelector(
+                    ".podcast-description"
+                );
+
+
+                if(description){
+
+
+                    description.textContent =
+
+                    podcast.description ||
+
+                    podcast.summary ||
+
+                    "";
 
 
                 }
@@ -328,22 +480,752 @@ const NightCastPodcasts = {
 
 
 
-                const title =
+                /*
+                =================================
+                DURATION
+                =================================
+                */
 
+
+                const duration =
                 card.querySelector(
+                    ".duration"
+                );
 
-                    ".podcast-title"
+
+                if(duration){
+
+
+                    duration.innerHTML =
+
+                    `
+                    <i class="fa-solid fa-clock"></i>
+
+                    ${this.formatTime(
+                        podcast.duration_seconds
+                    )}
+                    `;
+
+
+                }
+
+
+
+
+
+
+
+
+
+                /*
+                =================================
+                LISTEN COUNT
+                =================================
+                */
+
+
+                const listen =
+                card.querySelector(
+                    ".listen-count"
+                );
+
+
+                if(listen){
+
+
+                    listen.textContent =
+
+                    podcast.listen_count ||
+
+                    0;
+
+
+                }
+
+
+
+
+
+
+
+
+
+                /*
+                =================================
+                EPISODE
+                =================================
+                */
+
+
+                const episode =
+                card.querySelector(
+                    ".episode-number"
+                );
+
+
+                if(episode){
+
+
+                    episode.textContent =
+
+                    podcast.episode_number
+
+                    ?
+
+                    `قسمت ${podcast.episode_number}`
+
+                    :
+
+                    "";
+
+
+                }
+
+
+
+
+
+
+
+
+
+                /*
+                =================================
+                TAGS
+                =================================
+                */
+
+
+                const tags =
+                card.querySelector(
+                    ".podcast-tags"
+                );
+
+
+                if(tags){
+
+
+                    tags.textContent =
+
+                    podcast.tags ||
+
+                    "";
+
+
+                }
+
+
+
+
+
+
+
+
+
+
+                /*
+                =================================
+                BUTTON DATA
+                =================================
+                */
+
+
+                const buttons =
+
+                card.querySelectorAll(
+                    "button"
+                );
+
+
+
+                buttons.forEach(
+                    btn=>{
+
+
+                        btn.dataset.id =
+                        podcast.id;
+
+
+                        btn.dataset.title =
+                        podcast.title || "";
+
+
+                        btn.dataset.audio =
+                        podcast.audio_url || "";
+
+
+                        btn.dataset.cover =
+                        podcast.cover_url || "";
+
+
+                    }
 
                 );
 
 
 
 
-                if(title){
 
 
 
-                    title.textContent =
+
+
+                this.grid.appendChild(
+                    fragment
+                );
+
+
+            }
+
+        );
+
+
+    },
+
+        /* ==========================================
+       EVENTS
+    ========================================== */
+
+
+    bindEvents(){
+
+
+        if(!this.grid){
+
+            return;
+
+        }
+
+
+
+
+
+        this.grid.addEventListener(
+
+            "click",
+
+            event=>{
+
+
+                const button =
+
+                event.target.closest(
+                    "button"
+                );
+
+
+
+
+                if(!button){
+
+                    return;
+
+                }
+
+
+
+
+
+
+                const id =
+
+                button.dataset.id;
+
+
+
+
+
+
+                if(!id){
+
+                    return;
+
+                }
+
+
+
+
+
+
+
+                const podcast =
+
+                this.getPodcastById(
+                    id
+                );
+
+
+
+
+
+
+                if(!podcast){
+
+                    console.warn(
+                        "Podcast data missing"
+                    );
+
+                    return;
+
+                }
+
+
+
+
+
+
+
+
+
+                /*
+                ==============================
+                PLAY
+                ==============================
+                */
+
+
+                if(
+
+                    button.classList.contains(
+                        "play-button"
+                    )
+
+                ){
+
+
+                    this.playPodcast(
+                        podcast
+                    );
+
+
+                }
+
+
+
+
+
+
+
+
+
+                /*
+                ==============================
+                FAVORITE
+                ==============================
+                */
+
+
+                if(
+
+                    button.classList.contains(
+                        "favorite-button"
+                    )
+
+                ){
+
+
+                    this.favoritePodcast(
+                        podcast,
+                        button
+                    );
+
+
+                }
+
+
+
+
+
+
+
+
+
+                /*
+                ==============================
+                DOWNLOAD
+                ==============================
+                */
+
+
+                if(
+
+                    button.classList.contains(
+                        "download-button"
+                    )
+
+                ){
+
+
+                    this.downloadPodcast(
+                        podcast
+                    );
+
+
+                }
+
+
+
+
+
+
+
+
+
+                /*
+                ==============================
+                COMMENT
+                ==============================
+                */
+
+
+                if(
+
+                    button.classList.contains(
+                        "comment-button"
+                    )
+
+                ){
+
+
+                    this.openComments(
+                        podcast
+                    );
+
+
+                }
+
+
+
+            }
+
+        );
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /* ==========================================
+       FIND PODCAST
+    ========================================== */
+
+
+    getPodcastById(id){
+
+
+        return this.items.find(
+
+            item=>
+
+            String(item.id)
+
+            ===
+
+            String(id)
+
+        );
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /* ==========================================
+       PLAY CONNECT
+    ========================================== */
+
+
+    playPodcast(podcast){
+
+
+
+        if(
+            window.NightCastPlayer
+        ){
+
+
+
+            NightCastPlayer.play(
+                podcast
+            );
+
+
+
+        }
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /* ==========================================
+       FAVORITE CONNECT
+    ========================================== */
+
+
+    favoritePodcast(
+        podcast,
+        button
+    ){
+
+
+
+        if(
+            window.NightCastLibrary
+        ){
+
+
+
+            NightCastLibrary.toggleFavorite(
+
+                podcast
+
+            );
+
+
+
+
+            button.classList.toggle(
+
+                "active"
+
+            );
+
+
+
+        }
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /* ==========================================
+       DOWNLOAD CONNECT
+    ========================================== */
+
+
+    downloadPodcast(podcast){
+
+
+
+        if(
+            window.NightCastLibrary
+        ){
+
+
+
+            NightCastLibrary.download(
+
+                podcast
+
+            );
+
+
+
+        }
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /* ==========================================
+       COMMENTS CONNECT
+    ========================================== */
+
+
+    openComments(podcast){
+
+
+
+        window.location.href =
+
+        "/users/podcast.html?id="
+
+        +
+
+        podcast.id;
+
+
+
+    },
+
+        /*
+    ====================================
+    RENDER PODCAST CARDS
+    ====================================
+    */
+
+
+    render(items){
+
+
+        const grid =
+        document.getElementById(
+            "podcastGrid"
+        );
+
+
+
+        if(!grid){
+
+            console.warn(
+                "podcastGrid not found"
+            );
+
+            return;
+
+        }
+
+
+
+
+
+        const template =
+        document.getElementById(
+            "podcastCardTemplate"
+        );
+
+
+
+
+
+        if(!template){
+
+            console.warn(
+                "podcastCardTemplate missing"
+            );
+
+            return;
+
+        }
+
+
+
+
+
+        items.forEach(
+            podcast=>{
+
+
+                const card =
+                template.content.cloneNode(
+                    true
+                );
+
+
+
+
+                const wrapper =
+                card.querySelector(
+                    ".podcast-card"
+                );
+
+
+
+
+                /*
+                ============================
+                STORE PODCAST DATA
+                ============================
+                */
+
+
+                if(wrapper){
+
+
+                    wrapper.dataset.id =
+                    podcast.id;
+
+
+
+                    wrapper.dataset.audio =
+                    podcast.audio_url || "";
+
+
+
+                    wrapper.dataset.title =
+                    podcast.title || "";
+
+
+
+                    wrapper.dataset.cover =
+                    podcast.cover_url || "";
+
+
+
+                    wrapper.dataset.author =
+                    podcast.author_name || "";
+
+
+
+                }
+
+
+
+
+
+
+
+                /*
+                ============================
+                COVER
+                ============================
+                */
+
+
+                const image =
+                card.querySelector(
+                    ".podcast-image"
+                );
+
+
+
+                if(image){
+
+
+                    image.src =
+
+                    podcast.cover_url ||
+
+                    "/users/assets/images/default-cover.jpg";
+
+
+                    image.alt =
 
                     podcast.title;
 
@@ -358,19 +1240,55 @@ const NightCastPodcasts = {
 
 
 
-                const author =
+                /*
+                ============================
+                TITLE
+                ============================
+                */
 
+
+                const title =
                 card.querySelector(
-
-                    ".podcast-author"
-
+                    ".podcast-title"
                 );
 
 
 
+                if(title){
+
+
+                    title.textContent =
+
+                    podcast.title || 
+                    
+                    "بدون عنوان";
+
+
+                }
+
+
+
+
+
+
+
+
+
+                /*
+                ============================
+                AUTHOR
+                ============================
+                */
+
+
+                const author =
+                card.querySelector(
+                    ".podcast-author"
+                );
+
+
 
                 if(author){
-
 
 
                     author.textContent =
@@ -390,22 +1308,24 @@ const NightCastPodcasts = {
 
 
 
-                const desc =
+                /*
+                ============================
+                DESCRIPTION
+                ============================
+                */
 
+
+                const description =
                 card.querySelector(
-
                     ".podcast-description"
-
                 );
 
 
 
-
-                if(desc){
-
+                if(description){
 
 
-                    desc.textContent =
+                    description.textContent =
 
                     podcast.description ||
 
@@ -414,6 +1334,7 @@ const NightCastPodcasts = {
                     "";
 
 
+
                 }
 
 
@@ -424,37 +1345,40 @@ const NightCastPodcasts = {
 
 
 
+                /*
+                ============================
+                DURATION
+                ============================
+                */
+
+
                 const duration =
-
                 card.querySelector(
-
                     ".duration"
-
                 );
-
-
 
 
 
                 if(duration){
 
 
-
                     duration.innerHTML =
-
 
                     `
 
                     <i class="fa-solid fa-clock"></i>
 
-                    ${this.formatTime(
+                    ${
+
+                    this.formatTime(
 
                         podcast.duration_seconds
 
-                    )}
+                    )
+
+                    }
 
                     `;
-
 
 
                 }
@@ -467,46 +1391,39 @@ const NightCastPodcasts = {
 
 
 
+                /*
+                ============================
+                PLAY BUTTON
+                ============================
+                */
+
+
                 const play =
-
                 card.querySelector(
-
                     ".play-button"
-
                 );
-
-
-
 
 
 
                 if(play){
 
 
-
-                    play.onclick=()=>{
-
-
-
-                        if(window.NightCastPlayer){
+                    play.dataset.action =
+                    "play";
 
 
 
-                            NightCastPlayer.play(
+                    play.onclick = ()=>{
 
 
-                                podcast
+                        NightCastPlayer.play(
 
+                            podcast
 
-                            );
-
-
-                        }
-
+                        );
 
 
                     };
-
 
 
                 }
@@ -519,51 +1436,97 @@ const NightCastPodcasts = {
 
 
 
-                const download =
+                /*
+                ============================
+                FAVORITE BUTTON
+                ============================
+                */
 
+
+                const favorite =
                 card.querySelector(
-
-                    ".download-button"
-
+                    ".favorite-button"
                 );
 
 
 
+                if(favorite){
+
+
+                    favorite.dataset.action =
+                    "favorite";
+
+
+
+                    favorite.onclick = ()=>{
+
+
+                        if(
+                            window.NightCastLibrary
+                        ){
+
+
+                            NightCastLibrary.toggleFavorite(
+
+                                podcast
+
+                            );
+
+
+                        }
+
+
+                    };
+
+
+                }
+
+
+
+
+
+
+
+
+
+                /*
+                ============================
+                DOWNLOAD BUTTON
+                ============================
+                */
+
+
+                const download =
+                card.querySelector(
+                    ".download-button"
+                );
 
 
 
                 if(download){
 
 
+                    download.dataset.action =
+                    "download";
 
-                    download.onclick=()=>{
 
+
+                    download.onclick = ()=>{
 
 
                         if(
-
-                            NightCastAuth &&
-
-                            NightCastAuth.requireLogin()
-
+                            window.NightCastLibrary
                         ){
 
 
+                            NightCastLibrary.download(
 
-                            window.open(
-
-
-                                podcast.audio_url,
-
-
-                                "_blank"
-
+                                podcast
 
                             );
 
 
                         }
-
 
 
                     };
@@ -578,15 +1541,127 @@ const NightCastPodcasts = {
 
 
 
-                grid.appendChild(card);
+                /*
+                ============================
+                COMMENT BUTTON
+                ============================
+                */
 
 
+                const comment =
+                card.querySelector(
+                    ".comment-button"
+                );
+
+
+
+                if(comment){
+
+
+                    comment.dataset.action =
+                    "comment";
+
+
+
+                    comment.onclick = ()=>{
+
+
+                        window.location.href =
+
+                        `/users/podcast.html?id=${podcast.id}`;
+
+
+                    };
+
+
+                }
+
+
+
+
+
+
+                grid.appendChild(
+
+                    card
+
+                );
 
 
 
             }
 
 
+        );
+
+
+    },
+
+
+
+
+        /*
+    ====================================
+    FORMAT TIME
+    ====================================
+    */
+
+
+    formatTime(seconds){
+
+
+
+        if(
+            !seconds ||
+            isNaN(seconds)
+        ){
+
+            return "00:00";
+
+        }
+
+
+
+
+        const minutes =
+
+        Math.floor(
+
+            seconds / 60
+
+        );
+
+
+
+
+
+        const second =
+
+        Math.floor(
+
+            seconds % 60
+
+        );
+
+
+
+
+
+        return (
+
+            String(minutes)
+
+            .padStart(2,"0")
+
+            +
+
+            ":"
+
+            +
+
+            String(second)
+
+            .padStart(2,"0")
 
         );
 
@@ -604,28 +1679,145 @@ const NightCastPodcasts = {
 
     /*
     ====================================
-    TIME FORMAT
+    EMPTY STATE
     ====================================
     */
 
 
-    formatTime(seconds){
+    emptyState(){
 
 
 
-        if(!seconds)
+        const grid =
 
-        return "00:00";
+        document.getElementById(
+
+            "podcastGrid"
+
+        );
+
+
+
+
+        if(!grid)
+
+        return;
 
 
 
 
 
-        const min =
+        grid.innerHTML =
 
-        Math.floor(
 
-            seconds / 60
+
+        `
+
+        <div class="empty-state">
+
+            <i class="fa-solid fa-microphone-slash"></i>
+
+            <h3>
+
+            هنوز پادکستی منتشر نشده است
+
+            </h3>
+
+
+            <p>
+
+            به زودی محتوای جدید اضافه خواهد شد
+
+            </p>
+
+
+        </div>
+
+        `;
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    ERROR STATE
+    ====================================
+    */
+
+
+    errorState(message="خطا در دریافت اطلاعات"){
+
+
+
+        const grid =
+
+        document.getElementById(
+
+            "podcastGrid"
+
+        );
+
+
+
+
+        if(!grid)
+
+        return;
+
+
+
+
+
+        grid.innerHTML =
+
+
+
+        `
+
+        <div class="error-state">
+
+            <i class="fa-solid fa-triangle-exclamation"></i>
+
+
+            <h3>
+
+            ${message}
+
+            </h3>
+
+
+            <button
+
+            class="retry-button">
+
+            تلاش دوباره
+
+            </button>
+
+
+        </div>
+
+        `;
+
+
+
+
+
+
+        const retry =
+
+        grid.querySelector(
+
+            ".retry-button"
 
         );
 
@@ -633,29 +1825,163 @@ const NightCastPodcasts = {
 
 
 
-        const sec =
-
-        seconds % 60;
+        if(retry){
 
 
 
+            retry.onclick = ()=>{
+
+
+                this.page = 1;
+
+                this.hasMore = true;
+
+
+                grid.innerHTML="";
+
+
+                this.load();
 
 
 
-        return (
+            };
 
-            String(min).padStart(2,"0")
 
-            +
+        }
 
-            ":"
 
-            +
 
-            String(sec).padStart(2,"0")
+    },
+
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    LOADING STATE
+    ====================================
+    */
+
+
+    showLoading(){
+
+
+
+        const grid =
+
+        document.getElementById(
+
+            "podcastGrid"
 
         );
 
+
+
+
+
+        if(!grid)
+
+        return;
+
+
+
+
+
+
+
+        const loader =
+
+        document.createElement(
+
+            "div"
+
+        );
+
+
+
+
+        loader.className =
+
+        "podcast-loader";
+
+
+
+
+
+        loader.innerHTML =
+
+
+
+        `
+
+        <div class="spinner"></div>
+
+        <span>
+
+        در حال دریافت پادکست‌ها...
+
+        </span>
+
+        `;
+
+
+
+
+
+
+        grid.appendChild(
+
+            loader
+
+        );
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    REMOVE LOADING
+    ====================================
+    */
+
+
+    hideLoading(){
+
+
+
+        const loader =
+
+        document.querySelector(
+
+            ".podcast-loader"
+
+        );
+
+
+
+
+
+        if(loader){
+
+
+            loader.remove();
+
+
+        }
 
 
     },
@@ -692,9 +2018,21 @@ const NightCastPodcasts = {
 
 
 
-        if(!target)
+        if(!target){
 
-        return;
+
+            console.warn(
+
+                "Loading trigger not found"
+
+            );
+
+
+            return;
+
+
+        }
+
 
 
 
@@ -709,9 +2047,21 @@ const NightCastPodcasts = {
 
 
 
+                const entry =
+
+                entries[0];
+
+
+
+
+
                 if(
 
-                    entries[0].isIntersecting
+                    entry.isIntersecting &&
+
+                    !this.loading &&
+
+                    this.hasMore
 
                 ){
 
@@ -720,12 +2070,21 @@ const NightCastPodcasts = {
                     this.load();
 
 
-
                 }
 
 
-            }
 
+            },
+
+
+            {
+
+                rootMargin:
+
+                "300px"
+
+
+            }
 
 
         );
@@ -735,11 +2094,691 @@ const NightCastPodcasts = {
 
 
 
-        observer.observe(target);
+        observer.observe(
+
+            target
+
+        );
+
+
+
+    },
+
+
+        /*
+    ====================================
+    LOAD PODCASTS FROM API
+    ====================================
+    */
+
+
+    async load(){
+
+
+
+        if(
+
+            this.loading ||
+
+            !this.hasMore
+
+        ){
+
+            return;
+
+        }
+
+
+
+
+
+
+        this.loading = true;
+
+
+
+        this.showLoading();
+
+
+
+
+
+
+
+        try{
+
+
+
+            const result =
+
+            await API.podcasts(
+
+                this.page,
+
+                this.limit
+
+            );
+
+
+
+
+
+
+
+            /*
+            ============================
+            API ERROR
+            ============================
+            */
+
+
+            if(
+
+                !result ||
+
+                !result.success
+
+            ){
+
+
+
+                this.errorState(
+
+                    "خطا در دریافت پادکست‌ها"
+
+                );
+
+
+
+                return;
+
+
+            }
+
+
+
+
+
+
+
+
+
+            /*
+            ============================
+            EMPTY RESULT
+            ============================
+            */
+
+
+            if(
+
+                !result.podcasts ||
+
+                result.podcasts.length===0
+
+            ){
+
+
+
+                if(
+
+                    this.page===1
+
+                ){
+
+
+
+                    this.emptyState();
+
+
+                }
+
+
+
+
+
+                this.hasMore=false;
+
+
+
+                return;
+
+
+            }
+
+
+
+
+
+
+
+
+
+            /*
+            ============================
+            UPDATE PLAYER QUEUE
+            ============================
+            */
+
+
+            if(
+
+                window.NightCastPlayer
+
+            ){
+
+
+
+                NightCastPlayer.queue =
+
+                [
+
+                    ...
+
+                    NightCastPlayer.queue,
+
+                    ...
+
+                    result.podcasts
+
+                ];
+
+
+
+            }
+
+
+
+
+
+
+
+
+
+            /*
+            ============================
+            RENDER DATA
+            ============================
+            */
+
+
+            this.render(
+
+                result.podcasts
+
+            );
+
+
+
+
+
+
+
+
+
+            /*
+            ============================
+            PAGINATION
+            ============================
+            */
+
+
+            this.hasMore =
+
+            result.hasMore;
+
+
+
+
+
+            this.page++;
+
+
+
+
+
+        }
+
+        catch(error){
+
+
+
+            console.error(
+
+                "Podcast Load Error",
+
+                error
+
+            );
+
+
+
+            this.errorState(
+
+                "ارتباط با سرور برقرار نشد"
+
+            );
+
+
+
+        }
+
+        finally{
+
+
+
+            this.loading=false;
+
+
+
+            this.hideLoading();
+
+
+
+        }
+
+
+
+    },
+
+
+
+        /*
+    ====================================
+    EVENT DELEGATION
+    ====================================
+    */
+
+
+    bindEvents(){
+
+
+
+        document.addEventListener(
+
+            "click",
+
+            event=>{
+
+
+
+
+
+                const playButton =
+
+                event.target.closest(
+
+                    ".play-button"
+
+                );
+
+
+
+
+
+                if(playButton){
+
+
+
+                    const card =
+
+                    playButton.closest(
+
+                        ".podcast-card"
+
+                    );
+
+
+
+
+
+                    if(
+
+                        card &&
+
+                        window.NightCastPlayer
+
+                    ){
+
+
+
+                        NightCastPlayer.play({
+
+
+
+                            id:
+
+                            card.dataset.id,
+
+
+
+                            title:
+
+                            card.dataset.title,
+
+
+
+                            audio_url:
+
+                            card.dataset.audio,
+
+
+
+                            cover_url:
+
+                            card.dataset.cover,
+
+
+
+                            author_name:
+
+                            card.dataset.author
+
+
+
+                        });
+
+
+
+                    }
+
+
+
+                }
+
+
+
+
+
+
+
+
+
+                const favoriteButton =
+
+                event.target.closest(
+
+                    ".favorite-button"
+
+                );
+
+
+
+
+
+
+
+                if(favoriteButton){
+
+
+
+                    const card =
+
+                    favoriteButton.closest(
+
+                        ".podcast-card"
+
+                    );
+
+
+
+
+
+
+
+                    if(
+
+                        card &&
+
+                        window.NightCastLibrary
+
+                    ){
+
+
+
+                        NightCastLibrary.toggleFavorite({
+
+
+
+                            id:
+
+                            card.dataset.id,
+
+
+
+                            title:
+
+                            card.dataset.title,
+
+
+
+                            cover_url:
+
+                            card.dataset.cover
+
+
+
+                        });
+
+
+
+                    }
+
+
+
+                }
+
+
+
+
+
+
+
+
+
+                const downloadButton =
+
+                event.target.closest(
+
+                    ".download-button"
+
+                );
+
+
+
+
+
+
+                if(downloadButton){
+
+
+
+                    const card =
+
+                    downloadButton.closest(
+
+                        ".podcast-card"
+
+                    );
+
+
+
+
+
+
+                    if(
+
+                        card &&
+
+                        window.NightCastLibrary
+
+                    ){
+
+
+
+                        NightCastLibrary.download({
+
+
+
+                            id:
+
+                            card.dataset.id,
+
+
+
+                            title:
+
+                            card.dataset.title,
+
+
+
+                            audio_url:
+
+                            card.dataset.audio,
+
+
+
+                            cover_url:
+
+                            card.dataset.cover
+
+
+
+                        });
+
+
+
+                    }
+
+
+
+                }
+
+
+
+
+
+            }
+
+
+        );
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    RESET
+    ====================================
+    */
+
+
+    reset(){
+
+
+
+        this.page = 1;
+
+
+        this.hasMore = true;
+
+
+        this.loadedIds = [];
+
+
+
+
+
+        const grid =
+
+        document.getElementById(
+
+            "podcastGrid"
+
+        );
+
+
+
+
+
+        if(grid){
+
+
+            grid.innerHTML="";
+
+
+        }
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /*
+    ====================================
+    SEARCH SUPPORT
+    ====================================
+    */
+
+
+    replace(items){
+
+
+
+        this.loadedIds=[];
+
+
+
+        const grid =
+
+        document.getElementById(
+
+            "podcastGrid"
+
+        );
+
+
+
+
+
+        if(grid){
+
+
+            grid.innerHTML="";
+
+
+        }
+
+
+
+
+
+        this.render(
+
+            items
+
+        );
 
 
 
     }
+
 
 
 
@@ -754,6 +2793,13 @@ const NightCastPodcasts = {
 
 
 
+/*
+====================================
+GLOBAL EXPORT
+====================================
+*/
+
+
 window.NightCastPodcasts =
 
 NightCastPodcasts;
@@ -763,8 +2809,11 @@ NightCastPodcasts;
 
 
 
+
+
+
 console.log(
 
-"NightCast Podcasts V1 Loaded"
+    "NightCast Podcasts V2 Loaded"
 
 );

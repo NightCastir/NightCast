@@ -1,1 +1,918 @@
 
+/* ==================================================
+
+NightCast User Core CSS V2
+
+File:
+users/css/core.css
+
+SECTION 1/4
+
+Includes:
+- Reset
+- Root Variables
+- Global Base
+
+================================================== */
+
+
+/* ================================================
+RESET
+================================================ */
+
+
+*,
+*::before,
+*::after{
+
+    margin:0;
+
+    padding:0;
+
+    box-sizing:border-box;
+
+}
+
+
+
+
+html{
+
+    scroll-behavior:smooth;
+
+    font-size:16px;
+
+}
+
+
+
+
+body{
+
+    font-family:
+
+    "Vazirmatn",
+    Tahoma,
+    Arial,
+    sans-serif;
+
+
+    direction:rtl;
+
+
+    background:
+
+    var(--bg-main);
+
+
+    color:
+
+    var(--text);
+
+
+    min-height:100vh;
+
+
+    overflow-x:hidden;
+
+
+    line-height:1.8;
+
+
+}
+
+
+
+
+
+img{
+
+    max-width:100%;
+
+    height:auto;
+
+    display:block;
+
+}
+
+
+
+
+
+button,
+input,
+textarea,
+select{
+
+    font-family:inherit;
+
+}
+
+
+
+
+
+button{
+
+    cursor:pointer;
+
+}
+
+
+
+
+
+a{
+
+    text-decoration:none;
+
+    color:inherit;
+
+}
+
+
+
+
+
+ul{
+
+    list-style:none;
+
+}
+
+
+
+
+
+
+
+
+/* ================================================
+ROOT VARIABLES
+================================================ */
+
+
+:root{
+
+
+    /* ---------- Background ---------- */
+
+
+    --bg-main:
+
+    #0b1220;
+
+
+
+    --bg-card:
+
+    #121b2f;
+
+
+
+    --bg-soft:
+
+    #18243d;
+
+
+
+
+
+
+    /* ---------- Brand ---------- */
+
+
+    --primary:
+
+    #00d4ff;
+
+
+
+    --primary-dark:
+
+    #009ec2;
+
+
+
+    --gold:
+
+    #ffd369;
+
+
+
+    --gold-dark:
+
+    #d7a936;
+
+
+
+
+
+
+
+    /* ---------- Text ---------- */
+
+
+    --text:
+
+    #f5f7ff;
+
+
+
+    --text-soft:
+
+    #aab4c8;
+
+
+
+
+
+
+
+    /* ---------- Status ---------- */
+
+
+    --success:
+
+    #00e676;
+
+
+
+    --danger:
+
+    #ff5252;
+
+
+
+    --warning:
+
+    #ffb300;
+
+
+
+
+
+
+
+    /* ---------- Border ---------- */
+
+
+    --border:
+
+    rgba(255,255,255,.08);
+
+
+
+
+
+
+
+    /* ---------- Shadow ---------- */
+
+
+    --shadow:
+
+    0 15px 40px rgba(0,0,0,.35);
+
+
+
+
+
+
+
+    /* ---------- Radius ---------- */
+
+
+    --radius-sm:
+
+    8px;
+
+
+
+    --radius-md:
+
+    14px;
+
+
+
+    --radius-lg:
+
+    24px;
+
+
+
+
+
+
+
+    /* ---------- Layout ---------- */
+
+
+    --container:
+
+    1200px;
+
+
+
+
+
+
+
+    /* ---------- Animation ---------- */
+
+
+    --transition:
+
+    .3s ease;
+
+
+
+}
+
+
+
+
+
+
+
+/* ================================================
+LIGHT THEME
+================================================ */
+
+
+body.light-theme{
+
+
+    --bg-main:
+
+    #f5f7fb;
+
+
+
+    --bg-card:
+
+    #ffffff;
+
+
+
+    --bg-soft:
+
+    #edf2f8;
+
+
+
+    --text:
+
+    #101828;
+
+
+
+    --text-soft:
+
+    #667085;
+
+
+
+    --border:
+
+    rgba(0,0,0,.08);
+
+
+
+}
+
+
+
+
+
+
+
+/* ================================================
+GLOBAL CONTAINER
+================================================ */
+
+
+.container,
+.section-container,
+.header-container,
+.hero-container,
+.footer-container{
+
+
+    width:
+
+    min(1200px,92%);
+
+
+    max-width:
+
+    var(--container);
+
+
+    margin:
+
+    0 auto;
+
+
+
+}
+
+
+
+
+
+
+
+/* ================================================
+GLOBAL TEXT
+================================================ */
+
+
+h1,
+h2,
+h3,
+h4{
+
+    line-height:1.4;
+
+}
+
+
+
+
+
+p{
+
+    color:
+
+    var(--text-soft);
+
+}
+
+
+
+
+
+.text-primary{
+
+    color:
+
+    var(--primary);
+
+}
+
+
+
+
+
+.text-gold{
+
+    color:
+
+    var(--gold);
+
+}
+
+/* ==================================================
+
+SECTION 2/4
+
+GLOBAL COMPONENTS
+
+================================================== */
+
+
+/* ================================================
+BUTTONS
+================================================ */
+
+
+.primary-button{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+    border:none;
+
+    border-radius:var(--radius-md);
+
+    padding:12px 22px;
+
+    background:
+
+    linear-gradient(
+    135deg,
+    var(--primary),
+    #008cff
+    );
+
+    color:#fff;
+
+    font-weight:700;
+
+    transition:var(--transition);
+
+}
+
+.primary-button:hover{
+
+    transform:translateY(-2px);
+
+    opacity:.95;
+
+}
+
+
+
+.secondary-button{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+    border:1px solid var(--border);
+
+    border-radius:var(--radius-md);
+
+    padding:12px 22px;
+
+    background:var(--bg-soft);
+
+    color:var(--text);
+
+    transition:var(--transition);
+
+}
+
+.secondary-button:hover{
+
+    border-color:var(--primary);
+
+    color:var(--primary);
+
+}
+
+
+
+.icon-button{
+
+    width:42px;
+
+    height:42px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:var(--bg-card);
+
+    color:var(--text);
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    transition:var(--transition);
+
+}
+
+.icon-button:hover{
+
+    color:var(--primary);
+
+    border:1px solid var(--primary);
+
+}
+
+
+
+
+/* ================================================
+CARDS
+================================================ */
+
+
+.card{
+
+    background:var(--bg-card);
+
+    border:1px solid var(--border);
+
+    border-radius:var(--radius-lg);
+
+    box-shadow:var(--shadow);
+
+}
+
+
+
+
+/* ================================================
+UTILITY CLASSES
+================================================ */
+
+
+.hidden{
+
+    display:none !important;
+
+}
+
+
+.flex{
+
+    display:flex;
+
+}
+
+
+.flex-center{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+
+.flex-between{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+}
+
+
+.w-100{
+
+    width:100%;
+
+}
+
+
+.mt-20{
+
+    margin-top:20px;
+
+}
+
+
+.mt-40{
+
+    margin-top:40px;
+
+}
+
+
+.mb-20{
+
+    margin-bottom:20px;
+
+}
+
+
+.mb-40{
+
+    margin-bottom:40px;
+
+}
+
+
+.text-center{
+
+    text-align:center;
+
+}
+
+
+
+
+/* ================================================
+SCROLLBAR
+================================================ */
+
+
+::-webkit-scrollbar{
+
+    width:8px;
+
+}
+
+
+::-webkit-scrollbar-track{
+
+    background:var(--bg-main);
+
+}
+
+
+::-webkit-scrollbar-thumb{
+
+    background:var(--primary);
+
+    border-radius:20px;
+
+}
+
+
+::-webkit-scrollbar-thumb:hover{
+
+    background:var(--primary-dark);
+
+}
+
+
+
+
+/* ================================================
+SELECTION
+================================================ */
+
+
+::selection{
+
+    background:var(--primary);
+
+    color:#fff;
+
+}
+
+
+
+/* ================================================
+TYPOGRAPHY
+================================================ */
+
+h1,h2,h3,h4,h5,h6{
+    color:var(--text);
+    font-weight:700;
+}
+
+small{
+    color:var(--text-soft);
+}
+
+strong{
+    color:var(--text);
+}
+
+/* ================================================
+FORM ELEMENTS
+================================================ */
+
+input,
+textarea,
+select{
+
+    width:100%;
+
+    border:1px solid var(--border);
+
+    background:var(--bg-card);
+
+    color:var(--text);
+
+    border-radius:var(--radius-md);
+
+    outline:none;
+
+    transition:var(--transition);
+
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+
+    border-color:var(--primary);
+
+    box-shadow:0 0 0 3px rgba(0,212,255,.15);
+
+}
+
+/* ================================================
+ANIMATIONS
+================================================ */
+
+.fade-in{
+
+    animation:fadeIn .35s ease;
+
+}
+
+@keyframes fadeIn{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(10px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:none;
+
+    }
+
+  }
+
+
+/* ================================================
+APP READY
+================================================ */
+
+body:not(.app-ready){
+
+    opacity:0;
+
+}
+
+body.app-ready{
+
+    opacity:1;
+
+    transition:.35s ease;
+
+}
+
+/* ================================================
+GLOBAL LOADER
+================================================ */
+
+.global-loader{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:9999;
+
+    background:var(--bg-main);
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+.global-loader.hidden{
+
+    display:none;
+
+}
+
+/* ================================================
+HELPERS
+================================================ */
+
+.round{
+
+    border-radius:50%;
+
+}
+
+.shadow{
+
+    box-shadow:var(--shadow);
+
+}
+
+.border{
+
+    border:1px solid var(--border);
+
+}
+
+.bg-card{
+
+    background:var(--bg-card);
+
+}
+
+.bg-soft{
+
+    background:var(--bg-soft);
+
+}

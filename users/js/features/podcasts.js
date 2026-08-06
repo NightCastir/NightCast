@@ -1,586 +1,482 @@
 /* ==================================================
 
-NightCast User Podcasts Manager V2
+NightCast Listener
+Podcasts Module V1
 
 File:
 users/js/features/podcasts.js
 
-Responsibility
 
-✔ Load Podcasts
-✔ Render Cards
-✔ Infinite Scroll
-✔ Queue Builder
-✔ Search Integration
-✔ Player Integration
-✔ Library Integration
-✔ Error Handling
+Responsibility:
 
-Depends
+- Load public podcasts
+- Render podcast cards
+- Connect with Player
+- Handle podcast actions
 
+
+Compatible With:
+
+index.html V Final
 api.js
 player.js
-library.js
-ui.js
 
 ================================================== */
 
+
+(function(){
+
 "use strict";
 
-const NightCastPodcasts = {
 
-    grid:null,
+// ===============================
+// CONFIG
+// ===============================
 
-    template:null,
 
-    trigger:null,
+const Podcasts = {
 
-    observer:null,
 
-    loading:false,
+page:1,
 
-    page:1,
 
-    limit:6,
+limit:5,
 
-    hasMore:true,
 
-    items:[],
+loading:false,
 
 
+hasMore:true,
 
-    /* ==========================================
-       INIT
-    ========================================== */
 
-    init(){
+initialized:false,
 
-        this.grid =
-        document.getElementById(
-            "podcastGrid"
-        );
 
-        this.template =
-        document.getElementById(
-            "podcastCardTemplate"
-        );
+items:[],
 
-        this.trigger =
-        document.getElementById(
-            "podcastLoadingTrigger"
-        );
 
-        if(
-            !this.grid ||
-            !this.template
-        ){
+currentSort:"latest",
 
-            console.error(
-                "Podcast container not found."
-            );
 
-            return;
 
-        }
+};
 
-        this.createObserver();
 
-        this.loadFirstPage();
+// ===============================
+// DOM CACHE
+// ===============================
 
-        console.log(
-            "NightCast Podcasts Ready"
-        );
 
-    },
+const DOM = {};
 
 
 
-    /* ==========================================
-       FIRST LOAD
-    ========================================== */
+function cacheDOM(){
 
-    async loadFirstPage(){
 
-        this.page = 1;
+DOM.grid =
+document.getElementById(
+"podcastGrid"
+);
 
-        this.items = [];
 
-        this.hasMore = true;
+DOM.template =
+document.getElementById(
+"podcastCardTemplate"
+);
 
-        this.grid.innerHTML = "";
 
-        this.showSkeleton();
 
-        await this.load();
+DOM.loadingTrigger =
+document.getElementById(
+"podcastLoadingTrigger"
+);
 
-    },
 
 
+DOM.sortButton =
+document.getElementById(
+"sortPodcastButton"
+);
 
-    /* ==========================================
-       LOAD NEXT PAGE
-    ========================================== */
 
-    async load(){
 
-        if(
-            this.loading ||
-            !this.hasMore
-        ){
-            return;
-        }
+}
 
-        this.loading = true;
 
-        try{
 
-            const result =
-            await API.podcasts(
 
-                this.page,
+// ===============================
+// HELPERS
+// ===============================
 
-                this.limit
 
-            );
+function formatTime(seconds){
 
-            this.removeSkeleton();
 
-            if(!result.success){
+if(!seconds || seconds <= 0){
 
-                this.renderError(
-                    result.message ||
-                    "خطا در دریافت اطلاعات"
-                );
+return "00:00";
 
-                this.loading=false;
+}
 
-                return;
 
-            }
+const min =
+Math.floor(seconds / 60);
 
-            const podcasts =
-            result.podcasts || [];
 
-            if(
-                this.page===1 &&
-                podcasts.length===0
-            ){
+const sec =
+Math.floor(seconds % 60);
 
-                this.renderEmpty();
 
-                this.loading=false;
 
-                return;
+return (
 
-            }
+String(min).padStart(2,"0")
++
+":"
++
+String(sec).padStart(2,"0")
 
-            this.items.push(
+);
 
-                ...podcasts
 
-            );
+}
 
-            this.render(
-                podcasts
-            );
 
-            this.hasMore =
-            Boolean(
-                result.hasMore
-            );
 
-            this.page++;
 
-            this.updatePlayerQueue();
+function escapeHTML(value){
 
-        }
 
-        catch(error){
+if(!value){
 
-            console.error(error);
+return "";
 
-            this.renderError(
-                error.message
-            );
+}
 
-        }
 
-        this.loading=false;
+return String(value)
 
-    },
+.replace(
+/&/g,
+"&amp;"
+)
 
-        /* ==========================================
-       RENDER PODCASTS
-    ========================================== */
+.replace(
+/</g,
+"&lt;"
+)
 
-    render(items){
+.replace(
+/>/g,
+"&gt;"
+)
 
+.replace(
+/"/g,
+"&quot;"
+)
 
-        if(
-            !Array.isArray(items) ||
-            items.length===0
-        ){
+.replace(
+/'/g,
+"&#039;"
+);
 
-            return;
 
-        }
 
+}
 
 
-        items.forEach(
-            
-            podcast=>{
 
+// ===============================
+// PUBLIC ACCESS
+// ===============================
 
-                const fragment =
-                this.template.content.cloneNode(
-                    true
-                );
 
+window.NightCastPodcasts = Podcasts;
 
 
-                const card =
-                fragment.querySelector(
-                    ".podcast-card"
-                );
+ // ==================================================
+// LOAD PODCASTS FROM API
+// ==================================================
 
 
+async function loadPodcasts(reset = false){
 
-                if(!card){
 
-                    console.warn(
-                        "Podcast card template invalid"
-                    );
 
-                    return;
+if(Podcasts.loading){
 
-                }
+return;
 
+}
 
 
-                /*
-                =================================
-                DATA ATTRIBUTES
-                =================================
-                */
 
+if(!Podcasts.hasMore && !reset){
 
-                card.dataset.id =
-                podcast.id || "";
+return;
 
+}
 
 
-                card.dataset.title =
-                podcast.title || "";
 
+if(reset){
 
+Podcasts.page = 1;
 
-                card.dataset.audio =
-                podcast.audio_url || "";
+Podcasts.hasMore = true;
 
+Podcasts.items = [];
 
 
-                card.dataset.cover =
-                podcast.cover_url || "";
+clearPodcastGrid();
 
+}
 
 
-                card.dataset.author =
-                podcast.author_name || "";
 
 
 
-                card.dataset.duration =
-                podcast.duration_seconds || 0;
+Podcasts.loading = true;
 
 
 
+try{
 
-                /*
-                =================================
-                IMAGE
-                =================================
-                */
 
+showLoadingState();
 
-                const image =
-                card.querySelector(
-                    ".podcast-image"
-                );
 
 
-                if(image){
+// ===============================
+// API REQUEST
+// ===============================
 
 
-                    image.src =
-                    podcast.cover_url ||
+const response = await NightCastAPI.get(
 
-                    "/users/assets/images/default-cover.jpg";
+"/public/podcasts",
 
+{
 
-                    image.alt =
-                    podcast.title || "NightCast";
+page: Podcasts.page,
 
+limit: Podcasts.limit
 
-                }
+}
 
+);
 
 
 
-                /*
-                =================================
-                TITLE
-                =================================
-                */
 
 
-                const title =
-                card.querySelector(
-                    ".podcast-title"
-                );
+if(
+!response
+||
+!response.success
+){
 
 
-                if(title){
+throw new Error(
 
-                    title.textContent =
-                    podcast.title ||
+"Unable to load podcasts"
 
-                    "بدون عنوان";
+);
 
-                }
 
+}
 
 
 
 
-                /*
-                =================================
-                AUTHOR
-                =================================
-                */
 
 
-                const author =
-                card.querySelector(
-                    ".podcast-author"
-                );
+const podcasts =
 
+response.podcasts || [];
 
-                if(author){
 
 
-                    author.textContent =
-                    podcast.author_name ||
 
-                    "NightCast";
 
+// ذخیره داده‌ها
 
-                }
+Podcasts.items.push(
 
+...podcasts
 
+);
 
 
 
 
+// وضعیت صفحه‌بندی
 
-                /*
-                =================================
-                BOOK
-                =================================
-                */
+Podcasts.hasMore =
 
+response.hasMore || false;
 
-                const book =
-                card.querySelector(
-                    ".podcast-book"
-                );
 
 
-                if(book){
+// نمایش
 
+renderPodcasts(
 
-                    book.textContent =
-                    podcast.book_name ||
+podcasts
 
-                    "";
+);
 
 
-                }
 
 
 
+Podcasts.page++;
 
 
 
 
 
-                /*
-                =================================
-                CATEGORY
-                =================================
-                */
+}
 
+catch(error){
 
-                const category =
-                card.querySelector(
-                    ".podcast-category"
-                );
 
+console.error(
 
-                if(category){
+"Podcast Load Error:",
+error
 
+);
 
-                    category.textContent =
-                    podcast.category_name ||
 
-                    "";
+showPodcastError();
 
 
-                }
 
+}
 
+finally{
 
 
+Podcasts.loading = false;
 
 
+hideLoadingState();
 
 
-                /*
-                =================================
-                DESCRIPTION
-                =================================
-                */
+}
 
 
-                const description =
-                card.querySelector(
-                    ".podcast-description"
-                );
 
+}
 
-                if(description){
 
 
-                    description.textContent =
 
-                    podcast.description ||
 
-                    podcast.summary ||
 
-                    "";
+// ==================================================
+// CLEAR GRID
+// ==================================================
 
 
-                }
+function clearPodcastGrid(){
 
 
+if(!DOM.grid){
 
+return;
 
+}
 
 
 
+DOM.grid.innerHTML = "";
 
 
-                /*
-                =================================
-                DURATION
-                =================================
-                */
 
+}
 
-                const duration =
-                card.querySelector(
-                    ".duration"
-                );
 
 
-                if(duration){
 
 
-                    duration.innerHTML =
+// ==================================================
+// LOADING STATE CONTROL
+// ==================================================
 
-                    `
-                    <i class="fa-solid fa-clock"></i>
 
-                    ${this.formatTime(
-                        podcast.duration_seconds
-                    )}
-                    `;
+function showLoadingState(){
 
 
-                }
+if(!DOM.grid){
 
+return;
 
+}
 
 
 
+const skeletons =
 
+DOM.grid.querySelectorAll(
 
+".skeleton"
 
+);
 
-                /*
-                =================================
-                LISTEN COUNT
-                =================================
-                */
 
 
-                const listen =
-                card.querySelector(
-                    ".listen-count"
-                );
+skeletons.forEach(item=>{
 
 
-                if(listen){
+item.style.display = "flex";
 
 
-                    listen.textContent =
+});
 
-                    podcast.listen_count ||
 
-                    0;
 
+}
 
-                }
 
 
 
+function hideLoadingState(){
 
 
 
+if(!DOM.grid){
 
+return;
 
+}
 
-                /*
-                =================================
-                EPISODE
-                =================================
-                */
 
 
-                const episode =
-                card.querySelector(
-                    ".episode-number"
-                );
+const skeletons =
 
+DOM.grid.querySelectorAll(
 
-                if(episode){
+".skeleton"
 
+);
 
-                    episode.textContent =
 
-                    podcast.episode_number
 
-                    ?
+skeletons.forEach(item=>{
 
-                    `قسمت ${podcast.episode_number}`
 
-                    :
+item.remove();
 
-                    "";
 
+});
 
-                }
 
+}
 
 
 
@@ -588,188 +484,202 @@ const NightCastPodcasts = {
 
 
 
+// ==================================================
+// ERROR MESSAGE
+// ==================================================
 
-                /*
-                =================================
-                TAGS
-                =================================
-                */
 
+function showPodcastError(){
 
-                const tags =
-                card.querySelector(
-                    ".podcast-tags"
-                );
 
+if(!DOM.grid){
 
-                if(tags){
+return;
 
+}
 
-                    tags.textContent =
 
-                    podcast.tags ||
 
-                    "";
+DOM.grid.innerHTML = `
 
 
-                }
+<div class="podcast-error">
 
 
+<i class="fa-solid fa-circle-exclamation"></i>
 
 
+<p>
+دریافت پادکست‌ها با مشکل مواجه شد
+</p>
 
 
+<button
+id="retryPodcastLoad">
 
+تلاش دوباره
 
+</button>
 
 
-                /*
-                =================================
-                BUTTON DATA
-                =================================
-                */
+</div>
 
 
-                const buttons =
+`;
 
-                card.querySelectorAll(
-                    "button"
-                );
 
 
+const retry =
 
-                buttons.forEach(
-                    btn=>{
+document.getElementById(
 
+"retryPodcastLoad"
 
-                        btn.dataset.id =
-                        podcast.id;
+);
 
 
-                        btn.dataset.title =
-                        podcast.title || "";
 
+if(retry){
 
-                        btn.dataset.audio =
-                        podcast.audio_url || "";
 
+retry.addEventListener(
 
-                        btn.dataset.cover =
-                        podcast.cover_url || "";
+"click",
 
+()=>loadPodcasts(true)
 
-                    }
+);
 
-                );
 
+}
 
 
 
+}
 
 
 
+ /* ==================================================
 
+NightCast Podcast Module V2
 
-                this.grid.appendChild(
-                    fragment
-                );
+File:
+ /users/js/features/podcasts.js
 
+Part:
+3/6
 
-            }
+Responsibilities:
+- Render Podcast Cards
+- Bind Podcast Actions
+- Connect With Player
+- Handle User Actions
 
-        );
+================================================== */
 
 
-    },
+(function(){
 
-        /* ==========================================
-       EVENTS
-    ========================================== */
+"use strict";
 
 
-    bindEvents(){
 
+const PodcastUI = {
 
-        if(!this.grid){
 
-            return;
 
-        }
 
 
+/*
+==================================================
+CREATE CARD
+==================================================
+*/
 
 
+createCard(podcast){
 
-        this.grid.addEventListener(
 
-            "click",
 
-            event=>{
+const template = document.getElementById(
+"podcastCardTemplate"
+);
 
 
-                const button =
 
-                event.target.closest(
-                    "button"
-                );
+if(!template){
 
+console.error(
+"Podcast template not found"
+);
 
+return null;
 
+}
 
-                if(!button){
 
-                    return;
 
-                }
 
 
+const clone =
+template.content.cloneNode(true);
 
 
 
 
-                const id =
 
-                button.dataset.id;
 
+const card =
+clone.querySelector(
+".podcast-card"
+);
 
 
 
 
+if(!card){
 
-                if(!id){
+return null;
 
-                    return;
+}
 
-                }
 
 
 
 
 
+/*
+----------------------------------
+SET DATA
+----------------------------------
+*/
 
 
-                const podcast =
+card.dataset.id =
+podcast.id;
 
-                this.getPodcastById(
-                    id
-                );
 
 
 
 
+const cover =
+card.querySelector(
+"[data-field='cover']"
+);
 
 
-                if(!podcast){
+if(cover){
 
-                    console.warn(
-                        "Podcast data missing"
-                    );
+cover.src =
+podcast.cover ||
+"/users/assets/images/default-cover.jpg";
 
-                    return;
 
-                }
+cover.alt =
+podcast.title || "NightCast";
 
 
+}
 
 
 
@@ -777,28 +687,23 @@ const NightCastPodcasts = {
 
 
 
-                /*
-                ==============================
-                PLAY
-                ==============================
-                */
 
+const title =
+card.querySelector(
+"[data-field='title']"
+);
 
-                if(
 
-                    button.classList.contains(
-                        "play-button"
-                    )
 
-                ){
+if(title){
 
+title.textContent =
+podcast.title ||
+"بدون عنوان";
 
-                    this.playPodcast(
-                        podcast
-                    );
 
+}
 
-                }
 
 
 
@@ -806,1186 +711,1196 @@ const NightCastPodcasts = {
 
 
 
+const author =
+card.querySelector(
+"[data-field='author']"
+);
 
 
-                /*
-                ==============================
-                FAVORITE
-                ==============================
-                */
 
+if(author){
 
-                if(
+author.textContent =
+podcast.author ||
+"NightCast";
 
-                    button.classList.contains(
-                        "favorite-button"
-                    )
 
-                ){
+}
 
 
-                    this.favoritePodcast(
-                        podcast,
-                        button
-                    );
 
 
-                }
 
 
 
 
 
+const description =
+card.querySelector(
+"[data-field='description']"
+);
 
 
 
+if(description){
 
-                /*
-                ==============================
-                DOWNLOAD
-                ==============================
-                */
+description.textContent =
+podcast.description ||
+"";
 
 
-                if(
+}
 
-                    button.classList.contains(
-                        "download-button"
-                    )
 
-                ){
 
 
-                    this.downloadPodcast(
-                        podcast
-                    );
 
 
-                }
 
 
 
+const duration =
+card.querySelector(
+"[data-field='duration']"
+);
 
 
 
+if(duration){
 
 
+duration.innerHTML = `
 
-                /*
-                ==============================
-                COMMENT
-                ==============================
-                */
+<i class="fa-solid fa-clock"></i>
 
+${PodcastUI.formatTime(
+podcast.duration
+)}
 
-                if(
+`;
 
-                    button.classList.contains(
-                        "comment-button"
-                    )
+}
 
-                ){
 
 
-                    this.openComments(
-                        podcast
-                    );
 
+return card;
 
-                }
 
+},
 
 
-            }
 
-        );
 
 
-    },
 
 
+/*
+==================================================
+RENDER LIST
+==================================================
+*/
 
 
+render(list){
 
 
 
+const grid =
+document.getElementById(
+"podcastGrid"
+);
 
 
-    /* ==========================================
-       FIND PODCAST
-    ========================================== */
 
+if(!grid){
 
-    getPodcastById(id){
+console.error(
+"Podcast grid not found"
+);
 
+return;
 
-        return this.items.find(
+}
 
-            item=>
 
-            String(item.id)
 
-            ===
 
-            String(id)
 
-        );
 
+/*
+remove skeleton
+*/
 
-    },
 
+grid.innerHTML = "";
 
 
 
 
 
 
+if(
+!Array.isArray(list)
+||
+list.length===0
+){
 
 
-    /* ==========================================
-       PLAY CONNECT
-    ========================================== */
+grid.innerHTML = `
 
+<div class="empty-state">
 
-    playPodcast(podcast){
+<i class="fa-solid fa-headphones"></i>
 
+<p>
+هنوز پادکستی منتشر نشده است
+</p>
 
 
-        if(
-            window.NightCastPlayer
-        ){
+</div>
 
+`;
 
 
-            NightCastPlayer.play(
-                podcast
-            );
+return;
 
+}
 
 
-        }
 
 
 
-    },
 
 
 
 
+list.forEach(
+podcast=>{
 
 
+const card =
+PodcastUI.createCard(
+podcast
+);
 
 
 
-    /* ==========================================
-       FAVORITE CONNECT
-    ========================================== */
+if(card){
 
+grid.appendChild(card);
 
-    favoritePodcast(
-        podcast,
-        button
-    ){
+}
 
 
 
-        if(
-            window.NightCastLibrary
-        ){
+}
 
+);
 
 
-            NightCastLibrary.toggleFavorite(
 
-                podcast
 
-            );
 
+PodcastEvents.bind();
 
 
+},
 
-            button.classList.toggle(
 
-                "active"
 
-            );
 
 
 
-        }
 
+/*
+==================================================
+TIME FORMAT
+==================================================
+*/
 
 
-    },
+formatTime(seconds){
 
 
 
+if(
+!seconds ||
+isNaN(seconds)
+){
 
+return "00:00";
 
+}
 
 
 
+const min =
+Math.floor(seconds / 60);
 
-    /* ==========================================
-       DOWNLOAD CONNECT
-    ========================================== */
 
 
-    downloadPodcast(podcast){
+const sec =
+Math.floor(seconds % 60);
 
 
 
-        if(
-            window.NightCastLibrary
-        ){
+return (
 
+String(min).padStart(2,"0")
 
++
 
-            NightCastLibrary.download(
+":"
 
-                podcast
++
 
-            );
+String(sec).padStart(2,"0")
 
+);
 
 
-        }
 
+},
 
 
-    },
 
 
 
 
+/*
+==================================================
+LOADING STATE
+==================================================
+*/
 
 
+showLoading(){
 
 
+const grid =
+document.getElementById(
+"podcastGrid"
+);
 
-    /* ==========================================
-       COMMENTS CONNECT
-    ========================================== */
 
 
-    openComments(podcast){
+if(!grid)
+return;
 
 
 
-        window.location.href =
 
-        "/users/podcast.html?id="
 
-        +
+grid.innerHTML = `
 
-        podcast.id;
 
+<div class="podcast-card skeleton">
 
+<div class="podcast-cover-placeholder">
 
-    },
+</div>
 
-        /*
-    ====================================
-    RENDER PODCAST CARDS
-    ====================================
-    */
 
+<div class="podcast-info-placeholder">
 
-    render(items){
+</div>
 
 
-        const grid =
-        document.getElementById(
-            "podcastGrid"
-        );
+</div>
 
 
+<div class="podcast-card skeleton">
 
-        if(!grid){
+<div class="podcast-cover-placeholder">
 
-            console.warn(
-                "podcastGrid not found"
-            );
+</div>
 
-            return;
 
-        }
+<div class="podcast-info-placeholder">
 
+</div>
 
 
+</div>
 
 
-        const template =
-        document.getElementById(
-            "podcastCardTemplate"
-        );
+<div class="podcast-card skeleton">
 
+<div class="podcast-cover-placeholder">
 
+</div>
 
 
+<div class="podcast-info-placeholder">
 
-        if(!template){
+</div>
 
-            console.warn(
-                "podcastCardTemplate missing"
-            );
 
-            return;
+</div>
 
-        }
 
+`;
 
 
 
 
-        items.forEach(
-            podcast=>{
+},
 
 
-                const card =
-                template.content.cloneNode(
-                    true
-                );
 
 
 
 
-                const wrapper =
-                card.querySelector(
-                    ".podcast-card"
-                );
+/*
+==================================================
+ERROR STATE
+==================================================
+*/
 
 
+showError(message){
 
 
-                /*
-                ============================
-                STORE PODCAST DATA
-                ============================
-                */
 
+const grid =
+document.getElementById(
+"podcastGrid"
+);
 
-                if(wrapper){
 
 
-                    wrapper.dataset.id =
-                    podcast.id;
+if(!grid)
+return;
 
 
 
-                    wrapper.dataset.audio =
-                    podcast.audio_url || "";
 
 
+grid.innerHTML = `
 
-                    wrapper.dataset.title =
-                    podcast.title || "";
 
+<div class="error-state">
 
 
-                    wrapper.dataset.cover =
-                    podcast.cover_url || "";
+<i class="fa-solid fa-triangle-exclamation"></i>
 
 
+<p>
 
-                    wrapper.dataset.author =
-                    podcast.author_name || "";
+${message ||
+"خطا در دریافت پادکست‌ها"}
 
+</p>
 
 
-                }
 
+<button
+id="retryPodcastLoad">
 
+تلاش دوباره
 
+</button>
 
 
 
+</div>
 
-                /*
-                ============================
-                COVER
-                ============================
-                */
 
+`;
 
-                const image =
-                card.querySelector(
-                    ".podcast-image"
-                );
 
 
 
-                if(image){
 
+const retry =
+document.getElementById(
+"retryPodcastLoad"
+);
 
-                    image.src =
 
-                    podcast.cover_url ||
 
-                    "/users/assets/images/default-cover.jpg";
+if(retry){
 
 
-                    image.alt =
+retry.onclick =
+()=>{
 
-                    podcast.title;
+PodcastManager.load();
 
+};
 
-                }
 
+}
 
 
 
+}
 
 
 
+};
 
 
-                /*
-                ============================
-                TITLE
-                ============================
-                */
 
 
-                const title =
-                card.querySelector(
-                    ".podcast-title"
-                );
 
 
+window.PodcastUI =
+PodcastUI;
 
-                if(title){
 
 
-                    title.textContent =
+})();
 
-                    podcast.title || 
-                    
-                    "بدون عنوان";
 
 
-                }
 
+/* ==================================================
 
+NightCast Podcast Module V2
 
+File:
+ /users/js/features/podcasts.js
 
+Part:
+4/6
 
+Responsibilities:
+- Podcast Events
+- Player Connection
+- Download Protection
+- Favorite
+- Comments
 
+================================================== */
 
 
+(function(){
 
-                /*
-                ============================
-                AUTHOR
-                ============================
-                */
+"use strict";
 
 
-                const author =
-                card.querySelector(
-                    ".podcast-author"
-                );
 
 
 
-                if(author){
+const PodcastEvents = {
 
 
-                    author.textContent =
 
-                    podcast.author_name ||
 
-                    "NightCast";
 
+/*
+==================================================
+BIND EVENTS
+==================================================
+*/
 
-                }
 
+bind(){
 
 
 
+const cards =
+document.querySelectorAll(
+".podcast-card:not(.skeleton)"
+);
 
 
 
 
 
-                /*
-                ============================
-                DESCRIPTION
-                ============================
-                */
+cards.forEach(card=>{
 
 
-                const description =
-                card.querySelector(
-                    ".podcast-description"
-                );
+const play =
+card.querySelector(
+"[data-action='play']"
+);
 
 
 
-                if(description){
+if(play){
 
 
-                    description.textContent =
+play.onclick = ()=>{
 
-                    podcast.description ||
 
-                    podcast.summary ||
+const id =
+card.dataset.id;
 
-                    "";
 
 
+const podcast =
+PodcastManager.getById(id);
 
-                }
 
 
 
+if(!podcast){
 
+console.warn(
+"Podcast not found"
+);
 
+return;
 
+}
 
 
 
-                /*
-                ============================
-                DURATION
-                ============================
-                */
 
 
-                const duration =
-                card.querySelector(
-                    ".duration"
-                );
+PodcastEvents.play(
+podcast
+);
 
 
 
-                if(duration){
+};
 
 
-                    duration.innerHTML =
 
-                    `
+}
 
-                    <i class="fa-solid fa-clock"></i>
 
-                    ${
 
-                    this.formatTime(
 
-                        podcast.duration_seconds
 
-                    )
 
-                    }
 
-                    `;
 
 
-                }
+const download =
+card.querySelector(
+"[data-action='download']"
+);
 
 
 
+if(download){
 
 
+download.onclick = ()=>{
 
 
+const id =
+card.dataset.id;
 
 
-                /*
-                ============================
-                PLAY BUTTON
-                ============================
-                */
 
+const podcast =
+PodcastManager.getById(id);
 
-                const play =
-                card.querySelector(
-                    ".play-button"
-                );
 
 
+if(podcast){
 
-                if(play){
+PodcastEvents.download(
+podcast
+);
 
+}
 
-                    play.dataset.action =
-                    "play";
 
+};
 
 
-                    play.onclick = ()=>{
+}
 
 
-                        NightCastPlayer.play(
 
-                            podcast
 
-                        );
 
 
-                    };
 
 
-                }
+const favorite =
+card.querySelector(
+"[data-action='favorite']"
+);
 
 
 
+if(favorite){
 
 
+favorite.onclick = ()=>{
 
 
+const id =
+card.dataset.id;
 
 
-                /*
-                ============================
-                FAVORITE BUTTON
-                ============================
-                */
 
+PodcastEvents.favorite(
+id,
+favorite
+);
 
-                const favorite =
-                card.querySelector(
-                    ".favorite-button"
-                );
 
 
+};
 
-                if(favorite){
 
+}
 
-                    favorite.dataset.action =
-                    "favorite";
 
 
 
-                    favorite.onclick = ()=>{
 
 
-                        if(
-                            window.NightCastLibrary
-                        ){
 
 
-                            NightCastLibrary.toggleFavorite(
+const comments =
+card.querySelector(
+"[data-action='comments']"
+);
 
-                                podcast
 
-                            );
 
+if(comments){
 
-                        }
 
+comments.onclick = ()=>{
 
-                    };
 
+const id =
+card.dataset.id;
 
-                }
 
 
+PodcastEvents.comments(
+id
+);
 
 
 
+};
 
 
+}
 
 
-                /*
-                ============================
-                DOWNLOAD BUTTON
-                ============================
-                */
 
+});
 
-                const download =
-                card.querySelector(
-                    ".download-button"
-                );
 
 
 
-                if(download){
 
+},
 
-                    download.dataset.action =
-                    "download";
 
 
 
-                    download.onclick = ()=>{
 
 
-                        if(
-                            window.NightCastLibrary
-                        ){
 
+/*
+==================================================
+PLAY PODCAST
+==================================================
+*/
 
-                            NightCastLibrary.download(
 
-                                podcast
+play(podcast){
 
-                            );
 
 
-                        }
+if(
+!window.NightCastPlayer
+){
 
+console.error(
+"Player module not loaded"
+);
 
-                    };
 
+return;
 
-                }
+}
 
 
 
 
 
 
+window.NightCastPlayer.load({
 
 
-                /*
-                ============================
-                COMMENT BUTTON
-                ============================
-                */
+id: podcast.id,
 
 
-                const comment =
-                card.querySelector(
-                    ".comment-button"
-                );
+title: podcast.title,
 
 
+author: podcast.author,
 
-                if(comment){
 
+cover: podcast.cover,
 
-                    comment.dataset.action =
-                    "comment";
 
+audio:
+podcast.audio ||
+podcast.file ||
+podcast.url
 
 
-                    comment.onclick = ()=>{
 
+});
 
-                        window.location.href =
 
-                        `/users/podcast.html?id=${podcast.id}`;
 
 
-                    };
 
 
-                }
+window.NightCastPlayer.play();
 
 
 
 
 
+},
 
-                grid.appendChild(
 
-                    card
 
-                );
 
 
 
-            }
 
+/*
+==================================================
+DOWNLOAD
+==================================================
+*/
 
-        );
 
+download(podcast){
 
-    },
 
 
+/*
+Guest users cannot download
+*/
 
 
-        /*
-    ====================================
-    FORMAT TIME
-    ====================================
-    */
+if(
+window.AuthManager &&
+!AuthManager.isLoggedIn()
+){
 
 
-    formatTime(seconds){
 
+const modal =
+document.getElementById(
+"downloadLoginModal"
+);
 
 
-        if(
-            !seconds ||
-            isNaN(seconds)
-        ){
 
-            return "00:00";
+if(modal){
 
-        }
+modal.classList.remove(
+"hidden"
+);
 
 
+}
 
 
-        const minutes =
 
-        Math.floor(
+return;
 
-            seconds / 60
 
-        );
+}
 
 
 
 
 
-        const second =
 
-        Math.floor(
 
-            seconds % 60
+if(
+!podcast.audio
+&&
+!podcast.file
+&&
+!podcast.url
+){
 
-        );
 
 
+if(window.UI){
 
+UI.toast(
+"فایل صوتی موجود نیست",
+"error"
+);
 
+}
 
-        return (
 
-            String(minutes)
+return;
 
-            .padStart(2,"0")
+}
 
-            +
 
-            ":"
 
-            +
 
-            String(second)
 
-            .padStart(2,"0")
+const url =
+podcast.audio ||
+podcast.file ||
+podcast.url;
 
-        );
 
 
 
-    },
 
 
+const link =
+document.createElement(
+"a"
+);
 
 
 
+link.href =
+url;
 
 
 
+link.download =
+podcast.title + ".mp3";
 
-    /*
-    ====================================
-    EMPTY STATE
-    ====================================
-    */
 
 
-    emptyState(){
+document.body.appendChild(
+link
+);
 
 
 
-        const grid =
+link.click();
 
-        document.getElementById(
 
-            "podcastGrid"
 
-        );
+link.remove();
 
 
 
 
-        if(!grid)
+},
 
-        return;
 
 
 
 
 
-        grid.innerHTML =
 
+/*
+==================================================
+FAVORITE
+==================================================
+*/
 
 
-        `
+favorite(id,button){
 
-        <div class="empty-state">
 
-            <i class="fa-solid fa-microphone-slash"></i>
 
-            <h3>
+let favorites =
+JSON.parse(
+localStorage.getItem(
+"NightCastFavorites"
+)
+||
+"[]"
+);
 
-            هنوز پادکستی منتشر نشده است
 
-            </h3>
 
 
-            <p>
 
-            به زودی محتوای جدید اضافه خواهد شد
 
-            </p>
 
 
-        </div>
+const index =
+favorites.indexOf(id);
 
-        `;
 
 
 
-    },
 
 
 
+if(index === -1){
 
 
+favorites.push(id);
 
 
 
+button.classList.add(
+"active"
+);
 
-    /*
-    ====================================
-    ERROR STATE
-    ====================================
-    */
 
 
-    errorState(message="خطا در دریافت اطلاعات"){
+if(window.UI){
 
+UI.toast(
+"به علاقه‌مندی‌ها اضافه شد",
+"success"
+);
 
 
-        const grid =
+}
 
-        document.getElementById(
 
-            "podcastGrid"
 
-        );
 
+}
 
+else{
 
 
-        if(!grid)
+favorites.splice(
+index,
+1
+);
 
-        return;
 
 
+button.classList.remove(
+"active"
+);
 
 
 
-        grid.innerHTML =
+if(window.UI){
 
+UI.toast(
+"از علاقه‌مندی‌ها حذف شد",
+"info"
+);
 
 
-        `
+}
 
-        <div class="error-state">
 
-            <i class="fa-solid fa-triangle-exclamation"></i>
+}
 
 
-            <h3>
 
-            ${message}
 
-            </h3>
 
 
-            <button
+localStorage.setItem(
 
-            class="retry-button">
+"NightCastFavorites",
 
-            تلاش دوباره
+JSON.stringify(
+favorites
+)
 
-            </button>
+);
 
 
-        </div>
 
-        `;
 
 
+},
 
 
 
 
-        const retry =
 
-        grid.querySelector(
 
-            ".retry-button"
 
-        );
 
+/*
+==================================================
+COMMENTS
+==================================================
+*/
 
 
+comments(id){
 
 
-        if(retry){
 
+const modal =
+document.getElementById(
+"commentPageModal"
+);
 
 
-            retry.onclick = ()=>{
 
 
-                this.page = 1;
+if(!modal){
 
-                this.hasMore = true;
+return;
 
+}
 
-                grid.innerHTML="";
 
 
-                this.load();
 
+modal.dataset.podcastId =
+id;
 
 
-            };
 
+modal.classList.remove(
+"hidden"
+);
 
-        }
 
 
 
-    },
 
 
+if(window.CommentManager){
 
 
+CommentManager.load(
+id
+);
 
 
+}
 
 
 
-    /*
-    ====================================
-    LOADING STATE
-    ====================================
-    */
 
+}
 
-    showLoading(){
 
 
 
-        const grid =
 
-        document.getElementById(
 
-            "podcastGrid"
+};
 
-        );
 
 
 
 
 
-        if(!grid)
+window.PodcastEvents =
+PodcastEvents;
 
-        return;
 
 
 
+})();
 
 
 
 
-        const loader =
 
-        document.createElement(
 
-            "div"
+    
+/* ==================================================
 
-        );
+NightCast Podcast Module V2
 
+File:
+ /users/js/features/podcasts.js
 
+Part:
+5/6
 
+Responsibilities:
+- API Communication
+- Podcast State
+- Pagination
+- Infinite Scroll
+- Data Management
 
-        loader.className =
+================================================== */
 
-        "podcast-loader";
 
+(function(){
 
+"use strict";
 
 
 
-        loader.innerHTML =
 
 
 
-        `
+const PodcastManager = {
 
-        <div class="spinner"></div>
 
-        <span>
 
-        در حال دریافت پادکست‌ها...
 
-        </span>
 
-        `;
+/*
+==================================================
+STATE
+==================================================
+*/
 
 
+state:{
 
 
+items:[],
 
 
-        grid.appendChild(
+page:1,
 
-            loader
 
-        );
+limit:12,
 
 
+loading:false,
 
-    },
 
+finished:false,
 
 
+sort:"latest"
 
 
 
+},
 
 
 
-    /*
-    ====================================
-    REMOVE LOADING
-    ====================================
-    */
 
 
-    hideLoading(){
 
 
+/*
+==================================================
+INIT
+==================================================
+*/
 
-        const loader =
 
-        document.querySelector(
+init(){
 
-            ".podcast-loader"
 
-        );
 
+PodcastUI.showLoading();
 
 
 
+this.bindScroll();
 
-        if(loader){
 
 
-            loader.remove();
+this.load();
 
 
-        }
 
 
-    },
 
+},
 
 
 
@@ -1994,259 +1909,277 @@ const NightCastPodcasts = {
 
 
 
-    /*
-    ====================================
-    INFINITE SCROLL
-    ====================================
-    */
+/*
+==================================================
+LOAD PODCASTS
+==================================================
+*/
 
 
-    bindScroll(){
+async load(
+reset=false
+){
 
 
 
-        const target =
+if(
+this.state.loading
+)
+return;
 
-        document.getElementById(
 
-            "podcastLoadingTrigger"
 
-        );
 
 
 
 
+if(
+reset
+){
 
 
-        if(!target){
+this.state.page=1;
 
 
-            console.warn(
+this.state.items=[];
 
-                "Loading trigger not found"
 
-            );
+this.state.finished=false;
 
 
-            return;
+}
 
 
-        }
 
 
 
 
+if(
+this.state.finished
+)
+return;
 
 
 
-        const observer =
 
-        new IntersectionObserver(
 
-            entries=>{
 
 
+this.state.loading=true;
 
-                const entry =
 
-                entries[0];
 
 
 
 
 
-                if(
+try{
 
-                    entry.isIntersecting &&
 
-                    !this.loading &&
 
-                    this.hasMore
+let response;
 
-                ){
 
 
 
-                    this.load();
 
+/*
+----------------------------------
+API CHECK
+----------------------------------
+*/
 
-                }
 
+if(
+window.API
+&&
+API.get
+){
 
 
-            },
 
+response =
+await API.get(
 
-            {
+`/podcasts?page=${this.state.page}&limit=${this.state.limit}`
 
-                rootMargin:
+);
 
-                "300px"
 
 
-            }
+}
 
+else{
 
-        );
 
+throw new Error(
+"API module unavailable"
+);
 
 
+}
 
 
 
-        observer.observe(
 
-            target
 
-        );
 
 
 
-    },
+/*
+----------------------------------
+NORMALIZE RESPONSE
+----------------------------------
+*/
 
 
-        /*
-    ====================================
-    LOAD PODCASTS FROM API
-    ====================================
-    */
 
+const data =
+response.data ||
+response.items ||
+response.podcasts ||
+response;
 
-    async load(){
 
 
 
-        if(
 
-            this.loading ||
 
-            !this.hasMore
 
-        ){
+if(
+!Array.isArray(data)
+||
+data.length===0
+){
 
-            return;
 
-        }
+this.state.finished=true;
 
 
+this.state.loading=false;
 
 
+return;
 
+}
 
-        this.loading = true;
 
 
 
-        this.showLoading();
 
 
 
 
 
+this.state.items.push(
+...data
+);
 
 
-        try{
 
 
 
-            const result =
+PodcastUI.render(
+this.state.items
+);
 
-            await API.podcasts(
 
-                this.page,
 
-                this.limit
 
-            );
 
 
+this.state.page++;
 
 
 
 
 
-            /*
-            ============================
-            API ERROR
-            ============================
-            */
 
 
-            if(
+}
+catch(error){
 
-                !result ||
 
-                !result.success
 
-            ){
+console.error(
+"Podcast Load Error:",
+error
+);
 
 
 
-                this.errorState(
+PodcastUI.showError(
+"دریافت پادکست‌ها ناموفق بود"
+);
 
-                    "خطا در دریافت پادکست‌ها"
 
-                );
 
 
 
-                return;
+}
 
+finally{
 
-            }
 
+this.state.loading=false;
 
 
+}
 
 
 
+},
 
 
 
-            /*
-            ============================
-            EMPTY RESULT
-            ============================
-            */
 
 
-            if(
 
-                !result.podcasts ||
 
-                result.podcasts.length===0
+/*
+==================================================
+GET BY ID
+==================================================
+*/
 
-            ){
 
+getById(id){
 
 
-                if(
 
-                    this.page===1
+return this.state.items.find(
 
-                ){
+item=>
 
+String(item.id)
+===
 
+String(id)
 
-                    this.emptyState();
+);
 
 
-                }
+},
 
 
 
 
 
-                this.hasMore=false;
 
 
+/*
+==================================================
+SEARCH LOCAL
+==================================================
+*/
 
-                return;
 
+search(keyword){
 
-            }
 
 
+if(!keyword)
+return this.state.items;
 
 
 
@@ -2254,39 +2187,40 @@ const NightCastPodcasts = {
 
 
 
-            /*
-            ============================
-            UPDATE PLAYER QUEUE
-            ============================
-            */
+return this.state.items.filter(
+item=>{
 
 
-            if(
+const text =
 
-                window.NightCastPlayer
+(
+item.title
++
+item.description
++
+item.author
 
-            ){
+)
+.toLowerCase();
 
 
 
-                NightCastPlayer.queue =
 
-                [
+return text.includes(
 
-                    ...
+keyword.toLowerCase()
 
-                    NightCastPlayer.queue,
+);
 
-                    ...
 
-                    result.podcasts
 
-                ];
+}
 
+);
 
 
-            }
 
+},
 
 
 
@@ -2294,19 +2228,19 @@ const NightCastPodcasts = {
 
 
 
+/*
+==================================================
+SORT
+==================================================
+*/
 
-            /*
-            ============================
-            RENDER DATA
-            ============================
-            */
 
+sort(type){
 
-            this.render(
 
-                result.podcasts
 
-            );
+this.state.sort =
+type;
 
 
 
@@ -2314,470 +2248,544 @@ const NightCastPodcasts = {
 
 
 
+if(
+type==="oldest"
+){
 
 
-            /*
-            ============================
-            PAGINATION
-            ============================
-            */
+this.state.items.sort(
 
+(a,b)=>
 
-            this.hasMore =
+new Date(a.created_at)
+-
+new Date(b.created_at)
 
-            result.hasMore;
+);
 
 
+}
 
+else{
 
 
-            this.page++;
+this.state.items.sort(
 
+(a,b)=>
 
+new Date(b.created_at)
+-
+new Date(a.created_at)
 
+);
 
 
-        }
 
-        catch(error){
+}
 
 
 
-            console.error(
 
-                "Podcast Load Error",
 
-                error
 
-            );
 
+PodcastUI.render(
+this.state.items
+);
 
 
-            this.errorState(
 
-                "ارتباط با سرور برقرار نشد"
+},
 
-            );
 
 
 
-        }
 
-        finally{
 
 
+/*
+==================================================
+INFINITE SCROLL
+==================================================
+*/
 
-            this.loading=false;
 
+bindScroll(){
 
 
-            this.hideLoading();
 
+const trigger =
+document.getElementById(
+"podcastLoadingTrigger"
+);
 
 
-        }
 
 
 
-    },
+if(
+!trigger
+)
+return;
 
 
 
-        /*
-    ====================================
-    EVENT DELEGATION
-    ====================================
-    */
 
 
-    bindEvents(){
 
 
+const observer =
+new IntersectionObserver(
 
-        document.addEventListener(
+entries=>{
 
-            "click",
 
-            event=>{
 
+entries.forEach(
+entry=>{
 
 
+if(
+entry.isIntersecting
+){
 
 
-                const playButton =
 
-                event.target.closest(
+this.load();
 
-                    ".play-button"
 
-                );
 
+}
 
 
 
+}
 
-                if(playButton){
+);
 
 
 
-                    const card =
+},
+{
 
-                    playButton.closest(
+rootMargin:
+"300px"
 
-                        ".podcast-card"
 
-                    );
+}
 
+);
 
 
 
 
-                    if(
 
-                        card &&
 
-                        window.NightCastPlayer
 
-                    ){
+observer.observe(
+trigger
+);
 
 
 
-                        NightCastPlayer.play({
+}
 
 
 
-                            id:
 
-                            card.dataset.id,
 
 
+};
 
-                            title:
 
-                            card.dataset.title,
 
 
 
-                            audio_url:
 
-                            card.dataset.audio,
+window.PodcastManager =
+PodcastManager;
 
 
 
-                            cover_url:
 
-                            card.dataset.cover,
 
 
+/*
+==================================================
+AUTO START
+==================================================
+*/
 
-                            author_name:
 
-                            card.dataset.author
+document.addEventListener(
 
+"DOMContentLoaded",
 
+()=>{
 
-                        });
 
+PodcastManager.init();
 
 
-                    }
+}
 
+);
 
 
-                }
 
 
 
 
+})();
 
 
 
 
 
-                const favoriteButton =
 
-                event.target.closest(
+   /* ==================================================
 
-                    ".favorite-button"
+NightCast Podcast Module V2
 
-                );
+File:
+ /users/js/features/podcasts.js
 
+Part:
+6/6 FINAL
 
+Responsibilities:
+- Global Events
+- Sort Controller
+- Search Integration
+- App Integration
+- Public API
 
+================================================== */
 
 
+(function(){
 
+"use strict";
 
-                if(favoriteButton){
 
 
 
-                    const card =
 
-                    favoriteButton.closest(
+const PodcastController = {
 
-                        ".podcast-card"
 
-                    );
 
 
 
+/*
+==================================================
+BIND GLOBAL EVENTS
+==================================================
+*/
 
 
+init(){
 
 
-                    if(
 
-                        card &&
+this.bindSort();
 
-                        window.NightCastLibrary
 
-                    ){
+this.bindHeroActions();
 
 
+this.bindSearchIntegration();
 
-                        NightCastLibrary.toggleFavorite({
 
 
 
-                            id:
+},
 
-                            card.dataset.id,
 
 
 
-                            title:
 
-                            card.dataset.title,
 
 
+/*
+==================================================
+SORT BUTTON
+==================================================
+*/
 
-                            cover_url:
 
-                            card.dataset.cover
+bindSort(){
 
 
 
-                        });
+const button =
+document.getElementById(
+"sortPodcastButton"
+);
 
 
 
-                    }
 
 
+if(!button)
+return;
 
-                }
 
 
 
 
 
 
+button.addEventListener(
+"click",
 
+()=>{
 
 
-                const downloadButton =
 
-                event.target.closest(
+const current =
+PodcastManager.state.sort;
 
-                    ".download-button"
 
-                );
 
 
 
+if(
+current==="latest"
+){
 
 
+PodcastManager.sort(
+"oldest"
+);
 
-                if(downloadButton){
 
 
+button.innerHTML = `
 
-                    const card =
+<i class="fa-solid fa-arrow-up-wide-short"></i>
 
-                    downloadButton.closest(
+قدیمی‌ترین
 
-                        ".podcast-card"
+`;
 
-                    );
 
 
+}
 
+else{
 
 
+PodcastManager.sort(
+"latest"
+);
 
-                    if(
 
-                        card &&
 
-                        window.NightCastLibrary
+button.innerHTML = `
 
-                    ){
+<i class="fa-solid fa-arrow-down-wide-short"></i>
 
+جدیدترین
 
+`;
 
-                        NightCastLibrary.download({
 
 
+}
 
-                            id:
 
-                            card.dataset.id,
 
 
+}
 
-                            title:
+);
 
-                            card.dataset.title,
 
 
+},
 
-                            audio_url:
 
-                            card.dataset.audio,
 
 
 
-                            cover_url:
 
-                            card.dataset.cover
 
+/*
+==================================================
+HERO BUTTON
+==================================================
+*/
 
 
-                        });
+bindHeroActions(){
 
 
 
-                    }
+const start =
+document.getElementById(
+"startListeningButton"
+);
 
 
 
-                }
 
 
+if(start){
 
 
 
-            }
+start.onclick=()=>{
 
 
-        );
 
+const section =
+document.getElementById(
+"podcasts"
+);
 
 
-    },
 
+if(section){
 
 
+section.scrollIntoView({
 
+behavior:"smooth"
 
+});
 
 
+}
 
 
-    /*
-    ====================================
-    RESET
-    ====================================
-    */
 
+};
 
-    reset(){
 
 
+}
 
-        this.page = 1;
 
 
-        this.hasMore = true;
 
 
-        this.loadedIds = [];
 
 
 
 
+const explore =
+document.getElementById(
+"exploreButton"
+);
 
-        const grid =
 
-        document.getElementById(
 
-            "podcastGrid"
 
-        );
 
+if(explore){
 
 
 
+explore.onclick=()=>{
 
-        if(grid){
 
+const section =
+document.getElementById(
+"podcasts"
+);
 
-            grid.innerHTML="";
 
 
-        }
 
+if(section){
 
 
-    },
+section.scrollIntoView({
 
+behavior:"smooth"
 
+});
 
 
+}
 
 
 
+};
 
 
-    /*
-    ====================================
-    SEARCH SUPPORT
-    ====================================
-    */
 
+}
 
-    replace(items){
 
 
 
-        this.loadedIds=[];
+},
 
 
 
-        const grid =
 
-        document.getElementById(
 
-            "podcastGrid"
 
-        );
 
+/*
+==================================================
+SEARCH CONNECT
+==================================================
+*/
 
 
+bindSearchIntegration(){
 
 
-        if(grid){
 
+window.NightCastSearch = {
 
-            grid.innerHTML="";
 
+search(keyword){
 
-        }
 
 
+return PodcastManager.search(
+keyword
+);
 
 
 
-        this.render(
+}
 
-            items
 
-        );
 
+};
 
 
-    }
+
+},
+
+
+
+
+
+
+
+/*
+==================================================
+REFRESH
+==================================================
+*/
+
+
+refresh(){
+
+
+PodcastManager.load(
+true
+);
+
+
+}
+
 
 
 
@@ -2792,28 +2800,41 @@ const NightCastPodcasts = {
 
 
 
+window.PodcastController =
+PodcastController;
+
+
+
+
+
+
+
 
 /*
-====================================
-GLOBAL EXPORT
-====================================
+==================================================
+START MODULE
+==================================================
 */
 
 
-window.NightCastPodcasts =
+document.addEventListener(
 
-NightCastPodcasts;
+"DOMContentLoaded",
 
-
-
-
+()=>{
 
 
+PodcastController.init();
 
 
-
-console.log(
-
-    "NightCast Podcasts V2 Loaded"
+}
 
 );
+
+
+
+
+
+
+})(); 
+ 

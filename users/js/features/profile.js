@@ -1,528 +1,1032 @@
-/* ==================================================
+/*
+=================================================
 
-NightCast User Profile Manager V1
+NightCast Profile Module
 
 File:
-
-/users/js/features/profile.js
-
-
-Responsibility:
-
-- User Profile UI
-- Login Button
-- Profile Panel
-- Logout
+users/js/features/profile.js
 
 
-Depends:
+Responsibilities:
 
-auth.js
-api.js
-
-
-================================================== */
-
-
-const NightCastProfile = {
+- User profile panel
+- User information rendering
+- Library navigation
+- Logout handling
 
 
+Dependencies:
 
-    panel:null,
+- auth.js
+- library.js
+- ui.js
 
+
+=================================================
+*/
+
+
+(function(){
+
+"use strict";
 
 
 
+window.NightCast =
+window.NightCast || {};
 
+
+
+
+
+
+
+const Profile = {
+
+
+
+
+
+/*
+=================================================
+CONFIG
+=================================================
+*/
+
+
+config:{
+
+
+panelId:"profilePanel",
+
+
+defaultName:"کاربر NightCast",
+
+
+defaultUsername:"@username"
+
+
+
+},
+
+
+
+
+
+
+
+state:{
+
+
+user:null,
+
+
+isOpen:false
+
+
+},
+
+
+
+
+
+
+
+elements:{},
+
+
+
+
+
+
+
+/*
+=================================================
+INIT
+=================================================
+*/
+
+
+init(){
+
+
+
+this.cacheElements();
+
+
+
+this.bindEvents();
+
+
+
+this.loadUser();
+
+
+
+console.log(
+"NightCast Profile Initialized"
+);
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+CACHE DOM
+=================================================
+*/
+
+
+cacheElements(){
+
+
+
+this.elements.panel =
+document.getElementById(
+this.config.panelId
+);
+
+
+
+
+this.elements.name =
+document.getElementById(
+"profileName"
+);
+
+
+
+
+this.elements.username =
+document.getElementById(
+"profileUsername"
+);
+
+
+
+
+
+
+this.elements.logout =
+document.getElementById(
+"logoutButton"
+);
+
+
+
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+EVENTS
+=================================================
+*/
+
+
+bindEvents(){
+
+
+
+/*
+Profile open triggers
+*/
+
+
+document.querySelectorAll(
+'[data-action="profile"]'
+)
+.forEach(btn=>{
+
+
+btn.addEventListener(
+"click",
+()=>{
+
+
+this.open();
+
+
+});
+
+
+});
+
+
+
+
+
+
+
+
+if(this.elements.logout){
+
+
+
+this.elements.logout.addEventListener(
+"click",
+()=>{
+
+
+this.logout();
+
+
+});
+
+
+}
+
+
+
+
+
+
+/*
+Library buttons
+*/
+
+
+this.bindLibraryButtons();
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+LIBRARY BUTTONS
+=================================================
+*/
+
+
+bindLibraryButtons(){
+
+
+
+const map={
+
+
+
+historyButton:"history",
+
+
+favoritesButton:"favorites",
+
+
+downloadsButton:"downloads",
+
+
+savedButton:"saved"
+
+
+
+};
+
+
+
+
+
+
+Object.keys(map)
+.forEach(id=>{
+
+
+
+const button =
+document.getElementById(id);
+
+
+
+
+
+if(button){
+
+
+
+button.addEventListener(
+"click",
+()=>{
+
+
+this.openLibrary(
+map[id]
+);
+
+
+
+});
+
+
+}
+
+
+
+});
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+LOAD USER
+=================================================
+*/
+
+
+loadUser(){
+
+
+
+try{
+
+
+
+if(
+window.NightCast &&
+NightCast.Auth &&
+NightCast.Auth.getUser
+){
+
+
+
+this.state.user =
+NightCast.Auth.getUser();
+
+
+
+}
+
+
+
+
+
+this.render();
+
+
+
+}
+catch(error){
+
+
+
+console.error(
+"Profile User Load Error:",
+error
+);
+
+
+
+}
+
+
+
+},
     /*
-    ====================================
-    INIT
-    ====================================
-    */
+=================================================
+RENDER PROFILE
+=================================================
+*/
 
 
-    init(){
-
-
-
-        this.panel =
-
-        document.getElementById(
-
-            "profilePanel"
-
-        );
+render(){
 
 
 
-
-
-        this.bindEvents();
-
-
-
-        this.update();
-
-
-
-
-
-        console.log(
-
-            "NightCast Profile Ready"
-
-        );
-
-
-
-    },
+const user =
+this.state.user;
 
 
 
 
 
 
+if(
+!user
+){
 
 
 
+if(this.elements.name){
+
+
+this.elements.name.textContent =
+this.config.defaultName;
+
+
+}
+
+
+
+
+
+if(this.elements.username){
+
+
+this.elements.username.textContent =
+this.config.defaultUsername;
+
+
+}
+
+
+
+
+
+return;
+
+
+
+}
+
+
+
+
+
+
+
+if(this.elements.name){
+
+
+this.elements.name.textContent =
+
+user.full_name ||
+
+user.name ||
+
+this.config.defaultName;
+
+
+
+}
+
+
+
+
+
+
+
+if(this.elements.username){
+
+
+this.elements.username.textContent =
+
+user.username
+?
+"@" + user.username
+:
+this.config.defaultUsername;
+
+
+
+}
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+OPEN PROFILE PANEL
+=================================================
+*/
+
+
+open(){
+
+
+
+if(!this.elements.panel)
+return;
+
+
+
+
+
+this.elements.panel.classList.remove(
+"hidden"
+);
+
+
+
+this.state.isOpen=true;
+
+
+
+document.body.classList.add(
+"profile-open"
+);
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+CLOSE PROFILE PANEL
+=================================================
+*/
+
+
+close(){
+
+
+
+if(!this.elements.panel)
+return;
+
+
+
+
+
+this.elements.panel.classList.add(
+"hidden"
+);
+
+
+
+this.state.isOpen=false;
+
+
+
+document.body.classList.remove(
+"profile-open"
+);
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+TOGGLE PROFILE
+=================================================
+*/
+
+
+toggle(){
+
+
+
+if(this.state.isOpen){
+
+
+
+this.close();
+
+
+
+}
+else{
+
+
+this.open();
+
+
+}
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+OPEN LIBRARY ITEM
+=================================================
+*/
+
+
+openLibrary(type){
+
+
+
+console.log(
+"Profile Library:",
+type
+);
+
+
+
+
+
+
+
+if(
+window.NightCast &&
+NightCast.Library
+){
+
+
+
+const data =
+NightCast.Library.get(type);
+
+
+
+
+
+console.log(
+data
+);
+
+
+
+}
+
+
+
+
+
+/*
+
+در نسخه کامل:
+
+Profile Page
+یا
+Library Modal
+
+اینجا باز می‌شود
+
+*/
+
+
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+REFRESH USER
+=================================================
+*/
+
+
+refresh(){
+
+
+
+this.loadUser();
+
+
+
+this.render();
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+GET CURRENT USER
+=================================================
+*/
+
+
+getUser(){
+
+
+
+return this.state.user;
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+CHECK LOGIN
+=================================================
+*/
+
+
+isLoggedIn(){
+
+
+
+return !!this.state.user;
+
+
+
+},
     /*
-    ====================================
-    UPDATE PROFILE UI
-    ====================================
-    */
+=================================================
+LOGOUT
+=================================================
+*/
 
 
-    update(){
+async logout(){
 
 
 
-        const user =
+try{
 
-        NightCastAuth.getUser();
 
 
+/*
+اول خروج از سرور
+*/
 
 
+if(
+window.NightCast &&
+NightCast.Auth &&
+NightCast.Auth.logout
+){
 
 
-        const name =
+await NightCast.Auth.logout();
 
-        document.getElementById(
 
-            "profileName"
+}
 
-        );
 
 
 
 
+/*
+پاک‌سازی وضعیت داخلی
+*/
 
 
-        const username =
+this.state.user =
+null;
 
-        document.getElementById(
 
-            "profileUsername"
 
-        );
+this.render();
 
 
 
 
 
 
-        if(!user)
+/*
+بستن پنل
+*/
 
-        return;
 
+this.close();
 
 
 
 
 
 
+/*
+نمایش پیام
+*/
 
-        if(name){
 
+if(
+window.NightCast &&
+NightCast.UI &&
+NightCast.UI.toast
+){
 
 
-            name.textContent =
 
-            user.full_name ||
+NightCast.UI.toast(
 
-            user.username ||
+"با موفقیت خارج شدید"
 
-            "کاربر NightCast";
+);
 
 
-        }
+}
 
 
 
 
 
 
-        if(username){
 
+/*
+بازگشت به حالت مهمان
 
+*/
 
-            username.textContent =
 
-            user.username
+const state =
+document.getElementById(
+"nightcastState"
+);
 
-            ?
 
-            "@"+user.username
 
-            :
+if(state){
 
-            "@guest";
 
+state.dataset.user =
+"guest";
 
-        }
 
+}
 
 
 
 
-    },
 
+}
+catch(error){
 
 
 
+console.error(
+"Logout Error:",
+error
+);
 
 
 
 
+}
 
-    /*
-    ====================================
-    EVENTS
-    ====================================
-    */
 
 
-    bindEvents(){
 
 
 
+},
 
 
-        const loginButton =
 
-        document.getElementById(
 
-            "loginButton"
 
-        );
 
 
+/*
+=================================================
+OPEN LOGIN
+=================================================
+*/
 
 
+openLogin(){
 
 
 
-        if(loginButton){
+const modal =
+document.getElementById(
+"authModal"
+);
 
 
 
-            loginButton.onclick=()=>{
 
 
+if(modal){
 
 
 
-                if(
+modal.classList.remove(
+"hidden"
+);
 
-                    NightCastAuth.isLoggedIn()
 
-                ){
 
+}
 
 
-                    this.open();
 
+},
 
 
-                }
 
-                else{
 
 
 
-                    this.openLogin();
 
+/*
+=================================================
+UPDATE AVATAR
+=================================================
+*/
 
 
-                }
+setAvatar(image){
 
 
 
-            };
+const avatar =
+document.querySelector(
+".profile-avatar img"
+);
 
 
 
-        }
 
 
+if(avatar){
 
 
+avatar.src =
+image;
 
 
+}
 
 
 
-        const logoutButton =
+},
 
-        document.getElementById(
 
-            "logoutButton"
 
-        );
 
 
 
 
+/*
+=================================================
+DEBUG
+=================================================
+*/
 
 
+debug(){
 
-        if(logoutButton){
 
 
+console.log(
+"Profile State:",
+this.state
+);
 
-            logoutButton.onclick=()=>{
 
 
+}
 
-                NightCastAuth.logout();
 
-
-
-
-
-                this.close();
-
-
-
-
-
-                if(window.NightCastUI){
-
-
-
-                    NightCastUI.toast(
-
-                        "با موفقیت خارج شدید",
-
-                        "success"
-
-                    );
-
-
-
-                }
-
-
-
-            };
-
-
-
-        }
-
-
-
-
-
-
-
-
-
-        const profileLink =
-
-        document.querySelector(
-
-            'a[href="#profile"]'
-
-        );
-
-
-
-
-
-        if(profileLink){
-
-
-
-            profileLink.onclick=(e)=>{
-
-
-
-                e.preventDefault();
-
-
-
-                this.open();
-
-
-
-            };
-
-
-
-        }
-
-
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    OPEN PANEL
-    ====================================
-    */
-
-
-    open(){
-
-
-
-        if(!this.panel)
-
-        return;
-
-
-
-
-
-        this.update();
-
-
-
-
-
-        this.panel.classList.remove(
-
-            "hidden"
-
-        );
-
-
-
-        this.panel.classList.add(
-
-            "active"
-
-        );
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    CLOSE PANEL
-    ====================================
-    */
-
-
-    close(){
-
-
-
-        if(!this.panel)
-
-        return;
-
-
-
-
-
-        this.panel.classList.remove(
-
-            "active"
-
-        );
-
-
-
-        this.panel.classList.add(
-
-            "hidden"
-
-        );
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    LOGIN MODAL
-    ====================================
-    */
-
-
-    openLogin(){
-
-
-
-        const modal =
-
-        document.getElementById(
-
-            "authModal"
-
-        );
-
-
-
-
-
-
-        if(modal){
-
-
-
-            modal.classList.remove(
-
-                "hidden"
-
-            );
-
-
-
-        }
-
-
-
-    }
 
 
 
@@ -537,17 +1041,19 @@ const NightCastProfile = {
 
 
 
-window.NightCastProfile =
 
-NightCastProfile;
+/*
+=================================================
+EXPORT MODULE
+=================================================
+*/
+
+
+window.NightCast.Profile =
+Profile;
 
 
 
 
 
-
-console.log(
-
-"NightCast Profile V1 Loaded"
-
-);
+})();

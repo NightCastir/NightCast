@@ -841,20 +841,9 @@ ANIMATIONS
 APP READY
 ================================================ */
 
-body:not(.app-ready){
-
-    opacity:0;
-
+body.no-scroll{
+    overflow:hidden;
 }
-
-body.app-ready{
-
-    opacity:1;
-
-    transition:.35s ease;
-
-}
-
 /* ================================================
 GLOBAL LOADER
 ================================================ */

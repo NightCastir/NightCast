@@ -1,0 +1,722 @@
+/* ==================================================
+
+NightCast User Modal CSS V2
+
+File:
+users/css/modal.css
+
+Includes:
+- Auth Modal
+- Comments Modal
+- Search Overlay
+- System Modal
+- Profile Panel
+- Overlay Systems
+
+================================================== */
+
+
+/* ================================================
+GLOBAL HIDDEN
+================================================ */
+
+
+.hidden{
+
+    display:none !important;
+
+}
+
+
+
+
+
+/* ================================================
+COMMON OVERLAY
+================================================ */
+
+
+.auth-modal,
+.comments-modal,
+.comments-page-modal,
+.search-overlay,
+.system-modal{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:2000;
+
+    background:
+
+    rgba(0,0,0,.65);
+
+    backdrop-filter:blur(8px);
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:20px;
+
+}
+
+
+
+
+
+/* ================================================
+AUTH MODAL
+================================================ */
+
+
+.auth-container{
+
+    width:100%;
+
+    max-width:450px;
+
+    background:var(--bg-card);
+
+    border:1px solid var(--border);
+
+    border-radius:var(--radius-lg);
+
+    padding:30px;
+
+    position:relative;
+
+    box-shadow:var(--shadow);
+
+}
+
+
+
+
+
+.auth-close{
+
+    position:absolute;
+
+    top:15px;
+
+    left:15px;
+
+    width:38px;
+
+    height:38px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:var(--bg-soft);
+
+    color:var(--text);
+
+}
+
+
+
+
+
+.auth-tabs{
+
+    display:flex;
+
+    gap:8px;
+
+    margin-bottom:25px;
+
+    overflow:auto;
+
+}
+
+
+
+
+
+.auth-tabs button{
+
+    flex:1;
+
+    padding:10px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:var(--bg-soft);
+
+    color:var(--text-soft);
+
+}
+
+
+
+
+
+.auth-tabs button.active{
+
+    background:var(--primary);
+
+    color:#fff;
+
+}
+
+
+
+
+
+.auth-form{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:15px;
+
+}
+
+
+
+
+
+.auth-form input{
+
+    height:48px;
+
+    padding:0 15px;
+
+}
+
+
+
+
+
+.auth-submit{
+
+    height:48px;
+
+    border:none;
+
+    border-radius:var(--radius-md);
+
+    background:
+
+    linear-gradient(
+        135deg,
+        var(--primary),
+        #008cff
+    );
+
+    color:#fff;
+
+    font-weight:700;
+
+}
+
+
+
+
+
+.skip-login{
+
+    text-align:center;
+
+    margin-top:20px;
+
+}
+
+
+
+
+
+.skip-login a{
+
+    color:var(--primary);
+
+}
+
+
+
+
+
+/* ================================================
+OPEN ID
+================================================ */
+
+
+.openid-button{
+
+    width:100%;
+
+    height:48px;
+
+    border-radius:14px;
+
+    border:1px solid var(--border);
+
+    background:var(--bg-soft);
+
+    color:var(--text);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:10px;
+
+}
+
+
+
+
+
+/* ================================================
+COMMENTS MODAL
+================================================ */
+
+
+.comments-box{
+
+    width:100%;
+
+    max-width:600px;
+
+    max-height:80vh;
+
+    overflow:auto;
+
+    background:var(--bg-card);
+
+    border-radius:var(--radius-lg);
+
+    padding:25px;
+
+}
+
+
+
+
+
+.comments-header,
+.comments-page-header{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    margin-bottom:20px;
+
+}
+
+
+
+
+
+.comments-header button,
+.comments-page-header button{
+
+    width:38px;
+
+    height:38px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:var(--bg-soft);
+
+    color:var(--text);
+
+}
+
+
+
+
+
+.comments-list{
+
+    padding:15px 0;
+
+}
+
+
+
+
+
+.comment-form textarea,
+#newCommentText{
+
+    min-height:120px;
+
+    padding:15px;
+
+    resize:none;
+
+}
+
+
+
+
+
+.submit-comment,
+#newCommentForm button{
+
+    margin-top:15px;
+
+    width:100%;
+
+    height:45px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:var(--primary);
+
+    color:#fff;
+
+}
+
+
+
+
+
+/* ================================================
+SEARCH OVERLAY
+================================================ */
+
+
+.search-panel{
+
+    width:100%;
+
+    max-width:700px;
+
+    background:var(--bg-card);
+
+    border-radius:var(--radius-lg);
+
+    padding:25px;
+
+}
+
+
+
+
+
+.search-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+}
+
+
+
+
+
+.search-header button{
+
+    width:38px;
+
+    height:38px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:var(--bg-soft);
+
+}
+
+
+
+
+
+.search-input-large{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    background:var(--bg-soft);
+
+    padding:0 18px;
+
+    height:55px;
+
+    border-radius:50px;
+
+}
+
+
+
+
+
+.search-input-large input{
+
+    background:transparent;
+
+    border:none;
+
+}
+
+
+
+
+
+.search-results{
+
+    margin-top:20px;
+
+    max-height:350px;
+
+    overflow:auto;
+
+}
+
+
+
+
+
+/* ================================================
+SYSTEM MODAL
+================================================ */
+
+
+.system-modal-box{
+
+    width:100%;
+
+    max-width:400px;
+
+    text-align:center;
+
+    background:var(--bg-card);
+
+    border-radius:var(--radius-lg);
+
+    padding:35px;
+
+    box-shadow:var(--shadow);
+
+}
+
+
+
+
+
+.system-modal-box > i{
+
+    font-size:45px;
+
+    color:var(--warning);
+
+    margin-bottom:15px;
+
+}
+
+
+
+
+
+.system-modal-actions{
+
+    display:flex;
+
+    gap:12px;
+
+    margin-top:25px;
+
+}
+
+
+
+
+
+.system-modal-actions button{
+
+    flex:1;
+
+}
+
+
+
+
+
+/* ================================================
+PROFILE PANEL
+================================================ */
+
+
+.profile-panel{
+
+    position:fixed;
+
+    top:0;
+
+    left:0;
+
+    width:320px;
+
+    height:100vh;
+
+    background:var(--bg-card);
+
+    z-index:1500;
+
+    box-shadow:var(--shadow);
+
+    padding:25px;
+
+    overflow:auto;
+
+}
+
+
+
+
+
+.profile-header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding-bottom:25px;
+
+    border-bottom:1px solid var(--border);
+
+}
+
+
+
+
+
+.profile-avatar{
+
+    width:60px;
+
+    height:60px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:var(--primary);
+
+    color:#fff;
+
+    font-size:25px;
+
+}
+
+
+
+
+
+.profile-menu{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+
+    margin-top:25px;
+
+}
+
+
+
+
+
+.profile-menu button{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    padding:14px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:var(--bg-soft);
+
+    color:var(--text);
+
+}
+
+
+
+
+
+/* ================================================
+MOBILE
+================================================ */
+
+
+@media(max-width:576px){
+
+
+    .auth-container,
+    .comments-box,
+    .search-panel{
+
+        padding:20px;
+
+    }
+
+
+
+    .auth-tabs button{
+
+        font-size:13px;
+
+    }
+
+
+
+    .system-modal-actions{
+
+        flex-direction:column;
+
+    }
+
+
+
+    .profile-panel{
+
+        width:90%;
+
+    }
+
+
+  }

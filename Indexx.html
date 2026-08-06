@@ -24,41 +24,6 @@ content="NightCast - رادیوی تجربه، یادگیری و رشد فردی
 content="#0b1220">
 
 
-<meta property="og:title"
-content="NightCast | رادیو نایت‌کست">
-
-
-<meta property="og:description"
-content="پادکست، کتاب صوتی و تجربه‌های ارزشمند">
-
-
-<meta property="og:type"
-content="website">
-
-
-<meta property="og:image"
-content="/users/assets/images/cover.jpg">
-
-
-
-<link rel="preconnect"
-href="https://fonts.googleapis.com">
-
-
-<link rel="preconnect"
-href="https://fonts.gstatic.com"
-crossorigin>
-
-
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap"
-rel="stylesheet">
-
-
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
-
 <link rel="stylesheet" href="users/css/core.css">
 <link rel="stylesheet" href="users/css/header.css">
 <link rel="stylesheet" href="users/css/hero.css">
@@ -68,25 +33,26 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
 <link rel="stylesheet" href="users/css/footer.css">
 <link rel="stylesheet" href="users/css/responsive.css">
 
+
 </head>
 
 
 
-<body id="home">
+<body 
+id="home"
+data-page="home"
+data-theme="dark">
 
 
 
-<!-- =================================================
-GLOBAL LOADER
 
-ONLY ONE INSTANCE
 
-================================================= -->
-
+<!-- GLOBAL LOADER -->
 
 <div
 id="globalLoader"
-class="global-loader">
+class="global-loader"
+data-component="loader">
 
 
 <div
@@ -117,17 +83,12 @@ NightCast
 
 
 
-<!-- =================================================
-TOAST SYSTEM
-
-ONLY ONE INSTANCE
-
-================================================= -->
-
+<!-- TOAST -->
 
 <div
 id="toastContainer"
-class="toast-container">
+class="toast-container"
+data-component="toast">
 </div>
 
 
@@ -135,18 +96,15 @@ class="toast-container">
 
 
 
-<!-- =================================================
-LOGIN ENTRY SYSTEM
 
-Guest allowed
-Download requires login
 
-================================================= -->
 
+<!-- LOGIN ENTRY -->
 
 <section
 id="loginEntry"
-class="login-entry">
+class="login-entry"
+data-component="login-entry">
 
 
 
@@ -184,8 +142,14 @@ class="login-actions">
 
 
 <button
+
 id="openidLoginButton"
-class="login-primary">
+
+class="login-primary"
+
+data-component="auth"
+
+data-action="openid-login">
 
 <i class="fa-brands fa-google"></i>
 
@@ -196,9 +160,16 @@ class="login-primary">
 
 
 
+
 <button
+
 id="smsLoginButton"
-class="login-secondary">
+
+class="login-secondary"
+
+data-component="auth"
+
+data-action="sms-login">
 
 <i class="fa-solid fa-mobile-screen"></i>
 
@@ -211,8 +182,14 @@ class="login-secondary">
 
 
 <button
+
 id="skipLoginButton"
-class="login-skip">
+
+class="login-skip"
+
+data-component="auth"
+
+data-action="guest-login">
 
 ادامه بدون ورود
 
@@ -234,27 +211,40 @@ class="login-skip">
 
 
 
-<!-- =================================================
-HEADER
-================================================= -->
+
+
+
+
+<!-- HEADER -->
 
 
 <header
+
 id="mainHeader"
-class="main-header">
+
+class="main-header"
+
+data-component="header">
+
 
 
 <div
+
 class="header-container">
 
 
 
 <a
+
 href="/users/"
-class="brand">
+
+class="brand"
+
+data-action="home">
 
 
 <div
+
 class="brand-icon">
 
 <i class="fa-solid fa-radio"></i>
@@ -264,6 +254,7 @@ class="brand-icon">
 
 
 <div
+
 class="brand-text">
 
 <h2>
@@ -285,17 +276,29 @@ Night<span>Cast</span>
 
 
 
+
 <div
-class="search-box">
+
+class="search-box"
+
+data-component="search">
+
 
 
 <i class="fa-solid fa-magnifying-glass"></i>
 
 
+
 <input
+
 id="searchInput"
+
+data-search="main"
+
 type="search"
+
 placeholder="جستجوی پادکست، کتاب یا نویسنده...">
+
 
 
 </div>
@@ -304,14 +307,24 @@ placeholder="جستجوی پادکست، کتاب یا نویسنده...">
 
 
 
+
+
+
 <div
+
 class="header-actions">
 
 
 
 <button
+
 id="themeButton"
-class="icon-button">
+
+class="icon-button"
+
+data-component="theme"
+
+data-action="toggle-theme">
 
 
 <i class="fa-solid fa-moon"></i>
@@ -324,8 +337,14 @@ class="icon-button">
 
 
 <button
+
 id="loginButton"
-class="primary-button">
+
+class="primary-button"
+
+data-component="auth"
+
+data-action="open-login">
 
 
 <i class="fa-solid fa-user"></i>
@@ -351,18 +370,26 @@ class="primary-button">
 
 
 
-<!-- =================================================
-MOBILE HEADER
-================================================= -->
+
+
+<!-- MOBILE HEADER -->
 
 
 <header
-class="mobile-header">
+
+class="mobile-header"
+
+data-component="mobile-header">
+
 
 
 <button
+
 id="mobileMenuButton"
-class="icon-button">
+
+class="icon-button"
+
+data-action="open-mobile-menu">
 
 
 <i class="fa-solid fa-bars"></i>
@@ -375,11 +402,10 @@ class="icon-button">
 
 
 <div
+
 class="mobile-brand">
 
-
 Night<span>Cast</span>
-
 
 </div>
 
@@ -388,8 +414,12 @@ Night<span>Cast</span>
 
 
 <button
+
 id="mobileSearchButton"
-class="icon-button">
+
+class="icon-button"
+
+data-action="open-search">
 
 
 <i class="fa-solid fa-magnifying-glass"></i>
@@ -401,31 +431,29 @@ class="icon-button">
 
 </header>
 
-
-
-
-
-
-
-
-
 <!-- =================================================
 MOBILE MENU
 ================================================= -->
 
 
 <aside
+
 id="mobileMenu"
-class="mobile-menu">
+
+class="mobile-menu"
+
+data-component="mobile-menu">
 
 
 
 <div
+
 class="mobile-menu-header">
 
 
 
 <div
+
 class="mobile-menu-logo">
 
 Night<span>Cast</span>
@@ -435,9 +463,14 @@ Night<span>Cast</span>
 
 
 
+
 <button
+
 id="closeMobileMenu"
-class="icon-button">
+
+class="icon-button"
+
+data-action="close-mobile-menu">
 
 
 <i class="fa-solid fa-xmark"></i>
@@ -455,15 +488,23 @@ class="icon-button">
 
 
 
-
 <nav
-class="mobile-navigation">
+
+class="mobile-navigation"
+
+data-component="navigation">
 
 
 
 <a
+
 href="#home"
-class="active">
+
+class="active"
+
+data-action="navigate"
+
+data-target="home">
 
 
 <i class="fa-solid fa-house"></i>
@@ -480,7 +521,12 @@ class="active">
 
 
 <a
-href="#podcasts">
+
+href="#podcasts"
+
+data-action="navigate"
+
+data-target="podcasts">
 
 
 <i class="fa-solid fa-headphones"></i>
@@ -498,7 +544,12 @@ href="#podcasts">
 
 
 <a
-href="#about">
+
+href="#about"
+
+data-action="navigate"
+
+data-target="about">
 
 
 <i class="fa-solid fa-circle-info"></i>
@@ -516,7 +567,12 @@ href="#about">
 
 
 <a
-href="#profile">
+
+href="#profile"
+
+data-action="navigate"
+
+data-target="profile">
 
 
 <i class="fa-solid fa-user"></i>
@@ -544,8 +600,12 @@ href="#profile">
 
 
 <div
+
 id="mobileOverlay"
-class="mobile-overlay">
+
+class="mobile-overlay"
+
+data-action="close-mobile-menu">
 
 </div>
 
@@ -563,11 +623,15 @@ HERO SECTION
 
 
 <section
-class="hero-section">
+
+class="hero-section"
+
+data-component="hero">
 
 
 
 <div
+
 class="hero-container">
 
 
@@ -576,12 +640,15 @@ class="hero-container">
 
 
 <div
+
 class="hero-content">
 
 
 
 <div
+
 class="hero-badge">
+
 
 
 <i class="fa-solid fa-sparkles"></i>
@@ -629,13 +696,22 @@ class="hero-badge">
 
 
 <div
-class="hero-buttons">
+
+class="hero-buttons"
+
+data-component="hero-actions">
 
 
 
 <button
+
 id="startListeningButton"
-class="gold-button">
+
+class="gold-button"
+
+data-component="hero"
+
+data-action="start-listening">
 
 
 <i class="fa-solid fa-play"></i>
@@ -652,8 +728,14 @@ class="gold-button">
 
 
 <button
+
 id="exploreButton"
-class="outline-button">
+
+class="outline-button"
+
+data-component="hero"
+
+data-action="explore">
 
 
 <i class="fa-solid fa-compass"></i>
@@ -683,13 +765,17 @@ class="outline-button">
 
 
 <div
-class="hero-visual">
+
+class="hero-visual"
+
+data-component="hero-visual">
 
 
 
 
 
 <div
+
 class="hero-headphone">
 
 
@@ -705,6 +791,7 @@ class="hero-headphone">
 
 
 <div
+
 class="hero-floating-card one">
 
 
@@ -727,6 +814,7 @@ class="hero-floating-card one">
 
 
 <div
+
 class="hero-floating-card two">
 
 
@@ -749,6 +837,7 @@ class="hero-floating-card two">
 
 
 <div
+
 class="hero-floating-card three">
 
 
@@ -792,14 +881,20 @@ HERO STATS
 
 
 <div
-class="hero-stats">
+
+class="hero-stats"
+
+data-component="stats">
 
 
 
 
 
 <div
-class="stat-card">
+
+class="stat-card"
+
+data-stat="podcasts">
 
 
 <i class="fa-solid fa-podcast"></i>
@@ -809,7 +904,10 @@ class="stat-card">
 
 
 <strong
-id="podcastCount">
+
+id="podcastCount"
+
+data-counter="podcasts">
 
 0
 
@@ -835,7 +933,10 @@ id="podcastCount">
 
 
 <div
-class="stat-card">
+
+class="stat-card"
+
+data-stat="books">
 
 
 <i class="fa-solid fa-book-open-reader"></i>
@@ -845,7 +946,10 @@ class="stat-card">
 
 
 <strong
-id="bookCount">
+
+id="bookCount"
+
+data-counter="books">
 
 0
 
@@ -871,7 +975,10 @@ id="bookCount">
 
 
 <div
-class="stat-card">
+
+class="stat-card"
+
+data-stat="listeners">
 
 
 <i class="fa-solid fa-users"></i>
@@ -881,7 +988,10 @@ class="stat-card">
 
 
 <strong
-id="listenerCount">
+
+id="listenerCount"
+
+data-counter="listeners">
 
 0
 
@@ -916,37 +1026,47 @@ id="listenerCount">
 
 
 
-
-     
-<!-- =================================================
+     <!-- =================================================
 PODCAST SECTION
 ================================================= -->
 
 
 <section
+
 id="podcasts"
-class="podcasts-section">
+
+class="podcasts-section"
+
+data-component="podcasts">
+
 
 
 <div
+
 class="section-container">
 
 
 
 <div
+
 class="section-header">
+
 
 
 <div>
 
 
 <h2>
+
 آخرین پادکست‌ها
+
 </h2>
 
 
 <p>
+
 جدیدترین تجربه‌های صوتی NightCast
+
 </p>
 
 
@@ -956,12 +1076,21 @@ class="section-header">
 
 
 
+
+
 <div
+
 class="podcast-filter">
 
 
+
 <button
-id="sortPodcastButton">
+
+id="sortPodcastButton"
+
+data-component="podcast-sort"
+
+data-action="sort">
 
 
 <i class="fa-solid fa-arrow-down-wide-short"></i>
@@ -973,51 +1102,60 @@ id="sortPodcastButton">
 </button>
 
 
-</div>
-
-
 
 </div>
 
 
 
+</div>
 
 
 
 
 
-<!-- =================================================
-PODCAST GRID
 
-DATA FROM:
-features/podcasts.js
 
-================================================= -->
 
+
+<!-- PODCAST GRID -->
 
 <div
+
 id="podcastGrid"
-class="podcast-grid">
+
+class="podcast-grid"
+
+data-component="podcast-grid">
 
 
 
+
+
+<!-- loading skeleton -->
+
+<div
+
+class="podcast-card skeleton"
+
+data-state="loading">
 
 
 <div
-class="podcast-card skeleton">
 
-
-<div
 class="podcast-cover-placeholder">
+
 </div>
 
 
 <div
+
 class="podcast-info-placeholder">
+
 </div>
 
 
 </div>
+
 
 
 
@@ -1025,20 +1163,28 @@ class="podcast-info-placeholder">
 
 
 <div
-class="podcast-card skeleton">
+
+class="podcast-card skeleton"
+
+data-state="loading">
 
 
 <div
+
 class="podcast-cover-placeholder">
+
 </div>
 
 
 <div
+
 class="podcast-info-placeholder">
+
 </div>
 
 
 </div>
+
 
 
 
@@ -1046,27 +1192,35 @@ class="podcast-info-placeholder">
 
 
 <div
-class="podcast-card skeleton">
+
+class="podcast-card skeleton"
+
+data-state="loading">
 
 
 <div
+
 class="podcast-cover-placeholder">
+
 </div>
 
 
 <div
+
 class="podcast-info-placeholder">
-</div>
-
 
 </div>
 
 
+</div>
+
 
 
 
 
 </div>
+
+
 
 
 
@@ -1077,10 +1231,15 @@ class="podcast-info-placeholder">
 <!-- INFINITE SCROLL -->
 
 <div
+
 id="podcastLoadingTrigger"
-class="loading-trigger">
+
+class="loading-trigger"
+
+data-component="infinite-scroll">
 
 </div>
+
 
 
 
@@ -1110,27 +1269,39 @@ features/podcasts.js
 
 
 <template
-id="podcastCardTemplate">
+
+id="podcastCardTemplate"
+
+data-component="podcast-template">
 
 
 
 
 
 <article
-class="podcast-card">
+
+class="podcast-card"
+
+data-component="podcast-card">
 
 
 
 
 
 <div
+
 class="podcast-cover">
 
 
 
 <img
+
 class="podcast-image"
+
+data-field="cover"
+
 src=""
+
 alt="NightCast Podcast">
 
 
@@ -1139,8 +1310,13 @@ alt="NightCast Podcast">
 
 
 <button
+
 class="play-button"
+
+data-component="podcast-action"
+
 data-action="play">
+
 
 
 <i class="fa-solid fa-play"></i>
@@ -1162,7 +1338,9 @@ data-action="play">
 
 
 
+
 <div
+
 class="podcast-body">
 
 
@@ -1171,9 +1349,14 @@ class="podcast-body">
 
 
 <h3
-class="podcast-title">
+
+class="podcast-title"
+
+data-field="title">
+
 
 عنوان پادکست
+
 
 </h3>
 
@@ -1182,12 +1365,20 @@ class="podcast-title">
 
 
 
+
+
 <p
-class="podcast-author">
+
+class="podcast-author"
+
+data-field="author">
+
 
 گوینده
 
+
 </p>
+
 
 
 
@@ -1196,11 +1387,17 @@ class="podcast-author">
 
 
 <p
-class="podcast-description">
+
+class="podcast-description"
+
+data-field="description">
+
 
 توضیحات پادکست
 
+
 </p>
+
 
 
 
@@ -1210,18 +1407,24 @@ class="podcast-description">
 
 
 <div
+
 class="podcast-meta">
 
 
 
 <span
-class="duration">
+
+class="duration"
+
+data-field="duration">
+
 
 
 <i class="fa-solid fa-clock"></i>
 
 
 00:00
+
 
 
 </span>
@@ -1239,6 +1442,7 @@ class="duration">
 
 
 <div
+
 class="podcast-actions">
 
 
@@ -1246,8 +1450,13 @@ class="podcast-actions">
 
 
 <button
+
 class="download-button"
+
+data-component="podcast-action"
+
 data-action="download">
+
 
 
 <i class="fa-solid fa-download"></i>
@@ -1265,8 +1474,13 @@ data-action="download">
 
 
 <button
+
 class="favorite-button"
+
+data-component="podcast-action"
+
 data-action="favorite">
+
 
 
 <i class="fa-regular fa-heart"></i>
@@ -1281,8 +1495,13 @@ data-action="favorite">
 
 
 <button
+
 class="comment-button"
+
+data-component="podcast-action"
+
 data-action="comments">
+
 
 
 <i class="fa-regular fa-comment"></i>
@@ -1325,13 +1544,7 @@ data-action="comments">
 
 
 
-
-
-
-
-
-
-<!-- =================================================
+     <!-- =================================================
 COMMENTS MODAL
 
 Used By:
@@ -1341,8 +1554,12 @@ comments.js
 
 
 <div
+
 id="commentsModal"
-class="comments-modal hidden">
+
+class="comments-modal hidden"
+
+data-component="comments-modal">
 
 
 
@@ -1350,6 +1567,7 @@ class="comments-modal hidden">
 
 
 <div
+
 class="comments-box">
 
 
@@ -1358,6 +1576,7 @@ class="comments-box">
 
 
 <div
+
 class="comments-header">
 
 
@@ -1374,7 +1593,10 @@ class="comments-header">
 
 
 <button
-id="closeComments">
+
+id="closeComments"
+
+data-action="close-comments">
 
 
 <i class="fa-solid fa-xmark"></i>
@@ -1396,13 +1618,19 @@ id="closeComments">
 
 
 <div
+
 id="commentsList"
-class="comments-list">
+
+class="comments-list"
+
+data-component="comments-list">
 
 
 
 <p>
+
 هنوز نظری ثبت نشده است.
+
 </p>
 
 
@@ -1418,8 +1646,12 @@ class="comments-list">
 
 
 <form
+
 id="commentForm"
-class="comment-form">
+
+class="comment-form"
+
+data-action="submit-comment">
 
 
 
@@ -1427,8 +1659,13 @@ class="comment-form">
 
 
 <textarea
+
 id="commentText"
+
+data-field="comment-text"
+
 placeholder="نظر خود را بنویسید...">
+
 </textarea>
 
 
@@ -1438,8 +1675,12 @@ placeholder="نظر خود را بنویسید...">
 
 
 <button
+
 type="submit"
-class="submit-comment">
+
+class="submit-comment"
+
+data-action="send-comment">
 
 
 <i class="fa-solid fa-paper-plane"></i>
@@ -1473,17 +1714,30 @@ class="submit-comment">
 </div>
 
 
+
+
+
+
+
+
+
 <!-- =================================================
 ABOUT NIGHTCAST
 ================================================= -->
 
 
 <section
+
 id="about"
-class="about-section">
+
+class="about-section"
+
+data-component="about">
+
 
 
 <div
+
 class="section-container">
 
 
@@ -1491,6 +1745,7 @@ class="section-container">
 
 
 <div
+
 class="about-content">
 
 
@@ -1524,6 +1779,7 @@ NightCast یک رادیوی تجربه است؛
 
 
 <div
+
 class="about-features">
 
 
@@ -1531,7 +1787,10 @@ class="about-features">
 
 
 <div
-class="feature-item">
+
+class="feature-item"
+
+data-feature="books">
 
 
 <i class="fa-solid fa-book-open"></i>
@@ -1553,7 +1812,10 @@ class="feature-item">
 
 
 <div
-class="feature-item">
+
+class="feature-item"
+
+data-feature="podcasts">
 
 
 <i class="fa-solid fa-microphone"></i>
@@ -1575,7 +1837,10 @@ class="feature-item">
 
 
 <div
-class="feature-item">
+
+class="feature-item"
+
+data-feature="experience">
 
 
 <i class="fa-solid fa-lightbulb"></i>
@@ -1633,10 +1898,407 @@ player.js
 
 
 <div
+
 id="nightcastPlayer"
-class="audio-player">
+
+class="audio-player"
+
+data-component="audio-player">
 
 
+
+
+
+
+
+<div
+
+class="player-main">
+
+
+
+
+
+
+
+<!-- COVER -->
+
+
+<div
+
+class="player-cover">
+
+
+
+<img
+
+id="playerCover"
+
+data-player="cover"
+
+src="/users/assets/images/default-cover.jpg"
+
+alt="NightCast">
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- INFO -->
+
+
+<div
+
+class="player-info">
+
+
+<h3
+
+id="playerTitle"
+
+data-player="title">
+
+NightCast Player
+
+</h3>
+
+
+
+
+
+<p
+
+id="playerAuthor"
+
+data-player="author">
+
+آماده پخش
+
+</p>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- CONTROLS -->
+
+
+<div
+
+class="player-controls">
+
+
+
+
+
+<button
+
+id="previousButton"
+
+class="player-btn"
+
+data-player-action="previous">
+
+
+<i class="fa-solid fa-backward-step"></i>
+
+
+</button>
+
+
+
+
+
+
+
+<button
+
+id="playerPlayBtn"
+
+class="player-btn main"
+
+data-player-action="play">
+
+
+<i class="fa-solid fa-play"></i>
+
+
+</button>
+
+
+
+
+
+
+
+<button
+
+id="nextButton"
+
+class="player-btn"
+
+data-player-action="next">
+
+
+<i class="fa-solid fa-forward-step"></i>
+
+
+</button>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- PROGRESS -->
+
+
+<div
+
+class="player-progress-area"
+
+data-component="progress">
+
+
+
+
+
+
+<span
+
+id="playerCurrentTime"
+
+data-player="current-time">
+
+00:00
+
+</span>
+
+
+
+
+
+
+
+
+<div
+
+id="playerProgressContainer"
+
+class="progress-container"
+
+data-player-action="seek">
+
+
+
+<div
+
+id="playerProgressBar"
+
+class="progress-bar">
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+<span
+
+id="playerDuration"
+
+data-player="duration">
+
+00:00
+
+</span>
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- OPTIONS -->
+
+
+<div
+
+class="player-options">
+
+
+
+
+
+<button
+
+id="speedButton"
+
+data-player-action="speed">
+
+
+1x
+
+
+</button>
+
+
+
+
+
+
+
+<input
+
+id="playerVolume"
+
+data-player-action="volume"
+
+type="range"
+
+min="0"
+
+max="1"
+
+step="0.01"
+
+value="1">
+
+
+
+
+
+
+
+<button
+
+id="downloadCurrentButton"
+
+data-player-action="download">
+
+
+<i class="fa-solid fa-download"></i>
+
+
+</button>
+
+
+
+
+
+
+
+<button
+
+id="queueButton"
+
+data-player-action="queue">
+
+
+<i class="fa-solid fa-list"></i>
+
+
+</button>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<audio
+
+id="nightcastAudio"
+
+data-player="audio"
+
+preload="metadata">
+
+
+</audio>
+
+
+
+
+
+
+
+</div>
+
+<!-- =================================================
+FIXED AUDIO PLAYER
+
+Compatible With:
+player.js V2
+
+================================================= -->
+
+
+<div
+id="nightcastPlayer"
+class="audio-player"
+data-component="audio-player">
 
 
 
@@ -1650,9 +2312,7 @@ class="player-main">
 
 
 
-
 <!-- COVER -->
-
 
 <div
 class="player-cover">
@@ -1660,8 +2320,9 @@ class="player-cover">
 
 <img
 id="playerCover"
+class="player-cover-image"
 src="/users/assets/images/default-cover.jpg"
-alt="NightCast">
+alt="NightCast Player Cover">
 
 
 </div>
@@ -1680,7 +2341,8 @@ class="player-info">
 
 
 <h3
-id="playerTitle">
+id="playerTitle"
+data-player-title>
 
 NightCast Player
 
@@ -1689,15 +2351,13 @@ NightCast Player
 
 
 
-
 <p
-id="playerAuthor">
+id="playerAuthor"
+data-player-author>
 
 آماده پخش
 
 </p>
-
-
 
 
 </div>
@@ -1722,7 +2382,9 @@ class="player-controls">
 
 <button
 id="previousButton"
-class="player-btn">
+class="player-btn"
+data-action="previous"
+aria-label="Previous Track">
 
 
 <i class="fa-solid fa-backward-step"></i>
@@ -1738,10 +2400,14 @@ class="player-btn">
 
 <button
 id="playerPlayBtn"
-class="player-btn main">
+class="player-btn main"
+data-action="toggle-play"
+aria-label="Play Pause">
 
 
-<i class="fa-solid fa-play"></i>
+<i
+class="fa-solid fa-play"
+id="playerPlayIcon"></i>
 
 
 </button>
@@ -1754,7 +2420,9 @@ class="player-btn main">
 
 <button
 id="nextButton"
-class="player-btn">
+class="player-btn"
+data-action="next"
+aria-label="Next Track">
 
 
 <i class="fa-solid fa-forward-step"></i>
@@ -1789,7 +2457,8 @@ class="player-progress-area">
 
 
 <span
-id="playerCurrentTime">
+id="playerCurrentTime"
+data-current-time>
 
 00:00
 
@@ -1804,8 +2473,8 @@ id="playerCurrentTime">
 
 <div
 id="playerProgressContainer"
-class="progress-container">
-
+class="progress-container"
+data-action="seek">
 
 
 <div
@@ -1825,7 +2494,8 @@ class="progress-bar">
 
 
 <span
-id="playerDuration">
+id="playerDuration"
+data-duration>
 
 00:00
 
@@ -1859,7 +2529,8 @@ class="player-options">
 
 
 <button
-id="speedButton">
+id="speedButton"
+data-action="speed">
 
 
 1x
@@ -1875,6 +2546,8 @@ id="speedButton">
 
 <input
 id="playerVolume"
+class="player-volume"
+data-action="volume"
 type="range"
 min="0"
 max="1"
@@ -1888,7 +2561,9 @@ value="1">
 
 
 <button
-id="downloadCurrentButton">
+id="downloadCurrentButton"
+data-action="download-current"
+aria-label="Download Current">
 
 
 <i class="fa-solid fa-download"></i>
@@ -1903,7 +2578,9 @@ id="downloadCurrentButton">
 
 
 <button
-id="queueButton">
+id="queueButton"
+data-action="open-queue"
+aria-label="Queue">
 
 
 <i class="fa-solid fa-list"></i>
@@ -1936,6 +2613,7 @@ id="queueButton">
 
 <audio
 id="nightcastAudio"
+data-audio-element
 preload="metadata">
 
 
@@ -1949,17 +2627,24 @@ preload="metadata">
 
 </div>
 
-<!-- =================================================
+
+     
+     
+     <!-- =================================================
 QUEUE PANEL
 
 Audio Queue
+
+Compatible With:
+player.js
 
 ================================================= -->
 
 
 <div
 id="queuePanel"
-class="queue-panel hidden">
+class="queue-panel hidden"
+data-component="queue-panel">
 
 
 
@@ -1978,7 +2663,9 @@ class="queue-header">
 
 
 <button
-id="closeQueue">
+id="closeQueue"
+class="icon-button"
+data-action="close-queue">
 
 
 <i class="fa-solid fa-xmark"></i>
@@ -2029,17 +2716,16 @@ class="queue-list">
 <!-- =================================================
 AUTH MODAL
 
-Login
-Register
-SMS
-OpenID
+Compatible With:
+auth.js
 
 ================================================= -->
 
 
 <div
 id="authModal"
-class="auth-modal hidden">
+class="auth-modal hidden"
+data-component="auth-modal">
 
 
 
@@ -2055,7 +2741,8 @@ class="auth-container">
 
 <button
 id="closeAuth"
-class="auth-close">
+class="auth-close"
+data-action="close-auth">
 
 
 <i class="fa-solid fa-xmark"></i>
@@ -2079,7 +2766,8 @@ class="auth-tabs">
 
 <button
 class="active"
-data-auth-tab="login">
+data-auth-tab="login"
+data-action="change-auth-tab">
 
 ورود
 
@@ -2091,7 +2779,8 @@ data-auth-tab="login">
 
 
 <button
-data-auth-tab="register">
+data-auth-tab="register"
+data-action="change-auth-tab">
 
 ثبت نام
 
@@ -2103,7 +2792,8 @@ data-auth-tab="register">
 
 
 <button
-data-auth-tab="sms">
+data-auth-tab="sms"
+data-action="change-auth-tab">
 
 پیامک
 
@@ -2115,7 +2805,8 @@ data-auth-tab="sms">
 
 
 <button
-data-auth-tab="openid">
+data-auth-tab="openid"
+data-action="change-auth-tab">
 
 OpenID
 
@@ -2136,12 +2827,13 @@ OpenID
 
 
 
-<!-- LOGIN -->
+<!-- LOGIN FORM -->
 
 
 <form
 id="loginForm"
-class="auth-form">
+class="auth-form"
+data-form="login">
 
 
 
@@ -2149,6 +2841,7 @@ class="auth-form">
 
 <input
 id="loginUsername"
+name="username"
 type="text"
 placeholder="نام کاربری">
 
@@ -2160,6 +2853,7 @@ placeholder="نام کاربری">
 
 <input
 id="loginPassword"
+name="password"
 type="password"
 placeholder="رمز عبور">
 
@@ -2171,7 +2865,8 @@ placeholder="رمز عبور">
 
 <button
 type="submit"
-class="auth-submit">
+class="auth-submit"
+data-action="login-submit">
 
 
 <i class="fa-solid fa-right-to-bracket"></i>
@@ -2197,12 +2892,13 @@ class="auth-submit">
 
 
 
-<!-- REGISTER -->
+<!-- REGISTER FORM -->
 
 
 <form
 id="registerForm"
-class="auth-form hidden">
+class="auth-form hidden"
+data-form="register">
 
 
 
@@ -2211,6 +2907,7 @@ class="auth-form hidden">
 
 <input
 id="registerName"
+name="name"
 placeholder="نام کامل">
 
 
@@ -2221,6 +2918,7 @@ placeholder="نام کامل">
 
 <input
 id="registerUsername"
+name="username"
 placeholder="نام کاربری">
 
 
@@ -2231,6 +2929,7 @@ placeholder="نام کاربری">
 
 <input
 id="registerEmail"
+name="email"
 type="email"
 placeholder="ایمیل">
 
@@ -2242,6 +2941,7 @@ placeholder="ایمیل">
 
 <input
 id="registerPassword"
+name="password"
 type="password"
 placeholder="رمز عبور">
 
@@ -2253,7 +2953,8 @@ placeholder="رمز عبور">
 
 <button
 type="submit"
-class="auth-submit">
+class="auth-submit"
+data-action="register-submit">
 
 
 ثبت نام
@@ -2282,7 +2983,8 @@ class="auth-submit">
 
 <form
 id="smsLoginForm"
-class="auth-form hidden">
+class="auth-form hidden"
+data-form="sms">
 
 
 
@@ -2291,6 +2993,7 @@ class="auth-form hidden">
 
 <input
 id="mobileNumber"
+name="mobile"
 placeholder="شماره موبایل">
 
 
@@ -2302,7 +3005,8 @@ placeholder="شماره موبایل">
 <button
 id="sendSmsButton"
 type="button"
-class="auth-submit">
+class="auth-submit"
+data-action="send-sms">
 
 
 ارسال کد
@@ -2318,6 +3022,7 @@ class="auth-submit">
 
 <input
 id="smsCode"
+name="code"
 placeholder="کد تایید">
 
 
@@ -2328,7 +3033,8 @@ placeholder="کد تایید">
 
 <button
 type="submit"
-class="auth-submit">
+class="auth-submit"
+data-action="verify-sms">
 
 
 تایید
@@ -2352,7 +3058,7 @@ class="auth-submit">
 
 
 
-<!-- OPEN ID LOGIN -->
+<!-- GOOGLE LOGIN -->
 
 
 <div
@@ -2366,7 +3072,8 @@ class="openid-login hidden">
 
 <button
 id="googleLoginButton"
-class="openid-button">
+class="openid-button"
+data-action="google-login">
 
 
 <i class="fa-brands fa-google"></i>
@@ -2397,7 +3104,8 @@ class="skip-login">
 
 <a
 href="#"
-id="skipLogin">
+id="skipLogin"
+data-action="skip-login">
 
 
 ادامه بدون ورود
@@ -2426,19 +3134,23 @@ id="skipLogin">
 
 
 
-     
 
-<!-- =================================================
+
+
+
+     <!-- =================================================
 PROFILE PANEL
 
-User Dashboard
+Compatible With:
+profile.js
 
 ================================================= -->
 
 
 <aside
 id="profilePanel"
-class="profile-panel hidden">
+class="profile-panel hidden"
+data-component="profile-panel">
 
 
 
@@ -2524,7 +3236,8 @@ class="profile-menu">
 
 
 <button
-id="historyButton">
+id="historyButton"
+data-action="history">
 
 
 <i class="fa-solid fa-clock-rotate-left"></i>
@@ -2542,7 +3255,8 @@ id="historyButton">
 
 
 <button
-id="favoritesButton">
+id="favoritesButton"
+data-action="favorites">
 
 
 <i class="fa-solid fa-heart"></i>
@@ -2560,7 +3274,8 @@ id="favoritesButton">
 
 
 <button
-id="downloadsButton">
+id="downloadsButton"
+data-action="downloads">
 
 
 <i class="fa-solid fa-download"></i>
@@ -2578,7 +3293,8 @@ id="downloadsButton">
 
 
 <button
-id="savedButton">
+id="savedButton"
+data-action="saved">
 
 
 <i class="fa-solid fa-bookmark"></i>
@@ -2596,7 +3312,8 @@ id="savedButton">
 
 
 <button
-id="logoutButton">
+id="logoutButton"
+data-action="logout">
 
 
 <i class="fa-solid fa-right-from-bracket"></i>
@@ -2630,18 +3347,14 @@ id="logoutButton">
 
 
 
-
-
-
 <!-- =================================================
 MOBILE BOTTOM NAVIGATION
-
-PWA / APK READY
 
 ================================================= -->
 
 
 <nav
+id="mobileBottomNav"
 class="mobile-bottom-nav">
 
 
@@ -2651,7 +3364,8 @@ class="mobile-bottom-nav">
 
 <a
 href="#home"
-class="bottom-item active">
+class="bottom-item active"
+data-nav="home">
 
 
 
@@ -2677,7 +3391,8 @@ class="bottom-item active">
 
 <a
 href="#podcasts"
-class="bottom-item">
+class="bottom-item"
+data-nav="podcasts">
 
 
 
@@ -2703,7 +3418,8 @@ class="bottom-item">
 
 <button
 id="bottomPlayButton"
-class="bottom-play">
+class="bottom-play"
+data-action="toggle-player">
 
 
 <i class="fa-solid fa-play"></i>
@@ -2720,7 +3436,8 @@ class="bottom-play">
 
 <a
 href="#library"
-class="bottom-item">
+class="bottom-item"
+data-nav="library">
 
 
 
@@ -2746,7 +3463,8 @@ class="bottom-item">
 
 <a
 href="#profile"
-class="bottom-item">
+class="bottom-item"
+data-nav="profile">
 
 
 
@@ -2780,225 +3498,18 @@ class="bottom-item">
 
 
 <!-- =================================================
-FOOTER
+SEARCH OVERLAY
+
+Compatible With:
+search.js
 
 ================================================= -->
 
-
-<footer
-class="nightcast-footer">
-
-
-
-
-
-<div
-class="footer-container">
-
-
-
-
-
-
-
-
-<div
-class="footer-brand">
-
-
-
-
-
-<h2>
-
-Night<span>Cast</span>
-
-
-</h2>
-
-
-
-
-
-
-
-<p>
-
-رادیوی تجربه، یادگیری و رشد فردی
-
-</p>
-
-
-
-
-
-
-
-
-<div
-class="footer-social">
-
-
-
-
-
-<a
-href="#">
-
-<i class="fa-brands fa-instagram"></i>
-
-</a>
-
-
-
-
-
-
-<a
-href="#">
-
-<i class="fa-brands fa-telegram"></i>
-
-</a>
-
-
-
-
-
-
-
-<a
-href="#">
-
-<i class="fa-brands fa-youtube"></i>
-
-</a>
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-<div
-class="footer-links">
-
-
-
-
-
-<h3>
-
-دسترسی سریع
-
-</h3>
-
-
-
-
-
-
-<a
-href="#podcasts">
-
-پادکست‌ها
-
-</a>
-
-
-
-
-
-
-<a
-href="#about">
-
-درباره NightCast
-
-</a>
-
-
-
-
-
-
-<a
-href="#profile">
-
-حساب کاربری
-
-</a>
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-<div
-class="footer-bottom">
-
-© 2026 NightCast
-
-</div>
-
-
-
-
-
-
-
-</footer>
-
-
-
-
-     
-<!-- =================================================
-GLOBAL MODALS / SYSTEM LAYERS
-
-================================================= -->
-
-
-
-<!-- SEARCH OVERLAY -->
 
 <div
 id="searchOverlay"
-class="search-overlay hidden">
+class="search-overlay hidden"
+data-component="search-overlay">
 
 
 
@@ -3023,7 +3534,8 @@ class="search-header">
 
 
 <button
-id="closeSearch">
+id="closeSearch"
+data-action="close-search">
 
 
 <i class="fa-solid fa-xmark"></i>
@@ -3069,8 +3581,6 @@ placeholder="جستجو کنید...">
 id="searchResults"
 class="search-results">
 
-
-
 </div>
 
 
@@ -3096,16 +3606,15 @@ class="search-results">
 
 
 <!-- =================================================
-DOWNLOAD LOGIN WARNING MODAL
-
-Shown when guest tries download
+DOWNLOAD WARNING MODAL
 
 ================================================= -->
 
 
 <div
 id="downloadLoginModal"
-class="system-modal hidden">
+class="system-modal hidden"
+data-component="download-warning">
 
 
 
@@ -3158,6 +3667,7 @@ class="system-modal-actions">
 
 <button
 id="openLoginFromDownload"
+data-action="open-login"
 class="primary-button">
 
 
@@ -3172,6 +3682,7 @@ class="primary-button">
 
 <button
 id="closeDownloadModal"
+data-action="close-download-modal"
 class="secondary-button">
 
 
@@ -3211,10 +3722,9 @@ class="secondary-button">
 
 
 <!-- =================================================
-COMMENTS SYSTEM
+COMMENT SYSTEM
 
-External Form Ready
-
+Compatible With:
 comments.js
 
 ================================================= -->
@@ -3222,7 +3732,8 @@ comments.js
 
 <div
 id="commentPageModal"
-class="comments-page-modal hidden">
+class="comments-page-modal hidden"
+data-component="comments-modal">
 
 
 
@@ -3257,7 +3768,8 @@ class="comments-page-header">
 
 
 <button
-id="closeCommentPage">
+id="closeCommentPage"
+data-action="close-comments">
 
 
 <i class="fa-solid fa-xmark"></i>
@@ -3282,10 +3794,7 @@ id="closeCommentPage">
 
 
 <div
-id="commentPodcastInfo"
-class="comment-podcast-info">
-
-
+id="commentPodcastInfo">
 
 </div>
 
@@ -3297,8 +3806,7 @@ class="comment-podcast-info">
 
 
 <div
-id="commentItems"
-class="comment-items">
+id="commentItems">
 
 
 
@@ -3339,7 +3847,8 @@ placeholder="نظر خود را بنویسید...">
 
 
 <button
-type="submit">
+type="submit"
+data-action="submit-comment">
 
 
 <i class="fa-solid fa-paper-plane"></i>
@@ -3383,65 +3892,10 @@ type="submit">
 
 
 <!-- =================================================
-APP INITIALIZATION SCRIPTS
-
-ORDER IS IMPORTANT
+SYSTEM STATE
 
 ================================================= -->
 
-
-
-<script src="/users/js/api.js"></script>
-
-<script src="/users/js/auth.js"></script>
-
-<script src="/users/js/ui.js"></script>
-
-
-
-
-
-<script src="/users/js/player.js"></script>
-
-
-
-
-
-<script src="/users/js/features/podcasts.js"></script>
-
-<script src="/users/js/features/search.js"></script>
-
-<script src="/users/js/features/library.js"></script>
-
-<script src="/users/js/features/profile.js"></script>
-
-
-
-<script src="/users/js/comments.js"></script>
-
-
-
-
-
-<script src="/users/js/app.js"></script>
-
-<!-- =================================================
-END BODY SYSTEM
-
-================================================= -->
-
-
-
-<!--
-Hidden data container
-
-Used for future:
-- PWA
-- APK
-- Offline cache
-- User preferences
-
--->
 
 <div
 id="nightcastState"
@@ -3459,58 +3913,65 @@ hidden>
 
 
 
-<!-- =================================================
-SERVICE WORKER READY
 
-Future PWA / APK
+<!-- =================================================
+SCRIPTS
+
+ORDER IMPORTANT
 
 ================================================= -->
 
 
+<script src="/users/js/api.js"></script>
+
+<script src="/users/js/auth.js"></script>
+
+<script src="/users/js/ui.js"></script>
+
+
+<script src="/users/js/player.js"></script>
+
+
+<script src="/users/js/features/podcasts.js"></script>
+
+<script src="/users/js/features/search.js"></script>
+
+<script src="/users/js/features/library.js"></script>
+
+<script src="/users/js/features/profile.js"></script>
+
+
+<script src="/users/js/comments.js"></script>
+
+
+<script src="/users/js/app.js"></script>
+
+
+
+
+
+
+
+
 <script>
 
-
-/*
-========================================
-
-NightCast PWA Preparation
-
-Do not activate until:
-service-worker.js exists
-
-========================================
-*/
-
-
 if(
-    "serviceWorker" in navigator
+"serviceWorker" in navigator
 ){
 
-
-    console.log(
-        "NightCast PWA Ready"
-    );
-
+console.log(
+"NightCast PWA Ready"
+);
 
 }
-
-
 
 </script>
 
 
 
-
-
-
-
-
-
 </body>
-
 
 </html>
 
 
 
-     

@@ -1,116 +1,55 @@
 /* ==================================================
 
-NightCast Responsive System V1
+NightCast User Responsive System V3
 
 File:
- /users/css/responsive.css
+users/css/responsive.css
 
+Purpose:
+Final Responsive Layer
 
-Mobile First
-
-Breakpoints:
-
-Mobile
-Tablet
-Desktop
-Large Desktop
+Targets:
+- Desktop
+- Laptop
+- Tablet
+- Mobile
+- PWA / APK WebView
 
 ================================================== */
 
 
-/* =====================================
-BASE MOBILE
-===================================== */
+
+/* ==================================================
+ULTRA LARGE DESKTOP
+================================================== */
+
+@media (min-width:1440px){
 
 
-*{
+    .container,
+    .section-container,
+    .header-container,
+    .hero-container,
+    .footer-container{
 
-box-sizing:border-box;
+        max-width:1320px;
 
-}
-
-
-
-html{
-
-scroll-behavior:smooth;
-
-}
+    }
 
 
+    .hero-section{
 
-body{
+        padding-top:100px;
 
-overflow-x:hidden;
-
-}
-
+    }
 
 
+    .hero-content h1{
 
+        font-size:64px;
 
+    }
 
-/* =====================================
-HEADER
-===================================== */
-
-
-.main-header{
-
-display:none;
-
-}
-
-
-
-
-.mobile-header{
-
-display:flex;
-
-align-items:center;
-
-justify-content:space-between;
-
-padding:12px 16px;
-
-position:sticky;
-
-top:0;
-
-z-index:900;
-
-}
-
-
-
-.header-wrapper{
-
-display:flex;
-
-align-items:center;
-
-justify-content:space-between;
-
-gap:20px;
-
-}
-
-
-
-.header-search{
-
-display:none;
-
-}
-
-
-
-.header-actions{
-
-display:flex;
-
-gap:8px;
 
 }
 
@@ -118,9 +57,39 @@ gap:8px;
 
 
 
-.logo-text p{
+/* ==================================================
+LAPTOP
+1200 - 1439
+================================================== */
 
-display:none;
+@media (max-width:1200px){
+
+
+    .hero-container{
+
+        gap:35px;
+
+    }
+
+
+
+    .podcast-grid{
+
+        grid-template-columns:
+
+        repeat(3,1fr);
+
+    }
+
+
+
+    .player-main{
+
+        gap:15px;
+
+    }
+
+
 
 }
 
@@ -129,520 +98,89 @@ display:none;
 
 
 
+/* ==================================================
+TABLET LANDSCAPE
+992 - 1199
+================================================== */
 
-/* =====================================
-HERO
-===================================== */
 
+@media(max-width:992px){
 
-.hero-section{
 
-padding:30px 16px;
 
-}
+    body{
 
+        padding-bottom:
 
+        calc(90px + env(safe-area-inset-bottom));
 
-.hero-container{
+    }
 
-display:flex;
 
-flex-direction:column;
 
-gap:30px;
+    /* Layout */
 
-}
 
+    .hero-container{
 
+        flex-direction:column;
 
-.hero-content{
+        text-align:center;
 
-text-align:center;
+    }
 
-}
 
 
+    .hero-content{
 
-.hero-content h1{
+        max-width:720px;
 
-font-size:32px;
+        margin:auto;
 
-line-height:1.6;
+    }
 
-}
 
 
+    .hero-buttons{
 
-.hero-content p{
+        justify-content:center;
 
-font-size:15px;
+    }
 
-line-height:2;
 
-}
 
 
+    /* Podcast */
 
-.hero-actions{
 
-display:flex;
+    .podcast-grid{
 
-flex-direction:column;
+        grid-template-columns:
 
-gap:12px;
+        repeat(2,1fr);
 
-}
+    }
 
 
 
 
 
-.hero-visual{
+    /* Header */
 
-min-height:250px;
 
-display:flex;
+    .main-header{
 
-justify-content:center;
+        display:none;
 
-align-items:center;
+    }
 
-}
 
 
+    .mobile-header{
 
-.hero-circle{
+        display:flex;
 
-width:180px;
-
-height:180px;
-
-border-radius:50%;
-
-display:flex;
-
-align-items:center;
-
-justify-content:center;
-
-}
-
-
-
-
-
-.floating-card{
-
-position:absolute;
-
-}
-
-
-
-
-
-
-
-
-/* =====================================
-STATS
-===================================== */
-
-
-.hero-stats{
-
-display:grid;
-
-grid-template-columns:1fr;
-
-gap:12px;
-
-padding:20px 16px;
-
-}
-
-
-
-.hero-stat-card{
-
-display:flex;
-
-align-items:center;
-
-gap:15px;
-
-}
-
-
-
-
-
-
-
-
-/* =====================================
-CONTAINER
-===================================== */
-
-
-.section-container{
-
-width:100%;
-
-padding:0 16px;
-
-}
-
-
-
-
-
-
-
-/* =====================================
-CATEGORY
-===================================== */
-
-
-.category-list{
-
-display:flex;
-
-overflow-x:auto;
-
-gap:12px;
-
-padding-bottom:10px;
-
-}
-
-
-
-.category-card{
-
-min-width:110px;
-
-flex-shrink:0;
-
-}
-
-
-
-
-
-
-
-
-/* =====================================
-PODCAST GRID
-===================================== */
-
-
-.podcast-grid{
-
-display:grid;
-
-grid-template-columns:1fr;
-
-gap:20px;
-
-}
-
-
-
-.podcast-card{
-
-overflow:hidden;
-
-}
-
-
-
-
-
-.podcast-cover img{
-
-width:100%;
-
-aspect-ratio:1/1;
-
-object-fit:cover;
-
-}
-
-
-
-.podcast-actions{
-
-display:grid;
-
-grid-template-columns:1fr 1fr;
-
-gap:8px;
-
-}
-
-
-
-
-
-
-
-/* =====================================
-BOOKS
-===================================== */
-
-
-.books-grid{
-
-display:grid;
-
-grid-template-columns:1fr;
-
-gap:20px;
-
-}
-
-
-
-
-
-
-
-/* =====================================
-PLAYER FIXED
-===================================== */
-
-
-.nightcast-player{
-
-position:fixed;
-
-bottom:0;
-
-right:0;
-
-left:0;
-
-z-index:1000;
-
-}
-
-
-
-.player-controls{
-
-display:flex;
-
-justify-content:center;
-
-}
-
-
-
-
-
-.player-options{
-
-display:none;
-
-}
-
-
-
-
-
-
-
-
-/* =====================================
-PROFILE PANEL
-===================================== */
-
-
-.profile-panel{
-
-position:fixed;
-
-right:-100%;
-
-top:0;
-
-height:100%;
-
-width:85%;
-
-z-index:1200;
-
-transition:.3s;
-
-}
-
-
-
-.profile-panel.active{
-
-right:0;
-
-}
-
-
-
-
-
-
-
-
-/* =====================================
-AUTH MODAL
-===================================== */
-
-
-.auth-box{
-
-width:90%;
-
-max-width:400px;
-
-}
-
-
-
-
-
-
-
-
-
-/* =====================================
-MOBILE BOTTOM NAV
-===================================== */
-
-
-.mobile-bottom-nav{
-
-display:flex;
-
-position:fixed;
-
-bottom:0;
-
-left:0;
-
-right:0;
-
-height:65px;
-
-z-index:950;
-
-}
-
-
-
-
-
-
-
-
-
-
-/* =====================================
-TABLET
-
-768px+
-
-===================================== */
-
-
-@media(min-width:768px){
-
-
-
-.mobile-header{
-
-display:none;
-
-}
-
-
-
-.main-header{
-
-display:block;
-
-}
-
-
-
-.hero-container{
-
-flex-direction:row;
-
-align-items:center;
-
-}
-
-
-
-.hero-content{
-
-text-align:right;
-
-width:50%;
-
-}
-
-
-
-.hero-visual{
-
-width:50%;
-
-}
-
-
-
-.hero-actions{
-
-flex-direction:row;
-
-}
-
-
-
-
-
-.hero-stats{
-
-grid-template-columns:repeat(3,1fr);
-
-}
-
-
-
-.podcast-grid{
-
-grid-template-columns:repeat(2,1fr);
-
-}
-
-
-
-.books-grid{
-
-grid-template-columns:repeat(2,1fr);
-
-}
-
-
-
-
-
-.player-options{
-
-display:flex;
-
-}
+    }
 
 
 
@@ -655,26 +193,185 @@ display:flex;
 
 
 
+/* ==================================================
+TABLET PORTRAIT
+768 - 991
+================================================== */
+
+
+@media(max-width:768px){
 
 
 
-/* =====================================
-DESKTOP
+    html{
 
-1024px+
+        font-size:15px;
 
-===================================== */
-
-
-@media(min-width:1024px){
+    }
 
 
 
-.section-container{
 
-max-width:1200px;
+    /* Sections */
 
-margin:auto;
+
+    .hero-section,
+    .podcasts-section{
+
+        padding-top:45px;
+
+        padding-bottom:45px;
+
+    }
+
+
+
+
+
+    /* Typography */
+
+
+    .section-header h2{
+
+        font-size:26px;
+
+    }
+
+
+
+
+
+    /* Hero */
+
+
+    .hero-content h1{
+
+        font-size:
+
+        clamp(30px,7vw,38px);
+
+    }
+
+
+
+    .hero-content p{
+
+        font-size:15px;
+
+    }
+
+
+
+
+
+    .hero-buttons{
+
+        width:100%;
+
+        flex-direction:column;
+
+    }
+
+
+
+
+    .hero-buttons > *{
+
+        width:100%;
+
+    }
+
+
+
+
+
+    /* Podcast */
+
+
+    .podcast-grid{
+
+        grid-template-columns:
+
+        1fr;
+
+    }
+
+
+
+
+    .section-header{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+    }
+
+
+
+
+
+
+    /* Player */
+
+
+    .audio-player{
+
+        bottom:
+
+        calc(70px + env(safe-area-inset-bottom));
+
+    }
+
+
+
+
+    .player-main{
+
+        flex-direction:column;
+
+    }
+
+
+
+
+    .player-info{
+
+        text-align:center;
+
+    }
+
+
+
+
+    .player-controls{
+
+        justify-content:center;
+
+    }
+
+
+
+
+
+
+
+    /* Bottom Navigation */
+
+
+    .mobile-bottom-nav{
+
+        padding-bottom:
+
+        env(safe-area-inset-bottom);
+
+        height:
+
+        calc(70px + env(safe-area-inset-bottom));
+
+    }
+
+
 
 }
 
@@ -682,18 +379,206 @@ margin:auto;
 
 
 
-.podcast-grid{
+/* ==================================================
+MOBILE
+576 - 767
+================================================== */
 
-grid-template-columns:repeat(3,1fr);
+
+@media(max-width:576px){
+
+
+
+    .container,
+    .section-container{
+
+        width:94%;
+
+    }
+
+
+
+
+
+    .hero-badge{
+
+        font-size:12px;
+
+        padding:7px 14px;
+
+    }
+
+
+
+
+    .hero-headphone{
+
+        width:180px;
+
+        height:180px;
+
+        font-size:60px;
+
+    }
+
+
+
+
+
+    .hero-floating-card{
+
+        transform:scale(.85);
+
+    }
+
+
+
+
+
+    .stat-card{
+
+        padding:15px;
+
+    }
+
+
+
+
+
+    .stat-card strong{
+
+        font-size:22px;
+
+    }
+
+
+
+
+
+
+    .podcast-body{
+
+        padding:16px;
+
+    }
+
+
+
+
+
+
+    .podcast-actions{
+
+        flex-wrap:wrap;
+
+    }
+
+
+
+
+
+    .download-button{
+
+        width:100%;
+
+        flex:none;
+
+    }
+
+
+
+
+
+    .comment-button,
+    .favorite-button{
+
+        flex:1;
+
+    }
+
+
+
 
 }
 
 
 
 
-.books-grid{
 
-grid-template-columns:repeat(3,1fr);
+/* ==================================================
+SMALL PHONE
+390px
+================================================== */
+
+
+@media(max-width:390px){
+
+
+
+    html{
+
+        font-size:14px;
+
+    }
+
+
+
+
+
+    .hero-content h1{
+
+        font-size:28px;
+
+    }
+
+
+
+
+    .hero-headphone{
+
+        width:150px;
+
+        height:150px;
+
+        font-size:50px;
+
+    }
+
+
+
+
+
+    .hero-floating-card{
+
+        display:none;
+
+    }
+
+
+
+
+    .player-btn{
+
+        width:38px;
+
+        height:38px;
+
+    }
+
+
+
+
+
+    .player-btn.main{
+
+        width:48px;
+
+        height:48px;
+
+    }
+
+
+
 
 }
 
@@ -701,62 +586,37 @@ grid-template-columns:repeat(3,1fr);
 
 
 
-.header-search{
+/* ==================================================
+LANDSCAPE MOBILE
+================================================== */
 
-display:flex;
 
-flex:1;
-
-max-width:500px;
-
-}
+@media(max-height:500px)
+and (orientation:landscape){
 
 
 
+    .hero-section{
 
-.logo-text p{
+        padding-top:30px;
 
-display:block;
-
-}
-
-
-
-}
+    }
 
 
 
+    .hero-visual{
+
+        display:none;
+
+    }
 
 
 
+    .mobile-bottom-nav{
 
+        display:none;
 
-
-/* =====================================
-LARGE DESKTOP
-
-1400px+
-
-===================================== */
-
-
-@media(min-width:1400px){
-
-
-
-.podcast-grid{
-
-grid-template-columns:repeat(4,1fr);
-
-}
-
-
-
-.hero-content h1{
-
-font-size:46px;
-
-}
+    }
 
 
 
@@ -767,31 +627,30 @@ font-size:46px;
 
 
 
+/* ==================================================
+ACCESSIBILITY
+================================================== */
 
 
-/* =====================================
-SAFE AREA FOR MOBILE APK
-
-===================================== */
-
-
-@media(max-width:767px){
+@media(prefers-reduced-motion:reduce){
 
 
 
-body{
-
-padding-bottom:80px;
-
-}
+    *,
+    *::before,
+    *::after{
 
 
+        animation-duration:.01ms!important;
 
-.nightcast-player{
 
-bottom:65px;
+        transition-duration:.01ms!important;
 
-}
+
+        scroll-behavior:auto!important;
+
+
+    }
 
 
 

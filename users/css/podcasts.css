@@ -1,0 +1,672 @@
+/* ==================================================
+
+NightCast User Podcasts CSS V2
+
+File:
+users/css/podcasts.css
+
+Includes:
+- Podcast Section
+- Section Header
+- Podcast Grid
+- Podcast Card
+- Actions
+- Skeleton Loading
+
+================================================== */
+
+
+/* ================================================
+PODCAST SECTION
+================================================ */
+
+.podcasts-section{
+
+    padding:80px 0;
+
+    position:relative;
+
+}
+
+
+
+
+
+/* ================================================
+SECTION HEADER
+================================================ */
+
+
+.section-header{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:20px;
+
+    margin-bottom:40px;
+
+}
+
+
+
+
+
+.section-header h2{
+
+    font-size:32px;
+
+    font-weight:800;
+
+    margin-bottom:8px;
+
+}
+
+
+
+
+
+.section-header p{
+
+    font-size:15px;
+
+}
+
+
+
+
+
+/* ================================================
+FILTER BUTTON
+================================================ */
+
+
+.podcast-filter button{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:12px 18px;
+
+    border-radius:14px;
+
+    border:1px solid var(--border);
+
+    background:var(--bg-card);
+
+    color:var(--text);
+
+    transition:var(--transition);
+
+}
+
+
+
+.podcast-filter button:hover{
+
+    border-color:var(--primary);
+
+    color:var(--primary);
+
+}
+
+
+
+
+
+/* ================================================
+PODCAST GRID
+================================================ */
+
+
+.podcast-grid{
+
+    display:grid;
+
+    grid-template-columns:
+
+    repeat(3,1fr);
+
+    gap:25px;
+
+}
+
+
+
+
+
+/* ================================================
+PODCAST CARD
+================================================ */
+
+
+.podcast-card{
+
+    background:var(--bg-card);
+
+    border:
+
+    1px solid var(--border);
+
+    border-radius:var(--radius-lg);
+
+    overflow:hidden;
+
+    transition:var(--transition);
+
+    box-shadow:var(--shadow);
+
+}
+
+
+
+
+
+.podcast-card:hover{
+
+    transform:translateY(-8px);
+
+    border-color:
+
+    rgba(0,212,255,.35);
+
+}
+
+
+
+
+
+/* ================================================
+COVER
+================================================ */
+
+
+.podcast-cover{
+
+    position:relative;
+
+    aspect-ratio:16 / 10;
+
+    overflow:hidden;
+
+    background:var(--bg-soft);
+
+}
+
+
+
+
+
+.podcast-image{
+
+    width:100%;
+
+    height:100%;
+
+    object-fit:cover;
+
+    transition:.4s ease;
+
+}
+
+
+
+
+
+.podcast-card:hover .podcast-image{
+
+    transform:scale(1.06);
+
+}
+
+
+
+
+
+/* ================================================
+PLAY BUTTON
+================================================ */
+
+
+.play-button{
+
+    position:absolute;
+
+    left:50%;
+
+    top:50%;
+
+    transform:
+
+    translate(-50%,-50%);
+
+    width:58px;
+
+    height:58px;
+
+    border-radius:50%;
+
+    border:none;
+
+    background:
+
+    rgba(0,212,255,.95);
+
+    color:#fff;
+
+    font-size:20px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    opacity:0;
+
+    transition:var(--transition);
+
+}
+
+
+
+
+
+.podcast-card:hover .play-button{
+
+    opacity:1;
+
+}
+
+
+
+
+
+/* ================================================
+PODCAST BODY
+================================================ */
+
+
+.podcast-body{
+
+    padding:22px;
+
+}
+
+
+
+
+
+.podcast-title{
+
+    font-size:20px;
+
+    font-weight:800;
+
+    margin-bottom:8px;
+
+}
+
+
+
+
+
+.podcast-author{
+
+    font-size:14px;
+
+    color:var(--primary);
+
+    margin-bottom:12px;
+
+}
+
+
+
+
+
+.podcast-description{
+
+    font-size:14px;
+
+    line-height:1.9;
+
+    display:
+
+    -webkit-box;
+
+    -webkit-line-clamp:3;
+
+    -webkit-box-orient:vertical;
+
+    overflow:hidden;
+
+    margin-bottom:18px;
+
+}
+
+
+
+
+
+/* ================================================
+META
+================================================ */
+
+
+.podcast-meta{
+
+    display:flex;
+
+    align-items:center;
+
+    margin-bottom:18px;
+
+}
+
+
+
+.duration{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:7px;
+
+    color:var(--text-soft);
+
+    font-size:13px;
+
+}
+
+
+
+
+
+.duration i{
+
+    color:var(--gold);
+
+}
+
+
+
+
+
+/* ================================================
+ACTIONS
+================================================ */
+
+
+.podcast-actions{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+}
+
+
+
+
+
+.podcast-actions button{
+
+    height:40px;
+
+    border-radius:12px;
+
+    border:1px solid var(--border);
+
+    background:var(--bg-soft);
+
+    color:var(--text);
+
+    transition:var(--transition);
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:7px;
+
+}
+
+
+
+
+
+.download-button{
+
+    flex:1;
+
+}
+
+
+
+
+
+.podcast-actions button:hover{
+
+    border-color:var(--primary);
+
+    color:var(--primary);
+
+}
+
+
+
+
+
+.favorite-button.active{
+
+    color:#ff4d6d;
+
+    border-color:#ff4d6d;
+
+}
+
+
+
+
+
+.comment-button{
+
+    padding:0 14px;
+
+}
+
+
+
+
+
+/* ================================================
+SKELETON LOADING
+================================================ */
+
+
+.skeleton{
+
+    overflow:hidden;
+
+}
+
+
+
+.podcast-cover-placeholder,
+.podcast-info-placeholder{
+
+    background:
+
+    linear-gradient(
+        90deg,
+        var(--bg-soft),
+        rgba(255,255,255,.08),
+        var(--bg-soft)
+    );
+
+    background-size:200% 100%;
+
+    animation:
+
+    skeletonLoading 1.5s infinite;
+
+}
+
+
+
+
+
+.podcast-cover-placeholder{
+
+    aspect-ratio:16/10;
+
+}
+
+
+
+
+
+.podcast-info-placeholder{
+
+    height:140px;
+
+}
+
+
+
+
+
+@keyframes skeletonLoading{
+
+
+    0%{
+
+        background-position:200% 0;
+
+    }
+
+
+    100%{
+
+        background-position:-200% 0;
+
+    }
+
+
+}
+
+
+
+
+
+/* ================================================
+LOADING TRIGGER
+================================================ */
+
+
+.loading-trigger{
+
+    height:40px;
+
+    margin-top:30px;
+
+}
+
+
+
+
+
+/* ================================================
+TABLET
+================================================ */
+
+
+@media(max-width:992px){
+
+
+    .podcast-grid{
+
+        grid-template-columns:
+
+        repeat(2,1fr);
+
+    }
+
+
+}
+
+
+
+
+
+/* ================================================
+MOBILE
+================================================ */
+
+
+@media(max-width:576px){
+
+
+    .podcasts-section{
+
+        padding:50px 0;
+
+    }
+
+
+
+    .section-header{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+    }
+
+
+
+    .section-header h2{
+
+        font-size:26px;
+
+    }
+
+
+
+    .podcast-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+
+
+    .podcast-body{
+
+        padding:18px;
+
+    }
+
+
+
+    .podcast-title{
+
+        font-size:18px;
+
+    }
+
+
+
+  }

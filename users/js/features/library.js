@@ -1,708 +1,1398 @@
-/* ==================================================
+/*
+=================================================
 
-NightCast Library Manager V1
+NightCast Library Module
 
 File:
+users/js/features/library.js
 
-/users/js/features/library.js
+Responsibilities:
 
-
-Responsibility:
-
+- Listening history
 - Favorites
 - Downloads
-- Listening History
+- Saved podcasts
+- Local guest storage
+- User library sync preparation
+
+Dependencies:
+
+- api.js
+- auth.js
+- player.js
+
+=================================================
+*/
 
 
-Depends:
+(function(){
 
-api.js
-
-
-================================================== */
-
-
-const NightCastLibrary = {
-
-
-
-    favorites:[],
-
-
-    downloads:[],
-
-
-    history:[],
+"use strict";
 
 
 
+window.NightCast =
+window.NightCast || {};
 
 
+
+
+
+const Library = {
+
+
+
+
+
+/*
+=================================================
+CONFIG
+=================================================
+*/
+
+
+config:{
+
+
+storageKey:"NightCastLibrary",
+
+
+maxHistory:100,
+
+
+maxFavorites:200,
+
+
+maxDownloads:200,
+
+
+},
+
+
+
+
+
+
+
+state:{
+
+
+history:[],
+
+
+favorites:[],
+
+
+downloads:[],
+
+
+saved:[]
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+INIT
+=================================================
+*/
+
+
+init(){
+
+
+
+this.loadLocal();
+
+
+
+this.bindEvents();
+
+
+
+console.log(
+"NightCast Library Initialized"
+);
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+LOAD LOCAL DATA
+=================================================
+*/
+
+
+loadLocal(){
+
+
+
+try{
+
+
+
+const data =
+localStorage.getItem(
+this.config.storageKey
+);
+
+
+
+
+
+if(data){
+
+
+const parsed =
+JSON.parse(data);
+
+
+
+this.state =
+{
+
+
+...this.state,
+
+
+...parsed
+
+
+};
+
+
+}
+
+
+
+}
+catch(error){
+
+
+console.error(
+"Library Load Error:",
+error
+);
+
+
+}
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+SAVE LOCAL DATA
+=================================================
+*/
+
+
+save(){
+
+
+
+try{
+
+
+
+localStorage.setItem(
+
+this.config.storageKey,
+
+JSON.stringify(
+this.state
+)
+
+);
+
+
+
+}
+catch(error){
+
+
+
+console.error(
+"Library Save Error:",
+error
+);
+
+
+
+}
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+EVENT BINDING
+=================================================
+*/
+
+
+bindEvents(){
+
+
+
+const historyButton =
+document.getElementById(
+"historyButton"
+);
+
+
+
+const favoritesButton =
+document.getElementById(
+"favoritesButton"
+);
+
+
+
+
+const downloadsButton =
+document.getElementById(
+"downloadsButton"
+);
+
+
+
+
+const savedButton =
+document.getElementById(
+"savedButton"
+);
+
+
+
+
+
+
+
+if(historyButton){
+
+
+historyButton.addEventListener(
+"click",
+()=>{
+
+
+this.openSection(
+"history"
+);
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+if(favoritesButton){
+
+
+favoritesButton.addEventListener(
+"click",
+()=>{
+
+
+this.openSection(
+"favorites"
+);
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+if(downloadsButton){
+
+
+downloadsButton.addEventListener(
+"click",
+()=>{
+
+
+this.openSection(
+"downloads"
+);
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+if(savedButton){
+
+
+savedButton.addEventListener(
+"click",
+()=>{
+
+
+this.openSection(
+"saved"
+);
+
+
+});
+
+
+}
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+OPEN LIBRARY SECTION
+=================================================
+*/
+
+
+openSection(type){
+
+
+
+console.log(
+"Open Library:",
+type
+);
+
+
+
+
+/*
+
+فعلاً خروجی در Console
+
+در نسخه بعد:
+
+Library Modal
+یا
+Profile Page Section
+
+*/
+
+
+return this.get(type);
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+GET DATA
+=================================================
+*/
+
+
+get(type){
+
+
+
+if(!this.state[type]){
+
+
+return [];
+
+}
+
+
+
+return this.state[type];
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+ADD HISTORY
+=================================================
+*/
+
+
+addHistory(podcast){
+
+
+
+if(!podcast ||
+!podcast.id)
+return;
+
+
+
+
+
+const item={
+
+
+
+id:podcast.id,
+
+
+title:podcast.title || "",
+
+
+cover:podcast.cover || "",
+
+
+author:podcast.author || "",
+
+
+audio:podcast.audio || "",
+
+
+playedAt:
+Date.now()
+
+
+
+};
+
+
+
+
+
+
+// حذف تکراری
+
+this.state.history =
+this.state.history.filter(
+(item)=>
+item.id !== podcast.id
+);
+
+
+
+
+
+this.state.history.unshift(
+item
+);
+
+
+
+
+
+if(
+this.state.history.length >
+this.config.maxHistory
+){
+
+
+this.state.history.pop();
+
+
+}
+
+
+
+
+
+
+this.save();
+
+
+
+
+},
     /*
-    ====================================
-    INIT
-    ====================================
-    */
+=================================================
+FAVORITES
+=================================================
+*/
 
 
-    init(){
-
-
-
-        this.loadLocal();
-
-        this.bindEvents();
+addFavorite(podcast){
 
 
 
-
-        console.log(
-
-            "NightCast Library Ready"
-
-        );
-
-
-
-    },
+if(!podcast ||
+!podcast.id)
+return false;
 
 
 
 
 
+const exists =
+this.state.favorites.some(
+(item)=>
+item.id === podcast.id
+);
 
 
 
 
+
+if(exists)
+return false;
+
+
+
+
+
+
+
+const item={
+
+
+
+id:podcast.id,
+
+
+title:
+podcast.title || "",
+
+
+cover:
+podcast.cover || "",
+
+
+author:
+podcast.author || "",
+
+
+audio:
+podcast.audio || "",
+
+
+
+addedAt:
+Date.now()
+
+
+
+};
+
+
+
+
+
+
+
+this.state.favorites.unshift(
+item
+);
+
+
+
+
+
+
+
+if(
+this.state.favorites.length >
+this.config.maxFavorites
+){
+
+
+this.state.favorites.pop();
+
+
+}
+
+
+
+
+
+
+this.save();
+
+
+
+
+return true;
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+REMOVE FAVORITE
+=================================================
+*/
+
+
+removeFavorite(id){
+
+
+
+if(!id)
+return;
+
+
+
+this.state.favorites =
+this.state.favorites.filter(
+(item)=>
+item.id !== id
+);
+
+
+
+this.save();
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+TOGGLE FAVORITE
+=================================================
+*/
+
+
+toggleFavorite(podcast){
+
+
+
+if(
+this.isFavorite(
+podcast.id
+)
+){
+
+
+
+this.removeFavorite(
+podcast.id
+);
+
+
+
+return false;
+
+
+}
+
+
+
+
+this.addFavorite(
+podcast
+);
+
+
+
+return true;
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+CHECK FAVORITE
+=================================================
+*/
+
+
+isFavorite(id){
+
+
+
+return this.state.favorites.some(
+(item)=>
+item.id === id
+);
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+DOWNLOADS
+=================================================
+*/
+
+
+addDownload(podcast){
+
+
+
+if(!podcast ||
+!podcast.id)
+return;
+
+
+
+
+const item={
+
+
+
+id:
+podcast.id,
+
+
+title:
+podcast.title || "",
+
+
+cover:
+podcast.cover || "",
+
+
+audio:
+podcast.audio || "",
+
+
+downloadedAt:
+Date.now()
+
+
+
+};
+
+
+
+
+
+
+this.state.downloads =
+this.state.downloads.filter(
+(item)=>
+item.id !== podcast.id
+);
+
+
+
+
+
+
+this.state.downloads.unshift(
+item
+);
+
+
+
+
+
+
+if(
+this.state.downloads.length >
+this.config.maxDownloads
+){
+
+
+this.state.downloads.pop();
+
+
+}
+
+
+
+
+
+
+this.save();
+
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+REMOVE DOWNLOAD
+=================================================
+*/
+
+
+removeDownload(id){
+
+
+
+this.state.downloads =
+this.state.downloads.filter(
+(item)=>
+item.id !== id
+);
+
+
+
+this.save();
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+SAVED PODCASTS
+=================================================
+*/
+
+
+addSaved(podcast){
+
+
+
+if(!podcast ||
+!podcast.id)
+return false;
+
+
+
+
+
+const exists =
+this.state.saved.some(
+(item)=>
+item.id === podcast.id
+);
+
+
+
+
+
+
+if(exists)
+return false;
+
+
+
+
+
+
+
+this.state.saved.unshift({
+
+
+
+id:
+podcast.id,
+
+
+title:
+podcast.title || "",
+
+
+cover:
+podcast.cover || "",
+
+
+author:
+podcast.author || ""
+
+
+
+});
+
+
+
+
+
+
+
+this.save();
+
+
+
+return true;
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+REMOVE SAVED
+=================================================
+*/
+
+
+removeSaved(id){
+
+
+
+this.state.saved =
+this.state.saved.filter(
+(item)=>
+item.id !== id
+);
+
+
+
+this.save();
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+CHECK SAVED
+=================================================
+*/
+
+
+isSaved(id){
+
+
+
+return this.state.saved.some(
+(item)=>
+item.id === id
+);
+
+
+
+},
+
+
+
+
+
+
+
+/*
+=================================================
+CLEAR LIBRARY
+=================================================
+*/
+
+
+clear(){
+
+
+
+this.state={
+
+
+history:[],
+
+
+favorites:[],
+
+
+downloads:[],
+
+
+saved:[]
+
+
+};
+
+
+
+
+
+this.save();
+
+
+
+},
     /*
-    ====================================
-    LOCAL DATA
-    ====================================
-    */
+=================================================
+AUTH SYNC PREPARATION
+=================================================
+*/
 
 
-    loadLocal(){
+async syncWithServer(){
 
 
 
-        this.favorites =
+/*
 
-        JSON.parse(
+در حالت مهمان:
+LocalStorage کافی است
 
-            localStorage.getItem(
 
-                "NightCastFavorites"
+در حالت کاربر وارد شده:
+اطلاعات با Worker API سینک می‌شود
 
-            )
 
-        )
+*/
 
-        ||
 
-        [];
 
 
+if(
+!window.NightCast ||
+!NightCast.Auth
+){
 
 
+return;
 
 
-        this.downloads =
+}
 
-        JSON.parse(
 
-            localStorage.getItem(
 
-                "NightCastDownloads"
 
-            )
 
-        )
+const user =
+NightCast.Auth.getUser
+?
+NightCast.Auth.getUser()
+:
+null;
 
-        ||
 
-        [];
 
 
 
+if(!user){
 
 
+return;
 
 
-        this.history =
+}
 
-        JSON.parse(
 
-            localStorage.getItem(
 
-                "NightCastHistory"
 
-            )
 
-        )
 
-        ||
 
-        [];
+try{
 
 
 
-    },
+const response =
+await NightCastAPI.get(
+"/users/library"
+);
 
 
 
 
 
 
+if(response){
 
 
 
-    save(){
+this.state={
 
 
+...this.state,
 
-        localStorage.setItem(
 
-            "NightCastFavorites",
+...response.data
 
-            JSON.stringify(
 
-                this.favorites
+};
 
-            )
 
-        );
 
+this.save();
 
 
 
+}
 
 
-        localStorage.setItem(
 
-            "NightCastDownloads",
+}
+catch(error){
 
-            JSON.stringify(
 
-                this.downloads
 
-            )
+console.warn(
+"Library sync unavailable:",
+error
+);
 
-        );
 
 
+}
 
 
 
+},
 
-        localStorage.setItem(
 
-            "NightCastHistory",
 
-            JSON.stringify(
 
-                this.history
 
-            )
 
-        );
 
+/*
+=================================================
+GET FULL LIBRARY
+=================================================
+*/
 
 
-    },
+getAll(){
 
 
 
+return {
 
 
+history:
+this.state.history,
 
 
+favorites:
+this.state.favorites,
 
 
-    /*
-    ====================================
-    FAVORITE
-    ====================================
-    */
+downloads:
+this.state.downloads,
 
 
-    toggleFavorite(podcast){
+saved:
+this.state.saved
 
 
 
-        const index =
+};
 
-        this.favorites.findIndex(
 
-            item=>item.id===podcast.id
 
-        );
+},
 
 
 
 
 
 
-        if(index>-1){
 
+/*
+=================================================
+REMOVE ITEM BY TYPE
+=================================================
+*/
 
 
-            this.favorites.splice(
+remove(type,id){
 
-                index,
 
-                1
 
-            );
+if(
+!this.state[type]
+)
+return;
 
 
 
+this.state[type] =
+this.state[type].filter(
+(item)=>
+item.id !== id
+);
 
-            if(window.NightCastUI){
 
 
+this.save();
 
-                NightCastUI.toast(
 
-                    "از علاقه‌مندی‌ها حذف شد",
 
-                    "info"
+},
 
-                );
 
 
 
-            }
 
 
 
+/*
+=================================================
+PLAY FROM HISTORY
+=================================================
+*/
 
-        }
 
-        else{
+play(item){
 
 
 
-            this.favorites.push(
+if(
+window.NightCast &&
+NightCast.Player
+){
 
-                podcast
 
-            );
 
+NightCast.Player.load(
+item
+);
 
 
 
+NightCast.Player.play();
 
 
-            if(window.NightCastUI){
 
+}
 
 
-                NightCastUI.toast(
 
-                    "به علاقه‌مندی‌ها اضافه شد",
+},
 
-                    "success"
 
-                );
 
 
 
-            }
 
 
+/*
+=================================================
+EXPORT DEBUG
+=================================================
+*/
 
-        }
 
+debug(){
 
 
 
+console.table(
+this.state.history
+);
 
 
-        this.save();
 
+console.table(
+this.state.favorites
+);
 
 
-    },
 
+console.table(
+this.state.downloads
+);
 
 
 
+console.table(
+this.state.saved
+);
 
 
 
+}
 
 
-    /*
-    ====================================
-    DOWNLOAD
-    ====================================
-    */
 
-
-    async download(podcast){
-
-
-
-        if(!podcast.audio_url){
-
-
-
-            NightCastUI.toast(
-
-                "فایل صوتی موجود نیست",
-
-                "error"
-
-            );
-
-
-            return;
-
-
-
-        }
-
-
-
-
-
-
-
-
-        const token =
-
-        localStorage.getItem(
-
-            "NightCastToken"
-
-        );
-
-
-
-
-
-
-
-        if(!token){
-
-
-
-            if(window.NightCastAuth){
-
-
-
-                NightCastAuth.openLogin();
-
-
-
-            }
-
-
-
-            NightCastUI.toast(
-
-                "برای دانلود وارد شوید",
-
-                "warning"
-
-            );
-
-
-
-            return;
-
-
-
-        }
-
-
-
-
-
-
-
-
-
-        const result =
-
-        await API.get(
-
-            "/public/download/" +
-
-            podcast.id
-
-        );
-
-
-
-
-
-
-
-        if(result.success){
-
-
-
-            this.downloads.push(
-
-                podcast
-
-            );
-
-
-
-            this.save();
-
-
-
-
-
-            window.open(
-
-                podcast.audio_url,
-
-                "_blank"
-
-            );
-
-
-
-
-        }
-
-        else{
-
-
-
-            NightCastUI.toast(
-
-                result.message ||
-
-                "دانلود امکان پذیر نیست",
-
-                "error"
-
-            );
-
-
-
-        }
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    HISTORY
-    ====================================
-    */
-
-
-    addHistory(podcast){
-
-
-
-        this.history =
-
-        this.history.filter(
-
-            item=>item.id!==podcast.id
-
-        );
-
-
-
-
-
-
-        this.history.unshift(
-
-            podcast
-
-        );
-
-
-
-
-
-
-        this.history =
-
-        this.history.slice(
-
-            0,
-
-            50
-
-        );
-
-
-
-
-
-
-        this.save();
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    /*
-    ====================================
-    EVENTS
-    ====================================
-    */
-
-
-    bindEvents(){
-
-
-
-
-
-        document.addEventListener(
-
-            "click",
-
-            e=>{
-
-
-
-
-
-                const download =
-
-                e.target.closest(
-
-                    ".download-button"
-
-                );
-
-
-
-
-
-                if(download){
-
-
-
-                    const card =
-
-                    download.closest(
-
-                        ".podcast-card"
-
-                    );
-
-
-
-                    if(card && card.dataset.id){
-
-
-
-                        this.download({
-
-                            id:card.dataset.id,
-
-                            audio_url:card.dataset.audio,
-
-                            title:card.dataset.title
-
-                        });
-
-
-
-                    }
-
-
-
-                }
-
-
-
-
-
-
-
-
-                const favorite =
-
-                e.target.closest(
-
-                    ".favorite-button"
-
-                );
-
-
-
-
-
-
-                if(favorite){
-
-
-
-                    const card =
-
-                    favorite.closest(
-
-                        ".podcast-card"
-
-                    );
-
-
-
-
-
-
-                    if(card){
-
-
-
-                        this.toggleFavorite({
-
-                            id:card.dataset.id,
-
-                            title:card.dataset.title
-
-                        });
-
-
-
-                    }
-
-
-
-                }
-
-
-
-
-
-            }
-
-        );
-
-
-
-    }
 
 
 
@@ -715,17 +1405,20 @@ const NightCastLibrary = {
 
 
 
-window.NightCastLibrary =
-
-NightCastLibrary;
 
 
+/*
+=================================================
+EXPORT MODULE
+=================================================
+*/
+
+
+window.NightCast.Library =
+Library;
 
 
 
 
-console.log(
 
-"NightCast Library V1 Loaded"
-
-);
+})();

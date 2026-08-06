@@ -1,72 +1,378 @@
-/* ==================================================
+/* =========================================================
+   NightCast App Core
+   File:
+   /users/js/app.js
 
-NightCast User Application Bootstrap V2
+   Main Controller
 
-File:
+   Compatible With:
+   api.js
+   auth.js
+   ui.js
+   player.js
+   podcasts.js
+   search.js
+   library.js
+   profile.js
+   comments.js
 
-/users/js/app.js
-
-
-Responsibility:
-
-ONLY START APPLICATION
-
-
-Load Order:
-
-api.js
-auth.js
-ui.js
-podcasts.js
-search.js
-library.js
-profile.js
-player.js
-comments.js
+========================================================= */
 
 
-================================================== */
+(function(){
 
 
-const NightCastApp = {
+"use strict";
 
 
 
-    /*
-    ====================================
-    INIT
-    ====================================
-    */
 
 
-    async init(){
+const App = {
+
+
+
+    version:"4.0.0",
+
+
+
+    state:{
+
+
+        ready:false,
+
+        user:null,
+
+        theme:"dark"
+
+
+    },
+
+
+
+
+
+
+    init(){
 
 
 
         console.log(
+            "NightCast App Starting..."
+        );
 
-            "🚀 NightCast Starting..."
 
+
+        this.cache();
+
+
+
+        this.bindEvents();
+
+
+
+        this.restoreState();
+
+
+
+        this.initializeModules();
+
+
+
+        this.finish();
+
+
+
+    },
+
+
+
+
+
+
+
+
+    cache(){
+
+
+
+        this.loader =
+        document.getElementById(
+            "globalLoader"
+        );
+
+
+
+        this.stateBox =
+        document.getElementById(
+            "nightcastState"
+        );
+
+
+
+    },
+
+
+
+
+
+
+
+
+    bindEvents(){
+
+
+
+        /*
+        Global navigation
+        */
+
+
+        document.addEventListener(
+            "click",
+            this.handleActions.bind(this)
         );
 
 
 
 
-
-
         /*
-        ================================
-        UI
-        ================================
+        Keyboard shortcuts
         */
 
 
-        if(window.NightCastUI){
+        document.addEventListener(
+            "keydown",
+            e=>{
+
+
+                if(
+                    e.code==="Space" &&
+                    !this.isTyping(e.target)
+                ){
+
+                    e.preventDefault();
+
+
+                    if(
+                        window.NightCastPlayer
+                    ){
+
+                        NightCastPlayer.toggle();
+
+                    }
+
+
+                }
+
+
+            }
+        );
 
 
 
-            NightCastUI.init();
 
+    },
+
+
+
+
+
+
+
+
+
+    handleActions(e){
+
+
+
+        const target =
+        e.target.closest(
+            "[data-action]"
+        );
+
+
+
+        if(!target){
+
+            return;
+
+        }
+
+
+
+
+
+        const action =
+        target.dataset.action;
+
+
+
+
+
+        switch(action){
+
+
+
+            case "home":
+
+                this.scrollTo(
+                    "home"
+                );
+
+            break;
+
+
+
+
+            case "navigate":
+
+
+                this.navigate(
+                    target.dataset.target
+                );
+
+
+            break;
+
+
+
+
+            case "start-listening":
+
+
+                this.startListening();
+
+
+            break;
+
+
+
+
+            case "explore":
+
+
+                this.scrollTo(
+                    "podcasts"
+                );
+
+
+            break;
+
+
+
+        }
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    initializeModules(){
+
+
+
+        /*
+          بعضی فایل‌ها
+          خودشان init دارند
+          اینجا فقط کنترل وجودشان
+        */
+
+
+
+        const modules = [
+
+
+            "NightCastAPI",
+
+            "Auth",
+
+            "UI",
+
+            "NightCastPlayer",
+
+            "NightCastPodcasts",
+
+            "NightCastComments"
+
+
+        ];
+
+
+
+
+
+        modules.forEach(
+            module=>{
+
+
+                if(
+                    window[module]
+                ){
+
+                    console.log(
+                        module,
+                        "loaded"
+                    );
+
+
+                }
+
+
+            }
+        );
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    restoreState(){
+
+
+
+        const user =
+        localStorage.getItem(
+            "NightCastUser"
+        );
+
+
+
+
+        if(user){
+
+
+
+            try{
+
+
+                this.state.user =
+                JSON.parse(user);
+
+
+
+            }
+            catch{
+
+
+                this.state.user=null;
+
+
+            }
 
 
         }
@@ -77,49 +383,24 @@ const NightCastApp = {
 
 
 
-
-
-        /*
-        ================================
-        AUTH
-        ================================
-        */
-
-
-        if(window.NightCastAuth){
+        const theme =
+        localStorage.getItem(
+            "NightCastTheme"
+        );
 
 
 
-            await NightCastAuth.init();
+        if(theme){
+
+
+            this.state.theme =
+            theme;
 
 
 
-        }
-
-
-
-
-
-
-
-
-
-        /*
-        ================================
-        PLAYER
-
-        اول پلیر آماده شود
-
-        ================================
-        */
-
-
-        if(window.NightCastPlayer){
-
-
-
-            NightCastPlayer.init();
-
+            document.body
+            .dataset.theme =
+            theme;
 
 
         }
@@ -127,23 +408,115 @@ const NightCastApp = {
 
 
 
+    },
 
 
 
 
 
-        /*
-        ================================
-        PODCASTS
-        ================================
-        */
-
-
-        if(window.NightCastPodcasts){
 
 
 
-            NightCastPodcasts.init();
+
+    startListening(){
+
+
+
+        const section =
+        document.getElementById(
+            "podcasts"
+        );
+
+
+
+        if(section){
+
+
+            section.scrollIntoView({
+
+                behavior:"smooth"
+
+            });
+
+
+        }
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    navigate(target){
+
+
+
+        if(!target){
+
+            return;
+
+        }
+
+
+
+        const section =
+        document.getElementById(
+            target
+        );
+
+
+
+        if(section){
+
+
+
+            section.scrollIntoView({
+
+                behavior:"smooth"
+
+            });
+
+
+        }
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    scrollTo(id){
+
+
+
+        const element =
+        document.getElementById(
+            id
+        );
+
+
+
+        if(element){
+
+
+
+            element.scrollIntoView({
+
+                behavior:"smooth"
+
+            });
 
 
 
@@ -151,28 +524,7 @@ const NightCastApp = {
 
 
 
-
-
-
-
-
-
-        /*
-        ================================
-        SEARCH
-        ================================
-        */
-
-
-        if(window.NightCastSearch){
-
-
-
-            NightCastSearch.init();
-
-
-
-        }
+    },
 
 
 
@@ -181,111 +533,38 @@ const NightCastApp = {
 
 
 
-
-        /*
-        ================================
-        LIBRARY
-        ================================
-        */
-
-
-        if(window.NightCastLibrary){
+    finish(){
 
 
 
-            NightCastLibrary.init();
+        this.state.ready=true;
+
+
+
+        if(this.loader){
+
+
+
+            setTimeout(()=>{
+
+
+                this.loader.classList.add(
+                    "hidden"
+                );
+
+
+            },500);
 
 
 
         }
-
-
-
-
-
-
-
-
-
-        /*
-        ================================
-        PROFILE
-        ================================
-        */
-
-
-        if(window.NightCastProfile){
-
-
-
-            NightCastProfile.init();
-
-
-
-        }
-
-
-
-
-
-
-
-
-
-        /*
-        ================================
-        COMMENTS
-        ================================
-        */
-
-
-        if(
-
-            window.NightCastComments
-
-            &&
-
-            document.getElementById(
-
-                "commentsList"
-
-            )
-
-        ){
-
-
-
-            NightCastComments.init();
-
-
-
-        }
-
-
-
-
-
-
-
-
-
-        /*
-        ================================
-        REMOVE LOADING
-        ================================
-        */
-
-
-        this.ready();
-
-
 
 
 
 
         console.log(
 
-            "✅ NightCast Ready"
+            "NightCast Ready ✔"
 
         );
 
@@ -301,67 +580,37 @@ const NightCastApp = {
 
 
 
-    /*
-    ====================================
-    READY STATE
-    ====================================
-    */
-
-
-    ready(){
+    isTyping(element){
 
 
 
-        document.body.classList.add(
+        if(!element){
 
-            "app-ready"
-
-        );
-
-
-
-
-
-
-        const loader =
-
-        document.getElementById(
-
-            "globalLoader"
-
-        );
-
-
-
-
-
-
-
-        if(loader){
-
-
-
-            setTimeout(()=>{
-
-
-
-                loader.classList.add(
-
-                    "hidden"
-
-                );
-
-
-
-            },300);
-
-
+            return false;
 
         }
 
 
 
+        return [
+
+            "INPUT",
+
+            "TEXTAREA",
+
+            "SELECT"
+
+        ]
+
+        .includes(
+            element.tagName
+        );
+
+
     }
+
+
+
 
 
 
@@ -373,31 +622,26 @@ const NightCastApp = {
 
 
 
+window.NightCastApp =
+App;
 
 
-/*
-====================================
-START
-====================================
-*/
+
+
+
 
 
 document.addEventListener(
 
-    "DOMContentLoaded",
+"DOMContentLoaded",
 
-    ()=>{
-
-
-
-        NightCastApp.init();
+()=>{
 
 
+    App.init();
 
-    }
 
-
-);
+});
 
 
 
@@ -405,17 +649,4 @@ document.addEventListener(
 
 
 
-
-window.NightCastApp =
-
-NightCastApp;
-
-
-
-
-
-console.log(
-
-"NightCast App V2 Loaded"
-
-);
+})();

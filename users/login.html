@@ -35,7 +35,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 
 
 <!-- =========================
-AUTH LOADER
+LOADER
 ========================= -->
 
 
@@ -54,9 +54,7 @@ NightCast
 
 
 <p id="loaderText">
-
 در حال اتصال...
-
 </p>
 
 
@@ -71,16 +69,9 @@ NightCast
 
 
 
-<!-- =========================
-LOGIN PAGE
-========================= -->
 
 
 <main class="login-page">
-
-
-
-
 
 
 <section class="login-card">
@@ -89,9 +80,8 @@ LOGIN PAGE
 
 
 
-
-
 <!-- BRAND -->
+
 
 <div class="login-brand">
 
@@ -113,13 +103,13 @@ Night<span>Cast</span>
 
 
 <p>
-
 رادیوی تجربه، یادگیری و رشد فردی
-
 </p>
 
 
+
 </div>
+
 
 
 
@@ -136,18 +126,13 @@ Night<span>Cast</span>
 
 
 <h2>
-
 خوش آمدید
-
 </h2>
 
 
-
 <p>
-
-برای تجربه کامل NightCast وارد شوید  
-یا بدون حساب ادامه دهید.
-
+برای تجربه کامل NightCast وارد شوید
+یا به عنوان مهمان ادامه دهید.
 </p>
 
 
@@ -161,7 +146,7 @@ Night<span>Cast</span>
 
 
 
-<!-- OPENID BUTTON -->
+<!-- OPENID -->
 
 
 <button
@@ -177,9 +162,7 @@ type="button">
 
 
 <span>
-
 ورود با Google
-
 </span>
 
 
@@ -192,15 +175,12 @@ type="button">
 
 
 
+
 <div class="divider">
 
-
 <span>
-
 یا
-
 </span>
-
 
 </div>
 
@@ -211,7 +191,8 @@ type="button">
 
 
 
-<!-- GUEST LOGIN -->
+
+<!-- GUEST -->
 
 
 <button
@@ -227,9 +208,7 @@ type="button">
 
 
 <span>
-
-ادامه به عنوان مهمان
-
+ادامه بدون ورود
 </span>
 
 
@@ -243,15 +222,13 @@ type="button">
 
 
 
-<!-- STATUS MESSAGE -->
-
+<!-- MESSAGE -->
 
 <div
 
 id="loginMessage"
 
 class="login-status">
-
 
 </div>
 
@@ -270,46 +247,28 @@ class="login-status">
 
 
 
-
-
-
 <div class="feature">
-
 
 <i class="fa-solid fa-cloud"></i>
 
-
 <span>
-
 ذخیره تاریخچه شنیدن
-
 </span>
-
 
 </div>
 
 
 
 
-
-
-
 <div class="feature">
-
 
 <i class="fa-solid fa-download"></i>
 
-
 <span>
-
 دانلود پادکست‌ها
-
 </span>
 
-
 </div>
-
-
 
 
 
@@ -317,16 +276,15 @@ class="login-status">
 
 <div class="feature">
 
-
 <i class="fa-solid fa-heart"></i>
 
-
 <span>
-
-کتابخانه شخصی
-
+ساخت کتابخانه شخصی
 </span>
 
+</div>
+
+
 
 </div>
 
@@ -335,26 +293,12 @@ class="login-status">
 
 
 
-</div>
-
-
-
-
-
-
-
-
-
-<!-- FOOTER -->
 
 
 <footer class="login-footer">
 
-
 <p>
-
 با ورود به NightCast قوانین استفاده را می‌پذیرید.
-
 </p>
 
 
@@ -365,13 +309,7 @@ class="login-status">
 
 
 
-
-
 </section>
-
-
-
-
 
 
 </main>
@@ -383,11 +321,1386 @@ class="login-status">
 
 
 
-<script src="js/login.js"></script>
 
+<script src="js/login.js"></script>
 
 
 </body>
 
 
 </html>
+/* ==================================================
+
+NightCast Login CSS V1
+
+File:
+users/css/login.css
+
+Compatible With:
+login.html
+login.js
+
+================================================== */
+
+
+
+/* ===============================
+PAGE
+================================ */
+
+
+.login-page{
+
+    min-height:100vh;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:30px 15px;
+
+    background:
+
+    radial-gradient(
+        circle at top,
+        #16243d,
+        #0b1220 60%
+    );
+
+}
+
+
+
+
+/* ===============================
+CARD
+================================ */
+
+
+.login-card{
+
+    width:100%;
+
+    max-width:430px;
+
+    padding:40px 30px;
+
+    background:
+
+    rgba(18,27,47,.95);
+
+
+    border:
+
+    1px solid var(--border);
+
+
+    border-radius:28px;
+
+
+    box-shadow:
+
+    0 25px 70px rgba(0,0,0,.45);
+
+
+    text-align:center;
+
+
+    animation:
+
+    loginShow .5s ease;
+
+
+}
+
+
+
+
+
+@keyframes loginShow{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(30px);
+
+    }
+
+
+    to{
+
+        opacity:1;
+
+        transform:none;
+
+    }
+
+}
+
+
+
+
+
+
+/* ===============================
+BRAND
+================================ */
+
+
+.login-brand{
+
+    margin-bottom:35px;
+
+}
+
+
+
+.brand-icon{
+
+    width:80px;
+
+    height:80px;
+
+    margin:0 auto 20px;
+
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+
+    border-radius:50%;
+
+
+    background:
+
+    linear-gradient(
+        135deg,
+        var(--primary),
+        #006eff
+    );
+
+
+    color:white;
+
+
+    font-size:35px;
+
+
+    box-shadow:
+
+    0 15px 35px rgba(0,212,255,.25);
+
+
+}
+
+
+
+
+
+.login-brand h1{
+
+    font-size:38px;
+
+    font-weight:900;
+
+    color:white;
+
+}
+
+
+
+.login-brand h1 span{
+
+    color:var(--primary);
+
+}
+
+
+
+
+
+.login-brand p{
+
+    margin-top:10px;
+
+    color:var(--text-soft);
+
+}
+
+
+
+
+
+/* ===============================
+MESSAGE
+================================ */
+
+
+.login-message h2{
+
+    margin-bottom:10px;
+
+    font-size:25px;
+
+}
+
+
+
+.login-message p{
+
+    font-size:15px;
+
+    margin-bottom:30px;
+
+}
+
+
+
+
+
+
+
+/* ===============================
+BUTTONS
+================================ */
+
+
+.login-openid,
+.login-guest{
+
+
+    width:100%;
+
+
+    height:55px;
+
+
+    border-radius:15px;
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    justify-content:center;
+
+
+    gap:12px;
+
+
+    font-size:16px;
+
+
+    font-weight:700;
+
+
+    transition:.3s;
+
+
+}
+
+
+
+
+.login-openid{
+
+
+    background:white;
+
+
+    color:#222;
+
+
+    border:none;
+
+
+}
+
+
+
+
+
+.login-openid:hover{
+
+
+    transform:translateY(-3px);
+
+
+    box-shadow:
+
+    0 10px 25px rgba(255,255,255,.15);
+
+
+}
+
+
+
+
+
+.login-openid i{
+
+    color:#4285f4;
+
+    font-size:20px;
+
+}
+
+
+
+
+
+.login-guest{
+
+
+    background:
+
+    var(--bg-soft);
+
+
+    color:var(--text);
+
+
+    border:
+
+    1px solid var(--border);
+
+
+}
+
+
+
+.login-guest:hover{
+
+
+    border-color:var(--primary);
+
+
+    color:var(--primary);
+
+
+    transform:translateY(-3px);
+
+
+}
+
+
+
+
+
+/* ===============================
+DIVIDER
+================================ */
+
+
+.divider{
+
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    margin:25px 0;
+
+
+    color:var(--text-soft);
+
+}
+
+
+
+.divider::before,
+.divider::after{
+
+
+    content:"";
+
+
+    height:1px;
+
+
+    flex:1;
+
+
+    background:var(--border);
+
+
+}
+
+
+
+
+
+
+
+/* ===============================
+FEATURES
+================================ */
+
+
+.login-features{
+
+
+    margin-top:35px;
+
+
+    display:flex;
+
+
+    flex-direction:column;
+
+
+    gap:14px;
+
+
+}
+
+
+
+
+
+.feature{
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    gap:12px;
+
+
+    padding:12px;
+
+
+    background:
+
+    rgba(255,255,255,.03);
+
+
+    border-radius:12px;
+
+
+    color:var(--text-soft);
+
+
+    font-size:14px;
+
+
+}
+
+
+
+
+
+.feature i{
+
+    color:var(--primary);
+
+    width:22px;
+
+}
+
+
+
+
+
+
+
+
+/* ===============================
+STATUS
+================================ */
+
+
+.login-status{
+
+
+    min-height:25px;
+
+
+    margin-top:20px;
+
+
+    font-size:14px;
+
+
+    color:var(--warning);
+
+
+}
+
+
+
+
+
+/* ===============================
+FOOTER
+================================ */
+
+
+.login-footer{
+
+
+    margin-top:30px;
+
+
+    font-size:12px;
+
+
+    color:var(--text-soft);
+
+
+}
+
+
+
+
+
+
+
+/* ===============================
+LOADER
+================================ */
+
+
+.auth-loader{
+
+
+    position:fixed;
+
+
+    inset:0;
+
+
+    z-index:9999;
+
+
+    background:
+
+    rgba(11,18,32,.95);
+
+
+    display:flex;
+
+
+    align-items:center;
+
+
+    justify-content:center;
+
+
+}
+
+
+
+
+
+.auth-loader.hidden{
+
+    display:none;
+
+}
+
+
+
+
+.loader-box{
+
+
+    text-align:center;
+
+    color:white;
+
+}
+
+
+
+
+.loader-circle{
+
+
+    width:55px;
+
+    height:55px;
+
+
+    border-radius:50%;
+
+
+    border:
+
+    5px solid rgba(255,255,255,.2);
+
+
+    border-top-color:
+
+    var(--primary);
+
+
+    animation:
+
+    spin 1s linear infinite;
+
+
+    margin:auto auto 20px;
+
+
+}
+
+
+
+
+@keyframes spin{
+
+
+    to{
+
+        transform:rotate(360deg);
+
+    }
+
+}
+
+
+
+
+
+/* ===============================
+MOBILE
+================================ */
+
+
+@media(max-width:480px){
+
+
+.login-card{
+
+
+    padding:30px 20px;
+
+
+}
+
+
+.login-brand h1{
+
+
+    font-size:32px;
+
+
+}
+
+
+}
+
+/* ==================================================
+
+NightCast Login Controller
+
+File:
+users/js/login.js
+
+
+Version:
+1.0.0
+
+
+Compatible:
+login.html
+login.css
+
+
+================================================== */
+
+
+(function(){
+
+
+"use strict";
+
+
+
+
+
+const CONFIG = {
+
+
+
+    API_BASE:
+
+    "https://nightcast-api.tomasgermany2580.workers.dev/api/v1",
+
+
+
+
+    REDIRECT:
+
+    "/users/"
+
+
+
+
+};
+
+
+
+
+
+
+
+
+
+const Login = {
+
+
+
+
+    elements:{},
+
+
+
+
+
+    init(){
+
+
+
+        console.log(
+            "NightCast Login Ready"
+        );
+
+
+
+        this.cache();
+
+
+        this.bind();
+
+
+
+        this.checkSession();
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    cache(){
+
+
+
+        this.elements.loader =
+
+        document.getElementById(
+            "authLoader"
+        );
+
+
+
+
+        this.elements.loaderText =
+
+        document.getElementById(
+            "loaderText"
+        );
+
+
+
+
+        this.elements.openId =
+
+        document.getElementById(
+            "openIdLogin"
+        );
+
+
+
+
+
+        this.elements.guest =
+
+        document.getElementById(
+            "guestLogin"
+        );
+
+
+
+
+
+        this.elements.message =
+
+        document.getElementById(
+            "loginMessage"
+        );
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    bind(){
+
+
+
+        if(this.elements.openId){
+
+
+            this.elements.openId
+            .addEventListener(
+
+                "click",
+
+                ()=>{
+
+                    this.openID();
+
+
+                }
+
+            );
+
+
+        }
+
+
+
+
+
+
+
+
+        if(this.elements.guest){
+
+
+
+            this.elements.guest
+            .addEventListener(
+
+                "click",
+
+                ()=>{
+
+
+                    this.guestLogin();
+
+
+                }
+
+            );
+
+
+        }
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    openID(){
+
+
+
+        this.loading(
+            true,
+            "در حال اتصال به Google..."
+        );
+
+
+
+
+
+        /*
+        OAuth Redirect
+
+        Backend باید این Route را داشته باشد:
+
+        /auth/openid/google
+
+        */
+
+
+
+        const url =
+
+        CONFIG.API_BASE +
+
+        "/auth/openid/google";
+
+
+
+
+
+        window.location.href = url;
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    async guestLogin(){
+
+
+
+        this.loading(
+
+            true,
+
+            "ساخت حساب مهمان..."
+
+        );
+
+
+
+
+
+        try{
+
+
+
+            const response =
+
+            await fetch(
+
+                CONFIG.API_BASE +
+
+                "/auth/guest",
+
+                {
+
+
+                    method:"POST",
+
+
+                    headers:{
+
+
+                        "Content-Type":
+
+                        "application/json"
+
+
+                    }
+
+
+
+                }
+
+
+            );
+
+
+
+
+
+
+
+
+            if(!response.ok){
+
+
+
+                throw new Error(
+
+                    "Guest login failed"
+
+                );
+
+
+            }
+
+
+
+
+
+
+
+            const data =
+
+            await response.json();
+
+
+
+
+
+
+
+            this.saveSession(
+
+                data
+
+            );
+
+
+
+
+
+
+
+            this.success(
+
+                "ورود مهمان موفق بود"
+
+            );
+
+
+
+
+
+
+            setTimeout(()=>{
+
+
+                location.href =
+
+                CONFIG.REDIRECT;
+
+
+
+            },700);
+
+
+
+
+
+
+        }
+
+        catch(error){
+
+
+
+            console.error(
+
+                error
+
+            );
+
+
+
+            this.error(
+
+                "ورود مهمان انجام نشد"
+
+            );
+
+
+
+            this.loading(false);
+
+
+
+        }
+
+
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    saveSession(data){
+
+
+
+        if(data.token){
+
+
+
+            localStorage.setItem(
+
+                "NightCastToken",
+
+                data.token
+
+            );
+
+
+
+        }
+
+
+
+
+
+
+
+        if(data.user){
+
+
+
+            localStorage.setItem(
+
+                "NightCastUser",
+
+                JSON.stringify(
+
+                    data.user
+
+                )
+
+            );
+
+
+
+        }
+
+
+
+
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    checkSession(){
+
+
+
+        const token =
+
+        localStorage.getItem(
+
+            "NightCastToken"
+
+        );
+
+
+
+
+
+        if(token){
+
+
+
+            console.log(
+
+                "Existing session"
+
+            );
+
+
+
+        }
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    loading(status,text){
+
+
+
+        if(!this.elements.loader){
+
+            return;
+
+        }
+
+
+
+
+        if(text && this.elements.loaderText){
+
+
+
+            this.elements.loaderText.textContent=text;
+
+
+        }
+
+
+
+
+
+
+
+        if(status){
+
+
+
+            this.elements.loader
+
+            .classList
+
+            .remove(
+
+                "hidden"
+
+            );
+
+
+        }
+
+        else{
+
+
+            this.elements.loader
+
+            .classList
+
+            .add(
+
+                "hidden"
+
+            );
+
+
+        }
+
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    success(text){
+
+
+
+        this.elements.message.className=
+
+        "login-status success";
+
+
+
+        this.elements.message.textContent=text;
+
+
+
+    },
+
+
+
+
+
+
+
+
+    error(text){
+
+
+
+        this.elements.message.className=
+
+        "login-status error";
+
+
+
+        this.elements.message.textContent=text;
+
+
+
+    }
+
+
+
+
+
+};
+
+
+
+
+
+
+
+
+
+
+window.NightCastLogin = Login;
+
+
+
+
+
+
+
+document.addEventListener(
+
+"DOMContentLoaded",
+
+()=>{
+
+
+    Login.init();
+
+
+
+});
+
+
+
+
+
+
+
+})();

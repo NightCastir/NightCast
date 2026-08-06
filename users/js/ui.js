@@ -1,170 +1,156 @@
+
 /* ==================================================
 
-NightCast User UI Manager V3
+NightCast UI Manager V1
 
 File:
-/users/js/core/ui.js
+users/assets/js/components/ui.js
 
 Responsibility:
-ONLY UI
+- Toast Messages
+- Loading State
+- Modal Control
+- UI Helpers
+- Empty / Error States
+
+No API Logic
+No Authentication Logic
 
 ================================================== */
 
 
-const NightCastUI = {
-
-
-    init(){
-
-
-        this.initTheme();
-
-        this.bindGlobalEvents();
-
-        this.updateUserUI();
-
-
-        console.log(
-            "NightCast UI Ready"
-        );
-
-
-    },
+const UI = {
 
 
 
-
-
-
-    hideLoader(){
-
-
-        const loader =
-        document.getElementById(
-            "globalLoader"
-        );
-
-
-        if(loader){
-
-            loader.classList.add(
-                "hidden"
-            );
-
-        }
-
-
-    },
-
-
-
-
-
-
-
-    showLoader(){
-
-
-        const loader =
-        document.getElementById(
-            "globalLoader"
-        );
-
-
-        if(loader){
-
-            loader.classList.remove(
-                "hidden"
-            );
-
-        }
-
-
-    },
-
-
-
-
-
-
-
+    // ==========================================
+    // SHOW TOAST
+    // ==========================================
 
     toast(
+
         message,
-        type="info"
+
+        type="info",
+
+        duration=3000
+
     ){
 
 
-        const container =
+
+        let container =
+
         document.getElementById(
-            "toastContainer"
+
+            "nc-toast-container"
+
         );
 
 
 
         if(!container){
 
-            console.log(message);
 
-            return;
+            container =
+
+            document.createElement(
+
+                "div"
+
+            );
+
+
+            container.id =
+
+            "nc-toast-container";
+
+
+
+            document.body.appendChild(
+
+                container
+
+            );
+
 
         }
 
 
 
 
+        const toast =
 
-        const item =
         document.createElement(
+
             "div"
+
         );
 
 
 
-        item.className =
-        `toast toast-${type}`;
+        toast.className =
+
+        "nc-toast nc-toast-"+type;
 
 
 
-        item.innerHTML =
-        `
-        <span>${message}</span>
-        `;
+        toast.textContent =
+
+        message;
 
 
 
         container.appendChild(
-            item
+
+            toast
+
         );
 
 
 
-        setTimeout(()=>{
-
-            item.classList.add(
-                "show"
-            );
-
-        },50);
-
-
 
 
         setTimeout(()=>{
 
-            item.classList.remove(
+
+            toast.classList.add(
+
                 "show"
+
             );
+
+
+        },20);
+
+
+
+
+
+
+        setTimeout(()=>{
+
+
+            toast.classList.remove(
+
+                "show"
+
+            );
+
 
 
             setTimeout(()=>{
 
-                item.remove();
+
+                toast.remove();
+
+
 
             },300);
 
 
-        },3000);
+
+        },duration);
 
 
 
@@ -178,45 +164,20 @@ const NightCastUI = {
 
 
 
-    initTheme(){
+    // ==========================================
+    // SUCCESS MESSAGE
+    // ==========================================
+
+    success(message){
 
 
-        const saved =
-        localStorage.getItem(
-            "NightCastTheme"
+        this.toast(
+
+            message,
+
+            "success"
+
         );
-
-
-
-        if(saved==="light"){
-
-            document.body.classList.add(
-                "light-theme"
-            );
-
-        }
-
-
-
-
-        const btn =
-        document.getElementById(
-            "themeButton"
-        );
-
-
-
-        if(btn){
-
-
-            btn.onclick=()=>{
-
-                this.toggleTheme();
-
-            };
-
-
-        }
 
 
     },
@@ -226,30 +187,42 @@ const NightCastUI = {
 
 
 
+    // ==========================================
+    // ERROR MESSAGE
+    // ==========================================
 
-    toggleTheme(){
+    error(message){
 
 
-        document.body.classList.toggle(
-            "light-theme"
+        this.toast(
+
+            message,
+
+            "error"
+
         );
 
 
-
-        const mode =
-        document.body.classList.contains(
-            "light-theme"
-        )
-        ?
-        "light"
-        :
-        "dark";
+    },
 
 
 
-        localStorage.setItem(
-            "NightCastTheme",
-            mode
+
+
+
+    // ==========================================
+    // WARNING
+    // ==========================================
+
+    warning(message){
+
+
+        this.toast(
+
+            message,
+
+            "warning"
+
         );
 
 
@@ -261,70 +234,54 @@ const NightCastUI = {
 
 
 
+    // ==========================================
+    // LOADING
+    // ==========================================
+
+    showLoading(
+
+        element
+
+    ){
 
 
-    bindGlobalEvents(){
 
+        if(!element)
 
-        this.bindMobileMenu();
-
-
+        return;
 
 
 
-        const login =
-        document.getElementById(
-            "loginButton"
+        element.dataset.oldContent =
+
+        element.innerHTML;
+
+
+
+        element.innerHTML =
+
+
+        `
+
+        <div class="nc-loading">
+
+            <span></span>
+
+            <span></span>
+
+            <span></span>
+
+        </div>
+
+        `;
+
+
+
+        element.classList.add(
+
+            "loading"
+
         );
-
-
-
-        if(login){
-
-
-            login.onclick=()=>{
-
-
-                this.openModal(
-                    "authModal"
-                );
-
-
-            };
-
-
-        }
-
-
-
-
-
-
-
-        const closeAuth =
-        document.getElementById(
-            "closeAuth"
-        );
-
-
-
-        if(closeAuth){
-
-
-            closeAuth.onclick=()=>{
-
-
-                this.closeModal(
-                    "authModal"
-                );
-
-
-            };
-
-
-        }
-
-
 
 
     },
@@ -337,157 +294,133 @@ const NightCastUI = {
 
 
 
-    bindMobileMenu(){
+    hideLoading(
 
+        element
 
-        const open =
-        document.getElementById(
-            "mobileMenuButton"
-        );
+    ){
 
 
 
-        const close =
-        document.getElementById(
-            "closeMobileMenu"
-        );
+        if(!element)
 
-
-
-        const menu =
-        document.getElementById(
-            "mobileMenu"
-        );
-
-
-
-        const overlay =
-        document.getElementById(
-            "mobileOverlay"
-        );
-
-
-
-
-
-        if(open && menu && overlay){
-
-
-            open.onclick=()=>{
-
-
-                menu.classList.add(
-                    "active"
-                );
-
-
-                overlay.classList.add(
-                    "active"
-                );
-
-
-            };
-
-
-        }
-
-
-
-
-
-        if(close){
-
-
-            close.onclick=()=>{
-
-
-                menu.classList.remove(
-                    "active"
-                );
-
-
-                overlay.classList.remove(
-                    "active"
-                );
-
-
-            };
-
-
-        }
-
-
-
-
-
-        if(overlay){
-
-
-            overlay.onclick=()=>{
-
-
-                close.click();
-
-
-            };
-
-
-        }
-
-
-    },
-
-
-
-
-
-
-
-
-
-    updateUserUI(){
-
-
-
-        const btn =
-        document.getElementById(
-            "loginButton"
-        );
-
-
-
-        if(!btn){
-
-            return;
-
-        }
-
+        return;
 
 
 
         if(
-            window.NightCastAuth
-            &&
-            NightCastAuth.isLoggedIn()
+
+            element.dataset.oldContent
+
         ){
 
 
-            btn.innerHTML =
-            `
-            <i class="fa-solid fa-user"></i>
-            حساب کاربری
-            `;
+
+            element.innerHTML =
+
+            element.dataset.oldContent;
+
+
+
+            delete element.dataset.oldContent;
 
 
         }
-        else{
 
 
-            btn.innerHTML =
-            `
-            <i class="fa-solid fa-right-to-bracket"></i>
-            ورود
-            `;
+
+        element.classList.remove(
+
+            "loading"
+
+        );
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    // ==========================================
+    // SET TEXT
+    // ==========================================
+
+    text(
+
+        selector,
+
+        value
+
+    ){
+
+
+
+        const el =
+
+        document.querySelector(
+
+            selector
+
+        );
+
+
+
+        if(el){
+
+
+            el.textContent =
+
+            value ?? "";
+
+        }
+
+
+    },
+
+
+
+
+
+
+
+
+
+    // ==========================================
+    // SET HTML
+    // ==========================================
+
+    html(
+
+        selector,
+
+        value
+
+    ){
+
+
+
+        const el =
+
+        document.querySelector(
+
+            selector
+
+        );
+
+
+
+        if(el){
+
+
+            el.innerHTML =
+
+            value ?? "";
 
 
         }
@@ -503,21 +436,32 @@ const NightCastUI = {
 
 
 
-    openModal(id){
+    // ==========================================
+    // SHOW ELEMENT
+    // ==========================================
+
+    show(selector){
+
 
 
         const el =
-        document.getElementById(id);
+
+        document.querySelector(
+
+            selector
+
+        );
 
 
 
         if(el){
 
-            el.classList.remove(
-                "hidden"
-            );
+
+            el.style.display="";
+
 
         }
+
 
 
     },
@@ -529,24 +473,416 @@ const NightCastUI = {
 
 
 
-    closeModal(id){
+
+    // ==========================================
+    // HIDE ELEMENT
+    // ==========================================
+
+    hide(selector){
+
 
 
         const el =
-        document.getElementById(id);
+
+        document.querySelector(
+
+            selector
+
+        );
 
 
 
         if(el){
 
-            el.classList.add(
-                "hidden"
+
+            el.style.display="none";
+
+
+        }
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    // ==========================================
+    // EMPTY STATE
+    // ==========================================
+
+    empty(
+
+        container,
+
+        message="موردی یافت نشد"
+
+    ){
+
+
+
+        if(!container)
+
+        return;
+
+
+
+        container.innerHTML =
+
+
+        `
+
+        <div class="nc-empty">
+
+
+            <div class="nc-empty-icon">
+
+                🎙
+
+            </div>
+
+
+            <p>
+
+                ${message}
+
+            </p>
+
+
+        </div>
+
+        `;
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    // ==========================================
+    // ERROR STATE
+    // ==========================================
+
+    errorBox(
+
+        container,
+
+        message="خطایی رخ داده است"
+
+    ){
+
+
+
+        if(!container)
+
+        return;
+
+
+
+        container.innerHTML =
+
+
+        `
+
+        <div class="nc-error">
+
+
+            <div>
+
+                ⚠️
+
+            </div>
+
+
+            <p>
+
+                ${message}
+
+            </p>
+
+
+            <button
+
+            onclick="location.reload()">
+
+                تلاش دوباره
+
+            </button>
+
+
+        </div>
+
+
+        `;
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    // ==========================================
+    // MODAL OPEN
+    // ==========================================
+
+    openModal(
+
+        id
+
+    ){
+
+
+
+        const modal =
+
+        document.getElementById(
+
+            id
+
+        );
+
+
+
+        if(!modal)
+
+        return;
+
+
+
+        modal.classList.add(
+
+            "active"
+
+        );
+
+
+
+        document.body.classList.add(
+
+            "modal-open"
+
+        );
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    // ==========================================
+    // MODAL CLOSE
+    // ==========================================
+
+    closeModal(
+
+        id
+
+    ){
+
+
+
+        const modal =
+
+        document.getElementById(
+
+            id
+
+        );
+
+
+
+        if(!modal)
+
+        return;
+
+
+
+        modal.classList.remove(
+
+            "active"
+
+        );
+
+
+
+        document.body.classList.remove(
+
+            "modal-open"
+
+        );
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    // ==========================================
+    // FORMAT TIME
+    // ==========================================
+
+    formatTime(
+
+        seconds
+
+    ){
+
+
+
+        if(
+
+            !seconds
+
+            ||
+
+            isNaN(seconds)
+
+        )
+
+        return "00:00";
+
+
+
+        const min =
+
+        Math.floor(
+
+            seconds / 60
+
+        );
+
+
+
+        const sec =
+
+        Math.floor(
+
+            seconds % 60
+
+        );
+
+
+
+        return (
+
+            min < 10
+
+            ?
+
+            "0"+min
+
+            :
+
+            min
+
+        )
+
+        +
+
+        ":"+
+
+        (
+
+            sec < 10
+
+            ?
+
+            "0"+sec
+
+            :
+
+            sec
+
+        );
+
+
+    },
+
+
+
+
+
+
+
+
+
+    // ==========================================
+    // FORMAT DATE
+    // ==========================================
+
+    formatDate(
+
+        date
+
+    ){
+
+
+
+        if(!date)
+
+        return "-";
+
+
+
+        try{
+
+
+            return new Date(
+
+                date
+
+            ).toLocaleDateString(
+
+                "fa-IR"
+
             );
+
+
+        }
+
+        catch(e){
+
+
+            return date;
+
 
         }
 
 
     }
+
+
+
+
 
 
 
@@ -557,5 +893,13 @@ const NightCastUI = {
 
 
 
-window.NightCastUI =
-NightCastUI;
+
+window.UI = UI;
+
+
+
+console.log(
+
+"NightCast UI Loaded"
+
+);

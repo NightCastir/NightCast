@@ -1,25 +1,29 @@
 /* ==================================================
 
-NightCast Audio Player V1
+NightCast Audio Player V2
 
 File:
 
-/users/js/player.js
+users/js/player.js
 
 
-Responsibility:
+Compatible With:
+
+users/index.html
+
+
+Features:
 
 - Audio Control
-- Play Podcast
+- Play / Pause
 - Progress
+- Seek
 - Volume
 - Speed
-
-
-Depends:
-
-api.js
-
+- Queue Ready
+- Local Storage History
+- Mobile Bottom Player Sync
+- Error Handling
 
 ================================================== */
 
@@ -30,19 +34,19 @@ const NightCastPlayer = {
 
     audio:null,
 
-
     current:null,
 
+    queue:[],
+
+    currentIndex:-1,
 
 
 
 
 
-    /*
-    ====================================
+    /* ==========================================
     INIT
-    ====================================
-    */
+    ========================================== */
 
 
     init(){
@@ -53,7 +57,7 @@ const NightCastPlayer = {
 
         document.getElementById(
 
-            "audioElement"
+            "nightcastAudio"
 
         );
 
@@ -61,19 +65,20 @@ const NightCastPlayer = {
 
 
 
-
         if(!this.audio){
+
 
             console.warn(
 
-                "Audio element not found"
+                "NightCast audio element not found"
 
             );
 
+
             return;
 
-        }
 
+        }
 
 
 
@@ -82,11 +87,12 @@ const NightCastPlayer = {
         this.bindEvents();
 
 
+        this.restoreVolume();
 
 
         console.log(
 
-            "NightCast Player Ready"
+            "NightCast Player V2 Ready"
 
         );
 
@@ -102,14 +108,23 @@ const NightCastPlayer = {
 
 
 
-    /*
-    ====================================
-    PLAY PODCAST
-    ====================================
-    */
+    /* ==========================================
+    LOAD PODCAST
+    ========================================== */
 
 
     play(podcast){
+
+
+
+        if(!podcast){
+
+            return;
+
+        }
+
+
+
 
 
 
@@ -117,26 +132,20 @@ const NightCastPlayer = {
 
 
 
-            if(window.NightCastUI){
+            this.toast(
 
+                "فایل صوتی موجود نیست",
 
-                NightCastUI.toast(
+                "error"
 
-                    "فایل صوتی موجود نیست",
-
-                    "error"
-
-                );
-
-
-            }
-
+            );
 
 
             return;
 
 
         }
+
 
 
 
@@ -159,7 +168,16 @@ const NightCastPlayer = {
 
 
 
-        this.audio.play();
+        this.audio.load();
+
+
+
+
+
+
+        this.audio.play()
+
+        .catch(()=>{});
 
 
 
@@ -169,7 +187,7 @@ const NightCastPlayer = {
         this.updateInfo();
 
 
-
+        this.saveHistory();
 
 
 
@@ -187,14 +205,20 @@ const NightCastPlayer = {
 
 
 
-    /*
-    ====================================
-    UPDATE PLAYER INFO
-    ====================================
-    */
+    /* ==========================================
+    UPDATE UI
+    ========================================== */
 
 
     updateInfo(){
+
+
+
+        if(!this.current)
+
+        return;
+
+
 
 
 
@@ -208,6 +232,8 @@ const NightCastPlayer = {
 
 
 
+
+
         const author =
 
         document.getElementById(
@@ -215,6 +241,8 @@ const NightCastPlayer = {
             "playerAuthor"
 
         );
+
+
 
 
 
@@ -231,54 +259,42 @@ const NightCastPlayer = {
 
 
 
+        if(title)
 
+        title.textContent =
 
-        if(title){
+        this.current.title ||
 
-
-
-            title.textContent =
-
-            this.current.title || "NightCast";
-
-
-        }
+        "NightCast";
 
 
 
 
 
 
-        if(author){
 
+        if(author)
 
+        author.textContent =
 
-            author.textContent =
+        this.current.author_name ||
 
-            this.current.author_name ||
-
-            "NightCast";
-
-
-        }
+        "NightCast";
 
 
 
 
 
 
-        if(cover){
 
 
+        if(cover)
 
-            cover.src =
+        cover.src =
 
-            this.current.cover_url ||
+        this.current.cover_url ||
 
-            "/users/assets/images/default-cover.jpg";
-
-
-        }
+        "/users/assets/images/default-cover.jpg";
 
 
 
@@ -292,22 +308,20 @@ const NightCastPlayer = {
 
 
 
-    /*
-    ====================================
-    CONTROLS
-    ====================================
-    */
+    /* ==========================================
+    EVENTS
+    ========================================== */
 
 
     bindEvents(){
 
 
 
-        const playBtn =
+        const playButton =
 
         document.getElementById(
 
-            "playButton"
+            "playerPlayBtn"
 
         );
 
@@ -315,42 +329,54 @@ const NightCastPlayer = {
 
 
 
-        if(playBtn){
+        if(playButton){
 
 
 
-            playBtn.onclick=()=>{
+            playButton.onclick=()=>{
 
 
-
-                if(this.audio.paused){
-
-
-
-                    this.audio.play();
-
-
-
-                }
-
-                else{
-
-
-
-                    this.audio.pause();
-
-
-
-                }
-
+                this.toggle();
 
 
             };
 
 
-
         }
 
+
+
+
+
+
+
+        const bottomPlay =
+
+        document.getElementById(
+
+            "bottomPlayButton"
+
+        );
+
+
+
+
+
+
+        if(bottomPlay){
+
+
+
+            bottomPlay.onclick=()=>{
+
+
+                this.toggle();
+
+
+            };
+
+
+        }
 
 
 
@@ -365,12 +391,14 @@ const NightCastPlayer = {
             ()=>{
 
 
-                this.updatePlayIcon(true);
+                this.updatePlayState(true);
 
 
             }
 
         );
+
+
 
 
 
@@ -384,12 +412,13 @@ const NightCastPlayer = {
             ()=>{
 
 
-                this.updatePlayIcon(false);
+                this.updatePlayState(false);
 
 
             }
 
         );
+
 
 
 
@@ -419,13 +448,118 @@ const NightCastPlayer = {
 
 
 
+        this.audio.addEventListener(
+
+            "loadedmetadata",
+
+            ()=>{
+
+
+                this.updateDuration();
+
+
+            }
+
+        );
+
+
+
+
+
+
+
+        this.audio.addEventListener(
+
+            "ended",
+
+            ()=>{
+
+
+                this.next();
+
+
+            }
+
+        );
+
+
+
+
+
+
+
+
+
+        this.audio.addEventListener(
+
+            "error",
+
+            ()=>{
+
+
+                this.toast(
+
+                    "خطا در پخش فایل صوتی",
+
+                    "error"
+
+                );
+
+
+            }
+
+        );
+
+
+
+
+
+
+
+
+
+        const progress =
+
+        document.getElementById(
+
+            "playerProgressContainer"
+
+        );
+
+
+
+
+
+        if(progress){
+
+
+
+            progress.onclick=(event)=>{
+
+
+                this.seek(event,progress);
+
+
+            };
+
+
+        }
+
+
+
+
+
+
+
+
         const volume =
 
         document.getElementById(
 
-            "volumeControl"
+            "playerVolume"
 
         );
+
 
 
 
@@ -438,15 +572,22 @@ const NightCastPlayer = {
             volume.oninput=()=>{
 
 
-
                 this.audio.volume =
 
                 volume.value;
 
 
 
-            };
+                localStorage.setItem(
 
+                    "NightCastVolume",
+
+                    volume.value
+
+                );
+
+
+            };
 
 
         }
@@ -470,6 +611,8 @@ const NightCastPlayer = {
 
 
 
+
+
         if(speed){
 
 
@@ -477,68 +620,10 @@ const NightCastPlayer = {
             speed.onclick=()=>{
 
 
-
-                const values =
-
-                [
-
-                    1,
-
-                    1.25,
-
-                    1.5,
-
-                    2
-
-                ];
-
-
-
-
-
-                let index =
-
-                values.indexOf(
-
-                    this.audio.playbackRate
-
-                );
-
-
-
-
-
-                index++;
-
-
-
-
-
-                if(index>=values.length)
-
-                index=0;
-
-
-
-
-
-                this.audio.playbackRate =
-
-                values[index];
-
-
-
-
-
-
-                speed.textContent =
-
-                values[index]+"x";
-
+                this.changeSpeed(speed);
 
 
             };
-
 
 
         }
@@ -549,11 +634,12 @@ const NightCastPlayer = {
 
 
 
-        const progress =
+
+        const next =
 
         document.getElementById(
 
-            "progressContainer"
+            "nextButton"
 
         );
 
@@ -561,54 +647,172 @@ const NightCastPlayer = {
 
 
 
-        if(progress){
+        if(next){
 
 
 
-            progress.onclick=(e)=>{
+            next.onclick=()=>{
 
 
-
-                const rect =
-
-                progress.getBoundingClientRect();
-
-
-
-
-
-                const percent =
-
-                (
-
-                    e.clientX -
-
-                    rect.left
-
-                )
-
-                /
-
-                rect.width;
-
-
-
-
-
-
-                this.audio.currentTime =
-
-                this.audio.duration *
-
-                percent;
-
+                this.next();
 
 
             };
 
 
+        }
+
+
+
+
+
+
+
+        const previous =
+
+        document.getElementById(
+
+            "previousButton"
+
+        );
+
+
+
+
+
+        if(previous){
+
+
+
+            previous.onclick=()=>{
+
+
+                this.previous();
+
+
+            };
+
 
         }
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /* ==========================================
+    TOGGLE
+    ========================================== */
+
+
+    toggle(){
+
+
+
+        if(!this.audio.src)
+
+        return;
+
+
+
+
+
+
+        if(this.audio.paused){
+
+
+            this.audio.play();
+
+
+        }
+
+        else{
+
+
+            this.audio.pause();
+
+
+        }
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /* ==========================================
+    PLAY ICON
+    ========================================== */
+
+
+    updatePlayState(state){
+
+
+
+        const icon =
+
+        document.querySelector(
+
+            "#playerPlayBtn i"
+
+        );
+
+
+
+
+
+        const bottomIcon =
+
+        document.querySelector(
+
+            "#bottomPlayButton i"
+
+        );
+
+
+
+
+
+
+
+        const className = state
+
+        ?
+
+        "fa-solid fa-pause"
+
+        :
+
+        "fa-solid fa-play";
+
+
+
+
+
+
+        if(icon)
+
+        icon.className = className;
+
+
+
+
+
+
+        if(bottomIcon)
+
+        bottomIcon.className = className;
 
 
 
@@ -622,11 +826,9 @@ const NightCastPlayer = {
 
 
 
-    /*
-    ====================================
+    /* ==========================================
     PROGRESS
-    ====================================
-    */
+    ========================================== */
 
 
     updateProgress(){
@@ -641,12 +843,27 @@ const NightCastPlayer = {
 
 
 
+        const percent =
+
+        (
+
+            this.audio.currentTime /
+
+            this.audio.duration
+
+        ) * 100;
+
+
+
+
+
+
 
         const bar =
 
         document.getElementById(
 
-            "progressBar"
+            "playerProgressBar"
 
         );
 
@@ -655,30 +872,13 @@ const NightCastPlayer = {
 
 
 
-        if(bar){
+        if(bar)
+
+        bar.style.width =
+
+        percent+"%";
 
 
-
-            bar.style.width =
-
-
-            (
-
-                this.audio.currentTime /
-
-                this.audio.duration *
-
-                100
-
-            )
-
-            +
-
-            "%";
-
-
-
-        }
 
 
 
@@ -689,7 +889,7 @@ const NightCastPlayer = {
 
         document.getElementById(
 
-            "currentTime"
+            "playerCurrentTime"
 
         );
 
@@ -697,22 +897,15 @@ const NightCastPlayer = {
 
 
 
+        if(current)
 
+        current.textContent =
 
-        if(current){
+        this.formatTime(
 
+            this.audio.currentTime
 
-
-            current.textContent =
-
-            this.formatTime(
-
-                this.audio.currentTime
-
-            );
-
-
-        }
+        );
 
 
 
@@ -725,23 +918,15 @@ const NightCastPlayer = {
 
 
 
-
-    /*
-    ====================================
-    ICON
-    ====================================
-    */
-
-
-    updatePlayIcon(state){
+    updateDuration(){
 
 
 
-        const btn =
+        const duration =
 
-        document.querySelector(
+        document.getElementById(
 
-            "#playButton i"
+            "playerDuration"
 
         );
 
@@ -749,8 +934,32 @@ const NightCastPlayer = {
 
 
 
+        if(duration)
 
-        if(!btn)
+        duration.textContent =
+
+        this.formatTime(
+
+            this.audio.duration
+
+        );
+
+
+    },
+
+
+
+
+
+
+
+
+
+    seek(event,element){
+
+
+
+        if(!this.audio.duration)
 
         return;
 
@@ -759,15 +968,39 @@ const NightCastPlayer = {
 
 
 
-        btn.className = state
+        const rect =
 
-        ?
+        element.getBoundingClientRect();
 
-        "fa-solid fa-pause"
 
-        :
 
-        "fa-solid fa-play";
+
+
+        const percent =
+
+        (
+
+            event.clientX -
+
+            rect.left
+
+        )
+
+        /
+
+        rect.width;
+
+
+
+
+
+
+
+        this.audio.currentTime =
+
+        this.audio.duration *
+
+        percent;
 
 
 
@@ -781,11 +1014,248 @@ const NightCastPlayer = {
 
 
 
-    /*
-    ====================================
-    SHOW PLAYER
-    ====================================
-    */
+    /* ==========================================
+    SPEED
+    ========================================== */
+
+
+    changeSpeed(button){
+
+
+
+        const speeds =
+
+        [
+
+            1,
+
+            1.25,
+
+            1.5,
+
+            2
+
+        ];
+
+
+
+
+
+
+        let index =
+
+        speeds.indexOf(
+
+            this.audio.playbackRate
+
+        );
+
+
+
+
+
+        index++;
+
+
+
+
+
+
+        if(index>=speeds.length)
+
+        index=0;
+
+
+
+
+
+
+
+        this.audio.playbackRate =
+
+        speeds[index];
+
+
+
+
+
+        button.textContent =
+
+        speeds[index]+"x";
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /* ==========================================
+    NEXT / PREVIOUS
+    ========================================== */
+
+
+    next(){
+
+
+
+        if(
+
+            this.currentIndex <
+
+            this.queue.length-1
+
+        ){
+
+
+
+            this.currentIndex++;
+
+
+            this.play(
+
+                this.queue[this.currentIndex]
+
+            );
+
+
+        }
+
+
+    },
+
+
+
+
+
+
+    previous(){
+
+
+
+        if(
+
+            this.audio.currentTime > 5
+
+        ){
+
+
+            this.audio.currentTime=0;
+
+
+            return;
+
+
+        }
+
+
+
+
+
+
+        if(this.currentIndex>0){
+
+
+
+            this.currentIndex--;
+
+
+            this.play(
+
+                this.queue[this.currentIndex]
+
+            );
+
+
+        }
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /* ==========================================
+    STORAGE
+    ========================================== */
+
+
+    saveHistory(){
+
+
+
+        if(!this.current)
+
+        return;
+
+
+
+
+
+
+        localStorage.setItem(
+
+            "NightCastLastPodcast",
+
+            JSON.stringify(
+
+                this.current
+
+            )
+
+        );
+
+
+    },
+
+
+
+
+
+
+    restoreVolume(){
+
+
+
+        const volume =
+
+        localStorage.getItem(
+
+            "NightCastVolume"
+
+        );
+
+
+
+
+
+        if(volume)
+
+        this.audio.volume = volume;
+
+
+    },
+
+
+
+
+
+
+
+
+
+    /* ==========================================
+    SHOW
+    ========================================== */
 
 
     show(){
@@ -804,20 +1274,13 @@ const NightCastPlayer = {
 
 
 
-        if(player){
+        if(player)
 
+        player.classList.add(
 
+            "active"
 
-            player.classList.add(
-
-                "active"
-
-            );
-
-
-
-        }
-
+        );
 
 
     },
@@ -830,18 +1293,17 @@ const NightCastPlayer = {
 
 
 
-    /*
-    ====================================
-    TIME FORMAT
-    ====================================
-    */
-
-
     formatTime(seconds){
 
 
 
-        if(!seconds || isNaN(seconds))
+        if(
+
+            !seconds ||
+
+            isNaN(seconds)
+
+        )
 
         return "00:00";
 
@@ -850,11 +1312,11 @@ const NightCastPlayer = {
 
 
 
-        const min =
+        const m =
 
         Math.floor(
 
-            seconds / 60
+            seconds/60
 
         );
 
@@ -862,11 +1324,11 @@ const NightCastPlayer = {
 
 
 
-        const sec =
+        const s =
 
         Math.floor(
 
-            seconds % 60
+            seconds%60
 
         );
 
@@ -877,7 +1339,7 @@ const NightCastPlayer = {
 
         return (
 
-            String(min).padStart(2,"0")
+            String(m).padStart(2,"0")
 
             +
 
@@ -885,10 +1347,46 @@ const NightCastPlayer = {
 
             +
 
-            String(sec).padStart(2,"0")
+            String(s).padStart(2,"0")
 
         );
 
+
+    },
+
+
+
+
+
+
+
+
+
+    toast(message,type){
+
+
+
+        if(window.NightCastUI){
+
+
+            NightCastUI.toast(
+
+                message,
+
+                type
+
+            );
+
+
+        }
+
+        else{
+
+
+            console.log(message);
+
+
+        }
 
 
     }
@@ -912,9 +1410,24 @@ NightCastPlayer;
 
 
 
+document.addEventListener(
+
+"DOMContentLoaded",
+
+()=>{
+
+
+    NightCastPlayer.init();
+
+
+});
+
+
+
+
 
 console.log(
 
-"NightCast Player V1 Loaded"
+"NightCast Player V2 Loaded"
 
 );

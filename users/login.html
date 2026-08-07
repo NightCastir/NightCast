@@ -1,228 +1,147 @@
 <!DOCTYPE html>
-
 <html lang="fa" dir="rtl">
 
 <head>
 
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
-<title>
-NightCast | ورود
-</title>
-
+<title>NightCast | خوش آمدید</title>
 
 <meta name="theme-color" content="#0b1220">
 
-
 <link rel="stylesheet" href="css/core.css">
-
 <link rel="stylesheet" href="css/login.css">
-
 
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-
 </head>
 
+<body>
 
+<!-- Background -->
 
-<body data-theme="dark">
+<div class="background-blur blur1"></div>
+<div class="background-blur blur2"></div>
 
-
-
-<!-- =========================
-LOADER
-========================= -->
-
+<!-- Loader -->
 
 <div id="authLoader" class="auth-loader hidden">
 
+    <div class="loader-box">
 
-<div class="loader-box">
+        <div class="loader-circle"></div>
 
+        <h3>NightCast</h3>
 
-<div class="loader-circle"></div>
+        <p id="loaderText">
+            در حال اتصال...
+        </p>
 
-
-<h3>
-NightCast
-</h3>
-
-
-<p id="loaderText">
-در حال اتصال...
-</p>
-
+    </div>
 
 </div>
-
-
-</div>
-
-
-
-
-
-
-
-
 
 <main class="login-page">
 
-
 <section class="login-card">
 
+<!-- Hero -->
 
+<div class="hero">
 
+    <div class="brand-icon">
 
+        <i class="fa-solid fa-radio"></i>
 
-<!-- BRAND -->
+    </div>
 
+    <h1>
 
-<div class="login-brand">
+        Night<span>Cast</span>
 
+    </h1>
 
-<div class="brand-icon">
+    <p class="hero-text">
 
-<i class="fa-solid fa-radio"></i>
+        رادیوی تجربه، یادگیری و رشد فردی
 
-</div>
-
-
-
-<h1>
-
-Night<span>Cast</span>
-
-</h1>
-
-
-
-<p>
-رادیوی تجربه، یادگیری و رشد فردی
-</p>
-
-
+    </p>
 
 </div>
 
+<!-- Welcome -->
 
+<div class="welcome">
 
+    <h2>
 
+        به NightCast خوش آمدید
 
+    </h2>
 
+    <p>
 
+        هزاران دقیقه پادکست، خلاصه کتاب و تجربه‌های ارزشمند منتظر شماست.
 
-
-
-<!-- MESSAGE -->
-
-
-<div class="login-message">
-
-
-<h2>
-خوش آمدید
-</h2>
-
-
-<p>
-برای تجربه کامل NightCast وارد شوید
-یا به عنوان مهمان ادامه دهید.
-</p>
-
+    </p>
 
 </div>
 
-
-
-
-
-
-
-
-
-<!-- OPENID -->
-
+<!-- Google -->
 
 <button
 
 id="openIdLogin"
 
-class="login-openid"
+class="btn btn-google"
 
 type="button">
 
-
 <i class="fa-brands fa-google"></i>
 
-
 <span>
-ورود با Google
-</span>
 
+ادامه با Google
+
+</span>
 
 </button>
 
-
-
-
-
-
-
-
+<!-- Divider -->
 
 <div class="divider">
 
 <span>
+
 یا
+
 </span>
 
 </div>
 
-
-
-
-
-
-
-
-
-<!-- GUEST -->
-
+<!-- Guest -->
 
 <button
 
 id="guestLogin"
 
-class="login-guest"
+class="btn btn-guest"
 
 type="button">
 
-
 <i class="fa-solid fa-headphones"></i>
 
-
 <span>
-ادامه بدون ورود
-</span>
 
+ادامه به عنوان مهمان
+
+</span>
 
 </button>
 
-
-
-
-
-
-
-
-
-<!-- MESSAGE -->
+<!-- Status -->
 
 <div
 
@@ -232,100 +151,104 @@ class="login-status">
 
 </div>
 
+<!-- Features -->
 
+<div class="features">
 
-
-
-
-
-
-
-<!-- FEATURES -->
-
-
-<div class="login-features">
-
-
-
-<div class="feature">
+<div class="feature-card">
 
 <i class="fa-solid fa-cloud"></i>
 
-<span>
-ذخیره تاریخچه شنیدن
-</span>
+<h4>
+
+همگام‌سازی
+
+</h4>
+
+<p>
+
+ذخیره سابقه شنیدن
+
+</p>
 
 </div>
 
-
-
-
-<div class="feature">
+<div class="feature-card">
 
 <i class="fa-solid fa-download"></i>
 
-<span>
-دانلود پادکست‌ها
-</span>
+<h4>
+
+دانلود
+
+</h4>
+
+<p>
+
+دریافت آفلاین پادکست‌ها
+
+</p>
 
 </div>
 
-
-
-
-
-<div class="feature">
+<div class="feature-card">
 
 <i class="fa-solid fa-heart"></i>
 
-<span>
-ساخت کتابخانه شخصی
-</span>
+<h4>
 
-</div>
+کتابخانه
 
-
-
-</div>
-
-
-
-
-
-
-
-
-<footer class="login-footer">
+</h4>
 
 <p>
-با ورود به NightCast قوانین استفاده را می‌پذیرید.
+
+لیست علاقه‌مندی‌های شخصی
+
 </p>
 
+</div>
+
+</div>
+
+<!-- Links -->
+
+<div class="login-links">
+
+<a href="#">
+
+ورود با نام کاربری
+
+</a>
+
+<span>•</span>
+
+<a href="#">
+
+ایجاد حساب جدید
+
+</a>
+
+</div>
+
+<footer>
+
+<p>
+
+با ادامه، قوانین استفاده و سیاست حفظ حریم خصوصی NightCast را می‌پذیرید.
+
+</p>
 
 </footer>
 
-
-
-
-
-
 </section>
-
 
 </main>
 
-
-
-
-
-
-
-
-
-<script src="js/login.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-</body>
+<script src="js/login.js"></script>
 
+</body>
 
 </html>

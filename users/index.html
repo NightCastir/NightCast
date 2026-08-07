@@ -3284,255 +3284,204 @@ updateFavoriteIcons();
 
 
 
-
-
-
 /* ==================================================
-CREATE CARD
+CREATE PODCAST CARD
+NIGHTCAST V6
 ================================================== */
-
-
 
 function createPodcastCard(podcast){
 
+    const id =
+        Number(podcast.id);
 
 
-const cover =
+    const title =
+        podcast.title ||
+        "بدون عنوان";
 
-podcast.cover_url ||
 
-podcast.cover ||
+    const author =
+        podcast.author_name ||
+        "NightCast";
 
-"https://placehold.co/600x400/00d4ff/ffffff?text=NightCast";
 
+    const book =
+        podcast.book_name ||
+        "";
 
 
+    const description =
+        podcast.description ||
+        podcast.summary ||
+        "توضیحی برای این پادکست ثبت نشده است.";
 
 
-const title =
+    const cover =
+        podcast.cover_url ||
+        "https://placehold.co/600x400/00d4ff/ffffff?text=NightCast";
 
-podcast.title ||
 
-"بدون عنوان";
+    const audio =
+        podcast.audio_url ||
+        "";
 
 
+    const duration =
+        formatTime(
+            Number(podcast.duration_seconds || 0)
+        );
 
 
+    return `
 
+        <article
+            class="podcast-card"
+            data-id="${id}"
+            data-audio="${audio}"
+        >
 
-const author =
 
-podcast.author_name ||
+            <div class="podcast-cover">
 
-podcast.author ||
+                <img
+                    src="${cover}"
+                    alt="${escapeHtml(title)}"
+                    loading="lazy"
+                    onerror="
+                        this.onerror=null;
+                        this.src='https://placehold.co/600x400/00d4ff/ffffff?text=NightCast';
+                    "
+                >
 
-"NightCast";
 
+                <button
+                    type="button"
+                    class="play-card-btn"
+                    onclick="playPodcast(${id})"
+                    title="پخش پادکست"
+                >
 
+                    <i class="fa-solid fa-play"></i>
 
+                </button>
 
+            </div>
 
 
-const description =
+            <div class="podcast-info">
 
-podcast.description ||
 
-"توضیحی ثبت نشده است.";
+                <h3>
+                    ${escapeHtml(title)}
+                </h3>
 
 
+                <div class="podcast-meta">
 
 
+                    ${
+                        author
+                        ?
+                        `
+                        <span>
 
+                            <i class="fa-solid fa-user"></i>
 
+                            ${escapeHtml(author)}
 
-return `
+                        </span>
+                        `
+                        :
+                        ""
+                    }
 
 
+                    ${
+                        book
+                        ?
+                        `
+                        <span>
 
-<article
+                            <i class="fa-solid fa-book"></i>
 
-class="podcast-card"
+                            ${escapeHtml(book)}
 
-data-id="${podcast.id}"
+                        </span>
+                        `
+                        :
+                        ""
+                    }
 
->
 
+                    ${
+                        duration !== "00:00"
+                        ?
+                        `
+                        <span>
 
+                            <i class="fa-solid fa-clock"></i>
 
+                            ${duration}
 
+                        </span>
+                        `
+                        :
+                        ""
+                    }
 
-<div class="podcast-cover">
 
+                </div>
 
-<img
 
-src="${cover}"
+                <p>
+                    ${escapeHtml(description)}
+                </p>
 
-alt="${title}"
 
-onerror="this.src='https://placehold.co/600x400/00d4ff/ffffff?text=NightCast'"
+                <div class="podcast-footer">
 
->
 
+                    <button
+                        type="button"
+                        class="primary-button"
+                        onclick="playPodcast(${id})"
+                    >
 
+                        <i class="fa-solid fa-play"></i>
 
+                        پخش
 
+                    </button>
 
 
-<button
+                    <button
+                        type="button"
+                        class="favorite-button"
+                        data-id="${id}"
+                        onclick="toggleFavorite(${id})"
+                    >
 
-class="play-card-btn"
+                        <i class="fa-regular fa-heart"></i>
 
-onclick="playPodcast(${podcast.id})"
+                    </button>
 
->
 
+                </div>
 
-<i class="fa-solid fa-play"></i>
 
+            </div>
 
-</button>
 
+        </article>
 
-
-
-</div>
-
-
-
-
-
-
-
-
-<div class="podcast-info">
-
-
-
-
-
-<h3>
-
-${title}
-
-</h3>
-
-
-
-
-
-<div class="podcast-meta">
-
-
-<span>
-
-<i class="fa-solid fa-user"></i>
-
-${author}
-
-</span>
-
-
-</div>
-
-
-
-
-
-
-
-<p>
-
-${description}
-
-</p>
-
-
-
-
-
-
-
-
-<div class="podcast-footer">
-
-
-
-<button
-
-class="primary-button"
-
-onclick="playPodcast(${podcast.id})"
-
->
-
-
-<i class="fa-solid fa-play"></i>
-
-پخش
-
-
-</button>
-
-
-
-
-
-
-
-<button
-
-class="favorite-button"
-
-data-id="${podcast.id}"
-
-onclick="toggleFavorite(${podcast.id})"
-
->
-
-
-<i class="fa-regular fa-heart"></i>
-
-
-</button>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-</div>
-
-
-
-
-</article>
-
-
-
-
-`;
-
-
+    `;
 
 }
 
 
 
-
-
-
-
-
-
-/* ==================================================
+ 
+ /* ==================================================
 PAGINATION
 ================================================== */
 
@@ -3667,7 +3616,24 @@ box.appendChild(btn);
 
 
 
+/* ==================================================
+ESCAPE HTML
+================================================== */
 
+function escapeHtml(value){
+
+    if(value === null || value === undefined){
+        return "";
+    }
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+ }
 
 
 

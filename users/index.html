@@ -2883,243 +2883,154 @@ return {};
 
 
 
-/* ==================================================
-LOAD PODCASTS
+
+ /* ==================================================
+NIGHTCAST V6
+PODCAST API
 ================================================== */
 
+async function loadPodcasts(page = 1){
 
-async function loadPodcasts(page=1){
+    currentPage = page;
 
+    const grid = document.getElementById("podcastGrid");
 
+    if(!grid){
+        console.error("podcastGrid پیدا نشد");
+        return;
+    }
 
-currentPage = page;
+    grid.innerHTML = `
+        <div class="loading-card">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            <p>در حال دریافت پادکست‌ها...</p>
+        </div>
+    `;
 
+    try{
 
+        const response = await fetch(
+            API_URL +
+            "/public/podcasts?page=" +
+            page +
+            "&limit=9",
+            {
+                method:"GET",
+                headers:getHeaders()
+            }
+        );
 
+        if(!response.ok){
 
-const grid =
+            throw new Error(
+                "خطای ارتباط با سرور: " +
+                response.status
+            );
 
-document.getElementById(
+        }
 
-"podcastGrid"
+        const data = await response.json();
 
-);
-
-
-
-
-if(!grid)
-
-return;
-
-
-
-
-
-
-
-grid.innerHTML = `
-
-
-
-<div class="loading-card">
-
-
-<i class="fa-solid fa-spinner fa-spin"></i>
-
-
-<p>
-
-در حال دریافت پادکست‌ها...
-
-</p>
-
-
-
-</div>
+        console.log(
+            "NightCast Podcasts API:",
+            data
+        );
 
 
+        if(!data.success){
 
-`;
+            throw new Error(
+                data.message ||
+                "خطا در دریافت پادکست‌ها"
+            );
 
-
-
-
-
-
-
-try{
+        }
 
 
+        /*
+        ==========================================
+        API REAL RESPONSE
 
-const response =
+        data.podcasts
+        ==========================================
+        */
 
-await fetch(
-
-
-API_URL +
-
-"/public/podcasts?page=" +
-
-page +
-
-"&limit=9",
+        const items = Array.isArray(data.podcasts)
+            ? data.podcasts
+            : [];
 
 
-{
+        /*
+        CACHE
+        */
+
+        podcastsCache = items;
+
+        localStorage.setItem(
+            "NightCastPodcastCache",
+            JSON.stringify(items)
+        );
 
 
-headers:getHeaders()
+        /*
+        COUNTER
+        */
 
+        updatePodcastCounter(
+            Number(data.total || items.length)
+        );
+
+
+        /*
+        RENDER
+        */
+
+        renderPodcasts(items);
+
+
+        /*
+        PAGINATION
+        */
+
+        totalPages =
+            data.hasMore
+                ? Math.ceil(
+                    Number(data.total || items.length)
+                    /
+                    Number(data.limit || 9)
+                  )
+                : 1;
+
+
+        renderPagination();
+
+
+    }
+    catch(error){
+
+        console.error(
+            "NightCast Podcast Error:",
+            error
+        );
+
+
+        grid.innerHTML = `
+
+            <div class="loading-card">
+
+                <i class="fa-solid fa-circle-exclamation"></i>
+
+                <p>
+                    ${error.message}
+                </p>
+
+            </div>
+
+        `;
+
+    }
 
 }
-
-
-);
-
-
-
-
-
-
-
-const data =
-
-await response.json();
-
-
-
-
-
-
-if(!data.success){
-
-
-throw new Error(
-
-data.message ||
-
-"خطا در دریافت اطلاعات"
-
-);
-
-
-}
-
-
-
-
-
-
-
-const items =
-
-data.items || [];
-
-
-
-
-
-
-savePodcastCache(items);
-
-
-
-
-
-
-
-renderPodcasts(items);
-
-
-
-
-
-
-
-totalPages =
-
-data.totalPages || 1;
-
-
-
-
-
-
-
-renderPagination();
-
-
-
-
-
-
-updatePodcastCounter(
-
-data.total || items.length
-
-);
-
-
-
-
-
-
-
-}
-
-
-
-
-catch(error){
-
-
-
-console.error(error);
-
-
-
-
-grid.innerHTML = `
-
-
-
-<div class="loading-card">
-
-
-<i class="fa-solid fa-circle-exclamation"></i>
-
-
-<p>
-
-${error.message}
-
-</p>
-
-
-
-</div>
-
-
-
-`;
-
-
-
-}
-
-
-
-
-}
-
-
-
-
-
-
-
-
 
 /* ==================================================
 CACHE

@@ -39,7 +39,7 @@ const Login = {
 
 
         this.bindEvents();
-
+        this.initGoogle();
 
         this.checkExistingSession();
 
@@ -246,7 +246,21 @@ const Login = {
 
 
 
+initGoogle(){
 
+    google.accounts.id.initialize({
+
+        client_id: GOOGLE_CLIENT_ID,
+
+        callback: (response)=>{
+
+            this.googleCallback(response);
+
+        }
+
+    });
+
+},
     async googleLogin(){
 
 

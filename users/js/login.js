@@ -22,7 +22,8 @@ const API_URL =
 "https://nightcast-api.tomasgermany2580.workers.dev/api/v1";
 
 
-
+const GOOGLE_CLIENT_ID =
+"242292157493-km4c11qgkf0lr3e6pv9paspkn95jbf3a.apps.googleusercontent.com";
 
 
 const Login = {

@@ -22,11 +22,22 @@ const API_URL =
 "https://nightcast-api.tomasgermany2580.workers.dev/api/v1";
 
 
+
 const GOOGLE_CLIENT_ID =
+
 "242292157493-km4c11qgkf0lr3e6pv9paspkn95jbf3a.apps.googleusercontent.com";
 
 
+
+
+
 const Login = {
+
+
+
+    googleReady:false,
+
+
 
 
 
@@ -39,6 +50,7 @@ const Login = {
 
 
         this.bindEvents();
+
         this.initGoogle();
 
         this.checkExistingSession();
@@ -52,11 +64,12 @@ const Login = {
 
 
 
+
+
     bindEvents(){
 
 
-
-        const openIdButton =
+        const googleButton =
 
         document.getElementById(
             "openIdLogin"
@@ -64,10 +77,10 @@ const Login = {
 
 
 
-        if(openIdButton){
+        if(googleButton){
 
 
-            openIdButton.addEventListener(
+            googleButton.addEventListener(
 
                 "click",
 
@@ -124,82 +137,171 @@ const Login = {
 
 
 
-    async guestLogin(){
+/* ==========================================
+   GOOGLE INITIALIZE
+========================================== */
+
+
+
+    initGoogle(){
+
+
+
+        if(
+
+            window.google &&
+
+            google.accounts
+
+        ){
+
+
+            this.setupGoogle();
+
+
+            return;
+
+
+        }
+
+
+
+
+
+        const checker = setInterval(()=>{
+
+
+            if(
+
+                window.google &&
+
+                google.accounts
+
+            ){
+
+
+                clearInterval(checker);
+
+
+                this.setupGoogle();
+
+
+            }
+
+
+        },200);
+
+
+
+
+        setTimeout(()=>{
+
+
+            clearInterval(checker);
+
+
+            if(!this.googleReady){
+
+
+                console.error(
+
+                    "Google Identity timeout"
+
+                );
+
+
+            }
+
+
+        },10000);
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+    setupGoogle(){
+
+
+
+        google.accounts.id.initialize({
+
+
+            client_id:GOOGLE_CLIENT_ID,
+
+
+            callback:(response)=>{
+
+
+                console.log(
+
+                    "Google Token Received"
+
+                );
+
+
+                this.googleCallback(response);
+
+
+
+            }
+
+
+        });
+
+
+
+
+        this.googleReady = true;
+
+
+
+        console.log(
+
+            "Google Identity Ready"
+
+        );
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+/* ==========================================
+   GOOGLE LOGIN
+========================================== */
+
+
+
+    async googleLogin(){
+
 
 
         try{
 
 
-            this.showLoader();
+            if(!this.googleReady){
 
 
+                throw new Error(
 
-            const response =
-
-            await fetch(
-
-                API_URL +
-
-                "/public/guest",
-
-                {
-
-
-                    method:"POST",
-
-
-                    headers:{
-
-
-                        "Content-Type":
-                        "application/json"
-
-
-                    }
-
-
-                }
-
-            );
-
-
-
-
-            const data =
-
-            await response.json();
-
-
-
-
-
-            if(
-
-                data.success &&
-
-                data.token
-
-            ){
-
-
-
-                this.saveSession(
-
-                    data.token,
-
-                    data.user
+                    "اتصال Google آماده نیست، دوباره تلاش کنید"
 
                 );
-
-
-
-                window.location.href =
-
-                "index.html";
-
-
-
-                return;
 
 
             }
@@ -207,12 +309,53 @@ const Login = {
 
 
 
+            this.showLoader();
 
-            throw new Error(
 
-                data.message ||
 
-                "Guest login failed"
+
+            google.accounts.id.prompt(
+
+                (notification)=>{
+
+
+                    console.log(
+
+                        "Google Prompt",
+
+                        notification
+
+                    );
+
+
+
+
+                    if(
+
+                        notification.isNotDisplayed()
+
+                        ||
+
+                        notification.isSkippedMoment()
+
+                    ){
+
+
+                        this.hideLoader();
+
+
+                        this.showError(
+
+                            "پنجره ورود گوگل نمایش داده نشد"
+
+                        );
+
+
+                    }
+
+
+                }
+
 
             );
 
@@ -221,6 +364,7 @@ const Login = {
         }
 
         catch(error){
+
 
 
             this.hideLoader();
@@ -246,148 +390,129 @@ const Login = {
 
 
 
-initGoogle(){
 
-    if(!window.google || !google.accounts){
-
-        console.error(
-            "Google Identity not loaded"
-        );
-
-        return;
-
-    }
+    async googleCallback(response){
 
 
-    google.accounts.id.initialize({
 
-        client_id: GOOGLE_CLIENT_ID,
-
-        callback: (response)=>{
-
-            console.log(
-                "Google Token Received",
-                response
-            );
-
-            this.googleCallback(response);
-
-        }
-
-    });
+        try{
 
 
-},
-    async googleLogin(){
 
-    try{
-
-        this.showLoader();
+            const result = await fetch(
 
 
-        google.accounts.id.prompt(
-            (notification)=>{
+                API_URL +
+
+                "/public/openid/google",
 
 
-                console.log(
-                    "Google Prompt:",
-                    notification
-                );
+                {
 
 
-                if(
-                    notification.isNotDisplayed()
-                    ||
-                    notification.isSkippedMoment()
-                ){
+                    method:"POST",
 
-                    this.hideLoader();
 
-                    this.showError(
-                        "پنجره ورود گوگل نمایش داده نشد"
-                    );
+                    headers:{
+
+
+                        "Content-Type":
+
+                        "application/json"
+
+
+                    },
+
+
+                    body:JSON.stringify({
+
+
+                        idToken:
+
+                        response.credential
+
+
+                    })
+
 
                 }
 
 
-            }
-        );
+            );
 
 
-    }
-    catch(error){
 
-        this.hideLoader();
 
-        this.showError(
-            error.message
-        );
 
-    }
+            const data = await result.json();
 
-},
-    async googleCallback(response){
 
-    try{
 
-        const res = await fetch(
 
-            API_URL + "/public/openid/google",
 
-            {
+            if(!data.success){
 
-                method:"POST",
 
-                headers:{
-                    "Content-Type":"application/json"
-                },
+                throw new Error(
 
-                body:JSON.stringify({
+                    data.message ||
 
-                    idToken:response.credential
+                    "Google Login Failed"
 
-                })
+                );
+
 
             }
 
-        );
 
-        const data = await res.json();
 
-        if(!data.success){
 
-            throw new Error(
 
-                data.message ||
 
-                "Google Login Failed"
+            this.saveSession(
+
+
+                data.token,
+
+
+                data.user
+
 
             );
 
+
+
+
+
+            window.location.href =
+
+            "index.html";
+
+
+
+
         }
 
-        this.saveSession(
+        catch(error){
 
-            data.token,
 
-            data.user
 
-        );
+            this.hideLoader();
 
-        window.location.href = "index.html";
 
-    }
 
-    catch(error){
+            this.showError(
 
-        this.hideLoader();
+                error.message
 
-        this.showError(error.message);
+            );
 
-    }
 
-},
+        }
 
+
+
+    },
 
 
 
@@ -395,21 +520,173 @@ initGoogle(){
 
 
 
-    saveSession(
 
-        token,
 
-        user
+/* ==========================================
+   GUEST LOGIN
+========================================== */
 
-    ){
+
+
+    async guestLogin(){
+
+
+
+        try{
+
+
+
+            this.showLoader();
+
+
+
+
+
+            const response = await fetch(
+
+
+                API_URL +
+
+                "/public/guest",
+
+
+                {
+
+
+                    method:"POST",
+
+
+                    headers:{
+
+
+                        "Content-Type":
+
+                        "application/json"
+
+
+                    }
+
+
+                }
+
+
+            );
+
+
+
+
+
+            const data = await response.json();
+
+
+
+
+
+
+            if(
+
+                data.success &&
+
+                data.token
+
+            ){
+
+
+
+                this.saveSession(
+
+
+                    data.token,
+
+
+                    data.user
+
+
+                );
+
+
+
+
+
+                window.location.href =
+
+                "index.html";
+
+
+
+                return;
+
+
+            }
+
+
+
+
+
+
+
+            throw new Error(
+
+
+                data.message ||
+
+                "Guest Login Failed"
+
+
+            );
+
+
+
+
+
+        }
+
+        catch(error){
+
+
+
+            this.hideLoader();
+
+
+            this.showError(
+
+                error.message
+
+            );
+
+
+        }
+
+
+
+    },
+
+
+
+
+
+
+
+
+
+/* ==========================================
+   SESSION
+========================================== */
+
+
+
+    saveSession(token,user){
 
 
 
         localStorage.setItem(
+
 
             "NightCastToken",
 
+
             token
+
 
         );
 
@@ -418,9 +695,12 @@ initGoogle(){
 
         localStorage.setItem(
 
+
             "NightCastUser",
 
+
             JSON.stringify(user)
+
 
         );
 
@@ -451,20 +731,24 @@ initGoogle(){
 
 
         if(token){
-window.location.href = "index.html";
+
+
+
+            console.log(
+
+                "Existing session found"
+
+            );
 
 
 
             /*
-            اگر قبلاً وارد شده
-
-            مستقیم وارد برنامه شود
-
+              فعلاً غیرفعال است
+              تا صفحه Login همیشه دیده شود
             */
 
 
-            // فعلاً فعال نمی‌کنیم
-            // تا کاربر بتواند صفحه ورود را ببیند
+            // window.location.href="index.html";
 
 
         }
@@ -478,6 +762,12 @@ window.location.href = "index.html";
 
 
 
+
+
+
+/* ==========================================
+   UI
+========================================== */
 
 
 
@@ -561,7 +851,34 @@ window.location.href = "index.html";
 
 
 
-        alert(message);
+        const box =
+
+        document.getElementById(
+
+            "loginMessage"
+
+        );
+
+
+
+        if(box){
+
+
+            box.innerHTML =
+
+            message;
+
+
+
+        }
+
+        else{
+
+
+            alert(message);
+
+
+        }
 
 
 
@@ -571,10 +888,7 @@ window.location.href = "index.html";
 
 
 
-
-
 };
-
 
 
 
@@ -603,10 +917,6 @@ document.addEventListener(
 }
 
 );
-
-
-
-
 
 
 

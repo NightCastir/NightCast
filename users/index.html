@@ -6,48 +6,50 @@
 <meta charset="UTF-8">
 
 <meta name="viewport"
-content="width=device-width,initial-scale=1.0">
+content="width=device-width, initial-scale=1.0">
+
 
 <meta name="theme-color"
-content="#0b1220">
+content="#08111f">
+
 
 <title>
-
 NightCast | رادیو نایت کست
-
 </title>
+
 
 <link rel="preconnect"
 href="https://fonts.googleapis.com">
+
 
 <link rel="preconnect"
 href="https://fonts.gstatic.com"
 crossorigin>
 
+
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap"
 rel="stylesheet">
+
 
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
 
+
+
 <style>
 
-/* =====================================================
-
+/* ==================================================
 NightCast Listener V5
+PART 1 / 10
 
-SECTION 1 / 12
-
-===================================================== */
-
+CORE STYLE
+================================================== */
 
 
 *{
 
 margin:0;
-
 padding:0;
-
 box-sizing:border-box;
 
 }
@@ -72,11 +74,14 @@ color:#fff;
 
 overflow-x:hidden;
 
+padding-bottom:100px;
+
 }
 
 
 
 :root{
+
 
 --primary:#00d4ff;
 
@@ -90,17 +95,20 @@ overflow-x:hidden;
 
 --card2:#18243d;
 
---text:#ffffff;
+--text:#fff;
 
 --soft:#b7c0d1;
 
 --border:rgba(255,255,255,.08);
 
---radius:20px;
+--radius:22px;
 
---shadow:0 20px 50px rgba(0,0,0,.35);
+--shadow:
+0 20px 50px rgba(0,0,0,.35);
+
 
 }
+
 
 
 
@@ -114,9 +122,10 @@ margin:auto;
 
 
 
-/* ===========================
+/* ==========================
 BACKGROUND
-=========================== */
+========================== */
+
 
 .background{
 
@@ -124,9 +133,9 @@ position:fixed;
 
 inset:0;
 
-overflow:hidden;
-
 z-index:-1;
+
+overflow:hidden;
 
 }
 
@@ -170,17 +179,20 @@ height:400px;
 
 background:#0066ff;
 
-bottom:-180px;
+bottom:-150px;
 
-left:-150px;
+left:-120px;
 
 }
 
 
 
-/* ===========================
+
+
+/* ==========================
 HEADER
-=========================== */
+========================== */
+
 
 header{
 
@@ -188,13 +200,15 @@ position:sticky;
 
 top:0;
 
-z-index:100;
+z-index:1000;
+
+background:
+rgba(8,17,31,.85);
 
 backdrop-filter:blur(20px);
 
-background:rgba(8,17,31,.78);
-
-border-bottom:1px solid var(--border);
+border-bottom:
+1px solid var(--border);
 
 }
 
@@ -210,8 +224,14 @@ align-items:center;
 
 justify-content:space-between;
 
+gap:20px;
+
 }
 
+
+
+
+/* LOGO */
 
 
 .logo{
@@ -234,8 +254,6 @@ height:52px;
 
 border-radius:16px;
 
-background:linear-gradient(135deg,var(--primary),var(--primary2));
-
 display:flex;
 
 align-items:center;
@@ -243,6 +261,13 @@ align-items:center;
 justify-content:center;
 
 font-size:24px;
+
+background:
+linear-gradient(
+135deg,
+var(--primary),
+var(--primary2)
+);
 
 }
 
@@ -266,235 +291,43 @@ color:var(--gold);
 
 
 
-/* ادامه دارد ... */
 
-</style>
+/* MENU */
 
-</head>
-
-<body>
-
-<div class="background">
-
-<div class="blur one"></div>
-
-<div class="blur two"></div>
-
-</div>
-
-<header>
-
-<div class="container header-inner">
-
-<div class="logo">
-
-<div class="logo-icon">
-
-<i class="fa-solid fa-radio"></i>
-
-</div>
-
-<div>
-
-<h1>
-
-Night<span>Cast</span>
-
-</h1>
-
-</div>
-
-</div>
-
-<!-- ادامه در بخش بعد -->
-
-</div>
-
-</header>
-
- <!-- ===========================
-HEADER MENU
-=========================== -->
-
-<nav class="main-menu">
-
-<a href="#" class="active">
-
-<i class="fa-solid fa-house"></i>
-
-<span>خانه</span>
-
-</a>
-
-<a href="#podcasts">
-
-<i class="fa-solid fa-podcast"></i>
-
-<span>پادکست‌ها</span>
-
-</a>
-
-<a href="#books">
-
-<i class="fa-solid fa-book-open"></i>
-
-<span>کتاب‌ها</span>
-
-</a>
-
-<a href="#favorites">
-
-<i class="fa-solid fa-heart"></i>
-
-<span>علاقه‌مندی‌ها</span>
-
-</a>
-
-</nav>
-
-
-
-<!-- ===========================
-HEADER RIGHT
-=========================== -->
-
-<div class="header-actions">
-
-<button
-class="search-button"
-id="searchButton">
-
-<i class="fa-solid fa-magnifying-glass"></i>
-
-</button>
-
-<button
-class="notification-button">
-
-<i class="fa-solid fa-bell"></i>
-
-</button>
-
-<div
-class="user-box"
-id="userBox">
-
-<img
-
-id="userAvatar"
-
-src="https://ui-avatars.com/api/?name=NightCast&background=00d4ff&color=fff"
-
-alt="user"
-
->
-
-<div>
-
-<div
-id="userName">
-
-مهمان
-
-</div>
-
-<small
-id="userEmail">
-
-Guest
-
-</small>
-
-</div>
-
-<button
-
-id="logoutButton"
-
-class="logout-button"
-
-title="خروج">
-
-<i class="fa-solid fa-right-from-bracket"></i>
-
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-</header>
-
-
-
-<!-- ===========================
-SEARCH PANEL
-=========================== -->
-
-<section
-class="search-panel"
-id="searchPanel">
-
-<div class="container">
-
-<div class="search-box">
-
-<i class="fa-solid fa-magnifying-glass"></i>
-
-<input
-
-type="text"
-
-id="searchInput"
-
-placeholder="جستجوی پادکست ...">
-
-</div>
-
-</div>
-
-</section>
-
-<style>
-
-/* ===========================
-HEADER MENU
-=========================== */
 
 .main-menu{
 
 display:flex;
 
-gap:30px;
-
 align-items:center;
+
+gap:25px;
 
 }
 
+
+
 .main-menu a{
 
-display:flex;
-
-gap:8px;
-
-align-items:center;
+text-decoration:none;
 
 color:var(--soft);
 
-font-size:15px;
+display:flex;
+
+align-items:center;
+
+gap:8px;
+
+font-size:14px;
 
 transition:.3s;
 
 }
 
-.main-menu a:hover{
 
-color:#fff;
 
-}
-
+.main-menu a:hover,
 .main-menu a.active{
 
 color:var(--primary);
@@ -503,9 +336,10 @@ color:var(--primary);
 
 
 
-/* ===========================
-HEADER ACTIONS
-=========================== */
+
+
+/* ACTIONS */
+
 
 .header-actions{
 
@@ -513,17 +347,17 @@ display:flex;
 
 align-items:center;
 
-gap:18px;
+gap:12px;
 
 }
 
-.search-button,
 
-.notification-button{
 
-width:46px;
+.icon-button{
 
-height:46px;
+width:45px;
+
+height:45px;
 
 border:none;
 
@@ -541,21 +375,20 @@ transition:.3s;
 
 }
 
-.search-button:hover,
 
-.notification-button:hover{
+
+.icon-button:hover{
 
 background:var(--primary);
-
-transform:translateY(-2px);
 
 }
 
 
 
-/* ===========================
-USER BOX
-=========================== */
+
+
+/* USER */
+
 
 .user-box{
 
@@ -563,11 +396,11 @@ display:flex;
 
 align-items:center;
 
-gap:12px;
+gap:10px;
 
 background:var(--card);
 
-padding:8px 14px;
+padding:7px 12px;
 
 border-radius:18px;
 
@@ -575,109 +408,104 @@ border:1px solid var(--border);
 
 }
 
+
+
 .user-box img{
 
-width:46px;
+width:45px;
 
-height:46px;
+height:45px;
 
 border-radius:50%;
 
-object-fit:cover;
+}
+
+
+
+.user-info strong{
+
+display:block;
+
+font-size:14px;
 
 }
 
-#userName{
 
-font-weight:700;
 
-}
-
-#userEmail{
+.user-info small{
 
 color:var(--soft);
 
-font-size:12px;
+font-size:11px;
 
 }
 
 
 
-/* ===========================
-LOGOUT
-=========================== */
-
 .logout-button{
-
-width:40px;
-
-height:40px;
 
 border:none;
 
-background:transparent;
+background:none;
 
-color:#ff6666;
+color:#ff6677;
 
 cursor:pointer;
 
 font-size:17px;
 
-transition:.3s;
-
-}
-
-.logout-button:hover{
-
-transform:rotate(8deg);
-
-color:#ff2d55;
-
 }
 
 
 
-/* ===========================
-SEARCH PANEL
-=========================== */
+
+
+/* SEARCH */
+
 
 .search-panel{
 
 padding:25px 0;
 
+display:none;
+
 }
+
+
+
+.search-panel.active{
+
+display:block;
+
+}
+
+
 
 .search-box{
 
-display:flex;
-
-align-items:center;
-
-gap:15px;
-
 background:var(--card);
-
-padding:18px 22px;
-
-border-radius:20px;
 
 border:1px solid var(--border);
 
+border-radius:20px;
+
+padding:16px 20px;
+
+display:flex;
+
+gap:15px;
+
+align-items:center;
+
 }
 
-.search-box i{
 
-color:var(--primary);
-
-font-size:20px;
-
-}
 
 .search-box input{
 
 flex:1;
 
-background:transparent;
+background:none;
 
 border:none;
 
@@ -689,25 +517,242 @@ font-size:16px;
 
 }
 
-.search-box input::placeholder{
 
-color:var(--soft);
 
-}
+
 
 </style>
 
+
+</head>
+
+
+
+<body>
+
+
+<div class="background">
+
+<div class="blur one"></div>
+
+<div class="blur two"></div>
+
+</div>
+
+
+
+
+<header>
+
+
+<div class="container header-inner">
+
+
+
+<div class="logo">
+
+
+<div class="logo-icon">
+
+<i class="fa-solid fa-radio"></i>
+
+</div>
+
+
+<h1>
+
+Night<span>Cast</span>
+
+</h1>
+
+
+</div>
+
+
+
+
+
+<nav class="main-menu">
+
+
+<a href="#" class="active">
+
+<i class="fa-solid fa-house"></i>
+
+خانه
+
+</a>
+
+
+<a href="#podcasts">
+
+<i class="fa-solid fa-podcast"></i>
+
+پادکست‌ها
+
+</a>
+
+
+<a href="#books">
+
+<i class="fa-solid fa-book"></i>
+
+کتاب‌ها
+
+</a>
+
+
+<a href="#favorites">
+
+<i class="fa-solid fa-heart"></i>
+
+علاقه‌مندی
+
+</a>
+
+
+</nav>
+
+
+
+
+
+<div class="header-actions">
+
+
+
+<button
+id="searchButton"
+class="icon-button">
+
+<i class="fa-solid fa-search"></i>
+
+</button>
+
+
+
+<button
+class="icon-button">
+
+<i class="fa-solid fa-bell"></i>
+
+</button>
+
+
+
+
+
+<div class="user-box">
+
+
+
+<img
+
+id="userAvatar"
+
+src="https://ui-avatars.com/api/?name=Guest"
+
+>
+
+
+
+<div class="user-info">
+
+
+<strong id="userName">
+
+مهمان
+
+</strong>
+
+
+<small id="userEmail">
+
+Guest
+
+</small>
+
+
+</div>
+
+
+
+
+<button
+
+id="logoutButton"
+
+class="logout-button">
+
+<i class="fa-solid fa-right-from-bracket"></i>
+
+</button>
+
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+</header>
+
+
+
+
+<section
+id="searchPanel"
+class="search-panel">
+
+
+<div class="container">
+
+
+<div class="search-box">
+
+
+<i class="fa-solid fa-search"></i>
+
+
+<input
+
+id="searchInput"
+
+placeholder="جستجوی پادکست...">
+
+
+</div>
+
+
+</div>
+
+
+</section>
 <!-- ==================================================
-HERO
+PART 2 / 10
+
+HERO + STATISTICS
+
 ================================================== -->
+
 
 <section class="hero">
 
+
 <div class="container hero-grid">
 
-<!-- LEFT -->
+
 
 <div class="hero-content">
+
+
 
 <span class="hero-badge">
 
@@ -716,6 +761,9 @@ HERO
 رادیو NightCast
 
 </span>
+
+
+
 
 <h2>
 
@@ -737,15 +785,23 @@ HERO
 
 </h2>
 
+
+
+
 <p>
 
-در NightCast می‌توانید مجموعه‌ای از کتاب‌های صوتی، خلاصه کتاب‌ها،
-پادکست‌های آموزشی و برنامه‌های اختصاصی را در هر زمان و هر مکان
-بشنوید.
+در NightCast مجموعه‌ای از کتاب‌های صوتی،
+خلاصه کتاب‌ها، آموزش‌ها و برنامه‌های اختصاصی
+را هر زمان و هر مکان گوش کنید.
 
 </p>
 
+
+
+
+
 <div class="hero-buttons">
+
 
 <button class="primary-button">
 
@@ -755,6 +811,9 @@ HERO
 
 </button>
 
+
+
+
 <button class="secondary-button">
 
 <i class="fa-solid fa-book-open"></i>
@@ -763,15 +822,26 @@ HERO
 
 </button>
 
-</div>
+
 
 </div>
 
-<!-- RIGHT -->
+
+
+</div>
+
+
+
+
+
+
 
 <div class="hero-cover">
 
+
+
 <div class="cover-card">
+
 
 <div class="cover-image">
 
@@ -779,13 +849,14 @@ HERO
 
 </div>
 
-<div class="cover-info">
+
 
 <h3>
 
-آخرین قسمت
+آخرین برنامه
 
 </h3>
+
 
 <p>
 
@@ -793,157 +864,49 @@ HERO
 
 </p>
 
+
+
 <button class="play-circle">
 
 <i class="fa-solid fa-play"></i>
 
 </button>
 
-</div>
+
 
 </div>
 
-</div>
+
 
 </div>
+
+
+
+
+</div>
+
 
 </section>
 
 
-
-<!-- ==================================================
-STATISTICS
-================================================== -->
-
-<section class="statistics">
-
-<div class="container">
-
-<div class="stats-grid">
-
-<div class="stat-card">
-
-<div class="stat-icon">
-
-<i class="fa-solid fa-podcast"></i>
-
-</div>
-
-<div>
-
-<h3 id="podcastCount">
-
-0
-
-</h3>
-
-<p>
-
-پادکست
-
-</p>
-
-</div>
-
-</div>
-
-<div class="stat-card">
-
-<div class="stat-icon">
-
-<i class="fa-solid fa-headphones"></i>
-
-</div>
-
-<div>
-
-<h3>
-
-24/7
-
-</h3>
-
-<p>
-
-دسترسی
-
-</p>
-
-</div>
-
-</div>
-
-<div class="stat-card">
-
-<div class="stat-icon">
-
-<i class="fa-solid fa-book"></i>
-
-</div>
-
-<div>
-
-<h3>
-
-120+
-
-</h3>
-
-<p>
-
-کتاب
-
-</p>
-
-</div>
-
-</div>
-
-<div class="stat-card">
-
-<div class="stat-icon">
-
-<i class="fa-solid fa-users"></i>
-
-</div>
-
-<div>
-
-<h3>
-
-10K+
-
-</h3>
-
-<p>
-
-شنونده
-
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</section>
 
 
 
 <style>
 
-/* ===========================================
-HERO
-=========================================== */
+
+/* ==========================
+HERO STYLE
+========================== */
+
 
 .hero{
 
 padding:70px 0;
 
 }
+
+
 
 .hero-grid{
 
@@ -957,37 +920,47 @@ align-items:center;
 
 }
 
+
+
+
 .hero-badge{
 
 display:inline-flex;
 
-align-items:center;
-
 gap:10px;
+
+align-items:center;
 
 padding:10px 18px;
 
 border-radius:30px;
 
-background:rgba(0,212,255,.12);
+background:
+rgba(0,212,255,.12);
 
 color:var(--primary);
 
-margin-bottom:20px;
+margin-bottom:25px;
 
 }
+
+
+
+
 
 .hero-content h2{
 
 font-size:52px;
 
-line-height:1.4;
-
-margin-bottom:20px;
+line-height:1.5;
 
 font-weight:800;
 
+margin-bottom:20px;
+
 }
+
+
 
 .hero-content h2 span{
 
@@ -995,25 +968,29 @@ color:var(--gold);
 
 }
 
+
+
 .hero-content p{
+
+color:var(--soft);
 
 font-size:18px;
 
 line-height:2;
 
-color:var(--soft);
-
 margin-bottom:35px;
 
-max-width:650px;
-
 }
+
+
+
+
 
 .hero-buttons{
 
 display:flex;
 
-gap:18px;
+gap:15px;
 
 flex-wrap:wrap;
 
@@ -1021,39 +998,119 @@ flex-wrap:wrap;
 
 
 
-/* ===========================================
-COVER
-=========================================== */
 
-.cover-card{
 
-background:linear-gradient(
+.primary-button,
+.secondary-button{
+
+
+border:none;
+
+padding:13px 25px;
+
+border-radius:16px;
+
+cursor:pointer;
+
+font-family:inherit;
+
+font-size:15px;
+
+display:flex;
+
+align-items:center;
+
+gap:10px;
+
+transition:.3s;
+
+}
+
+
+
+.primary-button{
+
+
+background:
+linear-gradient(
 135deg,
-var(--card),
-var(--card2)
+var(--primary),
+var(--primary2)
 );
 
-border-radius:30px;
+color:white;
 
-padding:30px;
+}
 
-box-shadow:var(--shadow);
+
+
+.secondary-button{
+
+
+background:var(--card);
+
+color:white;
 
 border:1px solid var(--border);
 
 }
 
+
+
+
+.primary-button:hover,
+.secondary-button:hover{
+
+transform:translateY(-3px);
+
+}
+
+
+
+
+/* COVER */
+
+
+.cover-card{
+
+
+background:
+linear-gradient(
+135deg,
+var(--card),
+var(--card2)
+);
+
+
+border-radius:30px;
+
+padding:30px;
+
+text-align:center;
+
+border:1px solid var(--border);
+
+box-shadow:var(--shadow);
+
+
+}
+
+
+
 .cover-image{
+
 
 height:300px;
 
-border-radius:24px;
+border-radius:25px;
 
-background:linear-gradient(
+background:
+linear-gradient(
 135deg,
 #00d4ff,
 #0066ff
 );
+
 
 display:flex;
 
@@ -1065,15 +1122,13 @@ font-size:110px;
 
 margin-bottom:25px;
 
-}
-
-.cover-info{
-
-text-align:center;
 
 }
 
-.cover-info h3{
+
+
+
+.cover-card h3{
 
 font-size:28px;
 
@@ -1081,7 +1136,9 @@ margin-bottom:12px;
 
 }
 
-.cover-info p{
+
+
+.cover-card p{
 
 color:var(--soft);
 
@@ -1089,7 +1146,10 @@ margin-bottom:25px;
 
 }
 
+
+
 .play-circle{
+
 
 width:70px;
 
@@ -1101,35 +1161,31 @@ border-radius:50%;
 
 background:var(--gold);
 
-color:#111;
-
 font-size:24px;
 
 cursor:pointer;
 
-transition:.35s;
-
-}
-
-.play-circle:hover{
-
-transform:scale(1.08);
 
 }
 
 
 
-/* ===========================================
+
+/* ==========================
 STATISTICS
-=========================================== */
+========================== */
+
 
 .statistics{
 
-padding:10px 0 60px;
+padding:20px 0 70px;
 
 }
 
+
+
 .stats-grid{
+
 
 display:grid;
 
@@ -1137,9 +1193,14 @@ grid-template-columns:repeat(4,1fr);
 
 gap:20px;
 
+
 }
 
+
+
+
 .stat-card{
+
 
 background:var(--card);
 
@@ -1155,17 +1216,15 @@ align-items:center;
 
 gap:18px;
 
-transition:.3s;
 
 }
 
-.stat-card:hover{
 
-transform:translateY(-6px);
 
-}
+
 
 .stat-icon{
+
 
 width:60px;
 
@@ -1173,7 +1232,9 @@ height:60px;
 
 border-radius:18px;
 
-background:rgba(0,212,255,.12);
+background:
+rgba(0,212,255,.12);
+
 
 display:flex;
 
@@ -1181,11 +1242,14 @@ align-items:center;
 
 justify-content:center;
 
-font-size:24px;
+font-size:25px;
 
 color:var(--primary);
 
+
 }
+
+
 
 .stat-card h3{
 
@@ -1195,28 +1259,222 @@ margin-bottom:5px;
 
 }
 
+
+
 .stat-card p{
 
 color:var(--soft);
 
 }
 
+
+
 </style>
 
 
-<!-- ==================================================
+
+
+
+
+
+<section class="statistics">
+
+
+<div class="container">
+
+
+<div class="stats-grid">
+
+
+
+<div class="stat-card">
+
+
+<div class="stat-icon">
+
+<i class="fa-solid fa-podcast"></i>
+
+</div>
+
+
+<div>
+
+
+<h3 id="podcastCount">
+
+0
+
+</h3>
+
+
+<p>
+
+پادکست
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="stat-card">
+
+
+<div class="stat-icon">
+
+<i class="fa-solid fa-headphones"></i>
+
+</div>
+
+
+<div>
+
+
+<h3>
+
+24/7
+
+</h3>
+
+
+<p>
+
+دسترسی
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="stat-card">
+
+
+<div class="stat-icon">
+
+<i class="fa-solid fa-book"></i>
+
+</div>
+
+
+<div>
+
+
+<h3>
+
+120+
+
+</h3>
+
+
+<p>
+
+کتاب صوتی
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="stat-card">
+
+
+<div class="stat-icon">
+
+<i class="fa-solid fa-users"></i>
+
+</div>
+
+
+<div>
+
+
+<h3>
+
+10K+
+
+</h3>
+
+
+<p>
+
+شنونده
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+</div>
+
+
+</section>
+
+ <!-- ==================================================
+PART 3 / 10
+
 PODCAST SECTION
+GRID + CARD STYLE
+
 ================================================== -->
+
+
 
 <section
 id="podcasts"
 class="podcasts-section">
 
+
+
 <div class="container">
+
+
+
+
 
 <div class="section-header">
 
+
+
 <div>
+
 
 <span class="section-badge">
 
@@ -1224,36 +1482,51 @@ class="podcasts-section">
 
 </span>
 
+
+
 <h2>
 
 آخرین پادکست‌های NightCast
 
 </h2>
 
+
+
 <p>
 
-همیشه جدیدترین قسمت‌ها را اینجا مشاهده کنید.
+قسمت‌های جدید را اینجا مشاهده و گوش کنید.
 
 </p>
 
+
 </div>
 
-<button
-class="secondary-button">
+
+
+
+
+<button class="secondary-button">
+
 
 <i class="fa-solid fa-filter"></i>
 
+
 فیلتر
 
+
 </button>
+
+
+
+
 
 </div>
 
 
 
-<!-- ==========================
-GRID
-========================== -->
+
+
+
 
 <div
 
@@ -1263,29 +1536,34 @@ class="podcast-grid">
 
 
 
-<!-- Loading -->
+
 
 <div class="loading-card">
 
+
 <i class="fa-solid fa-spinner fa-spin"></i>
+
 
 <p>
 
-در حال دریافت اطلاعات...
+در حال دریافت پادکست‌ها...
 
 </p>
 
+
+
 </div>
 
 
 
+
 </div>
 
 
 
-<!-- ==========================
-PAGINATION
-========================== -->
+
+
+
 
 <div
 
@@ -1293,27 +1571,48 @@ id="pagination"
 
 class="pagination">
 
-</div>
 
 </div>
+
+
+
+
+
+</div>
+
+
 
 </section>
 
 
 
+
+
+
+
+
 <style>
 
-/* ===========================================
-SECTION HEADER
-=========================================== */
+/* ==========================
+PODCAST SECTION
+========================== */
+
+
 
 .podcasts-section{
 
+
 padding:80px 0;
+
 
 }
 
+
+
+
+
 .section-header{
+
 
 display:flex;
 
@@ -1321,69 +1620,103 @@ justify-content:space-between;
 
 align-items:end;
 
+gap:20px;
+
 margin-bottom:40px;
 
-gap:20px;
 
 }
 
+
+
+
 .section-badge{
+
 
 display:inline-block;
 
 padding:8px 16px;
 
-background:rgba(255,211,105,.15);
+border-radius:20px;
+
+background:
+rgba(255,211,105,.15);
 
 color:var(--gold);
 
-border-radius:20px;
+font-size:14px;
 
 margin-bottom:15px;
 
-font-size:14px;
 
 }
 
+
+
+
 .section-header h2{
+
 
 font-size:38px;
 
 margin-bottom:10px;
 
+
 }
+
+
+
 
 .section-header p{
 
+
 color:var(--soft);
+
 
 }
 
 
 
-/* ===========================================
+
+
+
+/* ==========================
 GRID
-=========================================== */
+========================== */
+
+
 
 .podcast-grid{
+
 
 display:grid;
 
 grid-template-columns:
 
-repeat(auto-fill,minmax(310px,1fr));
+repeat(
+auto-fill,
+minmax(300px,1fr)
+);
+
 
 gap:30px;
+
 
 }
 
 
 
-/* ===========================================
+
+
+
+/* ==========================
 CARD
-=========================================== */
+========================== */
+
+
 
 .podcast-card{
+
 
 background:var(--card);
 
@@ -1391,109 +1724,231 @@ border-radius:24px;
 
 overflow:hidden;
 
-border:1px solid var(--border);
+border:
+
+1px solid var(--border);
 
 transition:.35s;
 
 box-shadow:var(--shadow);
 
+
 }
+
+
+
+
 
 .podcast-card:hover{
 
+
 transform:translateY(-8px);
 
+
 }
+
+
+
 
 
 
 .podcast-cover{
 
-position:relative;
 
 height:220px;
 
-background:linear-gradient(
+position:relative;
 
+background:
+
+linear-gradient(
 135deg,
-
 #00d4ff,
-
 #0066ff
-
 );
+
+
+overflow:hidden;
+
+
+}
+
+
+
+
+
+.podcast-cover img{
+
+
+width:100%;
+
+height:100%;
+
+object-fit:cover;
+
+
+}
+
+
+
+
+
+
+.play-card-btn{
+
+
+position:absolute;
+
+top:50%;
+
+left:50%;
+
+transform:
+translate(-50%,-50%);
+
+
+width:65px;
+
+height:65px;
+
+border:none;
+
+border-radius:50%;
+
+
+background:
+
+rgba(255,255,255,.9);
+
+
+color:#0077ff;
+
+
+font-size:22px;
+
+cursor:pointer;
+
+
+opacity:0;
+
+transition:.3s;
+
+
+}
+
+
+
+
+
+.podcast-cover:hover 
+.play-card-btn{
+
+
+opacity:1;
+
+
+}
+
+
+
+
+
+
+
+.podcast-info{
+
+
+padding:22px;
+
+
+}
+
+
+
+
+
+
+
+.podcast-info h3{
+
+
+font-size:22px;
+
+margin-bottom:12px;
+
+
+}
+
+
+
+
+
+
+
+.podcast-meta{
+
+
+display:flex;
+
+gap:15px;
+
+flex-wrap:wrap;
+
+margin-bottom:15px;
+
+color:var(--soft);
+
+font-size:13px;
+
+
+}
+
+
+
+
+
+.podcast-meta span{
+
 
 display:flex;
 
 align-items:center;
 
-justify-content:center;
+gap:5px;
 
-font-size:70px;
 
 }
 
 
 
-.podcast-duration{
-
-position:absolute;
-
-bottom:14px;
-
-left:14px;
-
-background:rgba(0,0,0,.7);
-
-padding:6px 12px;
-
-border-radius:14px;
-
-font-size:13px;
-
-}
 
 
 
-.podcast-body{
-
-padding:22px;
-
-}
+.podcast-info p{
 
 
-
-.podcast-title{
-
-font-size:22px;
-
-font-weight:700;
-
-margin-bottom:12px;
-
-}
-
-
-
-.podcast-description{
+color:var(--soft);
 
 font-size:14px;
 
 line-height:1.9;
 
-color:var(--soft);
-
-height:80px;
+height:70px;
 
 overflow:hidden;
+
 
 }
 
 
 
+
+
+
+
+
 .podcast-footer{
 
-margin-top:22px;
 
 display:flex;
 
@@ -1501,15 +1956,692 @@ justify-content:space-between;
 
 align-items:center;
 
+margin-top:20px;
+
+
 }
 
 
 
-.listen-button{
+
+.favorite-button{
+
+
+width:42px;
+
+height:42px;
 
 border:none;
 
-background:linear-gradient(
+border-radius:50%;
+
+
+background:var(--card2);
+
+color:#fff;
+
+cursor:pointer;
+
+
+}
+
+
+
+
+
+
+
+/* ==========================
+LOADING
+========================== */
+
+
+
+.loading-card{
+
+
+grid-column:1/-1;
+
+background:var(--card);
+
+border-radius:24px;
+
+padding:80px;
+
+text-align:center;
+
+
+}
+
+
+
+
+.loading-card i{
+
+
+font-size:40px;
+
+color:var(--primary);
+
+margin-bottom:20px;
+
+
+}
+
+
+
+
+
+
+
+/* ==========================
+PAGINATION
+========================== */
+
+
+
+.pagination{
+
+
+display:flex;
+
+justify-content:center;
+
+gap:10px;
+
+margin-top:45px;
+
+flex-wrap:wrap;
+
+
+}
+
+
+
+
+
+.page-btn{
+
+
+width:45px;
+
+height:45px;
+
+border:none;
+
+border-radius:14px;
+
+
+background:var(--card);
+
+color:#fff;
+
+cursor:pointer;
+
+
+}
+
+
+
+
+.page-btn.active{
+
+
+background:var(--gold);
+
+color:#111;
+
+font-weight:700;
+
+
+}
+
+
+
+
+</style>
+
+
+ <!-- ==================================================
+PART 4 / 10
+
+AUDIO PLAYER UI
+
+================================================== -->
+
+
+<section
+
+id="playerBar"
+
+class="player-bar hidden">
+
+
+
+
+
+<div class="player-left">
+
+
+
+<img
+
+id="playerCover"
+
+class="player-cover"
+
+src="https://placehold.co/120x120/00d4ff/ffffff?text=NC"
+
+alt="cover">
+
+
+
+
+
+<div class="player-info">
+
+
+<h3
+
+id="playerTitle">
+
+هیچ پادکستی انتخاب نشده
+
+</h3>
+
+
+<p
+
+id="playerAuthor">
+
+NightCast Radio
+
+</p>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div class="player-center">
+
+
+
+<div class="player-controls">
+
+
+
+<button
+
+id="shuffleBtn"
+
+class="player-btn">
+
+<i class="fa-solid fa-shuffle"></i>
+
+</button>
+
+
+
+
+<button
+
+id="prevBtn"
+
+class="player-btn">
+
+<i class="fa-solid fa-backward-step"></i>
+
+</button>
+
+
+
+
+
+
+<button
+
+id="playBtn"
+
+class="player-play">
+
+<i
+
+id="playIcon"
+
+class="fa-solid fa-play">
+
+</i>
+
+</button>
+
+
+
+
+
+
+
+<button
+
+id="nextBtn"
+
+class="player-btn">
+
+<i class="fa-solid fa-forward-step"></i>
+
+</button>
+
+
+
+
+
+
+<button
+
+id="repeatBtn"
+
+class="player-btn">
+
+<i class="fa-solid fa-repeat"></i>
+
+</button>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div class="progress-area">
+
+
+
+<span
+
+id="currentTime">
+
+00:00
+
+</span>
+
+
+
+
+
+<input
+
+id="progress"
+
+type="range"
+
+min="0"
+
+max="100"
+
+value="0">
+
+
+
+
+
+<span
+
+id="duration">
+
+00:00
+
+</span>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div class="player-right">
+
+
+
+<button
+
+class="player-btn">
+
+<i class="fa-solid fa-volume-high"></i>
+
+</button>
+
+
+
+
+
+<input
+
+id="volume"
+
+type="range"
+
+min="0"
+
+max="100"
+
+value="100">
+
+
+
+</div>
+
+
+
+
+
+
+</section>
+
+
+
+
+
+
+<audio
+
+id="audioPlayer"
+
+preload="metadata">
+
+</audio>
+
+
+
+
+
+
+
+
+
+<style>
+
+
+/* ==========================
+PLAYER
+========================== */
+
+
+
+.player-bar{
+
+
+position:fixed;
+
+left:0;
+
+right:0;
+
+bottom:0;
+
+
+height:95px;
+
+
+background:
+
+rgba(15,24,40,.95);
+
+
+border-top:
+
+1px solid var(--border);
+
+
+display:flex;
+
+align-items:center;
+
+justify-content:space-between;
+
+
+padding:0 25px;
+
+
+z-index:9999;
+
+
+backdrop-filter:blur(20px);
+
+
+
+}
+
+
+
+
+
+.player-bar.hidden{
+
+display:none;
+
+}
+
+
+
+
+
+
+
+.player-left{
+
+
+display:flex;
+
+align-items:center;
+
+gap:15px;
+
+
+width:320px;
+
+
+}
+
+
+
+
+.player-cover{
+
+
+width:65px;
+
+height:65px;
+
+
+border-radius:15px;
+
+
+object-fit:cover;
+
+
+}
+
+
+
+
+
+.player-info h3{
+
+
+font-size:16px;
+
+
+white-space:nowrap;
+
+
+overflow:hidden;
+
+
+text-overflow:ellipsis;
+
+
+max-width:220px;
+
+
+}
+
+
+
+
+.player-info p{
+
+
+font-size:13px;
+
+
+color:var(--soft);
+
+
+}
+
+
+
+
+
+
+
+.player-center{
+
+
+flex:1;
+
+
+display:flex;
+
+
+flex-direction:column;
+
+
+align-items:center;
+
+
+gap:10px;
+
+
+}
+
+
+
+
+
+.player-controls{
+
+
+display:flex;
+
+
+align-items:center;
+
+
+gap:12px;
+
+
+}
+
+
+
+
+
+
+
+.player-btn{
+
+
+width:42px;
+
+
+height:42px;
+
+
+border:none;
+
+
+border-radius:50%;
+
+
+background:var(--card);
+
+
+color:white;
+
+
+cursor:pointer;
+
+
+transition:.3s;
+
+
+}
+
+
+
+
+.player-btn:hover{
+
+
+background:var(--primary);
+
+
+}
+
+
+
+
+
+
+
+.player-play{
+
+
+width:58px;
+
+
+height:58px;
+
+
+border:none;
+
+
+border-radius:50%;
+
+
+background:
+
+linear-gradient(
 
 135deg,
 
@@ -1519,215 +2651,282 @@ var(--primary2)
 
 );
 
-color:#fff;
 
-padding:10px 18px;
+color:white;
 
-border-radius:14px;
+
+font-size:22px;
+
 
 cursor:pointer;
 
-font-weight:700;
 
 }
 
 
 
-.listen-button:hover{
-
-opacity:.9;
-
-}
 
 
 
-.favorite-button{
-
-width:44px;
-
-height:44px;
-
-border:none;
-
-border-radius:50%;
-
-background:var(--card2);
-
-color:#fff;
-
-cursor:pointer;
-
-}
 
 
+.progress-area{
 
-/* ===========================================
-LOADING
-=========================================== */
-
-.loading-card{
-
-grid-column:1/-1;
-
-padding:80px;
-
-text-align:center;
-
-background:var(--card);
-
-border-radius:24px;
-
-}
-
-.loading-card i{
-
-font-size:40px;
-
-color:var(--primary);
-
-margin-bottom:20px;
-
-}
-
-
-
-/* ===========================================
-PAGINATION
-=========================================== */
-
-.pagination{
 
 display:flex;
 
-justify-content:center;
 
 align-items:center;
 
+
 gap:10px;
 
-margin-top:45px;
 
-flex-wrap:wrap;
+width:100%;
+
+
+max-width:500px;
+
 
 }
 
-.page-btn{
 
-width:46px;
 
-height:46px;
 
-border:none;
 
-border-radius:14px;
+.progress-area span{
 
-background:var(--card);
 
-color:#fff;
+font-size:12px;
+
+
+color:var(--soft);
+
+
+width:45px;
+
+
+text-align:center;
+
+
+}
+
+
+
+
+
+
+
+#progress{
+
+
+flex:1;
+
 
 cursor:pointer;
 
-transition:.3s;
 
 }
 
-.page-btn:hover{
 
-background:var(--primary);
+
+
+
+
+.player-right{
+
+
+width:200px;
+
+
+display:flex;
+
+
+align-items:center;
+
+
+justify-content:flex-end;
+
+
+gap:12px;
+
 
 }
 
-.page-btn.active{
 
-background:var(--gold);
 
-color:#111;
 
-font-weight:700;
+
+#volume{
+
+
+width:100px;
+
 
 }
 
-   </style>
 
 
-   
-   <script>
+
+
+</style>
+
+
+ <!-- ==================================================
+PART 5 / 10
+
+API SYSTEM
+LOAD PODCASTS
+
+================================================== -->
+
+
+<script>
+
 
 /* ==================================================
-NightCast
-SECTION 5/12
-
-API + PODCASTS
-
+NightCast API CORE
 ================================================== */
 
+
+
 const API_URL =
+
 "https://nightcast-api.tomasgermany2580.workers.dev/api/v1";
 
+
+
+
+
 let currentPage = 1;
+
 let totalPages = 1;
 
-const podcastGrid =
-document.getElementById("podcastGrid");
 
-const pagination =
-document.getElementById("pagination");
+let podcastsCache = [];
 
 
 
-/* ==========================================
+
+
+
+
+
+/* ==================================================
 TOKEN
-========================================== */
+================================================== */
+
 
 function getToken(){
 
+
 return localStorage.getItem(
+
 "NightCastToken"
+
 );
+
 
 }
 
 
 
-/* ==========================================
-AUTH HEADER
-========================================== */
+
+
+
+
+
+/* ==================================================
+HEADERS
+================================================== */
+
 
 function getHeaders(){
 
+
+
 const token = getToken();
+
+
+
 
 if(token){
 
-return{
+
+return {
+
 
 Authorization:
+
 "Bearer " + token
+
 
 };
 
-}
-
-return{};
 
 }
 
 
 
-/* ==========================================
+
+return {};
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ==================================================
 LOAD PODCASTS
-========================================== */
+================================================== */
+
 
 async function loadPodcasts(page=1){
 
+
+
 currentPage = page;
 
-podcastGrid.innerHTML =
 
-`
+
+
+const grid =
+
+document.getElementById(
+
+"podcastGrid"
+
+);
+
+
+
+
+if(!grid)
+
+return;
+
+
+
+
+
+
+
+grid.innerHTML = `
+
+
+
 <div class="loading-card">
 
+
 <i class="fa-solid fa-spinner fa-spin"></i>
+
 
 <p>
 
@@ -1735,13 +2934,28 @@ podcastGrid.innerHTML =
 
 </p>
 
+
+
 </div>
+
+
+
 `;
+
+
+
+
+
+
 
 try{
 
+
+
 const response =
+
 await fetch(
+
 
 API_URL +
 
@@ -1751,18 +2965,35 @@ page +
 
 "&limit=9",
 
+
 {
+
 
 headers:getHeaders()
 
+
 }
+
 
 );
 
+
+
+
+
+
+
 const data =
+
 await response.json();
 
+
+
+
+
+
 if(!data.success){
+
 
 throw new Error(
 
@@ -1772,32 +3003,92 @@ data.message ||
 
 );
 
+
 }
 
-renderPodcasts(
-data.items || []
-);
+
+
+
+
+
+
+const items =
+
+data.items || [];
+
+
+
+
+
+
+savePodcastCache(items);
+
+
+
+
+
+
+
+renderPodcasts(items);
+
+
+
+
+
+
 
 totalPages =
+
 data.totalPages || 1;
+
+
+
+
+
+
 
 renderPagination();
 
-updateCounter(
-data.total || 0
+
+
+
+
+
+updatePodcastCounter(
+
+data.total || items.length
+
 );
+
+
+
+
+
+
 
 }
 
+
+
+
 catch(error){
 
-podcastGrid.innerHTML=
 
-`
+
+console.error(error);
+
+
+
+
+grid.innerHTML = `
+
+
 
 <div class="loading-card">
 
+
 <i class="fa-solid fa-circle-exclamation"></i>
+
 
 <p>
 
@@ -1805,70 +3096,257 @@ ${error.message}
 
 </p>
 
+
+
 </div>
+
+
 
 `;
 
+
+
 }
 
+
+
+
 }
 
 
 
-/* ==========================================
-UPDATE COUNTER
-========================================== */
 
-function updateCounter(total){
 
-const box =
-document.getElementById(
-"podcastCount"
+
+
+
+
+/* ==================================================
+CACHE
+================================================== */
+
+
+
+function savePodcastCache(items){
+
+
+
+podcastsCache = items;
+
+
+
+localStorage.setItem(
+
+
+"NightCastPodcastCache",
+
+
+JSON.stringify(items)
+
+
 );
 
-if(box){
 
-box.innerHTML = total;
-
-}
 
 }
 
 
 
-/* ==========================================
+
+
+
+
+function loadPodcastCache(){
+
+
+
+const data =
+
+localStorage.getItem(
+
+"NightCastPodcastCache"
+
+);
+
+
+
+
+if(!data)
+
+return [];
+
+
+
+
+try{
+
+
+podcastsCache =
+
+JSON.parse(data);
+
+
+
+return podcastsCache;
+
+
+}
+
+
+catch(e){
+
+
+
+podcastsCache=[];
+
+
+return [];
+
+
+}
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ==================================================
+COUNTER
+================================================== */
+
+
+function updatePodcastCounter(total){
+
+
+
+const counter =
+
+document.getElementById(
+
+"podcastCount"
+
+);
+
+
+
+
+if(counter){
+
+
+
+counter.innerHTML = total;
+
+
+
+}
+
+
+
+}
+
+
+
+
+
+</script>
+
+
+
+ 
+ <!-- ==================================================
+PART 6 / 10
+
+PODCAST RENDER
+CARD + PAGINATION
+
+================================================== -->
+
+
+<script>
+
+
+/* ==================================================
 RENDER PODCASTS
-========================================== */
+================================================== */
+
+
 
 function renderPodcasts(items){
 
-if(items.length===0){
 
-podcastGrid.innerHTML=
 
-`
+const grid =
 
-<div class="loading-card">
+document.getElementById(
 
-<p>
+"podcastGrid"
 
-هیچ پادکستی وجود ندارد.
+);
 
-</p>
 
-</div>
 
-`;
+
+if(!grid)
 
 return;
 
+
+
+
+
+
+if(items.length===0){
+
+
+
+grid.innerHTML = `
+
+
+<div class="loading-card">
+
+
+<p>
+
+هیچ پادکستی موجود نیست.
+
+</p>
+
+
+</div>
+
+
+`;
+
+
+
+return;
+
+
+
 }
 
-podcastGrid.innerHTML="";
+
+
+
+
+grid.innerHTML="";
+
+
+
+
 
 items.forEach(item=>{
 
-podcastGrid.insertAdjacentHTML(
+
+grid.insertAdjacentHTML(
 
 "beforeend",
 
@@ -1876,28 +3354,48 @@ createPodcastCard(item)
 
 );
 
+
+
 });
+
+
+
+
+
+updateFavoriteIcons();
+
+
 
 }
 
 
-<script>
+
+
+
+
+
+
 
 /* ==================================================
-SECTION 6 / 12
-
-Podcast Cards + Pagination
-
+CREATE CARD
 ================================================== */
 
 
-/* ==========================================
-CREATE PODCAST CARD
-========================================== */
+
 function createPodcastCard(podcast){
 
 
-const id = podcast.id;
+
+const cover =
+
+podcast.cover_url ||
+
+podcast.cover ||
+
+"https://placehold.co/600x400/00d4ff/ffffff?text=NightCast";
+
+
+
 
 
 const title =
@@ -1908,18 +3406,6 @@ podcast.title ||
 
 
 
-const cover =
-
-podcast.cover_url && podcast.cover_url.trim()
-
-?
-
-podcast.cover_url
-
-:
-
-"assets/images/default-cover.jpg";
-
 
 
 
@@ -1927,16 +3413,10 @@ const author =
 
 podcast.author_name ||
 
+podcast.author ||
+
 "NightCast";
 
-
-
-
-const category =
-
-podcast.category_name ||
-
-"عمومی";
 
 
 
@@ -1946,45 +3426,7 @@ const description =
 
 podcast.description ||
 
-podcast.summary ||
-
-"بدون توضیحات";
-
-
-
-
-
-
-let duration = "";
-
-
-
-if(podcast.duration_seconds){
-
-
-let minutes = Math.floor(
-
-podcast.duration_seconds / 60
-
-);
-
-
-let seconds =
-
-podcast.duration_seconds % 60;
-
-
-
-duration =
-
-minutes +
-
-":" +
-
-String(seconds).padStart(2,"0");
-
-
-}
+"توضیحی ثبت نشده است.";
 
 
 
@@ -1995,7 +3437,16 @@ String(seconds).padStart(2,"0");
 return `
 
 
-<article class="podcast-card">
+
+<article
+
+class="podcast-card"
+
+data-id="${podcast.id}"
+
+>
+
+
 
 
 
@@ -2008,9 +3459,12 @@ src="${cover}"
 
 alt="${title}"
 
-onerror="this.src='assets/images/default-cover.jpg'"
+onerror="this.src='https://placehold.co/600x400/00d4ff/ffffff?text=NightCast'"
 
 >
+
+
+
 
 
 
@@ -2018,13 +3472,16 @@ onerror="this.src='assets/images/default-cover.jpg'"
 
 class="play-card-btn"
 
-onclick="playPodcast(${id})"
+onclick="playPodcast(${podcast.id})"
 
 >
 
+
 <i class="fa-solid fa-play"></i>
 
+
 </button>
+
 
 
 
@@ -2034,7 +3491,13 @@ onclick="playPodcast(${id})"
 
 
 
+
+
+
 <div class="podcast-info">
+
+
+
 
 
 <h3>
@@ -2042,6 +3505,8 @@ onclick="playPodcast(${id})"
 ${title}
 
 </h3>
+
+
 
 
 
@@ -2057,17 +3522,10 @@ ${author}
 </span>
 
 
-
-<span>
-
-<i class="fa-solid fa-layer-group"></i>
-
-${category}
-
-</span>
-
-
 </div>
+
+
+
 
 
 
@@ -2082,37 +3540,60 @@ ${description}
 
 
 
+
+
+
 <div class="podcast-footer">
-
-
-
-<span>
-
-<i class="fa-regular fa-clock"></i>
-
-${duration}
-
-</span>
-
 
 
 
 <button
 
-class="secondary-button"
+class="primary-button"
 
-onclick="openPodcastModal(${id})"
+onclick="playPodcast(${podcast.id})"
 
 >
 
-جزئیات
+
+<i class="fa-solid fa-play"></i>
+
+پخش
+
 
 </button>
 
 
 
 
+
+
+
+<button
+
+class="favorite-button"
+
+data-id="${podcast.id}"
+
+onclick="toggleFavorite(${podcast.id})"
+
+>
+
+
+<i class="fa-regular fa-heart"></i>
+
+
+</button>
+
+
+
+
+
+
 </div>
+
+
+
 
 
 
@@ -2125,62 +3606,62 @@ onclick="openPodcastModal(${id})"
 
 
 
+
 `;
 
+
+
 }
-/* ==========================================
+
+
+
+
+
+
+
+
+
+/* ==================================================
 PAGINATION
-========================================== */
+================================================== */
+
+
 
 function renderPagination(){
 
-pagination.innerHTML="";
 
 
+const box =
 
-if(totalPages<=1){
+document.getElementById(
 
-return;
-
-}
-
-
-
-const prev =
-
-document.createElement("button");
-
-prev.className="page-btn";
-
-prev.innerHTML=
-
-'<i class="fa-solid fa-angle-right"></i>';
-
-
-
-prev.disabled=
-
-currentPage===1;
-
-
-
-prev.onclick=()=>{
-
-if(currentPage>1){
-
-loadPodcasts(
-
-currentPage-1
+"pagination"
 
 );
 
-}
-
-};
 
 
 
-pagination.appendChild(prev);
+if(!box)
+
+return;
+
+
+
+
+
+box.innerHTML="";
+
+
+
+
+
+if(totalPages<=1)
+
+return;
+
+
+
 
 
 
@@ -2196,27 +3677,23 @@ i++
 
 ){
 
-const btn=
-
-document.createElement("button");
 
 
+const btn =
 
-btn.className=
+document.createElement(
 
-"page-btn";
-
-
-
-if(i===currentPage){
-
-btn.classList.add(
-
-"active"
+"button"
 
 );
 
-}
+
+
+
+
+btn.className="page-btn";
+
+
 
 
 
@@ -2224,1251 +3701,112 @@ btn.innerHTML=i;
 
 
 
-btn.onclick=()=>{
+
+
+
+
+if(i===currentPage){
+
+
+
+btn.classList.add(
+
+"active"
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+btn.onclick=function(){
+
+
 
 loadPodcasts(i);
 
-};
 
-
-
-pagination.appendChild(btn);
-
-}
-
-
-
-
-
-const next=
-
-document.createElement("button");
-
-
-
-next.className=
-
-"page-btn";
-
-
-
-next.innerHTML=
-
-'<i class="fa-solid fa-angle-left"></i>';
-
-
-
-next.disabled=
-
-currentPage===totalPages;
-
-
-
-next.onclick=()=>{
-
-if(currentPage<totalPages){
-
-loadPodcasts(
-
-currentPage+1
-
-);
-
-}
 
 };
 
 
 
-pagination.appendChild(next);
+
+
+
+box.appendChild(btn);
+
+
+
+
 
 }
 
 
 
-/* ==========================================
-FAVORITE
-========================================== */
-
-function toggleFavorite(id){
-
-console.log(
-
-"Favorite",
-
-id
-
-);
-
-/*
-
-در نسخه بعدی
-
-به Worker متصل می‌شود
-
-*/
-
 }
 
 
 
-/* ==========================================
-PLAY
-========================================== */
 
-function playPodcast(id){
 
-console.log(
 
-"Play",
 
-id
 
-);
-
-/*
-
-در قسمت Player
-
-کامل خواهد شد.
-
-*/
-
-}
-
-</script>
-
-
-<!-- ==================================================
-BOTTOM PLAYER
-SECTION 7 / 12
-================================================== -->
-
-<section
-id="playerBar"
-class="player-bar hidden">
-
-<div class="player-left">
-
-<img
-
-id="playerCover"
-
-src="https://placehold.co/120x120/00d4ff/ffffff?text=NC"
-
-alt="cover"
-
-class="player-cover">
-
-<div class="player-info">
-
-<h3 id="playerTitle">
-
-هیچ پادکستی انتخاب نشده
-
-</h3>
-
-<p id="playerAuthor">
-
-NightCast Radio
-
-</p>
-
-</div>
-
-</div>
-
-
-
-<div class="player-center">
-
-<div class="player-controls">
-
-<button
-id="shuffleBtn"
-class="player-btn">
-
-<i class="fa-solid fa-shuffle"></i>
-
-</button>
-
-<button
-id="prevBtn"
-class="player-btn">
-
-<i class="fa-solid fa-backward-step"></i>
-
-</button>
-
-<button
-id="playBtn"
-class="player-play">
-
-<i
-id="playIcon"
-class="fa-solid fa-play">
-
-</i>
-
-</button>
-
-<button
-id="nextBtn"
-class="player-btn">
-
-<i class="fa-solid fa-forward-step"></i>
-
-</button>
-
-<button
-id="repeatBtn"
-class="player-btn">
-
-<i class="fa-solid fa-repeat"></i>
-
-</button>
-
-</div>
-
-
-
-<div class="progress-area">
-
-<span
-id="currentTime">
-
-00:00
-
-</span>
-
-<input
-
-id="progress"
-
-type="range"
-
-min="0"
-
-max="100"
-
-value="0">
-
-<span
-id="duration">
-
-00:00
-
-</span>
-
-</div>
-
-</div>
-
-
-
-<div class="player-right">
-
-<button
-class="player-btn">
-
-<i class="fa-solid fa-volume-high"></i>
-
-</button>
-
-<input
-
-id="volume"
-
-type="range"
-
-min="0"
-
-max="100"
-
-value="100"
-
-style="width:100px;">
-
-</div>
-
-</section>
-
-
-
-<audio
-id="audioPlayer"
-preload="metadata">
-
-</audio>
-
-
-
-<style>
-
-/* ===========================================
-BOTTOM PLAYER
-=========================================== */
-
-.player-bar{
-
-position:fixed;
-
-bottom:0;
-
-left:0;
-
-right:0;
-
-height:96px;
-
-background:#0f1828;
-
-border-top:1px solid rgba(255,255,255,.08);
-
-display:flex;
-
-align-items:center;
-
-justify-content:space-between;
-
-padding:0 25px;
-
-z-index:9999;
-
-backdrop-filter:blur(18px);
-
-}
-
-
-
-.player-left{
-
-display:flex;
-
-align-items:center;
-
-gap:16px;
-
-width:320px;
-
-}
-
-
-
-.player-cover{
-
-width:64px;
-
-height:64px;
-
-border-radius:14px;
-
-object-fit:cover;
-
-}
-
-
-
-.player-info h3{
-
-font-size:16px;
-
-margin-bottom:4px;
-
-white-space:nowrap;
-
-overflow:hidden;
-
-text-overflow:ellipsis;
-
-}
-
-
-
-.player-info p{
-
-font-size:13px;
-
-color:var(--soft);
-
-}
-
-
-
-.player-center{
-
-flex:1;
-
-display:flex;
-
-flex-direction:column;
-
-align-items:center;
-
-gap:12px;
-
-}
-
-
-
-.player-controls{
-
-display:flex;
-
-align-items:center;
-
-gap:14px;
-
-}
-
-
-
-.player-btn{
-
-width:42px;
-
-height:42px;
-
-border:none;
-
-border-radius:50%;
-
-background:var(--card);
-
-color:#fff;
-
-cursor:pointer;
-
-transition:.3s;
-
-}
-
-
-
-.player-btn:hover{
-
-background:var(--primary);
-
-}
-
-
-
-.player-play{
-
-width:56px;
-
-height:56px;
-
-border:none;
-
-border-radius:50%;
-
-background:linear-gradient(
-
-135deg,
-
-var(--primary),
-
-var(--primary2)
-
-);
-
-color:#fff;
-
-font-size:20px;
-
-cursor:pointer;
-
-transition:.3s;
-
-}
-
-
-
-.player-play:hover{
-
-transform:scale(1.08);
-
-}
-
-
-
-.progress-area{
-
-display:flex;
-
-align-items:center;
-
-gap:10px;
-
-width:100%;
-
-}
-
-
-
-.progress-area span{
-
-font-size:12px;
-
-color:var(--soft);
-
-width:45px;
-
-text-align:center;
-
-}
-
-
-
-#progress{
-
-flex:1;
-
-}
-
-
-
-.player-right{
-
-width:220px;
-
-display:flex;
-
-align-items:center;
-
-justify-content:flex-end;
-
-gap:15px;
-
-}
-
-</style>
-
-
-
-<script>
-
-/* ===========================================
-PLAYER CORE
-=========================================== */
-
-const audio=
-
-document.getElementById("audioPlayer");
-
-const playBtn=
-
-document.getElementById("playBtn");
-
-const playIcon=
-
-document.getElementById("playIcon");
-
-const progress=
-
-document.getElementById("progress");
-
-const volume=
-
-document.getElementById("volume");
-
-
-
-let currentPodcast=null;
-
-
-
-function playPodcast(id){
-
-console.log(
-
-"Load Podcast",
-
-id
-
-);
-
-/*
-
-در قسمت بعد
-
-اطلاعات واقعی از Worker
-
-دریافت خواهد شد.
-
-*/
-
-document
-
-.getElementById("playerBar")
-
-.classList
-
-.remove("hidden");
-
-
-
-document
-
-.getElementById("playerTitle")
-
-.innerHTML=
-
-"در حال بارگذاری...";
-
-}
-
-
-
-playBtn.onclick=()=>{
-
-if(audio.paused){
-
-audio.play();
-
-}
-
-else{
-
-audio.pause();
-
-}
-
-};
-
-
-
-audio.onplay=()=>{
-
-playIcon.className=
-
-"fa-solid fa-pause";
-
-};
-
-
-
-audio.onpause=()=>{
-
-playIcon.className=
-
-"fa-solid fa-play";
-
-};
-
-
-
-audio.ontimeupdate=()=>{
-
-if(audio.duration){
-
-progress.value=
-
-(audio.currentTime/
-
-audio.duration)*100;
-
-}
-
-
-
-document
-
-.getElementById("currentTime")
-
-.innerHTML=
-
-formatTime(audio.currentTime);
-
-};
-
-
-
-audio.onloadedmetadata=()=>{
-
-document
-
-.getElementById("duration")
-
-.innerHTML=
-
-formatTime(audio.duration);
-
-};
-
-
-
-progress.oninput=()=>{
-
-if(audio.duration){
-
-audio.currentTime=
-
-(progress.value/100)*
-
-audio.duration;
-
-}
-
-};
-
-
-
-volume.oninput=()=>{
-
-audio.volume=
-
-volume.value/100;
-
-};
-
-
-
-function formatTime(sec){
-
-if(isNaN(sec))
-
-return "00:00";
-
-
-
-const m=
-
-Math.floor(sec/60);
-
-const s=
-
-Math.floor(sec%60);
-
-
-
-return
-
-String(m).padStart(2,"0")
-
-+
-
-":"
-
-+
-
-String(s).padStart(2,"0");
-
-}
-
-</script>
-
-<script>
 
 /* ==================================================
-SECTION 8 / 12
-
-NightCast Player API
-
+FAVORITE SYSTEM
 ================================================== */
 
 
-/* ==========================================
-LOAD PODCAST FROM WORKER
-========================================== */
-
-async function playPodcast(id){
-
-try{
-
-document
-
-.getElementById("playerBar")
-
-.classList
-
-.remove("hidden");
-
-
-document
-
-.getElementById("playerTitle")
-
-.innerHTML="در حال بارگذاری...";
-
-
-const response=
-
-await fetch(
-
-API_URL+
-
-"/public/podcast/"+id,
-
-{
-
-headers:getHeaders()
-
-}
-
-);
-
-
-const data=
-
-await response.json();
-
-
-if(!data.success){
-
-throw new Error(
-
-data.message||
-
-"خطا در دریافت اطلاعات"
-
-);
-
-}
-
-
-currentPodcast=data.item;
-
-
-/* ===============================
-TEXT
-=============================== */
-
-document
-
-.getElementById("playerTitle")
-
-.innerHTML=
-
-currentPodcast.title||"بدون عنوان";
-
-
-document
-
-.getElementById("playerAuthor")
-
-.innerHTML=
-
-currentPodcast.author||
-
-"NightCast";
-
-
-/* ===============================
-COVER
-=============================== */
-
-document
-
-.getElementById("playerCover")
-
-.src=
-
-currentPodcast.cover||
-
-"https://placehold.co/300x300/00d4ff/ffffff?text=NightCast";
-
-
-/* ===============================
-AUDIO
-=============================== */
-
-audio.src=
-
-currentPodcast.audio;
-
-
-audio.load();
-
-await audio.play();
-
-
-}
-catch(error){
-
-alert(error.message);
-
-}
-
-}
-
-
-
-/* ==========================================
-NEXT
-========================================== */
-
-async function nextPodcast(){
-
-if(!currentPodcast)
-
-return;
-
-await playPodcast(
-
-currentPodcast.id+1
-
-);
-
-}
-
-
-
-/* ==========================================
-PREVIOUS
-========================================== */
-
-async function previousPodcast(){
-
-if(!currentPodcast)
-
-return;
-
-if(currentPodcast.id<=1)
-
-return;
-
-await playPodcast(
-
-currentPodcast.id-1
-
-);
-
-}
-
-
-
-/* ==========================================
-BUTTONS
-========================================== */
-
-document
-
-.getElementById("nextBtn")
-
-.onclick=
-
-nextPodcast;
-
-
-document
-
-.getElementById("prevBtn")
-
-.onclick=
-
-previousPodcast;
-
-
-
-/* ==========================================
-END AUDIO
-========================================== */
-
-audio.onended=function(){
-
-nextPodcast();
-
-};
-
-
-
-/* ==========================================
-MEDIA SESSION
-========================================== */
-
-if("mediaSession" in navigator){
-
-navigator.mediaSession.setActionHandler(
-
-"play",
-
-()=>audio.play()
-
-);
-
-navigator.mediaSession.setActionHandler(
-
-"pause",
-
-()=>audio.pause()
-
-);
-
-navigator.mediaSession.setActionHandler(
-
-"nexttrack",
-
-nextPodcast
-
-);
-
-navigator.mediaSession.setActionHandler(
-
-"previoustrack",
-
-previousPodcast
-
-);
-
-}
-
-
-
-/* ==========================================
-UPDATE LOCK SCREEN
-========================================== */
-
-audio.onloadedmetadata=function(){
-
-document
-
-.getElementById("duration")
-
-.innerHTML=
-
-formatTime(audio.duration);
-
-
-if(
-
-"mediaSession" in navigator
-
-&& currentPodcast
-
-){
-
-navigator.mediaSession.metadata=
-
-new MediaMetadata({
-
-title:
-
-currentPodcast.title,
-
-artist:
-
-currentPodcast.author||
-
-"NightCast",
-
-album:
-
-"NightCast",
-
-artwork:[
-
-{
-
-src:
-
-currentPodcast.cover,
-
-sizes:"512x512",
-
-type:"image/png"
-
-}
-
-]
-
-});
-
-}
-
-};
-
-</script>
-
-
-
-<script>
-
-/* ==================================================
-SECTION 9 / 12
-
-Search
-Favorite
-Playlist
-Cache
-
-================================================== */
-
-
-/* ==========================================
-CACHE
-========================================== */
-
-let podcastsCache=[];
-
-
-
-/* ==========================================
-SAVE CACHE
-========================================== */
-
-function saveCache(list){
-
-podcastsCache=list;
-
-localStorage.setItem(
-
-"NightCastPodcastCache",
-
-JSON.stringify(list)
-
-);
-
-}
-
-
-
-/* ==========================================
-LOAD CACHE
-========================================== */
-
-function loadCache(){
-
-const cache=
-
-localStorage.getItem(
-
-"NightCastPodcastCache"
-
-);
-
-if(!cache)return;
-
-try{
-
-podcastsCache=
-
-JSON.parse(cache);
-
-}
-
-catch(e){
-
-podcastsCache=[];
-
-}
-
-}
-
-
-
-/* ==========================================
-SEARCH
-========================================== */
-
-const searchInput=
-
-document.getElementById(
-
-"searchInput"
-
-);
-
-
-
-if(searchInput){
-
-searchInput.addEventListener(
-
-"keyup",
-
-function(){
-
-const keyword=
-
-this.value
-
-.trim()
-
-.toLowerCase();
-
-
-
-if(keyword===""){
-
-renderPodcasts(
-
-podcastsCache
-
-);
-
-return;
-
-}
-
-
-
-const result=
-
-podcastsCache.filter(
-
-item=>{
-
-return(
-
-(item.title||"")
-
-.toLowerCase()
-
-.includes(keyword)
-
-||
-
-(item.description||"")
-
-.toLowerCase()
-
-.includes(keyword)
-
-);
-
-}
-
-);
-
-
-
-renderPodcasts(result);
-
-}
-
-);
-
-}
-
-
-
-/* ==========================================
-FAVORITE
-========================================== */
 
 function getFavorites(){
 
-const list=
+
+
+try{
+
+
+return JSON.parse(
 
 localStorage.getItem(
 
 "NightCastFavorite"
 
-);
+)
 
-if(!list)
+) || [];
+
+
+
+}
+
+catch(e){
+
 
 return [];
 
-return JSON.parse(list);
+}
+
 
 }
 
 
 
+
+
+
+
+
 function saveFavorites(list){
+
+
 
 localStorage.setItem(
 
@@ -3478,33 +3816,55 @@ JSON.stringify(list)
 
 );
 
+
+
 }
+
+
+
+
+
+
 
 
 
 function toggleFavorite(id){
 
-let list=
+
+
+let list =
 
 getFavorites();
 
 
 
+
+
+
 if(list.includes(id)){
 
-list=list.filter(
 
-x=>x!==id
+
+list = list.filter(
+
+item=>item!==id
 
 );
+
+
 
 }
 
 else{
 
+
 list.push(id);
 
+
+
 }
+
+
 
 
 
@@ -3512,21 +3872,30 @@ saveFavorites(list);
 
 
 
+
 updateFavoriteIcons();
+
+
 
 }
 
 
 
-/* ==========================================
-UPDATE HEART
-========================================== */
+
+
+
+
 
 function updateFavoriteIcons(){
 
-const list=
+
+
+const list =
 
 getFavorites();
+
+
+
 
 
 
@@ -3540,7 +3909,11 @@ document
 
 .forEach(btn=>{
 
-const id=
+
+
+
+
+const id =
 
 Number(
 
@@ -3550,183 +3923,1154 @@ btn.dataset.id
 
 
 
-if(
 
-list.includes(id)
 
-){
 
-btn.innerHTML=
+if(list.includes(id)){
+
+
+
+btn.innerHTML =
 
 '<i class="fa-solid fa-heart"></i>';
 
-btn.style.color="#ff4d6d";
+
+
+btn.style.color="#ff5577";
+
+
 
 }
 
 else{
 
-btn.innerHTML=
+
+
+btn.innerHTML =
 
 '<i class="fa-regular fa-heart"></i>';
 
-btn.style.color="#ffffff";
+
+
+btn.style.color="#fff";
+
 
 }
+
+
+
+
 
 });
 
-}
 
-
-
-/* ==========================================
-PLAYLIST
-========================================== */
-
-let playlist=[];
-
-let playlistIndex=0;
-
-
-
-function buildPlaylist(items){
-
-playlist=items;
 
 }
 
 
 
-/* ==========================================
-PLAY NEXT
-========================================== */
 
-function nextPodcast(){
 
-if(
+</script>
 
-playlist.length===0
+
+
+ <!-- ==================================================
+PART 7 / 10
+
+AUDIO PLAYER LOGIC
+
+================================================== -->
+
+
+<script>
+
+
+/* ==================================================
+PLAYER CORE
+================================================== */
+
+
+const audioPlayer =
+
+document.getElementById(
+
+"audioPlayer"
+
+);
+
+
+
+const playButton =
+
+document.getElementById(
+
+"playBtn"
+
+);
+
+
+
+const playIcon =
+
+document.getElementById(
+
+"playIcon"
+
+);
+
+
+
+const progressBar =
+
+document.getElementById(
+
+"progress"
+
+);
+
+
+
+const volumeBar =
+
+document.getElementById(
+
+"volume"
+
+);
+
+
+
+
+let currentPodcast = null;
+
+
+
+
+
+
+
+
+
+/* ==================================================
+PLAY PODCAST
+================================================== */
+
+
+async function playPodcast(id){
+
+
+
+try{
+
+
+
+document
+
+.getElementById(
+
+"playerBar"
 
 )
+
+.classList
+
+.remove(
+
+"hidden"
+
+);
+
+
+
+
+
+document
+
+.getElementById(
+
+"playerTitle"
+
+)
+
+.innerHTML=
+
+"در حال بارگذاری...";
+
+
+
+
+
+
+
+
+const response =
+
+await fetch(
+
+API_URL +
+
+"/public/podcast/" +
+
+id,
+
+
+{
+
+
+headers:getHeaders()
+
+
+}
+
+
+);
+
+
+
+
+
+
+
+
+const data =
+
+await response.json();
+
+
+
+
+
+
+
+if(!data.success){
+
+
+
+throw new Error(
+
+data.message ||
+
+"پادکست پیدا نشد"
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+currentPodcast =
+
+data.item;
+
+
+
+
+
+
+
+
+
+document
+
+.getElementById(
+
+"playerTitle"
+
+)
+
+.innerHTML=
+
+currentPodcast.title;
+
+
+
+
+
+
+
+document
+
+.getElementById(
+
+"playerAuthor"
+
+)
+
+.innerHTML=
+
+currentPodcast.author ||
+
+"NightCast";
+
+
+
+
+
+
+
+
+document
+
+.getElementById(
+
+"playerCover"
+
+)
+
+.src=
+
+currentPodcast.cover ||
+
+"https://placehold.co/300x300/00d4ff/ffffff?text=NC";
+
+
+
+
+
+
+
+
+audioPlayer.src =
+
+currentPodcast.audio;
+
+
+
+
+
+
+
+audioPlayer.load();
+
+
+
+
+await audioPlayer.play();
+
+
+
+
+
+updateMediaSession();
+
+
+
+
+}
+
+
+
+catch(error){
+
+
+
+console.error(error);
+
+
+
+showToast(
+
+error.message
+
+);
+
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+/* ==================================================
+PLAY BUTTON
+================================================== */
+
+
+playButton.onclick=function(){
+
+
+
+if(!audioPlayer.src)
 
 return;
 
 
 
-playlistIndex++;
+
+
+if(audioPlayer.paused){
 
 
 
-if(
+audioPlayer.play();
 
-playlistIndex>=playlist.length
 
-){
 
-playlistIndex=0;
+}
+
+else{
+
+
+
+audioPlayer.pause();
+
+
 
 }
 
 
-
-playPodcast(
-
-playlist[playlistIndex].id
-
-);
-
-}
-
-
-
-/* ==========================================
-PLAY PREVIOUS
-========================================== */
-
-function previousPodcast(){
-
-if(
-
-playlist.length===0
-
-)
-
-return;
-
-
-
-playlistIndex--;
-
-
-
-if(
-
-playlistIndex<0
-
-){
-
-playlistIndex=
-
-playlist.length-1;
-
-}
-
-
-
-playPodcast(
-
-playlist[playlistIndex].id
-
-);
-
-}
-
-
-
-/* ==========================================
-AUTO PLAY
-========================================== */
-
-audio.onended=function(){
-
-nextPodcast();
 
 };
 
 
 
-/* ==========================================
-INITIALIZE
-========================================== */
 
-loadCache();
 
-updateFavoriteIcons();
+
+
+
+
+
+/* ==================================================
+PLAY STATE
+================================================== */
+
+
+
+audioPlayer.addEventListener(
+
+"play",
+
+()=>{
+
+
+playIcon.className=
+
+"fa-solid fa-pause";
+
+
+});
+
+
+
+
+
+
+
+audioPlayer.addEventListener(
+
+"pause",
+
+()=>{
+
+
+playIcon.className=
+
+"fa-solid fa-play";
+
+
+});
+
+
+
+
+
+
+
+
+
+
+
+/* ==================================================
+TIME UPDATE
+================================================== */
+
+
+audioPlayer.addEventListener(
+
+"timeupdate",
+
+()=>{
+
+
+
+if(!audioPlayer.duration)
+
+return;
+
+
+
+
+
+progressBar.value =
+
+
+(
+
+audioPlayer.currentTime /
+
+audioPlayer.duration
+
+)
+
+*100;
+
+
+
+
+
+
+
+
+document
+
+.getElementById(
+
+"currentTime"
+
+)
+
+.innerHTML=
+
+formatTime(
+
+audioPlayer.currentTime
+
+);
+
+
+
+});
+
+
+
+
+
+
+
+
+
+audioPlayer.addEventListener(
+
+"loadedmetadata",
+
+()=>{
+
+
+
+document
+
+.getElementById(
+
+"duration"
+
+)
+
+.innerHTML=
+
+formatTime(
+
+audioPlayer.duration
+
+);
+
+
+
+});
+
+
+
+
+
+
+
+
+
+
+/* ==================================================
+PROGRESS CONTROL
+================================================== */
+
+
+
+progressBar.oninput=function(){
+
+
+
+if(audioPlayer.duration){
+
+
+
+audioPlayer.currentTime =
+
+
+(
+
+this.value /100
+
+)
+
+*
+
+audioPlayer.duration;
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+
+
+
+
+/* ==================================================
+VOLUME
+================================================== */
+
+
+
+volumeBar.oninput=function(){
+
+
+
+audioPlayer.volume =
+
+this.value /100;
+
+
+
+};
+
+
+
+
+
+
+
+audioPlayer.volume=1;
+
+
+
+
+
+
+
+
+
+/* ==================================================
+FORMAT TIME
+================================================== */
+
+
+function formatTime(seconds){
+
+
+
+if(isNaN(seconds))
+
+return "00:00";
+
+
+
+
+
+let min =
+
+Math.floor(
+
+seconds/60
+
+);
+
+
+
+let sec =
+
+Math.floor(
+
+seconds%60
+
+);
+
+
+
+
+
+return (
+
+String(min)
+
+.padStart(2,"0")
+
++
+
+":"
+
++
+
+String(sec)
+
+.padStart(2,"0")
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ==================================================
+NEXT / PREVIOUS
+================================================== */
+
+
+
+async function nextPodcast(){
+
+
+
+if(!currentPodcast)
+
+return;
+
+
+
+await playPodcast(
+
+Number(currentPodcast.id)+1
+
+);
+
+
+
+}
+
+
+
+
+
+async function previousPodcast(){
+
+
+
+if(!currentPodcast)
+
+return;
+
+
+
+if(currentPodcast.id<=1)
+
+return;
+
+
+
+
+await playPodcast(
+
+Number(currentPodcast.id)-1
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+document
+
+.getElementById(
+
+"nextBtn"
+
+)
+
+.onclick=
+
+nextPodcast;
+
+
+
+
+
+
+
+document
+
+.getElementById(
+
+"prevBtn"
+
+)
+
+.onclick=
+
+previousPodcast;
+
+
+
+
+
+
+
+
+
+
+/* ==================================================
+AUTO NEXT
+================================================== */
+
+
+audioPlayer.onended=function(){
+
+
+
+nextPodcast();
+
+
+
+};
+
+
+
+
+
+
+
+
+
+
+/* ==================================================
+MEDIA SESSION
+================================================== */
+
+
+function updateMediaSession(){
+
+
+
+if(!("mediaSession" in navigator))
+
+return;
+
+
+
+
+
+
+
+navigator.mediaSession.metadata =
+
+new MediaMetadata({
+
+
+
+title:
+
+currentPodcast.title,
+
+
+
+artist:
+
+currentPodcast.author ||
+
+"NightCast",
+
+
+
+album:
+
+"NightCast Radio",
+
+
+
+artwork:[
+
+{
+
+
+src:
+
+currentPodcast.cover,
+
+
+sizes:
+
+"512x512",
+
+type:
+
+"image/jpeg"
+
+
+}
+
+]
+
+});
+
+
+
+
+
+
+navigator.mediaSession.setActionHandler(
+
+"play",
+
+()=>audioPlayer.play()
+
+);
+
+
+
+
+navigator.mediaSession.setActionHandler(
+
+"pause",
+
+()=>audioPlayer.pause()
+
+);
+
+
+
+
+navigator.mediaSession.setActionHandler(
+
+"nexttrack",
+
+nextPodcast
+
+);
+
+
+
+
+navigator.mediaSession.setActionHandler(
+
+"previoustrack",
+
+previousPodcast
+
+);
+
+
+
+}
+
+
+
 
 </script>
 
 
+
+<!-- ==================================================
+PART 8 / 10
+
+SEARCH + USER SYSTEM
+
+================================================== -->
+
+
 <script>
 
+
 /* ==================================================
-SECTION 10 / 12
-
-User
-Toast
-Skeleton
-Logout
-
+SEARCH
 ================================================== */
 
 
-/* ==========================================
-CURRENT USER
-========================================== */
+const searchInput =
+
+document.getElementById(
+
+"searchInput"
+
+);
+
+
+
+
+
+if(searchInput){
+
+
+
+searchInput.addEventListener(
+
+"input",
+
+function(){
+
+
+
+const keyword =
+
+this.value
+
+.trim()
+
+.toLowerCase();
+
+
+
+
+
+
+
+if(keyword===""){
+
+
+
+renderPodcasts(
+
+podcastsCache
+
+);
+
+
+
+return;
+
+
+
+}
+
+
+
+
+
+
+
+
+
+const result =
+
+podcastsCache.filter(
+
+item=>{
+
+
+
+const title =
+
+(item.title || "")
+
+.toLowerCase();
+
+
+
+
+
+const desc =
+
+(item.description || "")
+
+.toLowerCase();
+
+
+
+
+
+
+
+return (
+
+title.includes(keyword)
+
+||
+
+desc.includes(keyword)
+
+);
+
+
+
+}
+
+
+
+);
+
+
+
+
+
+
+renderPodcasts(result);
+
+
+
+}
+
+
+
+);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ==================================================
+LOAD CURRENT USER
+================================================== */
+
+
 
 function loadCurrentUser(){
 
-const userData=
+
+
+
+
+const userBox =
 
 localStorage.getItem(
 
@@ -3734,7 +5078,12 @@ localStorage.getItem(
 
 );
 
-const token=
+
+
+
+
+
+const token =
 
 localStorage.getItem(
 
@@ -3742,7 +5091,12 @@ localStorage.getItem(
 
 );
 
-const userName=
+
+
+
+
+
+const nameBox =
 
 document.getElementById(
 
@@ -3750,7 +5104,12 @@ document.getElementById(
 
 );
 
-const userEmail=
+
+
+
+
+
+const emailBox =
 
 document.getElementById(
 
@@ -3758,7 +5117,12 @@ document.getElementById(
 
 );
 
-const userAvatar=
+
+
+
+
+
+const avatar =
 
 document.getElementById(
 
@@ -3768,37 +5132,70 @@ document.getElementById(
 
 
 
-if(
 
-!userData ||
 
-!token
 
-){
 
-userName.innerHTML="مهمان";
+if(!token || !userBox){
 
-userEmail.innerHTML="Guest";
 
-userAvatar.src=
+
+
+
+nameBox.innerHTML=
+
+"مهمان";
+
+
+
+
+
+emailBox.innerHTML=
+
+"Guest";
+
+
+
+
+
+
+avatar.src=
 
 "https://ui-avatars.com/api/?name=Guest&background=555&color=fff";
 
+
+
+
+
+
 return;
+
+
 
 }
 
 
 
+
+
+
+
+
+
 try{
 
-const user=
-
-JSON.parse(userData);
 
 
+const user =
 
-userName.innerHTML=
+JSON.parse(userBox);
+
+
+
+
+
+
+nameBox.innerHTML=
 
 user.full_name ||
 
@@ -3808,65 +5205,104 @@ user.name ||
 
 
 
-userEmail.innerHTML=
+
+
+
+
+
+emailBox.innerHTML=
 
 user.email ||
 
 user.username ||
 
-"-";
+"";
+
+
+
+
+
 
 
 
 if(user.picture){
 
-userAvatar.src=
+
+
+avatar.src=
 
 user.picture;
+
+
 
 }
 
 else{
 
-userAvatar.src=
+
+
+avatar.src=
 
 "https://ui-avatars.com/api/?name="+
 
 encodeURIComponent(
 
-user.full_name||
+user.full_name ||
 
 "NightCast"
 
-)+
+)
 
-"&background=00d4ff&color=fff";
++"&background=00d4ff&color=fff";
 
-}
 
-}
-
-catch(e){
-
-console.log(e);
-
-}
 
 }
 
 
 
-/* ==========================================
+
+
+
+}
+
+
+
+catch(error){
+
+
+
+console.log(error);
+
+
+
+}
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ==================================================
 LOGOUT
-========================================== */
+================================================== */
+
 
 async function logout(){
 
 
 
-try{
 
-const token=
+
+const token =
 
 localStorage.getItem(
 
@@ -3876,7 +5312,17 @@ localStorage.getItem(
 
 
 
+
+
+
+
+try{
+
+
+
 if(token){
+
+
 
 await fetch(
 
@@ -3884,41 +5330,63 @@ API_URL+
 
 "/auth/logout",
 
+
 {
+
 
 method:"POST",
 
+
 headers:{
+
+
 
 Authorization:
 
 "Bearer "+token
 
+
+
 }
+
+
 
 }
 
 );
 
+
+
 }
+
+
 
 }
 
 catch(e){
 
+
+
 console.log(e);
+
+
 
 }
 
 
 
-/* Local */
+
+
+
 
 localStorage.removeItem(
 
 "NightCastToken"
 
 );
+
+
+
 
 localStorage.removeItem(
 
@@ -3928,7 +5396,14 @@ localStorage.removeItem(
 
 
 
+
+
+
+
 loadCurrentUser();
+
+
+
 
 
 
@@ -3940,23 +5415,6 @@ showToast(
 
 
 
-podcastGrid.innerHTML=
-
-`
-
-<div class="loading-card">
-
-<i class="fa-solid fa-user"></i>
-
-<p>
-
-برای دسترسی کامل دوباره وارد شوید.
-
-</p>
-
-</div>
-
-`;
 
 
 
@@ -3964,43 +5422,78 @@ podcastGrid.innerHTML=
 
 
 
-document
-
-.getElementById(
-
-"logoutButton"
-
-)
-
-.addEventListener(
-
-"click",
-
-logout
-
-);
 
 
 
-/* ==========================================
-TOAST
-========================================== */
 
-function showToast(message){
 
-let toast=
+
+const logoutBtn =
 
 document.getElementById(
 
-"toast"
+"logoutButton"
 
 );
+
+
+
+
+
+
+if(logoutBtn){
+
+
+
+logoutBtn.onclick=
+
+logout;
+
+
+
+}
+
+
+
+
+
+
+
+
+
+/* ==================================================
+TOAST
+================================================== */
+
+
+
+function showToast(message){
+
+
+
+
+
+let toast =
+
+document.getElementById(
+
+"nightToast"
+
+);
+
+
+
+
 
 
 
 if(!toast){
 
-toast=
+
+
+
+
+toast =
 
 document.createElement(
 
@@ -4008,7 +5501,17 @@ document.createElement(
 
 );
 
-toast.id="toast";
+
+
+
+
+toast.id=
+
+"nightToast";
+
+
+
+
 
 document.body.appendChild(
 
@@ -4016,11 +5519,104 @@ toast
 
 );
 
+
+
+
+
+
+const css =
+
+document.createElement(
+
+"style"
+
+);
+
+
+
+
+
+css.innerHTML=`
+
+#nightToast{
+
+
+position:fixed;
+
+bottom:40px;
+
+left:50%;
+
+transform:translateX(-50%);
+
+
+background:#111827;
+
+color:white;
+
+
+padding:15px 25px;
+
+
+border-radius:16px;
+
+
+border:1px solid rgba(255,255,255,.1);
+
+
+opacity:0;
+
+
+transition:.3s;
+
+
+z-index:999999;
+
+
 }
 
 
 
-toast.innerHTML=message;
+#nightToast.show{
+
+
+opacity:1;
+
+
+bottom:60px;
+
+
+}
+
+
+
+`;
+
+
+
+
+
+document.head.appendChild(css);
+
+
+
+}
+
+
+
+
+
+
+
+
+toast.innerHTML=
+
+message;
+
+
+
+
+
 
 toast.classList.add(
 
@@ -4030,7 +5626,12 @@ toast.classList.add(
 
 
 
+
+
+
 setTimeout(()=>{
+
+
 
 toast.classList.remove(
 
@@ -4038,486 +5639,924 @@ toast.classList.remove(
 
 );
 
+
+
 },3000);
 
-}
 
 
 
-/* ==========================================
-SKELETON
-========================================== */
-
-function showSkeleton(){
-
-podcastGrid.innerHTML="";
 
 
-
-for(
-
-let i=0;
-
-i<6;
-
-i++
-
-){
-
-podcastGrid.insertAdjacentHTML(
-
-"beforeend",
-
-`
-
-<div class="podcast-card">
-
-<div
-
-style="height:220px;background:#263245;animation:pulse 1.2s infinite">
-
-</div>
-
-<div style="padding:20px">
-
-<div
-
-style="height:22px;background:#263245;border-radius:8px;margin-bottom:12px;animation:pulse 1.2s infinite">
-
-</div>
-
-<div
-
-style="height:15px;background:#263245;border-radius:8px;margin-bottom:8px;animation:pulse 1.2s infinite">
-
-</div>
-
-<div
-
-style="height:15px;background:#263245;border-radius:8px;width:70%;animation:pulse 1.2s infinite">
-
-</div>
-
-</div>
-
-</div>
-
-`
-
-);
-
-}
 
 }
 
 
 
-/* ==========================================
-PULSE
-========================================== */
-
-const style=
-
-document.createElement(
-
-"style"
-
-);
-
-style.innerHTML=`
-
-#toast{
-
-position:fixed;
-
-left:50%;
-
-bottom:35px;
-
-transform:translateX(-50%);
-
-background:#111;
-
-color:#fff;
-
-padding:14px 24px;
-
-border-radius:16px;
-
-border:1px solid rgba(255,255,255,.08);
-
-opacity:0;
-
-pointer-events:none;
-
-transition:.3s;
-
-z-index:99999;
-
-}
-
-#toast.show{
-
-opacity:1;
-
-bottom:50px;
-
-}
-
-@keyframes pulse{
-
-0%{opacity:.45}
-
-50%{opacity:1}
-
-100%{opacity:.45}
-
-}
-
-`;
-
-document.head.appendChild(style);
 
 
 
-/* ==========================================
-READY
-========================================== */
+
+
+
+/* ==================================================
+INIT USER
+================================================== */
+
 
 loadCurrentUser();
+
+
 
 </script>
 
 
 
-<!-- ==================================================
-SECTION 11 / 12
 
-Podcast Modal
-Share
-Download
-Bookmark
+ <!-- ==================================================
+PART 9 / 10
+
+PODCAST MODAL
+RESPONSIVE
 
 ================================================== -->
 
-<!-- ==========================
-MODAL
-========================== -->
 
 <div
+
 id="podcastModal"
+
 class="podcast-modal hidden">
 
-<div class="modal-overlay"
+
+
+
+
+<div
+
+class="modal-overlay"
+
 onclick="closePodcastModal()">
 
 </div>
 
+
+
+
+
+
+
 <div class="modal-window">
 
+
+
+
+
 <button
+
 class="modal-close"
+
 onclick="closePodcastModal()">
 
 <i class="fa-solid fa-xmark"></i>
 
 </button>
 
+
+
+
+
+
+
 <div class="modal-cover">
 
+
 <img
+
 id="modalCover"
+
 src=""
 
-alt="Podcast">
+alt="cover">
+
+
 
 </div>
+
+
+
+
+
+
 
 <div class="modal-body">
 
-<h2 id="modalTitle">
 
-...
+
+<h2
+
+id="modalTitle">
+
+عنوان پادکست
 
 </h2>
 
+
+
+
+
 <p
+
 id="modalDescription">
 
-...
+توضیحات
 
 </p>
 
+
+
+
+
+
+
 <div class="modal-actions">
 
+
+
 <button
+
 class="primary-button"
+
 onclick="playCurrentPodcast()">
+
 
 <i class="fa-solid fa-play"></i>
 
+
 پخش
+
 
 </button>
 
+
+
+
+
+
 <button
+
 class="secondary-button"
+
 onclick="downloadCurrentPodcast()">
+
 
 <i class="fa-solid fa-download"></i>
 
+
 دانلود
+
 
 </button>
 
+
+
+
+
+
 <button
+
 class="secondary-button"
+
 onclick="shareCurrentPodcast()">
+
+
 
 <i class="fa-solid fa-share-nodes"></i>
 
-اشتراک گذاری
+
+اشتراک
+
 
 </button>
 
+
+
+
+
+
+
 <button
+
 class="secondary-button"
+
 onclick="bookmarkCurrentPodcast()">
+
+
 
 <i class="fa-solid fa-bookmark"></i>
 
+
 ذخیره
+
 
 </button>
 
-</div>
+
+
+
+
 
 </div>
 
-</div>
+
 
 </div>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+
+
+
 
 
 
 <style>
 
-/* ===========================================
+
+/* ==========================
 MODAL
-=========================================== */
+========================== */
+
+
 
 .podcast-modal{
+
 
 position:fixed;
 
 inset:0;
 
+
 display:flex;
+
 
 align-items:center;
 
+
 justify-content:center;
+
 
 z-index:99999;
 
+
+
 }
+
+
+
+
 
 .podcast-modal.hidden{
 
+
 display:none;
 
+
 }
+
+
+
+
+
 
 .modal-overlay{
 
+
 position:absolute;
+
 
 inset:0;
 
-background:rgba(0,0,0,.7);
+
+background:
+
+rgba(0,0,0,.75);
+
 
 backdrop-filter:blur(8px);
 
+
 }
+
+
+
+
+
+
 
 .modal-window{
 
+
 position:relative;
 
-width:min(900px,92vw);
+
+width:min(900px,92%);
+
 
 background:var(--card);
 
-border-radius:24px;
+
+border-radius:25px;
+
 
 overflow:hidden;
 
+
 display:grid;
+
 
 grid-template-columns:320px 1fr;
 
-z-index:2;
 
 box-shadow:var(--shadow);
 
+
+z-index:2;
+
+
 }
+
+
+
+
+
+
 
 .modal-cover img{
 
+
 width:100%;
+
 
 height:100%;
 
+
 object-fit:cover;
 
+
 }
+
+
+
+
+
 
 .modal-body{
 
+
 padding:35px;
 
+
 }
+
+
+
+
+
 
 .modal-body h2{
 
-font-size:34px;
+
+font-size:32px;
+
 
 margin-bottom:20px;
 
+
 }
+
+
+
+
+
+
 
 .modal-body p{
 
-line-height:2;
 
 color:var(--soft);
 
+
+line-height:2;
+
+
 margin-bottom:30px;
 
+
 }
+
+
+
+
+
 
 .modal-actions{
 
+
 display:flex;
+
 
 flex-wrap:wrap;
 
+
 gap:15px;
 
+
 }
+
+
+
+
+
+
 
 .modal-close{
 
+
 position:absolute;
 
-top:18px;
 
-left:18px;
+top:15px;
 
-width:46px;
 
-height:46px;
+left:15px;
+
+
+width:45px;
+
+
+height:45px;
+
 
 border:none;
 
+
 border-radius:50%;
+
 
 background:#000;
 
+
 color:#fff;
+
 
 cursor:pointer;
 
-font-size:18px;
+
+z-index:3;
+
 
 }
+
+
+
+
+
+/* ==========================
+MOBILE
+========================== */
+
+
+
+@media(max-width:900px){
+
+
+
+.hero-grid{
+
+
+grid-template-columns:1fr;
+
+
+}
+
+
+
+
+.stats-grid{
+
+
+grid-template-columns:repeat(2,1fr);
+
+
+}
+
+
+
+
+
+.modal-window{
+
+
+grid-template-columns:1fr;
+
+
+}
+
+
+
+.modal-cover{
+
+
+height:280px;
+
+
+}
+
+
+
+.player-bar{
+
+
+height:auto;
+
+
+padding:12px;
+
+
+flex-direction:column;
+
+
+gap:10px;
+
+
+}
+
+
+
+.player-left,
+
+
+.player-right{
+
+
+width:100%;
+
+
+justify-content:center;
+
+
+}
+
+
+
+}
+
+
+
+
+
+@media(max-width:600px){
+
+
+
+.hero-content h2{
+
+
+font-size:34px;
+
+
+}
+
+
+
+.stats-grid{
+
+
+grid-template-columns:1fr;
+
+
+}
+
+
+
+
+.section-header{
+
+
+flex-direction:column;
+
+
+align-items:flex-start;
+
+
+}
+
+
+
+
+.podcast-grid{
+
+
+grid-template-columns:1fr;
+
+
+}
+
+
+
+
+.main-menu{
+
+
+display:none;
+
+
+}
+
+
+
+
+
+.player-controls{
+
+
+gap:8px;
+
+
+}
+
+
+
+.player-btn{
+
+
+width:38px;
+
+
+height:38px;
+
+
+}
+
+
+
+.player-play{
+
+
+width:50px;
+
+
+height:50px;
+
+
+}
+
+
+
+}
+
+
+
+
+
 
 </style>
 
 
 
+
+
+
+
+
+
 <script>
 
-/* ==========================================
-CURRENT MODAL PODCAST
-========================================== */
+
+/* ==================================================
+MODAL SYSTEM
+================================================== */
+
 
 let modalPodcast=null;
 
 
 
-/* ==========================================
-OPEN MODAL
-========================================== */
 
-function openPodcastModal(item){
+
+
+
+function openPodcastModal(id){
+
+
+
+const item =
+
+podcastsCache.find(
+
+p=>Number(p.id)===Number(id)
+
+);
+
+
+
+
+
+if(!item)
+
+return;
+
+
+
+
+
 
 modalPodcast=item;
 
-document
-.getElementById("modalCover").src=item.cover;
+
+
+
+
+
 
 document
-.getElementById("modalTitle").innerHTML=item.title;
+
+.getElementById(
+
+"modalCover"
+
+)
+
+.src=
+
+item.cover_url ||
+
+item.cover ||
+
+"https://placehold.co/600x600";
+
+
+
+
+
 
 document
-.getElementById("modalDescription").innerHTML=
 
-item.description||
+.getElementById(
+
+"modalTitle"
+
+)
+
+.innerHTML=
+
+item.title;
+
+
+
+
+
+
+document
+
+.getElementById(
+
+"modalDescription"
+
+)
+
+.innerHTML=
+
+item.description ||
 
 "توضیحی ثبت نشده است.";
 
+
+
+
+
+
+
+
 document
-.getElementById("podcastModal")
+
+.getElementById(
+
+"podcastModal"
+
+)
 
 .classList
 
-.remove("hidden");
+.remove(
+
+"hidden"
+
+);
+
+
 
 }
 
 
 
-/* ==========================================
-CLOSE
-========================================== */
+
+
+
+
+
 
 function closePodcastModal(){
 
+
+
 document
-.getElementById("podcastModal")
+
+.getElementById(
+
+"podcastModal"
+
+)
 
 .classList
 
-.add("hidden");
+.add(
+
+"hidden"
+
+);
+
+
 
 }
 
 
 
-/* ==========================================
-PLAY
-========================================== */
+
+
+
+
+
 
 function playCurrentPodcast(){
 
-if(!modalPodcast)return;
+
+
+if(!modalPodcast)
+
+return;
+
+
 
 closePodcastModal();
 
-playPodcast(modalPodcast.id);
+
+playPodcast(
+
+modalPodcast.id
+
+);
+
+
 
 }
 
 
 
-/* ==========================================
-DOWNLOAD
-========================================== */
+
+
+
+
+
 
 function downloadCurrentPodcast(){
 
-if(!modalPodcast)return;
+
+
+if(!modalPodcast)
+
+return;
+
+
+
+if(modalPodcast.audio){
+
+
 
 window.open(
 
@@ -4527,45 +6566,39 @@ modalPodcast.audio,
 
 );
 
-}
 
-
-
-/* ==========================================
-BOOKMARK
-========================================== */
-
-function bookmarkCurrentPodcast(){
-
-if(!modalPodcast)return;
-
-toggleFavorite(
-
-modalPodcast.id
-
-);
-
-showToast(
-
-"به علاقه‌مندی‌ها اضافه شد"
-
-);
 
 }
 
 
 
-/* ==========================================
-SHARE
-========================================== */
+}
+
+
+
+
+
+
+
+
 
 async function shareCurrentPodcast(){
 
-if(!modalPodcast)return;
 
-const url=
 
-window.location.origin+
+if(!modalPodcast)
+
+return;
+
+
+
+
+
+
+
+const url =
+
+location.origin+
 
 "/podcast/"+
 
@@ -4573,30 +6606,46 @@ modalPodcast.id;
 
 
 
+
+
+
+
 if(navigator.share){
 
-try{
+
 
 await navigator.share({
 
-title:modalPodcast.title,
 
-text:modalPodcast.description,
+
+title:
+
+modalPodcast.title,
+
+
+
+text:
+
+modalPodcast.description,
+
+
 
 url:url
 
+
+
 });
 
-}
-catch(e){}
 
-return;
 
 }
+
+else{
 
 
 
 navigator.clipboard.writeText(url);
+
 
 showToast(
 
@@ -4604,132 +6653,381 @@ showToast(
 
 );
 
+
+
 }
 
 
 
-/* ==========================================
-MODAL FROM CARD
-========================================== */
+}
 
-document.addEventListener(
 
-"click",
 
-function(e){
 
-const card=
 
-e.target.closest(
 
-".podcast-card"
 
-);
 
-if(!card)return;
 
-const id=
+function bookmarkCurrentPodcast(){
 
-Number(
 
-card.dataset.id
+
+if(!modalPodcast)
+
+return;
+
+
+
+toggleFavorite(
+
+modalPodcast.id
 
 );
 
-const item=
 
-podcastsCache.find(
 
-x=>x.id===id
+showToast(
+
+"ذخیره شد"
 
 );
 
-if(item){
 
-openPodcastModal(item);
 
 }
 
-}
 
-);
+
+
+
 
 </script>
+
+
+
+ 
+<!-- ==================================================
+PART 10 / 10
+
+FINAL INITIALIZE
+
+================================================== -->
+
+
+<nav class="mobile-nav">
+
+
+
+<a href="#" class="active">
+
+<i class="fa-solid fa-house"></i>
+
+<span>
+
+خانه
+
+</span>
+
+</a>
+
+
+
+
+
+<a href="#podcasts">
+
+<i class="fa-solid fa-podcast"></i>
+
+<span>
+
+پادکست
+
+</span>
+
+</a>
+
+
+
+
+
+
+<a href="#favorites">
+
+<i class="fa-solid fa-heart"></i>
+
+<span>
+
+علاقه
+
+</span>
+
+</a>
+
+
+
+
+
+
+<a href="#profile">
+
+<i class="fa-solid fa-user"></i>
+
+<span>
+
+پروفایل
+
+</span>
+
+</a>
+
+
+
+</nav>
+
+
+
+
+
+
+<style>
+
+
+.mobile-nav{
+
+
+display:none;
+
+
+position:fixed;
+
+
+bottom:0;
+
+
+left:0;
+
+
+right:0;
+
+
+height:70px;
+
+
+background:#101827;
+
+
+border-top:1px solid var(--border);
+
+
+z-index:99999;
+
+
+justify-content:space-around;
+
+
+align-items:center;
+
+
+}
+
+
+
+
+
+.mobile-nav a{
+
+
+color:var(--soft);
+
+
+text-decoration:none;
+
+
+font-size:12px;
+
+
+display:flex;
+
+
+flex-direction:column;
+
+
+align-items:center;
+
+
+gap:5px;
+
+
+}
+
+
+
+
+
+.mobile-nav a i{
+
+
+font-size:20px;
+
+
+}
+
+
+
+
+
+.mobile-nav a.active{
+
+
+color:var(--primary);
+
+
+}
+
+
+
+
+
+@media(max-width:600px){
+
+
+.mobile-nav{
+
+
+display:flex;
+
+
+}
+
+
+
+
+body{
+
+
+padding-bottom:80px;
+
+
+}
+
+
+}
+
+
+
+
+
+</style>
+
+
+
+
+
 
 
 
 
 <script>
 
+
 /* ==================================================
-SECTION 12 / 12
-
-NightCast Final Initialize
-
+NIGHTCAST APPLICATION
 ================================================== */
 
 
-/* ==========================================
-APPLICATION
-========================================== */
 
-const NightCast={
+const NightCast = {
+
 
 version:"5.0",
+
+
 
 ready:false,
 
 
 
+
+
+
 async init(){
-
-console.log(
-
-"NightCast Listener Started"
-
-);
 
 
 
 try{
 
-/* ---------- User ---------- */
+
+
+
+
+console.log(
+
+"NightCast Starting..."
+
+);
+
+
+
+
+
+
+
+/* User */
 
 loadCurrentUser();
 
 
 
-/* ---------- Theme ---------- */
-
-loadTheme();
 
 
 
-/* ---------- Cache ---------- */
 
-loadCache();
+/* Cache */
 
-
-
-/* ---------- Skeleton ---------- */
-
-showSkeleton();
+loadPodcastCache();
 
 
 
-/* ---------- Podcasts ---------- */
+
+
+
+
+/* Load Podcasts */
 
 await loadPodcasts(1);
 
 
 
-/* ---------- Player ---------- */
-
-audio.volume=1;
 
 
 
-/* ---------- App Ready ---------- */
+
+/* Audio */
+
+if(audioPlayer){
+
+
+
+audioPlayer.volume=1;
+
+
+
+}
+
+
+
+
+
+
+
+
+this.ready=true;
+
+
+
+
+
 
 document.body.classList.add(
 
@@ -4739,7 +7037,7 @@ document.body.classList.add(
 
 
 
-this.ready=true;
+
 
 
 
@@ -4751,11 +7049,25 @@ console.log(
 
 
 
+
+
 }
+
+
 
 catch(error){
 
-console.error(error);
+
+
+console.error(
+
+"NightCast Error",
+
+error
+
+);
+
+
 
 showToast(
 
@@ -4763,47 +7075,31 @@ showToast(
 
 );
 
-}
+
 
 }
+
+
+
+}
+
+
 
 };
 
 
 
-/* ==========================================
-THEME
-========================================== */
-
-function loadTheme(){
-
-const theme=
-
-localStorage.getItem(
-
-"NightCastTheme"
-
-);
 
 
 
-if(theme==="light"){
-
-document.body.classList.add(
-
-"light-theme"
-
-);
-
-}
-
-}
 
 
 
-/* ==========================================
-ONLINE / OFFLINE
-========================================== */
+/* ==================================================
+ONLINE OFFLINE
+================================================== */
+
+
 
 window.addEventListener(
 
@@ -4811,15 +7107,21 @@ window.addEventListener(
 
 ()=>{
 
+
 showToast(
 
-"ارتباط اینترنت قطع شد"
+"اتصال اینترنت قطع شد"
 
 );
+
 
 }
 
 );
+
+
+
+
 
 
 
@@ -4829,11 +7131,14 @@ window.addEventListener(
 
 ()=>{
 
+
 showToast(
 
-"ارتباط اینترنت برقرار شد"
+"اتصال برقرار شد"
 
 );
+
+
 
 loadPodcasts(
 
@@ -4841,73 +7146,131 @@ currentPage
 
 );
 
+
+
 }
 
 );
 
 
 
-/* ==========================================
-KEYBOARD
-========================================== */
+
+
+
+
+
+
+
+
+/* ==================================================
+KEYBOARD PLAYER
+================================================== */
+
+
 
 document.addEventListener(
 
 "keydown",
 
-function(e){
+e=>{
 
-if(e.code==="Space"){
+
+
+
 
 if(
 
-e.target.tagName!=="INPUT"
+e.code==="Space"
 
 &&
 
-e.target.tagName!=="TEXTAREA"
+e.target.tagName!=="INPUT"
 
 ){
 
+
+
 e.preventDefault();
 
-playBtn.click();
+
+
+if(playButton)
+
+playButton.click();
+
+
 
 }
 
-}
+
+
+
+
 
 
 
 if(e.code==="ArrowRight"){
 
-audio.currentTime+=10;
+
+
+audioPlayer.currentTime +=10;
+
+
 
 }
+
+
+
+
+
 
 
 
 if(e.code==="ArrowLeft"){
 
-audio.currentTime-=10;
+
+
+audioPlayer.currentTime -=10;
+
+
 
 }
+
+
 
 
 
 if(e.code==="Escape"){
 
+
+
 closePodcastModal();
+
+
 
 }
 
-});
 
 
 
-/* ==========================================
-SAVE LAST POSITION
-========================================== */
+
+}
+
+);
+
+
+
+
+
+
+
+
+
+/* ==================================================
+SAVE LAST PLAY
+================================================== */
+
+
 
 window.addEventListener(
 
@@ -4915,87 +7278,84 @@ window.addEventListener(
 
 ()=>{
 
+
+
+
+
 if(currentPodcast){
+
+
 
 localStorage.setItem(
 
+
 "NightCastLastPodcast",
+
 
 JSON.stringify({
 
+
 id:currentPodcast.id,
 
-time:audio.currentTime
+
+time:audioPlayer.currentTime
+
 
 })
 
-);
-
-}
-
-});
-
-
-
-/* ==========================================
-RESTORE LAST PODCAST
-========================================== */
-
-async function restoreLastPodcast(){
-
-const last=
-
-localStorage.getItem(
-
-"NightCastLastPodcast"
 
 );
 
-if(!last)return;
 
-try{
-
-const info=
-
-JSON.parse(last);
-
-await playPodcast(info.id);
-
-audio.currentTime=
-
-info.time||0;
-
-}
-
-catch(e){}
 
 }
 
 
 
-/* ==========================================
+
+
+}
+
+);
+
+
+
+
+
+
+
+
+
+/* ==================================================
 BOOT
-========================================== */
+================================================== */
+
+
 
 document.addEventListener(
 
 "DOMContentLoaded",
 
-async()=>{
+()=>{
 
-await NightCast.init();
 
-/* اگر خواستی آخرین فایل پخش شود */
-/// await restoreLastPodcast();
+NightCast.init();
 
-});
+
+
+}
+
+);
+
+
+
+
 
 </script>
 
-</body>
-</html>
 
 
-   
-   
-   
+<!-- END NIGHTCAST V5 -->
+
+ 
+ 

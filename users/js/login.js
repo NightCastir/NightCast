@@ -195,7 +195,7 @@ const Login = {
 
                 window.location.href =
 
-                "../index.html";
+                "index.html";
 
 
 

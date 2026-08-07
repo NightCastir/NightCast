@@ -263,32 +263,85 @@ initGoogle(){
 },
     async googleLogin(){
 
+    this.showLoader();
 
+    try{
 
-        /*
-        
-        Google Identity آماده است
+        google.accounts.id.prompt();
 
-        این قسمت بعد از قرار دادن
+    }
+    catch(error){
 
-        Client ID گوگل فعال می‌شود.
-
-
-        فعلاً پیام مناسب نمایش می‌دهد.
-
-        */
-
+        this.hideLoader();
 
         this.showError(
+            "Google Identity بارگذاری نشده است."
+        );
 
-            "اتصال Google OpenID نیاز به تنظیم Client ID گوگل دارد"
+    }
+
+},
+    async googleCallback(response){
+
+    try{
+
+        const res = await fetch(
+
+            API_URL + "/public/openid/google",
+
+            {
+
+                method:"POST",
+
+                headers:{
+                    "Content-Type":"application/json"
+                },
+
+                body:JSON.stringify({
+
+                    idToken:response.credential
+
+                })
+
+            }
 
         );
 
+        const data = await res.json();
 
+        if(!data.success){
 
-    },
+            throw new Error(
 
+                data.message ||
+
+                "Google Login Failed"
+
+            );
+
+        }
+
+        this.saveSession(
+
+            data.token,
+
+            data.user
+
+        );
+
+        window.location.href = "index.html";
+
+    }
+
+    catch(error){
+
+        this.hideLoader();
+
+        this.showError(error.message);
+
+    }
+
+},
 
 
 

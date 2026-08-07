@@ -1,27 +1,25 @@
 /* ==================================================
 
-NightCast Login Controller V2
+NightCast Login Controller V5
 
 File:
 users/js/login.js
 
-
-Responsibilities:
-
-- OpenID Authentication
-- Guest Login
-- Token Storage
-- User State
-- Redirect
-
+Connect:
+Cloudflare Worker API
 
 ================================================== */
 
 
 (function(){
 
-
 "use strict";
+
+
+
+const API_URL =
+
+"https://nightcast-api.tomasgermany2580.workers.dev/api/v1";
 
 
 
@@ -31,36 +29,18 @@ const Login = {
 
 
 
-    config:{
-
-
-        redirect:"/users/",
-
-
-        openidEndpoint:
-        "/api/v1/auth/openid"
-
-
-    },
-
-
-
-
-
-
-
-
     init(){
 
 
         console.log(
-            "NightCast Login Ready"
+            "NightCast Login Loaded"
         );
 
 
+        this.bindEvents();
 
-        this.bind();
 
+        this.checkExistingSession();
 
 
     },
@@ -71,9 +51,7 @@ const Login = {
 
 
 
-
-
-    bind(){
+    bindEvents(){
 
 
 
@@ -82,6 +60,26 @@ const Login = {
         document.getElementById(
             "openIdLogin"
         );
+
+
+
+        if(openIdButton){
+
+
+            openIdButton.addEventListener(
+
+                "click",
+
+                ()=>{
+
+                    this.googleLogin();
+
+                }
+
+            );
+
+
+        }
 
 
 
@@ -95,41 +93,7 @@ const Login = {
 
 
 
-
-
-
-
-        if(openIdButton){
-
-
-
-            openIdButton.addEventListener(
-
-                "click",
-
-                ()=>{
-
-
-                    this.openID();
-
-
-                }
-
-            );
-
-
-
-        }
-
-
-
-
-
-
-
-
         if(guestButton){
-
 
 
             guestButton.addEventListener(
@@ -138,14 +102,11 @@ const Login = {
 
                 ()=>{
 
-
-                    this.guest();
-
+                    this.guestLogin();
 
                 }
 
             );
-
 
 
         }
@@ -162,65 +123,116 @@ const Login = {
 
 
 
-    openID(){
+    async guestLogin(){
+
+
+        try{
+
+
+            this.showLoader();
 
 
 
-        this.loading(true);
+            const response =
+
+            await fetch(
+
+                API_URL +
+
+                "/public/guest",
+
+                {
 
 
+                    method:"POST",
 
 
-
-        /*
-        
-        مرحله اول:
-
-        انتقال به سرویس OpenID
-        
-        مثال:
-
-        Google OAuth
-        Apple Sign In
-        Auth0
-        
-        */
+                    headers:{
 
 
-        const url =
-
-        this.config.openidEndpoint;
-
+                        "Content-Type":
+                        "application/json"
 
 
+                    }
 
 
+                }
 
-        /*
-        
-        در نسخه واقعی:
-
-        window.location.href=url;
-
-
-        فعلا حالت آماده تست
-        
-        */
+            );
 
 
 
 
+            const data =
 
-        setTimeout(()=>{
-
-
-
-            this.fakeOpenID();
+            await response.json();
 
 
 
-        },1200);
 
+
+            if(
+
+                data.success &&
+
+                data.token
+
+            ){
+
+
+
+                this.saveSession(
+
+                    data.token,
+
+                    data.user
+
+                );
+
+
+
+                window.location.href =
+
+                "index.html";
+
+
+
+                return;
+
+
+            }
+
+
+
+
+
+            throw new Error(
+
+                data.message ||
+
+                "Guest login failed"
+
+            );
+
+
+
+        }
+
+        catch(error){
+
+
+            this.hideLoader();
+
+
+            this.showError(
+
+                error.message
+
+            );
+
+
+        }
 
 
 
@@ -234,157 +246,29 @@ const Login = {
 
 
 
-    fakeOpenID(){
+    async googleLogin(){
 
 
 
         /*
         
-        شبیه سازی پاسخ OpenID
-        
-        بعدا با Worker API جایگزین می‌شود
-        
+        Google Identity آماده است
+
+        این قسمت بعد از قرار دادن
+
+        Client ID گوگل فعال می‌شود.
+
+
+        فعلاً پیام مناسب نمایش می‌دهد.
+
         */
 
 
+        this.showError(
 
-
-
-        const user = {
-
-
-
-            id:
-
-            "openid_user_001",
-
-
-
-            name:
-
-            "NightCast User",
-
-
-
-            provider:
-
-            "openid",
-
-
-
-            role:
-
-            "listener"
-
-        };
-
-
-
-
-
-
-
-
-        const token =
-
-
-
-        "NC_" +
-
-        Date.now();
-
-
-
-
-
-
-
-
-        this.saveSession(
-
-            user,
-
-            token
+            "اتصال Google OpenID نیاز به تنظیم Client ID گوگل دارد"
 
         );
-
-
-
-
-
-
-
-        this.redirect();
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    guest(){
-
-
-
-        const guestUser = {
-
-
-
-            id:
-
-            "guest_" + Date.now(),
-
-
-
-            name:
-
-            "مهمان NightCast",
-
-
-
-            provider:
-
-            "guest",
-
-
-
-            role:
-
-            "guest"
-
-
-        };
-
-
-
-
-
-
-
-
-        this.saveSession(
-
-
-            guestUser,
-
-
-            null
-
-
-        );
-
-
-
-
-
-
-        this.redirect();
 
 
 
@@ -399,27 +283,57 @@ const Login = {
 
 
     saveSession(
-        user,
-        token
+
+        token,
+
+        user
+
     ){
 
+
+
+        localStorage.setItem(
+
+            "NightCastToken",
+
+            token
+
+        );
 
 
 
 
         localStorage.setItem(
 
-
             "NightCastUser",
 
-
             JSON.stringify(user)
-
 
         );
 
 
 
+    },
+
+
+
+
+
+
+
+
+
+    checkExistingSession(){
+
+
+
+        const token =
+
+        localStorage.getItem(
+
+            "NightCastToken"
+
+        );
 
 
 
@@ -427,41 +341,19 @@ const Login = {
 
 
 
-            localStorage.setItem(
+            /*
+            اگر قبلاً وارد شده
+
+            مستقیم وارد برنامه شود
+
+            */
 
 
-                "NightCastToken",
-
-
-                token
-
-
-            );
-
-
-
-        }
-
-
-
-
-
-        else{
-
-
-            localStorage.removeItem(
-
-                "NightCastToken"
-
-            );
+            // فعلاً فعال نمی‌کنیم
+            // تا کاربر بتواند صفحه ورود را ببیند
 
 
         }
-
-
-
-
-
 
 
 
@@ -475,35 +367,7 @@ const Login = {
 
 
 
-    redirect(){
-
-
-
-        setTimeout(()=>{
-
-
-
-            window.location.href =
-
-            this.config.redirect;
-
-
-
-        },500);
-
-
-
-    },
-
-
-
-
-
-
-
-
-
-    loading(status){
+    showLoader(){
 
 
 
@@ -517,22 +381,7 @@ const Login = {
 
 
 
-
-
-        if(!loader){
-
-            return;
-
-        }
-
-
-
-
-
-
-
-        if(status){
-
+        if(loader){
 
 
             loader.classList.remove(
@@ -544,8 +393,33 @@ const Login = {
 
         }
 
-        else{
 
+
+    },
+
+
+
+
+
+
+
+
+
+    hideLoader(){
+
+
+
+        const loader =
+
+        document.getElementById(
+
+            "authLoader"
+
+        );
+
+
+
+        if(loader){
 
 
             loader.classList.add(
@@ -557,6 +431,23 @@ const Login = {
 
         }
 
+
+
+    },
+
+
+
+
+
+
+
+
+
+    showError(message){
+
+
+
+        alert(message);
 
 
 
@@ -576,7 +467,9 @@ const Login = {
 
 
 
+
 window.NightCastLogin = Login;
+
 
 
 
@@ -593,7 +486,9 @@ document.addEventListener(
     Login.init();
 
 
-});
+}
+
+);
 
 
 

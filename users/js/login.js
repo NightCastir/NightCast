@@ -195,7 +195,7 @@ const Login = {
 
                 window.location.href =
 
-                "index.html";
+                "../index.html";
 
 
 
@@ -374,7 +374,7 @@ initGoogle(){
 
         );
 
-        window.location.href = "index.html";
+        window.location.href = "../index.html";
 
     }
 

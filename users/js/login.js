@@ -248,11 +248,27 @@ const Login = {
 
 initGoogle(){
 
+    if(!window.google || !google.accounts){
+
+        console.error(
+            "Google Identity not loaded"
+        );
+
+        return;
+
+    }
+
+
     google.accounts.id.initialize({
 
         client_id: GOOGLE_CLIENT_ID,
 
         callback: (response)=>{
+
+            console.log(
+                "Google Token Received",
+                response
+            );
 
             this.googleCallback(response);
 
@@ -260,14 +276,43 @@ initGoogle(){
 
     });
 
+
 },
     async googleLogin(){
 
-    this.showLoader();
-
     try{
 
-        google.accounts.id.prompt();
+        this.showLoader();
+
+
+        google.accounts.id.prompt(
+            (notification)=>{
+
+
+                console.log(
+                    "Google Prompt:",
+                    notification
+                );
+
+
+                if(
+                    notification.isNotDisplayed()
+                    ||
+                    notification.isSkippedMoment()
+                ){
+
+                    this.hideLoader();
+
+                    this.showError(
+                        "پنجره ورود گوگل نمایش داده نشد"
+                    );
+
+                }
+
+
+            }
+        );
+
 
     }
     catch(error){
@@ -275,7 +320,7 @@ initGoogle(){
         this.hideLoader();
 
         this.showError(
-            "Google Identity بارگذاری نشده است."
+            error.message
         );
 
     }

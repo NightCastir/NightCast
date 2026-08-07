@@ -3933,248 +3933,227 @@ let currentPodcast = null;
 PLAY PODCAST
 ================================================== */
 
+/* ==================================================
+PLAY PODCAST
+NIGHTCAST V6
+================================================== */
 
 async function playPodcast(id){
 
+    try{
 
+        const podcast =
+            podcastsCache.find(
+                item =>
+                    Number(item.id) === Number(id)
+            );
 
-try{
 
+        if(!podcast){
 
+            showToast(
+                "اطلاعات پادکست پیدا نشد"
+            );
 
-document
+            console.error(
+                "Podcast not found in cache:",
+                id
+            );
 
-.getElementById(
+            return;
+        }
 
-"playerBar"
 
-)
+        console.log(
+            "Playing podcast:",
+            podcast
+        );
 
-.classList
 
-.remove(
+        /*
+        ==========================================
+        AUDIO URL
+        ==========================================
+        */
 
-"hidden"
+        const audioUrl =
+            podcast.audio_url;
 
-);
 
+        if(!audioUrl){
 
+            showToast(
+                "فایل صوتی این پادکست هنوز ثبت نشده است."
+            );
 
+            return;
+        }
 
 
-document
+        /*
+        ==========================================
+        SHOW PLAYER
+        ==========================================
+        */
 
-.getElementById(
+        const playerBar =
+            document.getElementById(
+                "playerBar"
+            );
 
-"playerTitle"
 
-)
+        if(playerBar){
 
-.innerHTML=
+            playerBar.classList.remove(
+                "hidden"
+            );
 
-"در حال بارگذاری...";
+        }
 
 
+        /*
+        ==========================================
+        CURRENT PODCAST
+        ==========================================
+        */
 
+        currentPodcast = podcast;
 
 
+        /*
+        ==========================================
+        TITLE
+        ==========================================
+        */
 
+        const title =
+            document.getElementById(
+                "playerTitle"
+            );
 
 
-const response =
+        if(title){
 
-await fetch(
+            title.textContent =
+                podcast.title ||
+                "NightCast";
 
-API_URL +
+        }
 
-"/public/podcast/" +
 
-id,
+        /*
+        ==========================================
+        AUTHOR
+        ==========================================
+        */
 
+        const author =
+            document.getElementById(
+                "playerAuthor"
+            );
 
-{
 
+        if(author){
 
-headers:getHeaders()
+            author.textContent =
+                podcast.author_name ||
+                "NightCast Radio";
 
+        }
 
-}
 
+        /*
+        ==========================================
+        COVER
+        ==========================================
+        */
 
-);
+        const playerCover =
+            document.getElementById(
+                "playerCover"
+            );
 
 
+        if(playerCover){
 
+            playerCover.src =
+                podcast.cover_url ||
+                "https://placehold.co/300x300/00d4ff/ffffff?text=NC";
 
+        }
 
 
+        /*
+        ==========================================
+        AUDIO
+        ==========================================
+        */
 
+        audioPlayer.pause();
 
-const data =
+        audioPlayer.currentTime = 0;
 
-await response.json();
+        audioPlayer.src =
+            audioUrl;
 
 
+        audioPlayer.load();
 
 
+        /*
+        ==========================================
+        PLAY
+        ==========================================
+        */
 
+        try{
 
+            await audioPlayer.play();
 
-if(!data.success){
+        }
+        catch(playError){
 
+            console.error(
+                "Audio play error:",
+                playError
+            );
 
+            showToast(
+                "امکان پخش فایل صوتی وجود ندارد."
+            );
 
-throw new Error(
+            return;
 
-data.message ||
+        }
 
-"پادکست پیدا نشد"
 
-);
+        /*
+        ==========================================
+        MEDIA SESSION
+        ==========================================
+        */
 
+        updateMediaSession();
 
 
-}
+    }
+    catch(error){
 
+        console.error(
+            "playPodcast error:",
+            error
+        );
 
+        showToast(
+            error.message ||
+            "خطا در پخش پادکست"
+        );
 
+    }
 
+ }
 
-
-
-currentPodcast =
-
-data.item;
-
-
-
-
-
-
-
-
-
-document
-
-.getElementById(
-
-"playerTitle"
-
-)
-
-.innerHTML=
-
-currentPodcast.title;
-
-
-
-
-
-
-
-document
-
-.getElementById(
-
-"playerAuthor"
-
-)
-
-.innerHTML=
-
-currentPodcast.author ||
-
-"NightCast";
-
-
-
-
-
-
-
-
-document
-
-.getElementById(
-
-"playerCover"
-
-)
-
-.src=
-
-currentPodcast.cover ||
-
-"https://placehold.co/300x300/00d4ff/ffffff?text=NC";
-
-
-
-
-
-
-
-
-audioPlayer.src =
-
-currentPodcast.audio;
-
-
-
-
-
-
-
-audioPlayer.load();
-
-
-
-
-await audioPlayer.play();
-
-
-
-
-
-updateMediaSession();
-
-
-
-
-}
-
-
-
-catch(error){
-
-
-
-console.error(error);
-
-
-
-showToast(
-
-error.message
-
-);
-
-
-
-}
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
+ 
 /* ==================================================
 PLAY BUTTON
 ================================================== */

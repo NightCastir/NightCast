@@ -1,22 +1,125 @@
- /* ==================================================
-
- NightCast Login CSS V2
-
- File:
- /users/css/login.css
-
-
- Compatible:
- login.html
-
+/* ==================================================
+   NightCast Login UI V6
+   File : /users/css/login.css
+   Part 1/3
 ================================================== */
 
+/* ===========================
+   RESET
+=========================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+
+    font-family:
+    Vazirmatn,
+    Tahoma,
+    sans-serif;
+
+    background:#08111f;
+
+    color:#fff;
+
+    overflow-x:hidden;
+
+    min-height:100vh;
+
+    position:relative;
+
+}
 
 
-/* ================================================
-LOGIN PAGE
-================================================ */
+/* ===========================
+   BACKGROUND
+=========================== */
 
+.background-blur{
+
+    position:fixed;
+
+    border-radius:50%;
+
+    filter:blur(110px);
+
+    opacity:.45;
+
+    z-index:-2;
+
+    animation:
+    floatBlob
+    12s
+    ease-in-out
+    infinite;
+
+}
+
+.blur1{
+
+    width:320px;
+
+    height:320px;
+
+    background:#1b6dff;
+
+    top:-120px;
+
+    right:-80px;
+
+}
+
+.blur2{
+
+    width:280px;
+
+    height:280px;
+
+    background:#00d4ff;
+
+    bottom:-80px;
+
+    left:-80px;
+
+    animation-delay:4s;
+
+}
+
+body::before{
+
+    content:"";
+
+    position:fixed;
+
+    inset:0;
+
+    background:
+
+    radial-gradient(
+
+    circle at top,
+
+    rgba(255,255,255,.05),
+
+    transparent 45%
+
+    );
+
+    z-index:-1;
+
+}
+
+
+/* ===========================
+   PAGE
+=========================== */
 
 .login-page{
 
@@ -24,854 +127,849 @@ LOGIN PAGE
 
     display:flex;
 
-    align-items:center;
-
     justify-content:center;
 
-    padding:30px 15px;
+    align-items:center;
 
-
-    background:
-
-    radial-gradient(
-        circle at top,
-        rgba(0,212,255,.18),
-        transparent 45%
-    ),
-
-    var(--bg-main);
-
+    padding:32px 18px;
 
 }
 
 
-
-
-
-
-
-
-/* ================================================
-LOGIN CARD
-================================================ */
-
+/* ===========================
+   CARD
+=========================== */
 
 .login-card{
 
-
     width:100%;
 
-    max-width:430px;
+    max-width:470px;
 
+    padding:36px;
 
-    padding:40px 30px;
-
+    border-radius:28px;
 
     background:
 
-    rgba(18,27,47,.85);
+    rgba(15,23,42,.72);
 
+    backdrop-filter:blur(22px);
 
+    -webkit-backdrop-filter:blur(22px);
 
-    border:
-
-    1px solid var(--border);
-
-
-
-    border-radius:
-
-    28px;
-
-
+    border:1px solid
+    rgba(255,255,255,.08);
 
     box-shadow:
 
-    0 25px 70px rgba(0,0,0,.45);
+    0 25px 60px
+    rgba(0,0,0,.45),
+
+    inset 0 1px 0
+    rgba(255,255,255,.05);
+
+}
 
 
+/* ===========================
+   HERO
+=========================== */
 
-    backdrop-filter:
-
-    blur(20px);
-
-
+.hero{
 
     text-align:center;
 
-
-
-    animation:
-
-    loginEnter .5s ease;
-
-
+    margin-bottom:28px;
 
 }
-
-
-
-
-
-
-@keyframes loginEnter{
-
-
-    from{
-
-
-        opacity:0;
-
-        transform:translateY(30px);
-
-    }
-
-
-    to{
-
-
-        opacity:1;
-
-        transform:none;
-
-
-    }
-
-
-}
-
-
-
-
-
-
-
-/* ================================================
-BRAND
-================================================ */
-
-
-.login-brand{
-
-
-    margin-bottom:30px;
-
-
-}
-
-
-
-
 
 .brand-icon{
 
+    width:96px;
 
-    width:80px;
+    height:96px;
 
-    height:80px;
-
-
-    margin:0 auto 20px;
-
-
+    margin:auto;
 
     border-radius:50%;
 
-
     display:flex;
-
-
-    align-items:center;
-
 
     justify-content:center;
 
+    align-items:center;
 
-
-    font-size:35px;
-
-
+    font-size:42px;
 
     color:#fff;
 
-
-
     background:
 
     linear-gradient(
-        135deg,
-        var(--primary),
-        #0066ff
+
+    135deg,
+
+    #0ea5e9,
+
+    #2563eb
+
     );
-
-
 
     box-shadow:
 
-    0 10px 35px rgba(0,212,255,.35);
+    0 0 45px
+    rgba(14,165,233,.45);
 
+    animation:
+    pulseGlow
+    3s
+    infinite;
 
 }
 
+.hero h1{
 
-
-
-
-
-.login-brand h1{
-
+    margin-top:22px;
 
     font-size:38px;
 
+    font-weight:800;
 
-    font-weight:900;
-
-
-    color:var(--text);
-
+    letter-spacing:.5px;
 
 }
 
+.hero span{
 
-
-
-
-.login-brand h1 span{
-
-
-    color:var(--primary);
-
+    color:#3ecbff;
 
 }
 
-
-
-
-
-.login-brand p{
-
+.hero-text{
 
     margin-top:10px;
 
-
-    font-size:14px;
-
-
-}
-
-
-
-
-
-
-
-
-
-/* ================================================
-MESSAGE
-================================================ */
-
-
-.login-message{
-
-
-    margin-bottom:30px;
-
-
-}
-
-
-
-.login-message h2{
-
-
-    font-size:25px;
-
-
-    margin-bottom:10px;
-
-
-}
-
-
-
-
-
-
-
-.login-message p{
-
+    color:#b9c7d8;
 
     font-size:15px;
 
-
-    line-height:2;
-
+    line-height:1.9;
 
 }
 
 
+/* ===========================
+   WELCOME
+=========================== */
 
+.welcome{
 
+    text-align:center;
 
+    margin-bottom:34px;
 
+}
 
+.welcome h2{
 
-
-/* ================================================
-BUTTONS
-================================================ */
-
-
-.login-openid,
-.login-guest{
-
-
-    width:100%;
-
-
-    height:55px;
-
-
-    border-radius:16px;
-
-
-    border:none;
-
-
-    display:flex;
-
-
-    align-items:center;
-
-
-    justify-content:center;
-
-
-    gap:12px;
-
-
-    font-size:16px;
-
+    font-size:27px;
 
     font-weight:700;
 
+    margin-bottom:12px;
 
-    transition:.3s;
+}
 
+.welcome p{
+
+    color:#9fb2c7;
+
+    line-height:2;
+
+    font-size:14px;
+
+}
+/* ==================================================
+   NightCast Login UI V6
+   Part 2/3
+================================================== */
+
+
+/* ===========================
+   BUTTONS
+=========================== */
+
+.btn{
+
+    width:100%;
+
+    height:58px;
+
+    border:none;
+
+    border-radius:16px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:12px;
+
+    cursor:pointer;
+
+    transition:.30s;
+
+    font-size:16px;
+
+    font-weight:700;
+
+    margin-bottom:18px;
+
+}
+
+.btn i{
+
+    font-size:22px;
 
 }
 
 
+/* ===========================
+   GOOGLE BUTTON
+=========================== */
 
-
-
-
-
-.login-openid{
-
+.btn-google{
 
     background:
 
     linear-gradient(
-        135deg,
-        #ffffff,
-        #e8edf5
-    );
 
+        135deg,
+
+        #ffffff,
+
+        #f2f2f2
+
+    );
 
     color:#222;
 
+    box-shadow:
+
+        0 12px 30px rgba(255,255,255,.15);
 
 }
 
+.btn-google:hover{
 
-
-
-
-
-
-.login-openid:hover{
-
-
-    transform:
-
-    translateY(-3px);
-
+    transform:translateY(-3px);
 
     box-shadow:
 
-    0 10px 25px rgba(255,255,255,.15);
-
-
-}
-
-
-
-
-
-
-
-.login-openid i{
-
-
-    color:#ea4335;
-
-
-    font-size:20px;
-
+        0 18px 45px rgba(255,255,255,.25);
 
 }
 
 
+/* ===========================
+   GUEST BUTTON
+=========================== */
 
+.btn-guest{
 
+    background:transparent;
 
+    border:2px solid rgba(255,255,255,.12);
 
+    color:#ffffff;
 
+}
 
-.login-guest{
+.btn-guest:hover{
 
+    background:rgba(255,255,255,.05);
 
-    background:
+    border-color:#36c9ff;
 
-    var(--bg-soft);
-
-
-
-    color:var(--text);
-
-
-
-    border:
-
-    1px solid var(--border);
-
+    transform:translateY(-3px);
 
 }
 
 
-
-
-
-
-
-.login-guest:hover{
-
-
-    border-color:
-
-    var(--primary);
-
-
-
-    color:
-
-    var(--primary);
-
-
-
-    transform:
-
-    translateY(-3px);
-
-
-}
-
-
-
-
-
-
-
-
-/* ================================================
-DIVIDER
-================================================ */
-
+/* ===========================
+   DIVIDER
+=========================== */
 
 .divider{
 
-
     display:flex;
-
 
     align-items:center;
 
-
-    gap:15px;
-
+    gap:16px;
 
     margin:25px 0;
 
+    color:#7d8da3;
 
-    color:var(--text-soft);
-
+    font-size:13px;
 
 }
 
-
-
 .divider::before,
-.divider::after{
 
+.divider::after{
 
     content:"";
 
+    flex:1;
 
     height:1px;
 
-
-    flex:1;
-
-
     background:
 
-    var(--border);
-
+    rgba(255,255,255,.08);
 
 }
 
 
-
-
-
-
-
-/* ================================================
-STATUS
-================================================ */
-
+/* ===========================
+   STATUS
+=========================== */
 
 .login-status{
 
+    min-height:22px;
 
-    min-height:25px;
+    margin-top:8px;
 
-
-    margin-top:15px;
-
-
-    font-size:14px;
-
-
-}
-
-
-
-.login-status.error{
-
-
-    color:
-
-    var(--danger);
-
-
-}
-
-
-
-.login-status.success{
-
-
-    color:
-
-    var(--success);
-
-
-}
-
-
-
-
-
-
-
-
-/* ================================================
-FEATURES
-================================================ */
-
-
-.login-features{
-
-
-    margin-top:35px;
-
-
-    display:flex;
-
-
-    flex-direction:column;
-
-
-    gap:15px;
-
-
-    text-align:right;
-
-
-}
-
-
-
-
-
-.feature{
-
-
-    display:flex;
-
-
-    align-items:center;
-
-
-    gap:12px;
-
-
-    color:var(--text-soft);
-
-
-    font-size:14px;
-
-
-}
-
-
-
-.feature i{
-
-
-    width:35px;
-
-
-    height:35px;
-
-
-    border-radius:50%;
-
-
-    display:flex;
-
-
-    align-items:center;
-
-
-    justify-content:center;
-
-
-    background:
-
-    rgba(0,212,255,.12);
-
-
-
-    color:
-
-    var(--primary);
-
-
-}
-
-
-
-
-
-
-
-
-
-/* ================================================
-FOOTER
-================================================ */
-
-
-.login-footer{
-
-
-    margin-top:30px;
-
-
-    font-size:12px;
-
-
-    color:var(--text-soft);
-
-
-}
-
-
-
-
-
-
-
-
-
-/* ================================================
-LOADER
-================================================ */
-
-
-.auth-loader{
-
-
-    position:fixed;
-
-
-    inset:0;
-
-
-    z-index:9999;
-
-
-    display:flex;
-
-
-    align-items:center;
-
-
-    justify-content:center;
-
-
-    background:
-
-    rgba(5,10,20,.92);
-
-
-}
-
-
-
-.auth-loader.hidden{
-
-
-    display:none;
-
-
-}
-
-
-
-
-
-
-
-.loader-box{
-
+    margin-bottom:25px;
 
     text-align:center;
 
+    font-size:14px;
+
+    color:#ffb84d;
 
 }
 
 
+/* ===========================
+   FEATURES
+=========================== */
 
+.features{
 
+    display:grid;
 
-.loader-box h3{
+    grid-template-columns:
 
+    repeat(3,1fr);
 
-    margin-top:20px;
+    gap:14px;
 
+    margin-top:10px;
 
-    font-size:25px;
+    margin-bottom:30px;
 
+}
+
+.feature-card{
+
+    padding:18px 12px;
+
+    border-radius:18px;
+
+    text-align:center;
+
+    background:
+
+    rgba(255,255,255,.04);
+
+    border:1px solid rgba(255,255,255,.06);
+
+    transition:.30s;
+
+}
+
+.feature-card:hover{
+
+    transform:translateY(-6px);
+
+    background:
+
+    rgba(255,255,255,.07);
+
+    border-color:
+
+    rgba(54,201,255,.35);
+
+}
+
+.feature-card i{
+
+    font-size:26px;
+
+    color:#37d0ff;
+
+    margin-bottom:14px;
+
+}
+
+.feature-card h4{
+
+    font-size:15px;
+
+    margin-bottom:8px;
+
+    font-weight:700;
+
+}
+
+.feature-card p{
+
+    font-size:12px;
+
+    color:#9fb2c7;
+
+    line-height:1.8;
 
 }
 
 
+/* ===========================
+   LINKS
+=========================== */
+
+.login-links{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:14px;
+
+    margin-top:10px;
+
+    margin-bottom:24px;
+
+    font-size:14px;
+
+}
+
+.login-links a{
+
+    color:#36c9ff;
+
+    text-decoration:none;
+
+    transition:.25s;
+
+}
+
+.login-links a:hover{
+
+    color:#ffffff;
+
+}
+
+.login-links span{
+
+    color:#607089;
+
+}
 
 
+/* ===========================
+   FOOTER
+=========================== */
+
+footer{
+
+    text-align:center;
+
+    padding-top:18px;
+
+    border-top:1px solid rgba(255,255,255,.08);
+
+}
+
+footer p{
+
+    color:#8ca0b5;
+
+    font-size:12px;
+
+    line-height:1.9;
+
+}
+/* ==================================================
+   NightCast Login UI V6
+   Part 3/3
+================================================== */
+
+
+/* ===========================
+   LOADER
+=========================== */
+
+.auth-loader{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(5,10,20,.82);
+
+    backdrop-filter:blur(10px);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    z-index:99999;
+
+    transition:.35s;
+
+}
+
+.auth-loader.hidden{
+
+    opacity:0;
+
+    visibility:hidden;
+
+}
+
+.loader-box{
+
+    text-align:center;
+
+}
 
 .loader-circle{
 
+    width:72px;
 
-    width:60px;
-
-
-    height:60px;
-
+    height:72px;
 
     border-radius:50%;
 
+    border:4px solid rgba(255,255,255,.15);
 
-    border:
+    border-top:4px solid #36c9ff;
 
-    5px solid rgba(255,255,255,.15);
+    margin:auto;
 
+    animation:spin 1s linear infinite;
 
+}
 
-    border-top-color:
+.loader-box h3{
 
-    var(--primary);
+    margin-top:20px;
 
+    font-size:26px;
 
+    font-weight:700;
 
-    animation:
+}
 
-    spin 1s linear infinite;
+.loader-box p{
 
+    margin-top:10px;
+
+    color:#a8b8ca;
 
 }
 
 
-
-
-
-
+/* ===========================
+   ANIMATIONS
+=========================== */
 
 @keyframes spin{
 
+    from{
 
-    to{
-
-
-        transform:rotate(360deg);
-
+        transform:rotate(0deg);
 
     }
 
+    to{
+
+        transform:rotate(360deg);
+
+    }
 
 }
 
+@keyframes pulseGlow{
 
+    0%{
 
+        transform:scale(1);
 
+        box-shadow:
 
+        0 0 30px rgba(54,201,255,.35);
 
+    }
 
+    50%{
 
+        transform:scale(1.06);
 
-/* ================================================
-MOBILE
-================================================ */
+        box-shadow:
 
+        0 0 55px rgba(54,201,255,.60);
 
-@media(max-width:480px){
+    }
 
+    100%{
 
+        transform:scale(1);
+
+        box-shadow:
+
+        0 0 30px rgba(54,201,255,.35);
+
+    }
+
+}
+
+@keyframes floatBlob{
+
+    0%{
+
+        transform:translate(0,0);
+
+    }
+
+    50%{
+
+        transform:translate(25px,-30px);
+
+    }
+
+    100%{
+
+        transform:translate(0,0);
+
+    }
+
+}
+
+@keyframes fadeUp{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(20px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
 
 .login-card{
 
-
-    padding:30px 20px;
-
-
-    border-radius:22px;
-
+    animation:fadeUp .6s ease;
 
 }
 
 
+/* ===========================
+   SCROLLBAR
+=========================== */
 
-.login-brand h1{
+::-webkit-scrollbar{
 
+    width:8px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#0d1728;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:#2b79ff;
+
+    border-radius:20px;
+
+}
+
+
+/* ===========================
+   MOBILE
+=========================== */
+
+@media (max-width:768px){
+
+.login-card{
+
+    padding:28px 22px;
+
+    border-radius:24px;
+
+}
+
+.hero h1{
 
     font-size:32px;
 
+}
+
+.brand-icon{
+
+    width:82px;
+
+    height:82px;
+
+    font-size:34px;
+
+}
+
+.welcome h2{
+
+    font-size:24px;
+
+}
+
+.features{
+
+    grid-template-columns:1fr;
+
+    gap:12px;
+
+}
+
+.feature-card{
+
+    display:flex;
+
+    align-items:center;
+
+    text-align:right;
+
+    gap:16px;
+
+    padding:18px;
+
+}
+
+.feature-card i{
+
+    margin:0;
+
+    min-width:34px;
+
+}
+
+.feature-card h4{
+
+    margin-bottom:4px;
+
+}
+
+.login-links{
+
+    flex-direction:column;
+
+    gap:10px;
+
+}
+
+.login-links span{
+
+    display:none;
+
+}
 
 }
 
 
+/* ===========================
+   SMALL DEVICES
+=========================== */
+
+@media (max-width:420px){
+
+.login-page{
+
+    padding:18px;
+
 }
+
+.login-card{
+
+    padding:22px 18px;
+
+}
+
+.hero h1{
+
+    font-size:28px;
+
+}
+
+.hero-text{
+
+    font-size:13px;
+
+}
+
+.welcome h2{
+
+    font-size:21px;
+
+}
+
+.btn{
+
+    height:54px;
+
+    font-size:15px;
+
+}
+
+}
+
+
+/* ===========================
+   LARGE SCREENS
+=========================== */
+
+@media (min-width:1100px){
+
+.login-card{
+
+    max-width:520px;
+
+}
+
+}
+
+
+/* ==================================================
+   END
+================================================== */

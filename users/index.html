@@ -1894,52 +1894,113 @@ Podcast Cards + Pagination
 /* ==========================================
 CREATE PODCAST CARD
 ========================================== */
+function createPodcastCard(podcast){
 
-function createPodcastCard(item){
 
-const cover =
-
-item.cover ||
-
-"https://placehold.co/600x600/00d4ff/ffffff?text=NightCast";
-
+const id = podcast.id;
 
 
 const title =
 
-item.title ||
+podcast.title ||
 
 "بدون عنوان";
 
 
 
-const desc =
+const cover =
 
-item.description ||
+podcast.cover_url && podcast.cover_url.trim()
 
-"توضیحی برای این پادکست ثبت نشده است.";
+?
 
+podcast.cover_url
 
+:
 
-const duration =
-
-item.duration ||
-
-"--:--";
+"assets/images/default-cover.jpg";
 
 
 
-const id =
 
-item.id;
+const author =
+
+podcast.author_name ||
+
+"NightCast";
+
+
+
+
+const category =
+
+podcast.category_name ||
+
+"عمومی";
+
+
+
+
+
+const description =
+
+podcast.description ||
+
+podcast.summary ||
+
+"بدون توضیحات";
+
+
+
+
+
+
+let duration = "";
+
+
+
+if(podcast.duration_seconds){
+
+
+let minutes = Math.floor(
+
+podcast.duration_seconds / 60
+
+);
+
+
+let seconds =
+
+podcast.duration_seconds % 60;
+
+
+
+duration =
+
+minutes +
+
+":" +
+
+String(seconds).padStart(2,"0");
+
+
+}
+
+
+
+
 
 
 
 return `
 
-<article class="podcast-card fade-in">
+
+<article class="podcast-card">
+
+
 
 <div class="podcast-cover">
+
 
 <img
 
@@ -1947,75 +2008,126 @@ src="${cover}"
 
 alt="${title}"
 
-loading="lazy"
+onerror="this.src='assets/images/default-cover.jpg'"
 
-style="
+>
 
-width:100%;
-height:100%;
-object-fit:cover;
-">
 
-<div class="podcast-duration">
 
-<i class="fa-regular fa-clock"></i>
+<button
 
-${duration}
+class="play-card-btn"
+
+onclick="playPodcast(${id})"
+
+>
+
+<i class="fa-solid fa-play"></i>
+
+</button>
+
+
 
 </div>
 
-</div>
 
-<div class="podcast-body">
 
-<h3 class="podcast-title">
+
+
+<div class="podcast-info">
+
+
+<h3>
 
 ${title}
 
 </h3>
 
-<p class="podcast-description">
 
-${desc}
+
+<div class="podcast-meta">
+
+
+<span>
+
+<i class="fa-solid fa-user"></i>
+
+${author}
+
+</span>
+
+
+
+<span>
+
+<i class="fa-solid fa-layer-group"></i>
+
+${category}
+
+</span>
+
+
+</div>
+
+
+
+
+<p>
+
+${description}
 
 </p>
 
+
+
+
+
 <div class="podcast-footer">
 
+
+
+<span>
+
+<i class="fa-regular fa-clock"></i>
+
+${duration}
+
+</span>
+
+
+
+
 <button
 
-class="listen-button"
+class="secondary-button"
 
-onclick="playPodcast(${id})">
+onclick="openPodcastModal(${id})"
 
-<i class="fa-solid fa-play"></i>
+>
 
-پخش
+جزئیات
 
 </button>
 
-<button
 
-class="favorite-button"
 
-onclick="toggleFavorite(${id})">
-
-<i class="fa-regular fa-heart"></i>
-
-</button>
 
 </div>
 
+
+
 </div>
+
+
+
 
 </article>
+
+
 
 `;
 
 }
-
-
-
 /* ==========================================
 PAGINATION
 ========================================== */

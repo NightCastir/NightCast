@@ -3166,7 +3166,129 @@ counter.innerHTML = total;
 
 
 
+/* ==================================================
+LATEST PODCAST HERO
+================================================== */
 
+function updateLatestPodcastHero(items){
+
+    const titleBox =
+        document.getElementById(
+            "latestPodcastTitle"
+        );
+
+    const playButton =
+        document.getElementById(
+            "latestPodcastPlay"
+        );
+
+
+    if(!titleBox || !playButton){
+
+        return;
+
+    }
+
+
+    /*
+    ==========================================
+    اگر پادکستی وجود نداشت
+    ==========================================
+    */
+
+    if(
+        !Array.isArray(items) ||
+        items.length === 0
+    ){
+
+        titleBox.textContent =
+            "هنوز پادکستی ثبت نشده است.";
+
+        playButton.disabled = true;
+
+        return;
+
+    }
+
+
+    /*
+    ==========================================
+    جدیدترین پادکست
+    API باید لیست را از جدیدترین
+    به قدیمی‌ترین برگرداند.
+    ==========================================
+    */
+
+    const latestPodcast =
+        items[0];
+
+
+    /*
+    ==========================================
+    TITLE
+    ==========================================
+    */
+
+    titleBox.textContent =
+        latestPodcast.title ||
+        "بدون عنوان";
+
+
+    /*
+    ==========================================
+    AUDIO URL
+    ==========================================
+    */
+
+    const audioURL =
+        latestPodcast.audio_url ||
+        "";
+
+
+    /*
+    ==========================================
+    PLAY BUTTON
+    ==========================================
+    */
+
+    if(!audioURL){
+
+        playButton.disabled = true;
+
+        playButton.title =
+            "فایل صوتی موجود نیست";
+
+        return;
+
+    }
+
+
+    playButton.disabled = false;
+
+    playButton.title =
+        "پخش " +
+        (
+            latestPodcast.title ||
+            "آخرین پادکست"
+        );
+
+
+    /*
+    ==========================================
+    PLAY LATEST PODCAST
+    ==========================================
+    */
+
+    playButton.onclick = function(){
+
+        playPodcast(
+            latestPodcast.id
+        );
+
+    };
+
+
+ }
 
 </script>
 

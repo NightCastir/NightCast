@@ -4805,110 +4805,207 @@ if(searchButton && searchPanel){
  }
 
 
+/* ==================================================
+NIGHTCAST PUBLIC SEARCH
+SEARCH ALL PODCASTS VIA WORKER
+================================================== */
+
+let searchTimer = null;
+
 if(searchInput){
 
+    searchInput.addEventListener(
+        "input",
+        function(){
 
+            const keyword =
+                this.value.trim();
 
-searchInput.addEventListener(
+            if(keyword === ""){
 
-"input",
+                loadPodcasts(currentPage);
 
-function(){
+                return;
 
+            }
 
+            clearTimeout(searchTimer);
 
-const keyword =
+            searchTimer = setTimeout(
+                () => searchAllPodcasts(keyword),
+                350
+            );
 
-this.value
-
-.trim()
-
-.toLowerCase();
-
-
-
-
-
-
-
-if(keyword===""){
-
-
-
-renderPodcasts(
-
-podcastsCache
-
-);
-
-
-
-return;
-
-
-
-}
-
-
-
-
-
-
-
-
-const result = podcastsCache.filter(item => {
-
-    const title =
-        String(item.title || "").toLowerCase();
-
-    const description =
-        String(
-            item.description ||
-            item.summary ||
-            ""
-        ).toLowerCase();
-
-    const author =
-        String(
-            item.author_name ||
-            ""
-        ).toLowerCase();
-
-    const book =
-        String(
-            item.book_name ||
-            ""
-        ).toLowerCase();
-
-
-    return (
-        title.includes(keyword) ||
-        description.includes(keyword) ||
-        author.includes(keyword) ||
-        book.includes(keyword)
+        }
     );
 
-});
-
-
-
-
-
-
-renderPodcasts(result);
-
-
-
 }
 
 
+/* ==================================================
+SEARCH ALL PODCASTS
+================================================== */
 
-);
+async function searchAllPodcasts(keyword){
+
+    const grid =
+        document.getElementById(
+            "podcastGrid"
+        );
 
 
+    if(!grid){
 
-}
+        return;
 
+    }
+
+
+    grid.innerHTML = `
+
+        <div class="loading-card">
+
+            <i class="fa-solid fa-spinner fa-spin"></i>
+
+            <p>
+                در حال جستجو...
+            </p>
+
+        </div>
+
+    `;
+
+
+    try{
+
+        const response =
+            await fetch(
+
+                API_URL +
+                "/public/podcasts/search?q=" +
+                encodeURIComponent(keyword),
+
+                {
+                    method:"GET",
+                    headers:getHeaders()
+                }
+
+            );
+
+
+        if(!response.ok){
+
+            throw new Error(
+                "خطای جستجو: " +
+                response.status
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "NightCast Search API:",
+            data
+        );
+
+
+        if(!data.success){
+
+            throw new Error(
+                data.message ||
+                "جستجو ناموفق بود."
+            );
+
+        }
+
+
+        const results =
+            Array.isArray(data.podcasts)
+                ? data.podcasts
+                : [];
+
+
+        podcastsCache =
+            results;
+
+
+        updatePodcastCounter(
+            Number(data.total || results.length)
+        );
+
+
+        const pagination =
+            document.getElementById(
+                "pagination"
+            );
+
+
+        if(pagination){
+
+            pagination.innerHTML = "";
+
+        }
+
+
+        if(results.length === 0){
+
+            grid.innerHTML = `
+
+                <div class="loading-card">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <p>
+                        برای «${escapeHtml(keyword)}»
+                        پادکستی پیدا نشد.
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        renderPodcasts(results);
+
+
+    }
+    catch(error){
+
+        console.error(
+            "NightCast Search Error:",
+            error
+        );
+
+
+        grid.innerHTML = `
+
+            <div class="loading-card">
+
+                <i class="fa-solid fa-circle-exclamation"></i>
+
+                <p>
+                    ${escapeHtml(
+                        error.message ||
+                        "خطا در جستجو"
+                    )}
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+ }
+ 
 
 
 

@@ -2914,7 +2914,7 @@ async function loadPodcasts(page = 1){
             API_URL +
             "/public/podcasts?page=" +
             page +
-            "&limit=9",
+            "&limit=4",
             {
                 method:"GET",
                 headers:getHeaders()
@@ -2998,13 +2998,13 @@ updateLatestPodcastHero(items);
         */
 
         totalPages =
-            data.hasMore
-                ? Math.ceil(
-                    Number(data.total || items.length)
-                    /
-                    Number(data.limit || 9)
-                  )
-                : 1;
+    data.hasMore
+        ? Math.ceil(
+            Number(data.total || items.length)
+            /
+            4
+          )
+        : 1;
 
 
         renderPagination();

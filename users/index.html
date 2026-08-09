@@ -2997,14 +2997,9 @@ updateLatestPodcastHero(items);
         PAGINATION
         */
 
-        totalPages =
-    data.hasMore
-        ? Math.ceil(
-            Number(data.total || items.length)
-            /
-            4
-          )
-        : 1;
+        totalPages = Math.ceil(
+    Number(data.total || 0) / 4
+);
 
 
         renderPagination();

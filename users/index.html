@@ -4771,7 +4771,38 @@ document.getElementById(
 );
 
 
+/* ==================================================
+SEARCH BUTTON
+OPEN / CLOSE SEARCH PANEL
+================================================== */
 
+const searchButton =
+    document.getElementById("searchButton");
+
+const searchPanel =
+    document.getElementById("searchPanel");
+
+
+if(searchButton && searchPanel){
+
+    searchButton.addEventListener(
+        "click",
+        function(){
+
+            searchPanel.classList.toggle("active");
+
+            if(searchPanel.classList.contains("active")){
+
+                if(searchInput){
+                    searchInput.focus();
+                }
+
+            }
+
+        }
+    );
+
+ }
 
 
 if(searchInput){

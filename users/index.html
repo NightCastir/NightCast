@@ -4856,54 +4856,39 @@ return;
 
 
 
+const result = podcastsCache.filter(item => {
 
-const result =
+    const title =
+        String(item.title || "").toLowerCase();
 
-podcastsCache.filter(
+    const description =
+        String(
+            item.description ||
+            item.summary ||
+            ""
+        ).toLowerCase();
 
-item=>{
+    const author =
+        String(
+            item.author_name ||
+            ""
+        ).toLowerCase();
 
-
-
-const title =
-
-(item.title || "")
-
-.toLowerCase();
-
-
-
-
-
-const desc =
-
-(item.description || "")
-
-.toLowerCase();
-
+    const book =
+        String(
+            item.book_name ||
+            ""
+        ).toLowerCase();
 
 
+    return (
+        title.includes(keyword) ||
+        description.includes(keyword) ||
+        author.includes(keyword) ||
+        book.includes(keyword)
+    );
 
-
-
-
-return (
-
-title.includes(keyword)
-
-||
-
-desc.includes(keyword)
-
-);
-
-
-
-}
-
-
-
-);
+});
 
 
 

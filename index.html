@@ -28,6 +28,7 @@
     <link rel="stylesheet"
           href="css/splash.css">
 
+     <meta name="theme-color" content="#050a16">
 </head>
 
 <body>
@@ -117,7 +118,25 @@
 <script src="js/auth.js"></script>
 
 <script src="js/router.js"></script>
-
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js")
+            .then(registration => {
+                console.log(
+                    "NightCast Service Worker:",
+                    registration.scope
+                );
+            })
+            .catch(error => {
+                console.error(
+                    "Service Worker registration failed:",
+                    error
+                );
+            });
+    });
+}
+</script>
 </body>
 
 </html>

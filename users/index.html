@@ -6121,7 +6121,302 @@ if(logoutBtn){
 
 
 
+/* ==================================================
+NIGHTCAST DOWNLOAD SYSTEM
+================================================== */
 
+
+/* ==================================================
+CHECK LOGIN
+================================================== */
+
+function isUserLoggedIn(){
+
+    const token =
+        localStorage.getItem(
+            "NightCastToken"
+        );
+
+    const user =
+        localStorage.getItem(
+            "NightCastUser"
+        );
+
+
+    return Boolean(
+        token &&
+        user
+    );
+
+}
+
+
+/* ==================================================
+HANDLE PODCAST DOWNLOAD
+================================================== */
+
+async function handlePodcastDownload(id){
+
+    console.log(
+        "NightCast Download:",
+        id
+    );
+
+
+    /*
+    ==========================================
+    CHECK LOGIN
+    ==========================================
+    */
+
+    if(!isUserLoggedIn()){
+
+        showLoginRequiredModal();
+
+        return;
+
+    }
+
+
+    /*
+    ==========================================
+    FIND PODCAST
+    ==========================================
+    */
+
+    const podcast =
+        podcastsCache.find(
+            item =>
+                Number(item.id) ===
+                Number(id)
+        );
+
+
+    if(!podcast){
+
+        showToast(
+            "پادکست مورد نظر پیدا نشد."
+        );
+
+        return;
+
+    }
+
+
+    /*
+    ==========================================
+    AUDIO URL
+    ==========================================
+    */
+
+    const audioURL =
+        podcast.audio_url ||
+        "";
+
+
+    if(!audioURL){
+
+        showToast(
+            "فایل صوتی این پادکست موجود نیست."
+        );
+
+        return;
+
+    }
+
+
+    /*
+    ==========================================
+    START DOWNLOAD
+    ==========================================
+    */
+
+    try{
+
+        showToast(
+            "در حال آماده‌سازی دانلود..."
+        );
+
+
+        const response =
+            await fetch(
+                audioURL
+            );
+
+
+        if(!response.ok){
+
+            throw new Error(
+                "Download failed"
+            );
+
+        }
+
+
+        const blob =
+            await response.blob();
+
+
+        const blobURL =
+            URL.createObjectURL(
+                blob
+            );
+
+
+        /*
+        ==========================================
+        FILE NAME
+        ==========================================
+        */
+
+        const safeTitle =
+            sanitizeFileName(
+                podcast.title ||
+                "NightCast-Podcast"
+            );
+
+
+        const extension =
+            getAudioExtension(
+                audioURL
+            );
+
+
+        /*
+        ==========================================
+        DOWNLOAD LINK
+        ==========================================
+        */
+
+        const link =
+            document.createElement(
+                "a"
+            );
+
+
+        link.href =
+            blobURL;
+
+
+        link.download =
+            safeTitle +
+            extension;
+
+
+        document.body.appendChild(
+            link
+        );
+
+
+        link.click();
+
+
+        link.remove();
+
+
+        /*
+        ==========================================
+        CLEAN BLOB
+        ==========================================
+        */
+
+        setTimeout(
+            () => {
+
+                URL.revokeObjectURL(
+                    blobURL
+                );
+
+            },
+            1000
+        );
+
+
+        showToast(
+            "دانلود شروع شد."
+        );
+
+    }
+    catch(error){
+
+        console.error(
+            "NightCast Download Error:",
+            error
+        );
+
+
+        showToast(
+            "دانلود فایل امکان‌پذیر نبود."
+        );
+
+    }
+
+}
+
+
+/* ==================================================
+SAFE FILE NAME
+================================================== */
+
+function sanitizeFileName(name){
+
+    return String(name)
+
+        .replace(
+            /[\\\/:*?"<>|]/g,
+            ""
+        )
+
+        .replace(
+            /\s+/g,
+            " "
+        )
+
+        .trim()
+
+        .substring(
+            0,
+            100
+        );
+
+}
+
+
+/* ==================================================
+GET AUDIO EXTENSION
+================================================== */
+
+function getAudioExtension(url){
+
+    try{
+
+        const cleanURL =
+            url.split("?")[0];
+
+        const match =
+            cleanURL.match(
+                /\.([a-zA-Z0-9]+)$/
+            );
+
+
+        if(match){
+
+            return "." +
+                match[1].toLowerCase();
+
+        }
+
+    }
+    catch(error){
+
+        console.log(error);
+
+    }
+
+
+    return ".mp3";
+
+    }
 
 
 /* ==================================================

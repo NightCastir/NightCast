@@ -642,56 +642,96 @@ class="icon-button">
 
 
 
-<div class="user-box">
+ <div class="user-box" id="userBox">
+
+    <button
+        id="userProfileButton"
+        class="user-profile-button"
+        type="button"
+        title="پروفایل کاربری">
+
+        <img
+            id="userAvatar"
+            src="https://ui-avatars.com/api/?name=Guest"
+            alt="User">
+
+    </button>
 
 
+    <div class="user-info">
 
-<img
+        <strong id="userName">
+            مهمان
+        </strong>
 
-id="userAvatar"
+        <small id="userEmail">
+            Guest
+        </small>
 
-src="https://ui-avatars.com/api/?name=Guest"
-
->
-
-
-
-<div class="user-info">
-
-
-<strong id="userName">
-
-مهمان
-
-</strong>
+    </div>
 
 
-<small id="userEmail">
+    <!-- PROFILE MENU -->
 
-Guest
+    <div
+        id="profileMenu"
+        class="profile-menu">
 
-</small>
+        <div class="profile-menu-header">
+
+            <img
+                id="menuUserAvatar"
+                src="https://ui-avatars.com/api/?name=Guest"
+                alt="User">
+
+            <div>
+
+                <strong id="menuUserName">
+                    مهمان
+                </strong>
+
+                <small id="menuUserEmail">
+                    Guest
+                </small>
+
+            </div>
+
+        </div>
 
 
-</div>
+        <div class="profile-menu-divider"></div>
 
 
+        <button
+            type="button"
+            class="profile-menu-item"
+            id="profileButton">
+
+            <i class="fa-solid fa-user"></i>
+
+            <span>
+                پروفایل من
+            </span>
+
+        </button>
 
 
-<button
+        <button
+            type="button"
+            class="profile-menu-item logout-item"
+            id="logoutButton">
 
-id="logoutButton"
+            <i class="fa-solid fa-right-from-bracket"></i>
 
-class="logout-button">
+            <span>
+                خروج از حساب
+            </span>
 
-<i class="fa-solid fa-right-from-bracket"></i>
+        </button>
 
-</button>
+    </div>
 
-
-
-
-</div>
+ </div>
 
 
 

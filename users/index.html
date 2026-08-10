@@ -4024,7 +4024,82 @@ const durationBox =
 
 
 let currentPodcast = null;
+/* ==================================================
+SYNC PODCAST CARD PLAY BUTTONS
+================================================== */
 
+function updatePodcastPlayButtons(){
+
+    document
+        .querySelectorAll(".play-card-btn")
+        .forEach(button => {
+
+            const card =
+                button.closest(".podcast-card");
+
+            if(!card){
+
+                return;
+
+            }
+
+            const id =
+                Number(card.dataset.id);
+
+
+            const icon =
+                button.querySelector("i");
+
+
+            /*
+            ==========================================
+            THIS PODCAST IS CURRENTLY PLAYING
+            ==========================================
+            */
+
+            if(
+                currentPodcast &&
+                Number(currentPodcast.id) === id &&
+                !audioPlayer.paused
+            ){
+
+                if(icon){
+
+                    icon.className =
+                        "fa-solid fa-pause";
+
+                }
+
+                button.classList.add(
+                    "playing"
+                );
+
+                button.title =
+                    "توقف پادکست";
+
+            }
+
+            else{
+
+                if(icon){
+
+                    icon.className =
+                        "fa-solid fa-play";
+
+                }
+
+                button.classList.remove(
+                    "playing"
+                );
+
+                button.title =
+                    "پخش پادکست";
+
+            }
+
+        });
+
+ }
 
 /* ==================================================
 PLAY PODCAST

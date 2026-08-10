@@ -6167,7 +6167,24 @@ function isUserLoggedIn(){
 
 }
 
+/* ==================================================
+REQUIRE LOGIN
+================================================== */
 
+function requireLogin(){
+
+    if(!isUserLoggedIn()){
+
+        showLoginRequiredModal();
+
+        return false;
+
+    }
+
+    return true;
+
+}
+    
 /* ==================================================
 HANDLE PODCAST DOWNLOAD
 ================================================== */

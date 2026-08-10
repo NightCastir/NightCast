@@ -8912,6 +8912,266 @@ MOBILE PLAYER - DO NOT COVER PAGINATION
 
     }
  }
+
+
+    /* ==================================================
+LOGIN REQUIRED MODAL
+================================================== */
+
+.login-required-modal{
+
+    position:fixed;
+
+    inset:0;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:20px;
+
+    z-index:999999;
+
+}
+
+
+.login-required-modal.hidden{
+
+    display:none;
+
+}
+
+
+.login-required-overlay{
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+        rgba(0,0,0,.75);
+
+    backdrop-filter:
+        blur(8px);
+
+}
+
+
+/* ==================================================
+BOX
+================================================== */
+
+.login-required-box{
+
+    position:relative;
+
+    width:min(
+        420px,
+        100%
+    );
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--card),
+            var(--card2)
+        );
+
+    border:
+        1px solid var(--border);
+
+    border-radius:26px;
+
+    padding:35px 30px;
+
+    text-align:center;
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.55);
+
+    z-index:2;
+
+}
+
+
+/* ==================================================
+ICON
+================================================== */
+
+.login-required-icon{
+
+    width:70px;
+
+    height:70px;
+
+    margin:0 auto 20px;
+
+    border-radius:22px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:28px;
+
+    color:var(--gold);
+
+    background:
+        rgba(255,211,105,.12);
+
+}
+
+
+/* ==================================================
+TITLE
+================================================== */
+
+.login-required-box h3{
+
+    font-size:23px;
+
+    margin-bottom:12px;
+
+}
+
+
+.login-required-box p{
+
+    color:var(--soft);
+
+    font-size:14px;
+
+    line-height:2;
+
+    margin-bottom:25px;
+
+}
+
+
+/* ==================================================
+LOGIN BUTTON
+================================================== */
+
+.login-required-button{
+
+    width:100%;
+
+    border:none;
+
+    padding:14px 20px;
+
+    border-radius:15px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            var(--primary2)
+        );
+
+    color:#fff;
+
+    font-family:inherit;
+
+    font-size:14px;
+
+    cursor:pointer;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:9px;
+
+    transition:.3s;
+
+}
+
+
+.login-required-button:hover{
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 10px 30px
+        rgba(0,119,255,.3);
+
+}
+
+
+/* ==================================================
+CANCEL
+================================================== */
+
+.login-required-cancel{
+
+    border:none;
+
+    background:none;
+
+    color:var(--soft);
+
+    font-family:inherit;
+
+    font-size:12px;
+
+    cursor:pointer;
+
+    margin-top:15px;
+
+}
+
+
+.login-required-cancel:hover{
+
+    color:#fff;
+
+}
+
+
+/* ==================================================
+CLOSE
+================================================== */
+
+.login-required-close{
+
+    position:absolute;
+
+    top:12px;
+
+    left:12px;
+
+    width:38px;
+
+    height:38px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:
+        rgba(255,255,255,.06);
+
+    color:#fff;
+
+    cursor:pointer;
+
+}
+
+
+.login-required-close:hover{
+
+    background:
+        rgba(255,255,255,.12);
+
+}
 </style>
 
 

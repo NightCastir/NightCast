@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NightCast Favorites Test</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:20px;background:#101114;color:#eee;font-family:Tahoma,Arial,sans-serif}
+.container{max-width:850px;margin:auto}
+.card{background:#1b1d21;border:1px solid #30343b;border-radius:16px;padding:22px;box-shadow:0 8px 30px #0005}
+h1{text-align:center;color:#00d4ff;margin-top:5px}
+.info{background:#15171b;border-radius:10px;padding:12px;line-height:1.9;font-size:14px}
+button{width:100%;padding:15px;border:0;border-radius:10px;background:#007bff;color:#fff;font-size:17px;font-weight:bold;cursor:pointer;margin-top:15px}
+button:disabled{opacity:.6;cursor:wait}
+pre{direction:ltr;text-align:left;background:#08090a;color:#d9e2ec;padding:16px;border-radius:10px;overflow:auto;min-height:220px;white-space:pre-wrap}
+.status{margin-top:15px;padding:14px;border-radius:10px;background:#15171b}
+.ok{color:#00e68a}.fail{color:#ff6464}.warn{color:#ffd166}
+.small{font-size:13px;color:#aaa}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="card">
+<h1>❤️ NightCast Favorites Test</h1>
+
+<div class="info">
+این تستر فقط سیستم علاقه‌مندی را بررسی می‌کند.<br>
+Worker:
+<strong>nightcast-api.tomasgermany2580.workers.dev</strong><br>
+با زدن یک دکمه، مراحل تست به‌ترتیب اجرا می‌شوند.
+</div>
+
+<button id="runBtn" onclick="runAllTests()">اجرای کامل تست علاقه‌مندی</button>
+
+<div id="status" class="status">آماده تست...</div>
+
+<h3>گزارش تست</h3>
+<pre id="output">Waiting...</pre>
+</div>
+</div>
+
+<script>
+const API_URL =
+"https://nightcast-api.tomasgermany2580.workers.dev/api/v1";
+
+/*
+  فقط این دو مقدار را در صورت نیاز تغییر بده.
+  اگر مقدار userId از Session فعلی قابل استخراج نباشد،
+  تستر از کاربر 1 و پادکست 1 برای تست استفاده می‌کند.
+*/
+const USER_ID = 1;
+const PODCAST_ID = 1;
+
+const output = document.getElementById("output");
+const statusBox = document.getElementById("status");
+const button = document.getElementById("runBtn");
+
+function log(message, data=null){
+    let text = message;
+    if(data !== null){
+        text += "\n" + JSON.stringify(data,null,2);
+    }
+    output.textContent += text + "\n\n";
+    output.scrollTop = output.scrollHeight;
+}
+
+async function request(endpoint, options={}){
+    const response = await fetch(API_URL + endpoint, options);
+    const text = await response.text();
+
+    let data;
+    try{
+        data = JSON.parse(text);
+    }catch{
+        data = {raw:text};
+    }
+
+    return {
+        ok: response.ok,
+        status: response.status,
+        data
+    };
+}
+
+async function runAllTests(){
+
+    button.disabled = true;
+    output.textContent = "";
+
+    statusBox.innerHTML =
+        '<span class="warn">⏳ تست‌ها در حال اجرا هستند...</span>';
+
+    try{
+
+        log("========================================");
+        log("NIGHTCAST FAVORITES TEST");
+        log("========================================");
+
+        // ------------------------------------------------
+        // 1. Worker
+        // ------------------------------------------------
+        log("1) تست اتصال Worker");
+
+        const worker = await request("/test");
+
+        log(
+            "HTTP " + worker.status,
+            worker.data
+        );
+
+        if(!worker.ok || worker.data.success !== true){
+            throw new Error("Worker API در دسترس نیست.");
+        }
+
+        // ------------------------------------------------
+        // 2. Read favorites
+        // ------------------------------------------------
+        log("2) دریافت علاقه‌مندی‌های کاربر");
+
+        const list = await request(
+            "/public/favorites?user_id=" + USER_ID
+        );
+
+        log(
+            "HTTP " + list.status,
+            list.data
+        );
+
+        // ------------------------------------------------
+        // 3. Check favorite
+        // ------------------------------------------------
+        log("3) بررسی وضعیت علاقه‌مندی Podcast " + PODCAST_ID);
+
+        const checkBefore = await request(
+            "/public/favorites/" + PODCAST_ID +
+            "?user_id=" + USER_ID
+        );
+
+        log(
+            "HTTP " + checkBefore.status,
+            checkBefore.data
+        );
+
+        // ------------------------------------------------
+        // 4. Add favorite
+        // ------------------------------------------------
+        log("4) افزودن Podcast به علاقه‌مندی‌ها");
+
+        const add = await request(
+            "/public/favorites",
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    user_id:USER_ID,
+                    podcast_id:PODCAST_ID
+                })
+            }
+        );
+
+        log(
+            "HTTP " + add.status,
+            add.data
+        );
+
+        // ------------------------------------------------
+        // 5. Check after add
+        // ------------------------------------------------
+        log("5) بررسی مجدد بعد از افزودن");
+
+        const checkAfterAdd = await request(
+            "/public/favorites/" + PODCAST_ID +
+            "?user_id=" + USER_ID
+        );
+
+        log(
+            "HTTP " + checkAfterAdd.status,
+            checkAfterAdd.data
+        );
+
+        // ------------------------------------------------
+        // 6. Remove favorite
+        // ------------------------------------------------
+        log("6) حذف Podcast از علاقه‌مندی‌ها");
+
+        const remove = await request(
+            "/public/favorites/" + PODCAST_ID +
+            "?user_id=" + USER_ID,
+            {
+                method:"DELETE"
+            }
+        );
+
+        log(
+            "HTTP " + remove.status,
+            remove.data
+        );
+
+        // ------------------------------------------------
+        // 7. Final check
+        // ------------------------------------------------
+        log("7) بررسی نهایی");
+
+        const finalCheck = await request(
+            "/public/favorites/" + PODCAST_ID +
+            "?user_id=" + USER_ID
+        );
+
+        log(
+            "HTTP " + finalCheck.status,
+            finalCheck.data
+        );
+
+        log("========================================");
+        log("TEST FINISHED");
+        log("========================================");
+
+        statusBox.innerHTML =
+            '<span class="ok">✔ تست کامل اجرا شد.</span>' +
+            '<br><span class="small">برای قضاوت نهایی، JSON بالا را بررسی می‌کنیم.</span>';
+
+    }
+    catch(error){
+
+        log("❌ TEST ERROR", {
+            message:error.message
+        });
+
+        statusBox.innerHTML =
+            '<span class="fail">✖ تست متوقف شد.</span>' +
+            '<br>' + error.message;
+    }
+
+    finally{
+        button.disabled = false;
+    }
+}
+</script>
+</body>
+</html>

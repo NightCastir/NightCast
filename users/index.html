@@ -6418,10 +6418,95 @@ function getAudioExtension(url){
 
     }
 
+    /* ==================================================
+GUEST DOWNLOAD
+GO TO LOGIN
+================================================== */
+
+async function goToLogin(){
+
+    console.log(
+        "NightCast: Redirecting to login..."
+    );
+
+
+    const token =
+        localStorage.getItem(
+            "NightCastToken"
+        );
+
+
+    /*
+    ==========================================
+    LOGOUT FROM SERVER
+    ==========================================
+    */
+
+    try{
+
+        if(token){
+
+            await fetch(
+                API_URL +
+                "/auth/logout",
+                {
+                    method:"POST",
+
+                    headers:{
+                        Authorization:
+                            "Bearer " +
+                            token
+                    }
+                }
+            );
+
+        }
+
+    }
+    catch(error){
+
+        /*
+        حتی اگر API Logout خطا داد،
+        کاربر نباید در صفحه گیر کند.
+        */
+
+        console.warn(
+            "Logout API Error:",
+            error
+        );
+
+    }
+
+
+    /*
+    ==========================================
+    CLEAR LOCAL AUTH
+    ==========================================
+    */
+
+    localStorage.removeItem(
+        "NightCastToken"
+    );
+
+
+    localStorage.removeItem(
+        "NightCastUser"
+    );
+
+
+    /*
+    ==========================================
+    REDIRECT
+    ==========================================
+    */
+
+    window.location.href =
+        "login.html";
+
+}
 /* ==================================================
 LOGIN REQUIRED MODAL
 ================================================== */
-
 function showLoginRequiredModal(){
 
     const modal =

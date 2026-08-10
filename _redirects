@@ -1,4 +1,2 @@
 /login /users/login.html 200
 /users /users/index.html 200
-/auth /users/auth.js 200
-

@@ -4356,6 +4356,10 @@ audioPlayer.addEventListener(
     "play",
     () => {
 
+        /*
+        MAIN PLAYER
+        */
+
         if(playIcon){
 
             playIcon.className =
@@ -4363,10 +4367,15 @@ audioPlayer.addEventListener(
 
         }
 
+
+        /*
+        PODCAST CARD BUTTONS
+        */
+
+        updatePodcastPlayButtons();
+
     }
 );
-
-
 /* ==================================================
 PAUSE EVENT
 ================================================== */
@@ -4375,6 +4384,10 @@ audioPlayer.addEventListener(
     "pause",
     () => {
 
+        /*
+        MAIN PLAYER
+        */
+
         if(playIcon){
 
             playIcon.className =
@@ -4382,11 +4395,16 @@ audioPlayer.addEventListener(
 
         }
 
+
+        /*
+        PODCAST CARD BUTTONS
+        */
+
+        updatePodcastPlayButtons();
+
     }
 );
-
-
-/* ==================================================
+ /* ==================================================
 TIME UPDATE
 ================================================== */
 

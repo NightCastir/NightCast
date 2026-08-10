@@ -3865,32 +3865,57 @@ function createPodcastCard(podcast){
                 <div class="podcast-footer">
 
 
-                    <button
-                        type="button"
-                        class="primary-button"
-                        onclick="playPodcast(${id})"
-                    >
+    <div class="podcast-actions">
 
-                        <i class="fa-solid fa-play"></i>
+        <!-- PLAY -->
 
-                        پخش
+        <button
+            type="button"
+            class="primary-button"
+            onclick="playPodcast(${id})"
+        >
 
-                    </button>
+            <i class="fa-solid fa-play"></i>
 
+            پخش
 
-                    <button
-                        type="button"
-                        class="favorite-button"
-                        data-id="${id}"
-                        onclick="toggleFavorite(${id})"
-                    >
-
-                        <i class="fa-regular fa-heart"></i>
-
-                    </button>
+        </button>
 
 
-                </div>
+        <!-- DOWNLOAD -->
+
+        <button
+            type="button"
+            class="download-button"
+            onclick="handlePodcastDownload(${id})"
+            title="دانلود پادکست"
+        >
+
+            <i class="fa-solid fa-download"></i>
+
+            دانلود
+
+        </button>
+
+    </div>
+
+
+    <!-- FAVORITE -->
+
+    <button
+        type="button"
+        class="favorite-button"
+        data-id="${id}"
+        onclick="toggleFavorite(${id})"
+        title="افزودن به علاقه‌مندی"
+    >
+
+        <i class="fa-regular fa-heart"></i>
+
+    </button>
+
+
+</div>
 
 
             </div>

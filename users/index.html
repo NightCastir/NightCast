@@ -4044,10 +4044,15 @@ const durationBox =
 
 let currentPodcast = null;
 /* ==================================================
-SYNC PODCAST CARD PLAY BUTTONS
+SYNC PODCAST PLAY BUTTONS
+CARD + LATEST PODCAST
 ================================================== */
 
 function updatePodcastPlayButtons(){
+
+    /* ==================================================
+    CARD PLAY BUTTONS
+    ================================================== */
 
     document
         .querySelectorAll(".play-card-btn")
@@ -4056,11 +4061,13 @@ function updatePodcastPlayButtons(){
             const card =
                 button.closest(".podcast-card");
 
+
             if(!card){
 
                 return;
 
             }
+
 
             const id =
                 Number(card.dataset.id);
@@ -4089,9 +4096,11 @@ function updatePodcastPlayButtons(){
 
                 }
 
+
                 button.classList.add(
                     "playing"
                 );
+
 
                 button.title =
                     "توقف پادکست";
@@ -4107,9 +4116,11 @@ function updatePodcastPlayButtons(){
 
                 }
 
+
                 button.classList.remove(
                     "playing"
                 );
+
 
                 button.title =
                     "پخش پادکست";
@@ -4118,9 +4129,103 @@ function updatePodcastPlayButtons(){
 
         });
 
- }
 
-/* ==================================================
+
+    /* ==================================================
+    LATEST PODCAST HERO BUTTON
+    ================================================== */
+
+    const latestButton =
+        document.getElementById(
+            "latestPodcastPlay"
+        );
+
+
+    if(!latestButton){
+
+        return;
+
+    }
+
+
+    const latestIcon =
+        latestButton.querySelector("i");
+
+
+    /*
+    ==========================================
+    FIND LATEST PODCAST
+    ==========================================
+    */
+
+    const latestPodcast =
+        podcastsCache.length > 0
+            ? podcastsCache[0]
+            : null;
+
+
+    /*
+    ==========================================
+    CHECK PLAYING STATE
+    ==========================================
+    */
+
+    if(
+        latestPodcast &&
+        currentPodcast &&
+        Number(currentPodcast.id) ===
+        Number(latestPodcast.id) &&
+        !audioPlayer.paused
+    ){
+
+        /*
+        PAUSE ICON
+        */
+
+        if(latestIcon){
+
+            latestIcon.className =
+                "fa-solid fa-pause";
+
+        }
+
+
+        latestButton.classList.add(
+            "playing"
+        );
+
+
+        latestButton.title =
+            "توقف پادکست";
+
+
+    }
+    else{
+
+        /*
+        PLAY ICON
+        */
+
+        if(latestIcon){
+
+            latestIcon.className =
+                "fa-solid fa-play";
+
+        }
+
+
+        latestButton.classList.remove(
+            "playing"
+        );
+
+
+        latestButton.title =
+            "پخش آخرین پادکست";
+
+    }
+
+}
+ /* ==================================================
 PLAY PODCAST
 ================================================== */
 

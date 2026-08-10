@@ -6549,8 +6549,61 @@ function closeLoginRequiredModal(){
     );
 
     }
+/* ==================================================
+PROFILE ACCESS
+================================================== */
+
+function handleProfileAccess(){
+
+    if(!isUserLoggedIn()){
+
+        showLoginRequiredModal();
+
+        return;
+
+    }
+
+
+    /*
+    ==========================================
+    USER IS LOGGED IN
+    ==========================================
+    */
+
+    console.log(
+        "NightCast: Opening profile..."
+    );
+
+    }
+
 
     /* ==================================================
+HEADER PROFILE BUTTON
+================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const userProfileButton =
+            document.getElementById(
+                "userProfileButton"
+            );
+
+
+        if(userProfileButton){
+
+            userProfileButton.addEventListener(
+                "click",
+                handleProfileAccess
+            );
+
+        }
+
+    }
+);
+    
+/* ==================================================
 PROFILE ACCESS
 ================================================== */
 

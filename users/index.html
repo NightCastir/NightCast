@@ -4220,61 +4220,151 @@ JSON.stringify(list)
 
 
 
-function toggleFavorite(id){
-if(!requireLogin()){
+async function toggleFavorite(id){
 
-    return;
+    /* ------------------------------------------
+       CHECK LOGIN
+    ------------------------------------------ */
+
+    if(!requireLogin()){
+
+        return;
+
+    }
+
+
+    try{
+
+        /* ------------------------------------------
+           CHECK CURRENT FAVORITE STATUS
+        ------------------------------------------ */
+
+        const checkResponse = await fetch(
+
+            API_URL +
+            "/public/favorites/check/" +
+            encodeURIComponent(id),
+
+            {
+                method:"GET",
+
+                headers:{
+                    "Content-Type":"application/json",
+                    "Authorization":
+                        "Bearer " +
+                        localStorage.getItem("NightCastToken")
+                }
+            }
+
+        );
+
+
+        const checkData =
+            await checkResponse.json();
+
+
+        console.log(
+            "NightCast Favorite Check:",
+            checkData
+        );
+
+
+        if(
+            !checkResponse.ok ||
+            !checkData.success
+        ){
+
+            throw new Error(
+                checkData.message ||
+                "خطا در بررسی علاقه‌مندی"
+            );
+
+        }
+
+
+        /* ------------------------------------------
+           CURRENT STATUS
+        ------------------------------------------ */
+
+        const isFavorite =
+            checkData.favorite === true;
+
+
+        /* ------------------------------------------
+           ADD / REMOVE
+        ------------------------------------------ */
+
+        const response = await fetch(
+
+            API_URL +
+            "/public/favorites/" +
+            encodeURIComponent(id),
+
+            {
+                method:
+                    isFavorite
+                        ? "DELETE"
+                        : "POST",
+
+                headers:{
+                    "Content-Type":"application/json",
+                    "Authorization":
+                        "Bearer " +
+                        localStorage.getItem("NightCastToken")
+                }
+
+            }
+
+        );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "NightCast Favorite Result:",
+            data
+        );
+
+
+        if(
+            !response.ok ||
+            !data.success
+        ){
+
+            throw new Error(
+                data.message ||
+                "عملیات علاقه‌مندی انجام نشد"
+            );
+
+        }
+
+
+        /* ------------------------------------------
+           UPDATE HEART ICONS
+        ------------------------------------------ */
+
+        updateFavoriteIconsFromServer(id);
+
+
+    }
+    catch(error){
+
+        console.error(
+            "NightCast Favorite Error:",
+            error
+        );
+
+
+        alert(
+            error.message ||
+            "خطا در ثبت علاقه‌مندی"
+        );
+
+    }
 
 }
-
-
-let list =
-
-getFavorites();
-
-
-
-
-
-
-if(list.includes(id)){
-
-
-
-list = list.filter(
-
-item=>item!==id
-
-);
-
-
-
-}
-
-else{
-
-
-list.push(id);
-
-
-
-}
-
-
-
-
-
-saveFavorites(list);
-
-
-
-
-updateFavoriteIcons();
-
-
-
-}
-
 
 
 

@@ -6043,7 +6043,6 @@ const profileMenu =
 /* ==================================================
 OPEN / CLOSE PROFILE MENU
 ================================================== */
-
 if(
     userProfileButton &&
     profileMenu
@@ -6054,6 +6053,24 @@ if(
         function(event){
 
             event.stopPropagation();
+
+
+            /* ==========================================
+            CHECK LOGIN
+            ========================================== */
+
+            if(!isUserLoggedIn()){
+
+                showLoginRequiredModal();
+
+                return;
+
+            }
+
+
+            /* ==========================================
+            LOGGED IN → OPEN PROFILE MENU
+            ========================================== */
 
             profileMenu.classList.toggle(
                 "active"

@@ -5884,31 +5884,98 @@ showToast(
 
 
 
-const logoutBtn =
 
-document.getElementById(
+    /* ==================================================
+PROFILE MENU SYSTEM
+================================================== */
 
-"logoutButton"
+const userProfileButton =
+    document.getElementById(
+        "userProfileButton"
+    );
 
+const profileMenu =
+    document.getElementById(
+        "profileMenu"
+    );
+
+
+/* ==================================================
+OPEN / CLOSE PROFILE MENU
+================================================== */
+
+if(
+    userProfileButton &&
+    profileMenu
+){
+
+    userProfileButton.addEventListener(
+        "click",
+        function(event){
+
+            event.stopPropagation();
+
+            profileMenu.classList.toggle(
+                "active"
+            );
+
+        }
+    );
+
+}
+
+
+/* ==================================================
+CLOSE WHEN CLICK OUTSIDE
+================================================== */
+
+document.addEventListener(
+    "click",
+    function(event){
+
+        if(
+            profileMenu &&
+            userProfileButton &&
+            !profileMenu.contains(event.target) &&
+            !userProfileButton.contains(event.target)
+        ){
+
+            profileMenu.classList.remove(
+                "active"
+            );
+
+        }
+
+    }
 );
 
 
+/* ==================================================
+LOGOUT BUTTON
+================================================== */
 
-
+const logoutBtn =
+    document.getElementById(
+        "logoutButton"
+    );
 
 
 if(logoutBtn){
 
+    logoutBtn.addEventListener(
+        "click",
+        async function(){
 
+            profileMenu.classList.remove(
+                "active"
+            );
 
-logoutBtn.onclick=
+            await logout();
 
-logout;
+        }
+    );
 
-
-
-}
-
+    }
 
 
 

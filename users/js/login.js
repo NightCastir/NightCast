@@ -530,136 +530,51 @@ const Login = {
 
     async guestLogin(){
 
+    try{
 
+        this.showLoader();
 
-        try{
+        /*
+        ==========================================
+        GUEST USER
+        ==========================================
 
+        مهمان کاربر لاگین‌شده نیست.
+        بنابراین هیچ Token یا User Session
+        برای او ذخیره نمی‌کنیم.
+        */
 
+        localStorage.removeItem(
+            "NightCastToken"
+        );
 
-            this.showLoader();
+        localStorage.removeItem(
+            "NightCastUser"
+        );
 
 
+        /*
+        ==========================================
+        GO TO INDEX
+        ==========================================
+        */
 
+        window.location.href =
+        "index.html";
 
+    }
 
-            const response = await fetch(
+    catch(error){
 
+        this.hideLoader();
 
-                API_URL +
+        this.showError(
+            error.message
+        );
 
-                "/public/guest",
+    }
 
-
-                {
-
-
-                    method:"POST",
-
-
-                    headers:{
-
-
-                        "Content-Type":
-
-                        "application/json"
-
-
-                    }
-
-
-                }
-
-
-            );
-
-
-
-
-
-            const data = await response.json();
-
-
-
-
-
-
-            if(
-
-                data.success &&
-
-                data.token
-
-            ){
-
-
-
-                this.saveSession(
-
-
-                    data.token,
-
-
-                    data.user
-
-
-                );
-
-
-
-
-
-                window.location.href =
-
-                "index.html";
-
-
-
-                return;
-
-
-            }
-
-
-
-
-
-
-
-            throw new Error(
-
-
-                data.message ||
-
-                "Guest Login Failed"
-
-
-            );
-
-
-
-
-
-        }
-
-        catch(error){
-
-
-
-            this.hideLoader();
-
-
-            this.showError(
-
-                error.message
-
-            );
-
-
-        }
-
-
-
-    },
+},
 
 
 

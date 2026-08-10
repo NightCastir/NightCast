@@ -408,7 +408,277 @@ border:1px solid var(--border);
 
 }
 
+/* ==================================================
+USER PROFILE BUTTON
+================================================== */
 
+.user-profile-button{
+
+    border:none;
+
+    padding:0;
+
+    margin:0;
+
+    background:none;
+
+    cursor:pointer;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+
+.user-profile-button img{
+
+    width:45px;
+
+    height:45px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    display:block;
+
+    transition:.3s;
+
+}
+
+
+.user-profile-button:hover img{
+
+    transform:scale(1.06);
+
+    box-shadow:
+        0 0 0 3px rgba(0,212,255,.25);
+
+}
+
+
+/* ==================================================
+PROFILE MENU
+================================================== */
+
+.profile-menu{
+
+    position:absolute;
+
+    top:
+        calc(100% + 12px);
+
+    right:0;
+
+    width:260px;
+
+    background:
+        rgba(17,27,45,.98);
+
+    border:
+        1px solid var(--border);
+
+    border-radius:20px;
+
+    padding:12px;
+
+    box-shadow:
+        0 20px 50px rgba(0,0,0,.45);
+
+    backdrop-filter:blur(20px);
+
+    opacity:0;
+
+    visibility:hidden;
+
+    transform:
+        translateY(-8px)
+        scale(.98);
+
+    transition:.25s;
+
+    z-index:10000;
+
+}
+
+
+/* OPEN */
+
+.profile-menu.active{
+
+    opacity:1;
+
+    visibility:visible;
+
+    transform:
+        translateY(0)
+        scale(1);
+
+}
+
+
+/* ==================================================
+PROFILE MENU HEADER
+================================================== */
+
+.profile-menu-header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    padding:10px;
+
+}
+
+
+.profile-menu-header img{
+
+    width:45px;
+
+    height:45px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+}
+
+
+.profile-menu-header strong{
+
+    display:block;
+
+    font-size:14px;
+
+    margin-bottom:3px;
+
+}
+
+
+.profile-menu-header small{
+
+    display:block;
+
+    color:var(--soft);
+
+    font-size:11px;
+
+}
+
+
+/* ==================================================
+DIVIDER
+================================================== */
+
+.profile-menu-divider{
+
+    height:1px;
+
+    background:
+        var(--border);
+
+    margin:7px 0;
+
+}
+
+
+/* ==================================================
+MENU ITEM
+================================================== */
+
+.profile-menu-item{
+
+    width:100%;
+
+    border:none;
+
+    background:none;
+
+    color:#fff;
+
+    padding:12px;
+
+    border-radius:13px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    cursor:pointer;
+
+    font-family:inherit;
+
+    font-size:13px;
+
+    text-align:right;
+
+    transition:.2s;
+
+}
+
+
+.profile-menu-item i{
+
+    width:22px;
+
+    text-align:center;
+
+    color:var(--primary);
+
+}
+
+
+.profile-menu-item:hover{
+
+    background:
+        rgba(255,255,255,.06);
+
+}
+
+
+/* ==================================================
+LOGOUT
+================================================== */
+
+.profile-menu-item.logout-item{
+
+    color:#ff6677;
+
+}
+
+
+.profile-menu-item.logout-item i{
+
+    color:#ff6677;
+
+}
+
+
+.profile-menu-item.logout-item:hover{
+
+    background:
+        rgba(255,80,100,.10);
+
+}
+
+
+/* ==================================================
+IMPORTANT
+================================================== */
+
+.user-box{
+
+    position:relative;
+
+}
 
 .user-box img{
 

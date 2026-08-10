@@ -9351,5 +9351,81 @@ NightCast.init();
 
 <!-- END NIGHTCAST V5 -->
 
- 
+ <!-- ==================================================
+LOGIN REQUIRED MODAL
+================================================== -->
+
+<div
+    id="loginRequiredModal"
+    class="login-required-modal hidden">
+
+
+    <div
+        class="login-required-overlay"
+        onclick="closeLoginRequiredModal()">
+    </div>
+
+
+    <div class="login-required-box">
+
+
+        <button
+            type="button"
+            class="login-required-close"
+            onclick="closeLoginRequiredModal()">
+
+            <i class="fa-solid fa-xmark"></i>
+
+        </button>
+
+
+        <div class="login-required-icon">
+
+            <i class="fa-solid fa-lock"></i>
+
+        </div>
+
+
+        <h3>
+
+            ورود به حساب کاربری
+
+        </h3>
+
+
+        <p>
+
+            دانلود پادکست فقط برای کاربران
+            واردشده فعال است.
+
+        </p>
+
+
+        <button
+            type="button"
+            class="login-required-button"
+            onclick="goToLogin()">
+
+            <i class="fa-solid fa-right-to-bracket"></i>
+
+            ورود به حساب کاربری
+
+        </button>
+
+
+        <button
+            type="button"
+            class="login-required-cancel"
+            onclick="closeLoginRequiredModal()">
+
+            فعلاً ادامه می‌دهم
+
+        </button>
+
+
+    </div>
+
+</div>
+    </body>
+</html>
  

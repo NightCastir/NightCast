@@ -4221,7 +4221,11 @@ JSON.stringify(list)
 
 
 function toggleFavorite(id){
+if(!requireLogin()){
 
+    return;
+
+}
 
 
 let list =

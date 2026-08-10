@@ -5607,39 +5607,46 @@ const menuEmail =
 
 if(!token || !userBox){
 
+    nameBox.innerHTML =
+        "مهمان";
+
+    emailBox.innerHTML =
+        "Guest";
 
 
+    const guestAvatar =
+        "https://ui-avatars.com/api/?name=Guest&background=555&color=fff";
 
 
-nameBox.innerHTML=
-
-"مهمان";
-
+    avatar.src =
+        guestAvatar;
 
 
+    if(menuAvatar){
+
+        menuAvatar.src =
+            guestAvatar;
+
+    }
 
 
-emailBox.innerHTML=
+    if(menuName){
 
-"Guest";
+        menuName.textContent =
+            "مهمان";
 
-
-
-
-
-
-avatar.src=
-
-"https://ui-avatars.com/api/?name=Guest&background=555&color=fff";
+    }
 
 
+    if(menuEmail){
+
+        menuEmail.textContent =
+            "Guest";
+
+    }
 
 
-
-
-return;
-
-
+    return;
 
 }
 

@@ -1,1 +1,8 @@
-
+[{
+"relation": ["delegate_permission/common.handle_all_urls"],
+"target": {
+"namespace": "android_app",
+"package_name": "ir.nightcast.app",
+"sha256_cert_fingerprints": ["4B:22:9A:8F:27:08:7F:71:64:D4:4C:74:5E:6B:E9:50:5D:F7:56:39:9F:A6:42:B0:DE:38:59:55:B4:70:2F:E1"]
+}
+}]

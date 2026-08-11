@@ -396,7 +396,7 @@ google.accounts.id.renderButton(
 
 
 
-            window.location.href =
+            window.location.replace =
 
             "index.html";
 
@@ -471,7 +471,7 @@ google.accounts.id.renderButton(
         ==========================================
         */
 
-        window.location.href =
+        window.location.replace =
         "index.html";
 
     }

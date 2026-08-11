@@ -53,7 +53,7 @@ const Login = {
 
         this.initGoogle();
 
-        this.checkExistingSession();
+     
 
 
     },

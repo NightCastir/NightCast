@@ -395,10 +395,7 @@ google.accounts.id.renderButton(
 
 
 
-
-            window.location.replace =
-
-            "index.html";
+window.location.replace("index.html");
 
 
 
@@ -471,9 +468,7 @@ google.accounts.id.renderButton(
         ==========================================
         */
 
-        window.location.replace =
-        "index.html";
-
+       window.location.replace("index.html");
     }
 
     catch(error){

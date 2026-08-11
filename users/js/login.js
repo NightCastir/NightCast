@@ -232,7 +232,46 @@ const Login = {
 
         });
 
+const container =
+    document.getElementById(
+        "googleLoginButton"
+    );
 
+
+if(!container){
+
+    console.error(
+        "Google login button container not found"
+    );
+
+    return;
+
+}
+
+
+google.accounts.id.renderButton(
+
+    container,
+
+    {
+
+        type:"standard",
+
+        theme:"outline",
+
+        size:"large",
+
+        text:"continue_with",
+
+        shape:"rectangular",
+
+        width:320,
+
+        logo_alignment:"left"
+
+    }
+
+);
 
 
         this.googleReady = true;

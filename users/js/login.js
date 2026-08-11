@@ -41,23 +41,62 @@ const Login = {
 
 
 
-    init(){
+  init(){
+
+    console.log(
+        "NightCast Login Loaded"
+    );
 
 
-        console.log(
-            "NightCast Login Loaded"
+    /*
+    ==========================================
+    CHECK EXISTING LOGIN
+    ==========================================
+    */
+
+    const token =
+        localStorage.getItem(
+            "NightCastToken"
+        );
+
+    const user =
+        localStorage.getItem(
+            "NightCastUser"
         );
 
 
-        this.bindEvents();
+    /*
+    اگر کاربر قبلاً با Google
+    وارد شده است، Login را دوباره نشان نده.
+    */
 
-        this.initGoogle();
+    if(token && user){
 
-     
+        console.log(
+            "Existing NightCast session found"
+        );
 
 
-    },
+        window.location.replace(
+            "index.html"
+        );
 
+
+        return;
+
+    }
+
+
+    /*
+    کاربر Login نیست.
+    بنابراین صفحه Login را آماده کن.
+    */
+
+    this.bindEvents();
+
+    this.initGoogle();
+
+},
 
 
 

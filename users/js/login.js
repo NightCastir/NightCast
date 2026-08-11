@@ -504,50 +504,6 @@ const Login = {
 
 
 
-    checkExistingSession(){
-
-
-
-        const token =
-
-        localStorage.getItem(
-
-            "NightCastToken"
-
-        );
-
-
-
-        if(token){
-
-
-
-            console.log(
-
-                "Existing session found"
-
-            );
-
-
-
-            /*
-              فعلاً غیرفعال است
-              تا صفحه Login همیشه دیده شود
-            */
-
-
-            // window.location.href="index.html";
-
-
-        }
-
-
-
-    },
-
-
-
-
 
 
 

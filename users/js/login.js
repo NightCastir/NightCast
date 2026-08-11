@@ -69,31 +69,7 @@ const Login = {
     bindEvents(){
 
 
-        const googleButton =
 
-        document.getElementById(
-            "openIdLogin"
-        );
-
-
-
-        if(googleButton){
-
-
-            googleButton.addEventListener(
-
-                "click",
-
-                ()=>{
-
-                    this.googleLogin();
-
-                }
-
-            );
-
-
-        }
 
 
 

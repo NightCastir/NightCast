@@ -578,7 +578,57 @@ window.location.replace("index.html");
 
 
 
+/* ==================================================
+   REDIRECT FALLBACK
+================================================== */
 
+setupRedirectButton(){
+
+    const help =
+        document.getElementById(
+            "redirectHelp"
+        );
+
+
+    const button =
+        document.getElementById(
+            "goToIndexButton"
+        );
+
+
+    if(!help || !button){
+
+        return;
+
+    }
+
+
+    button.addEventListener(
+        "click",
+        ()=>{
+
+            window.location.href =
+                "index.html";
+
+        }
+    );
+
+
+    /*
+    بعد از 3 ثانیه اگر هنوز
+    روی login.html هستیم،
+    دکمه کمکی نمایش داده شود.
+    */
+
+    setTimeout(()=>{
+
+        help.classList.remove(
+            "hidden"
+        );
+
+    },3000);
+
+},
 
 /* ==========================================
    UI

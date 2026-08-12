@@ -337,8 +337,6 @@ google.accounts.id.renderButton(
    GOOGLE LOGIN
 ========================================== */
 
-
-
 async googleCallback(response){
 
     try{
@@ -543,6 +541,9 @@ async googleCallback(response){
     }
 
 },
+
+    
+    
 /* ==========================================
    GUEST LOGIN
 ========================================== */

@@ -835,7 +835,7 @@
             grid-template-columns: minmax(180px,1fr) 2fr minmax(180px,1fr);
             align-items: center;
             gap: 20px;
-            direction : ltr !important;
+            direction: ltr !important;
         }
 
         .track {
@@ -1425,26 +1425,26 @@
                 const cover = escapeHtml(p.cover_url || placeholder), audio = escapeHtml(p.audio_url || "");
                 const duration = formatTime(p.duration_seconds || 0), fav = isFavorite(id);
                 return `<article class="podcast-card" data-id="${id}">
-          <div class="podcast-cover">
-            <img src="${cover}" alt="${title}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${placeholder}'">
-            <div class="cover-shade"></div>
-            <button class="play-card" data-action="play" data-id="${id}" aria-label="پخش ${title}" ${audio ? "" : "disabled"}><i class="fa-solid fa-play"></i></button>
-          </div>
-          <div class="podcast-info">
-            <h3 class="podcast-title">${title}</h3>
-            <div class="meta">
-              ${author ? `<span><i class="fa-solid fa-user"></i>${author}</span>` : ""}
-              ${book ? `<span><i class="fa-solid fa-book"></i>${book}</span>` : ""}
-              ${duration !== "00:00" ? `<span><i class="fa-regular fa-clock"></i>${duration}</span>` : ""}
-            </div>
-            <p class="podcast-desc">${desc}</p>
-            <div class="card-footer">
-              <button class="btn btn-primary" data-action="play" data-id="${id}" ${audio ? "" : "disabled"}><i class="fa-solid fa-play"></i> پخش</button>
-              <button class="btn btn-secondary" data-action="download" data-id="${id}" ${audio ? "" : "disabled"}><i class="fa-solid fa-download"></i></button>
-              <button class="favorite ${fav ? "active" : ""}" data-action="favorite" data-id="${id}" aria-label="علاقه‌مندی"><i class="${fav ? "fa-solid" : "fa-regular"} fa-heart"></i></button>
-            </div>
-          </div>
-        </article>`;
+                  <div class="podcast-cover">
+                    <img src="${cover}" alt="${title}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${placeholder}'">
+                    <div class="cover-shade"></div>
+                    <button class="play-card" data-action="play" data-id="${id}" aria-label="پخش ${title}" ${audio ? "" : "disabled"}><i class="fa-solid fa-play"></i></button>
+                  </div>
+                  <div class="podcast-info">
+                    <h3 class="podcast-title">${title}</h3>
+                    <div class="meta">
+                      ${author ? `<span><i class="fa-solid fa-user"></i>${author}</span>` : ""}
+                      ${book ? `<span><i class="fa-solid fa-book"></i>${book}</span>` : ""}
+                      ${duration !== "00:00" ? `<span><i class="fa-regular fa-clock"></i>${duration}</span>` : ""}
+                    </div>
+                    <p class="podcast-desc">${desc}</p>
+                    <div class="card-footer">
+                      <button class="btn btn-primary" data-action="play" data-id="${id}" ${audio ? "" : "disabled"}><i class="fa-solid fa-play"></i> پخش</button>
+                      <button class="btn btn-secondary" data-action="download" data-id="${id}" ${audio ? "" : "disabled"}><i class="fa-solid fa-download"></i></button>
+                      <button class="favorite ${fav ? "active" : ""}" data-action="favorite" data-id="${id}" aria-label="علاقه‌مندی"><i class="${fav ? "fa-solid" : "fa-regular"} fa-heart"></i></button>
+                    </div>
+                  </div>
+                </article>`;
             }
 
             function render(items) {
@@ -1484,25 +1484,95 @@
                 render(state.visible.slice(start, start + CONFIG.PAGE_SIZE)); renderPagination();
                 updateStats();
             }
-
             async function loadPodcasts() {
-                skeletons();
+                const cacheKey = CONFIG.CACHE_KEY;
+
+                // 1. ابتدا Cache را فوراً بخوان
+                let cached = [];
+
                 try {
-                    const res = await fetch(CONFIG.FEED_URL, { cache: "no-cache", headers: { Accept: "application/json" } });
-                    if (!res.ok) throw new Error(`خطای دریافت پادکست‌ها: ${res.status}`);
+                    cached = JSON.parse(localStorage.getItem(cacheKey) || "[]");
+                } catch {
+                    cached = [];
+                }
+
+                // 2. اگر Cache داریم، بدون نمایش Skeleton فوراً نمایش بده
+                if (Array.isArray(cached) && cached.length) {
+                    state.all = cached;
+                    updateLatest(cached);
+                    applyView();
+                } else {
+                    // فقط اولین بار که هیچ داده‌ای نداریم Skeleton نمایش داده شود
+                    skeletons();
+                }
+
+                // 3. حالا JSON را در پس‌زمینه بررسی کن
+                try {
+                    const res = await fetch(CONFIG.FEED_URL, {
+                        method: "GET",
+                        cache: "no-cache",
+                        headers: {
+                            "Accept": "application/json"
+                        }
+                    });
+
+                    if (!res.ok) {
+                        throw new Error(`خطای دریافت پادکست‌ها: ${res.status}`);
+                    }
+
                     const data = await res.json();
-                    const items = Array.isArray(data) ? data : (Array.isArray(data.podcasts) ? data.podcasts : []);
-                    state.all = items;
-                    localStorage.setItem(CONFIG.CACHE_KEY, JSON.stringify(items));
-                    updateLatest(items); applyView();
+
+                    const freshItems =
+                        Array.isArray(data)
+                            ? data
+                            : Array.isArray(data.podcasts)
+                                ? data.podcasts
+                                : [];
+
+                    // 4. بررسی کن واقعاً داده جدید است یا نه
+                    const oldData = JSON.stringify(cached);
+                    const newData = JSON.stringify(freshItems);
+
+                    // 5. اگر JSON هیچ تغییری نکرده، هیچ Render مجددی انجام نده
+                    if (oldData === newData) {
+                        return;
+                    }
+
+                    // 6. فقط در صورت تغییر واقعی JSON، صفحه را به‌روزرسانی کن
+                    state.all = freshItems;
+
+                    localStorage.setItem(
+                        cacheKey,
+                        JSON.stringify(freshItems)
+                    );
+
+                    updateLatest(freshItems);
+                    applyView();
+
                 } catch (err) {
                     console.error("NightCast Feed Error:", err);
-                    try {
-                        const cached = JSON.parse(localStorage.getItem(CONFIG.CACHE_KEY) || "[]");
-                        if (Array.isArray(cached) && cached.length) { state.all = cached; updateLatest(cached); applyView(); toast("اتصال برقرار نیست؛ نسخه ذخیره‌شده نمایش داده شد."); return }
-                    } catch { }
+
+                    // اگر Cache داشتیم، همان Cache را نگه می‌داریم
+                    if (cached.length) {
+                        return;
+                    }
+
+                    // فقط وقتی هیچ Cache نداریم خطا نمایش بده
                     els.grid.className = "podcast-grid";
-                    els.grid.innerHTML = `<div class="error-state" style="grid-column:1/-1"><i class="fa-solid fa-circle-exclamation"></i><h3>دریافت پادکست‌ها ناموفق بود</h3><p>${escapeHtml(err.message || "خطای نامشخص")}</p><button class="btn btn-primary" data-action="reload"><i class="fa-solid fa-rotate"></i> تلاش دوباره</button></div>`;
+
+                    els.grid.innerHTML = `
+                    <div class="error-state" style="grid-column:1/-1">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <h3>دریافت پادکست‌ها ناموفق بود</h3>
+                        <p>${escapeHtml(
+                        err.message || "خطای نامشخص"
+                    )}</p>
+                        <button class="btn btn-primary" data-action="reload">
+                            <i class="fa-solid fa-rotate"></i>
+                            تلاش دوباره
+                        </button>
+                    </div>
+                `;
                 }
             }
 

@@ -72,12 +72,6 @@ const Login = {
 
  if(token && user){
 
-    alert(
-        "Session پیدا شد\n\n" +
-        "Token: موجود\n" +
-        "User: موجود\n\n" +
-        "در حال انتقال..."
-    );
 
 
     window.location.replace(
@@ -90,13 +84,6 @@ const Login = {
 }
 
 
-alert(
-    "Session پیدا نشد\n\n" +
-    "Token: " +
-    (token ? "موجود" : "NULL") +
-    "\nUser: " +
-    (user ? "موجود" : "NULL")
-);
 
     /*
     کاربر Login نیست.

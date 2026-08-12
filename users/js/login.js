@@ -339,135 +339,192 @@ google.accounts.id.renderButton(
 
 
 
+async googleCallback(response){
 
-    async googleCallback(response){
+    try{
 
-
-
-        try{
-
+        this.showLoader();
 
 
-            const result = await fetch(
+        /*
+        ==========================================
+        GOOGLE TOKEN CHECK
+        ==========================================
+        */
 
+        if(
+            !response ||
+            !response.credential
+        ){
+
+            throw new Error(
+                "Google Token دریافت نشد."
+            );
+
+        }
+
+
+        /*
+        ==========================================
+        SEND GOOGLE TOKEN TO NIGHTCAST API
+        ==========================================
+        */
+
+        const result =
+            await fetch(
 
                 API_URL +
-
                 "/public/openid/google",
-
 
                 {
 
-
                     method:"POST",
-
 
                     headers:{
 
-
                         "Content-Type":
-
                         "application/json"
-
 
                     },
 
-
-                    body:JSON.stringify({
-
+                    body:
+                    JSON.stringify({
 
                         idToken:
-
                         response.credential
-
 
                     })
 
-
                 }
 
-
             );
 
 
+        /*
+        ==========================================
+        READ API RESPONSE
+        ==========================================
+        */
+
+        const data =
+            await result.json();
 
 
+        /*
+        ==========================================
+        API ERROR
+        ==========================================
+        */
 
-            const data = await result.json();
+        if(
+            !result.ok ||
+            !data.success
+        ){
 
+            throw new Error(
 
-
-
-
-            if(!data.success){
-
-
-                throw new Error(
-
-                    data.message ||
-
-                    "Google Login Failed"
-
-                );
-
-
-            }
-
-
-
-
-
-
-            this.saveSession(
-
-
-                data.token,
-
-
-                data.user
-
+                data.message ||
+                "ورود Google در NightCast ناموفق بود."
 
             );
-
-
-
-
-window.location.replace("index.html");
-
-
-
-
-        }
-
-        catch(error){
-
-
-
-            this.hideLoader();
-
-
-
-            this.showError(
-
-                error.message
-
-            );
-
 
         }
 
 
+        /*
+        ==========================================
+        CHECK SESSION DATA
+        ==========================================
+        */
 
-    },
+        if(!data.token){
+
+            throw new Error(
+                "NightCast Token از سرور دریافت نشد."
+            );
+
+        }
 
 
+        if(!data.user){
+
+            throw new Error(
+                "اطلاعات کاربر از سرور دریافت نشد."
+            );
+
+        }
 
 
+        /*
+        ==========================================
+        SAVE NIGHTCAST SESSION
+        ==========================================
+        */
+
+        this.saveSession(
+            data.token,
+            data.user
+        );
 
 
+        /*
+        ==========================================
+        VERIFY LOCAL SESSION
+        ==========================================
+        */
+
+        const savedToken =
+            localStorage.getItem(
+                "NightCastToken"
+            );
 
 
+        const savedUser =
+            localStorage.getItem(
+                "NightCastUser"
+            );
 
+
+        if(
+            !savedToken ||
+            !savedUser
+        ){
+
+            throw new Error(
+                "Session در NightCast ذخیره نشد."
+            );
+
+        }
+
+
+        /*
+        ==========================================
+        LOGIN SUCCESS
+        ==========================================
+        */
+
+        window.location.replace(
+            "index.html"
+        );
+
+    }
+
+    catch(error){
+
+        this.hideLoader();
+
+        this.showError(
+            error.message
+        );
+
+        console.error(
+            "NightCast Google Login Error:",
+            error
+        );
+
+    }
+
+},
 /* ==========================================
    GUEST LOGIN
 ========================================== */

@@ -603,16 +603,38 @@ setupRedirectButton(){
     }
 
 
-    button.addEventListener(
-        "click",
-        ()=>{
+  button.addEventListener(
+    "click",
+    ()=>{
 
-            window.location.href =
-                "index.html";
+        const token =
+            localStorage.getItem(
+                "NightCastToken"
+            );
+
+        const user =
+            localStorage.getItem(
+                "NightCastUser"
+            );
+
+
+        if(token && user){
+
+            window.location.replace(
+                "index.html"
+            );
+
+            return;
 
         }
-    );
 
+
+        alert(
+            "ورود Google هنوز در NightCast ثبت نشده است."
+        );
+
+    }
+);
 
     /*
     بعد از 3 ثانیه اگر هنوز

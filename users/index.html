@@ -766,7 +766,7 @@
 
         .nc-footer {
             margin-top: 35px;
-            padding: 32px 18px calc(var(--nc-player) + 30px);
+            padding: 32px 18px 30px;
             border-top: 1px solid var(--nc-border);
             background: rgba(9,15,25,.45)
         }
@@ -814,11 +814,15 @@
             -webkit-backdrop-filter: blur(16px);
             min-height: var(--nc-player);
             transform: translateY(110%);
-            transition: transform .25s ease
+            transition: transform .25s ease;
+            visibility: hidden;
+            pointer-events: none
         }
 
             .player.show {
-                transform: none
+                transform: none;
+                visibility: visible;
+                pointer-events: auto
             }
 
         .player-inner {
@@ -1118,22 +1122,20 @@
                 display: none
             }
 
-            .nc-footer {
-                padding-bottom: calc(var(--nc-player) + var(--nc-bottom) + 25px)
-            }
-
             .mobile-nav {
                 position: fixed;
                 display: flex;
                 z-index: 1100;
-                bottom: var(--nc-player);
+                bottom: 0;
                 inset-inline: 0;
                 height: var(--nc-bottom);
                 background: rgba(9,15,25,.96);
                 border-top: 1px solid rgba(255,255,255,.06);
                 backdrop-filter: blur(16px);
+                -webkit-backdrop-filter: blur(16px);
                 justify-content: space-around;
-                padding: 6px 4px
+                padding: 6px 4px;
+                transition: transform .25s ease,opacity .25s ease
             }
 
                 .mobile-nav a {
@@ -1154,6 +1156,20 @@
                 .mobile-nav a.active {
                     color: var(--nc-primary)
                 }
+
+            body:not(.player-open) .nc-footer {
+                padding-bottom: calc(var(--nc-bottom) + 25px)
+            }
+
+            body.player-open .nc-footer {
+                padding-bottom: calc(var(--nc-player) + 25px)
+            }
+
+            body.player-open .mobile-nav {
+                transform: translateY(110%);
+                opacity: 0;
+                pointer-events: none
+            }
         }
 
         @media(max-width:520px) {
@@ -1352,7 +1368,7 @@
                     { key: "telegram", label: "تلگرام", icon: "fa-brands fa-telegram", url: "https://t.me/NightCast_ir" },
                     { key: "youtube", label: "یوتیوب", icon: "fa-brands fa-youtube", url: "https://www.youtube.com/@NightCast-r5e" },
                     { key: "eitaa", label: "ایتا", icon: "fa-solid fa-paper-plane", url: "https://eitaa.com/NightCast" },
-                    { key: "bale", label: "سروش", icon: "fa-solid fa-comments", url: "https://splus.ir/NightCast" }
+                    { key: "bale", label: "سروش", icon: "fa-solid fa-comments", url: "https://splus.ir/NightCast" }" }
                 ]
             });
 
@@ -1370,6 +1386,7 @@
             };
 
             let state = { all: [], visible: [], page: 1, totalPages: 1, current: null, query: "", searchTimer: null, toastTimer: null };
+            document.body.classList.remove("player-open");
 
             const placeholder = "https://placehold.co/600x600/11233A/E9BE70?text=NightCast";
 
@@ -1501,7 +1518,9 @@
                 const p = state.all.find(x => Number(x.id) === Number(id));
                 if (!p) { toast("پادکست مورد نظر پیدا نشد."); return }
                 if (!p.audio_url) { toast("فایل صوتی این پادکست موجود نیست."); return }
-                state.current = p; els.player.classList.add("show");
+                state.current = p;
+                els.player.classList.add("show");
+                document.body.classList.add("player-open");
                 els.playerTitle.textContent = p.title || "بدون عنوان"; els.playerAuthor.textContent = p.author_name || "NightCast Radio";
                 els.playerCover.src = p.cover_url || placeholder; els.playerCover.alt = p.title || "NightCast";
                 els.audio.pause(); els.audio.src = p.audio_url; els.audio.load();

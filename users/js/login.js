@@ -588,52 +588,43 @@ async googleCallback(response){
 /* ==========================================
    SESSION
 ========================================== */
+saveSession(token,user){
 
+    if(!token){
 
-
-    saveSession(token,user){
-
-
-
-        localStorage.setItem(
-
-
-            "NightCastToken",
-
-
-            token
-
-
+        throw new Error(
+            "Token خالی است."
         );
 
+    }
 
 
+    if(!user){
 
-        localStorage.setItem(
-
-
-            "NightCastUser",
-
-
-            JSON.stringify(user)
-
-
+        throw new Error(
+            "اطلاعات کاربر خالی است."
         );
 
+    }
 
 
-    },
+    localStorage.setItem(
+        "NightCastToken",
+        token
+    );
 
 
+    localStorage.setItem(
+        "NightCastUser",
+        JSON.stringify(user)
+    );
 
 
+    console.log(
+        "NightCast Session Saved"
+    );
 
-
-
-
-
-
-
+},
 
 /* ==================================================
    REDIRECT FALLBACK

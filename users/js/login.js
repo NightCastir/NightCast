@@ -41,16 +41,16 @@ const Login = {
 
 
 
-  init(){
+init(){
 
     console.log(
         "NightCast Login Loaded"
     );
-this.setupRedirectButton();
+
 
     /*
     ==========================================
-    CHECK EXISTING LOGIN
+    CHECK EXISTING NIGHTCAST SESSION
     ==========================================
     */
 
@@ -65,44 +65,57 @@ this.setupRedirectButton();
         );
 
 
-    /*
-    اگر کاربر قبلاً با Google
-    وارد شده است، Login را دوباره نشان نده.
-    */
-
- if(token && user){
-
-
-
-    window.location.replace(
-        "index.html"
+    console.log(
+        "Session Check:",
+        {
+            token: token ? "FOUND" : "NULL",
+            user: user ? "FOUND" : "NULL"
+        }
     );
 
 
-    return;
+    /*
+    ==========================================
+    EXISTING SESSION
+    ==========================================
+    */
 
-}
+    if(token && user){
 
+        console.log(
+            "Existing NightCast session found."
+        );
+
+
+        window.location.replace(
+            "index.html"
+        );
+
+
+        return;
+
+    }
 
 
     /*
-    کاربر Login نیست.
-    بنابراین صفحه Login را آماده کن.
+    ==========================================
+    NO SESSION
+    ==========================================
     */
+
+    console.log(
+        "No NightCast session found."
+    );
+
 
     this.bindEvents();
 
     this.initGoogle();
 
+    this.setupRedirectButton();
+
 },
-
-
-
-
-
-
-
-
+    
     bindEvents(){
 
 

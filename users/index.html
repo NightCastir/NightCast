@@ -5574,12 +5574,62 @@ if(searchInput){
 }
 
 
-/* ==================================================
-   SEARCH ALL PODCASTS
-   LOCAL SEARCH FROM podcasts.json
-   ================================================== */
 
-function searchAllPodcasts(keyword){
+/* ==================================================
+NIGHTCAST LOCAL SEARCH
+SEARCH PODCASTS FROM podcasts.json CACHE
+================================================== */
+
+let searchTimer = null;
+
+
+/* ==================================================
+SEARCH INPUT
+================================================== */
+
+if(searchInput){
+
+    searchInput.addEventListener(
+        "input",
+        function(){
+
+            const keyword =
+                this.value.trim();
+
+
+            /* ------------------------------------------
+            EMPTY SEARCH
+            ------------------------------------------ */
+
+            if(keyword === ""){
+
+                loadPodcasts(currentPage);
+
+                return;
+
+            }
+
+
+            clearTimeout(searchTimer);
+
+
+            searchTimer = setTimeout(
+                () => searchPodcasts(keyword),
+                250
+            );
+
+        }
+    );
+
+}
+
+
+/* ==================================================
+SEARCH PODCASTS
+FROM LOCAL CACHE
+================================================== */
+
+function searchPodcasts(keyword){
 
     const grid =
         document.getElementById(
@@ -5594,34 +5644,28 @@ function searchAllPodcasts(keyword){
     }
 
 
-    /*
-    ==========================================
-    CLEAN KEYWORD
-    ==========================================
-    */
+    /* ------------------------------------------
+    NORMALIZE
+    ------------------------------------------ */
 
-    const searchTerm =
-        String(keyword || "")
+    const query =
+        String(keyword)
             .trim()
             .toLowerCase();
 
 
-    if(searchTerm === ""){
+    if(!query){
 
-        loadPodcasts(
-            currentPage
-        );
+        loadPodcasts(currentPage);
 
         return;
 
     }
 
 
-    /*
-    ==========================================
-    SEARCH IN ALL PODCASTS
-    ==========================================
-    */
+    /* ------------------------------------------
+    SEARCH
+    ------------------------------------------ */
 
     const results =
         podcastsCache.filter(
@@ -5663,51 +5707,38 @@ function searchAllPodcasts(keyword){
                     ).toLowerCase();
 
 
-                const description =
-                    String(
-                        podcast.description || ""
-                    ).toLowerCase();
-
-
                 return (
-
-                    title.includes(searchTerm) ||
-
-                    book.includes(searchTerm) ||
-
-                    author.includes(searchTerm) ||
-
-                    category.includes(searchTerm) ||
-
-                    tags.includes(searchTerm) ||
-
-                    summary.includes(searchTerm) ||
-
-                    description.includes(searchTerm)
-
+                    title.includes(query) ||
+                    book.includes(query) ||
+                    author.includes(query) ||
+                    category.includes(query) ||
+                    tags.includes(query) ||
+                    summary.includes(query)
                 );
 
             }
-
         );
 
 
-    /*
-    ==========================================
-    COUNTER
-    ==========================================
-    */
+    console.log(
+        "NightCast Local Search:",
+        keyword,
+        results
+    );
+
+
+    /* ------------------------------------------
+    UPDATE COUNTER
+    ------------------------------------------ */
 
     updatePodcastCounter(
         results.length
     );
 
 
-    /*
-    ==========================================
-    HIDE PAGINATION
-    ==========================================
-    */
+    /* ------------------------------------------
+    REMOVE PAGINATION
+    ------------------------------------------ */
 
     const pagination =
         document.getElementById(
@@ -5722,11 +5753,9 @@ function searchAllPodcasts(keyword){
     }
 
 
-    /*
-    ==========================================
+    /* ------------------------------------------
     NO RESULT
-    ==========================================
-    */
+    ------------------------------------------ */
 
     if(results.length === 0){
 
@@ -5737,7 +5766,7 @@ function searchAllPodcasts(keyword){
                 <i class="fa-solid fa-magnifying-glass"></i>
 
                 <p>
-                    برای «${escapeHtml(searchTerm)}»
+                    برای «${escapeHtml(keyword)}»
                     پادکستی پیدا نشد.
                 </p>
 
@@ -5750,18 +5779,15 @@ function searchAllPodcasts(keyword){
     }
 
 
-    /*
-    ==========================================
+    /* ------------------------------------------
     RENDER RESULTS
-    ==========================================
-    */
+    ------------------------------------------ */
 
-    renderPodcasts(
-        results
-    );
+    renderPodcasts(results);
 
-}
+}    
 
+    
     
 /* ==================================================
 LOAD CURRENT USER

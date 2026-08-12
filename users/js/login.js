@@ -348,7 +348,7 @@ async googleCallback(response){
 
         /*
         ==========================================
-        GOOGLE RESPONSE CHECK
+        CHECK GOOGLE TOKEN
         ==========================================
         */
 
@@ -366,117 +366,124 @@ async googleCallback(response){
 
         /*
         ==========================================
-        READ GOOGLE USER INFORMATION
+        SEND GOOGLE TOKEN TO NIGHTCAST
         ==========================================
         */
 
-        const payload =
-            response.credential.split(".")[1];
+        const result =
+
+            await fetch(
+
+                API_URL +
+                "/public/openid/google",
+
+                {
+
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                        "application/json"
+                    },
+
+                    body:JSON.stringify({
+
+                        idToken:
+                        response.credential
+
+                    })
+
+                }
+
+            );
 
 
-        if(!payload){
+        /*
+        ==========================================
+        READ RESPONSE
+        ==========================================
+        */
+
+        const data =
+            await result.json();
+
+
+        /*
+        ==========================================
+        CHECK LOGIN RESULT
+        ==========================================
+        */
+
+        if(
+            !result.ok ||
+            !data.success
+        ){
 
             throw new Error(
-                "اطلاعات Google قابل خواندن نیست."
+
+                data.message ||
+
+                "ورود Google در NightCast ناموفق بود."
+
             );
 
         }
 
 
-        const googleUser =
-            JSON.parse(
+        /*
+        ==========================================
+        CHECK SESSION
+        ==========================================
+        */
 
-                decodeURIComponent(
+        if(!data.token){
 
-                    atob(
-                        payload
-                        .replace(/-/g, "+")
-                        .replace(/_/g, "/")
-                    )
-                    .split("")
-                    .map(
-                        char =>
-                            "%" +
-                            ("00" +
-                            char.charCodeAt(0)
-                            .toString(16))
-                            .slice(-2)
-                    )
-                    .join("")
-
-                )
-
+            throw new Error(
+                "Session از NightCast دریافت نشد."
             );
 
+        }
 
-        /*
-        ==========================================
-        CREATE NIGHTCAST USER
-        ==========================================
-        */
 
-        const user = {
+        if(!data.user){
 
-            id:
-                googleUser.sub || null,
+            throw new Error(
+                "اطلاعات کاربر دریافت نشد."
+            );
 
-            username:
-                googleUser.email || "",
-
-            email:
-                googleUser.email || "",
-
-            full_name:
-                googleUser.name || "NightCast User",
-
-            picture:
-                googleUser.picture || "",
-
-            role:
-                "user",
-
-            provider:
-                "google"
-
-        };
+        }
 
 
         /*
         ==========================================
-        CREATE LOCAL LOGIN SESSION
+        SAVE REAL SESSION
         ==========================================
         */
 
-        const localToken =
-            "google_" +
-            googleUser.sub;
+        this.saveSession(
 
+            data.token,
 
-        localStorage.setItem(
-            "NightCastToken",
-            localToken
-        );
+            data.user
 
-
-        localStorage.setItem(
-            "NightCastUser",
-            JSON.stringify(user)
         );
 
 
         /*
         ==========================================
-        VERIFY LOCAL SESSION
+        VERIFY LOCAL STORAGE
         ==========================================
         */
 
         const savedToken =
+
             localStorage.getItem(
                 "NightCastToken"
             );
 
 
         const savedUser =
+
             localStorage.getItem(
                 "NightCastUser"
             );
@@ -496,7 +503,7 @@ async googleCallback(response){
 
         /*
         ==========================================
-        LOGIN SUCCESS
+        SUCCESS
         ==========================================
         */
 
@@ -518,19 +525,25 @@ async googleCallback(response){
 
         this.hideLoader();
 
-        this.showError(
-            error.message
-        );
 
         console.error(
             "NightCast Google Login Error:",
             error
         );
 
+
+        this.showError(
+
+            error.message ||
+
+            "خطا در ورود با Google"
+
+        );
+
     }
 
 },
-    /* ==========================================
+/* ==========================================
    GUEST LOGIN
 ========================================== */
 

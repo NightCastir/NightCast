@@ -70,22 +70,33 @@ const Login = {
     وارد شده است، Login را دوباره نشان نده.
     */
 
-    if(token && user){
+ if(token && user){
 
-        console.log(
-            "Existing NightCast session found"
-        );
-
-
-        window.location.replace(
-            "index.html"
-        );
+    alert(
+        "Session پیدا شد\n\n" +
+        "Token: موجود\n" +
+        "User: موجود\n\n" +
+        "در حال انتقال..."
+    );
 
 
-        return;
+    window.location.replace(
+        "index.html"
+    );
 
-    }
 
+    return;
+
+}
+
+
+alert(
+    "Session پیدا نشد\n\n" +
+    "Token: " +
+    (token ? "موجود" : "NULL") +
+    "\nUser: " +
+    (user ? "موجود" : "NULL")
+);
 
     /*
     کاربر Login نیست.

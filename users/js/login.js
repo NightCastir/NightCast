@@ -695,12 +695,6 @@ setupRedirectButton(){
 
         }
 
-
-     /*   
-         alert(
-            "ورود Google هنوز در NightCast ثبت نشده است."
-        );
-     */
     }
 );
 

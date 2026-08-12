@@ -348,7 +348,7 @@ async googleCallback(response){
 
         /*
         ==========================================
-        GOOGLE TOKEN CHECK
+        GOOGLE RESPONSE CHECK
         ==========================================
         */
 
@@ -366,102 +366,101 @@ async googleCallback(response){
 
         /*
         ==========================================
-        SEND GOOGLE TOKEN TO NIGHTCAST API
+        READ GOOGLE USER INFORMATION
         ==========================================
         */
 
-      const googleAPI =
-    API_URL +
-    "/public/openid/google";
-
-console.log(
-    "NightCast Google API:",
-    googleAPI
-);
-
-const result =
-    await fetch(
-        googleAPI,
-        {
-            method:"POST",
-
-            headers:{
-                "Content-Type":
-                "application/json"
-            },
-
-            body:JSON.stringify({
-                idToken:
-                response.credential
-            })
-        }
-    );
+        const payload =
+            response.credential.split(".")[1];
 
 
-        /*
-        ==========================================
-        READ API RESPONSE
-        ==========================================
-        */
-
-        const data =
-            await result.json();
-
-
-        /*
-        ==========================================
-        API ERROR
-        ==========================================
-        */
-
-        if(
-            !result.ok ||
-            !data.success
-        ){
+        if(!payload){
 
             throw new Error(
-
-                data.message ||
-                "ورود Google در NightCast ناموفق بود."
-
+                "اطلاعات Google قابل خواندن نیست."
             );
 
         }
 
 
+        const googleUser =
+            JSON.parse(
+
+                decodeURIComponent(
+
+                    atob(
+                        payload
+                        .replace(/-/g, "+")
+                        .replace(/_/g, "/")
+                    )
+                    .split("")
+                    .map(
+                        char =>
+                            "%" +
+                            ("00" +
+                            char.charCodeAt(0)
+                            .toString(16))
+                            .slice(-2)
+                    )
+                    .join("")
+
+                )
+
+            );
+
+
         /*
         ==========================================
-        CHECK SESSION DATA
+        CREATE NIGHTCAST USER
         ==========================================
         */
 
-        if(!data.token){
+        const user = {
 
-            throw new Error(
-                "NightCast Token از سرور دریافت نشد."
-            );
+            id:
+                googleUser.sub || null,
 
-        }
+            username:
+                googleUser.email || "",
 
+            email:
+                googleUser.email || "",
 
-        if(!data.user){
+            full_name:
+                googleUser.name || "NightCast User",
 
-            throw new Error(
-                "اطلاعات کاربر از سرور دریافت نشد."
-            );
+            picture:
+                googleUser.picture || "",
 
-        }
+            role:
+                "user",
+
+            provider:
+                "google"
+
+        };
 
 
         /*
         ==========================================
-        SAVE NIGHTCAST SESSION
+        CREATE LOCAL LOGIN SESSION
         ==========================================
         */
 
-        this.saveSession(
-            data.token,
-            data.user
+        const localToken =
+            "google_" +
+            googleUser.sub;
+
+
+        localStorage.setItem(
+            "NightCastToken",
+            localToken
+        );
+
+
+        localStorage.setItem(
+            "NightCastUser",
+            JSON.stringify(user)
         );
 
 
@@ -501,6 +500,14 @@ const result =
         ==========================================
         */
 
+        console.log(
+            "NightCast Google Login Successful"
+        );
+
+
+        this.hideLoader();
+
+
         window.location.replace(
             "index.html"
         );
@@ -523,7 +530,7 @@ const result =
     }
 
 },
-/* ==========================================
+    /* ==========================================
    GUEST LOGIN
 ========================================== */
 

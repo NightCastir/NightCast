@@ -5434,10 +5434,11 @@ if(searchInput){
 
 
 /* ==================================================
-SEARCH ALL PODCASTS
-================================================== */
+   SEARCH ALL PODCASTS
+   LOCAL SEARCH FROM podcasts.json
+   ================================================== */
 
-async function searchAllPodcasts(keyword){
+function searchAllPodcasts(keyword){
 
     const grid =
         document.getElementById(
@@ -5452,159 +5453,175 @@ async function searchAllPodcasts(keyword){
     }
 
 
-    grid.innerHTML = `
+    /*
+    ==========================================
+    CLEAN KEYWORD
+    ==========================================
+    */
 
-        <div class="loading-card">
-
-            <i class="fa-solid fa-spinner fa-spin"></i>
-
-            <p>
-                در حال جستجو...
-            </p>
-
-        </div>
-
-    `;
+    const searchTerm =
+        String(keyword || "")
+            .trim()
+            .toLowerCase();
 
 
-    try{
+    if(searchTerm === ""){
 
-        const response =
-            await fetch(
-
-                API_URL +
-                "/public/podcasts/search?q=" +
-                encodeURIComponent(keyword),
-
-                {
-                    method:"GET",
-                    headers:getHeaders()
-                }
-
-            );
-
-
-        if(!response.ok){
-
-            throw new Error(
-                "خطای جستجو: " +
-                response.status
-            );
-
-        }
-
-
-        const data =
-            await response.json();
-
-
-        console.log(
-            "NightCast Search API:",
-            data
+        loadPodcasts(
+            currentPage
         );
 
-
-        if(!data.success){
-
-            throw new Error(
-                data.message ||
-                "جستجو ناموفق بود."
-            );
-
-        }
-
-
-        const results =
-            Array.isArray(data.podcasts)
-                ? data.podcasts
-                : [];
-
-
-        podcastsCache =
-            results;
-
-
-        updatePodcastCounter(
-            Number(data.total || results.length)
-        );
-
-
-        const pagination =
-            document.getElementById(
-                "pagination"
-            );
-
-
-        if(pagination){
-
-            pagination.innerHTML = "";
-
-        }
-
-
-        if(results.length === 0){
-
-            grid.innerHTML = `
-
-                <div class="loading-card">
-
-                    <i class="fa-solid fa-magnifying-glass"></i>
-
-                    <p>
-                        برای «${escapeHtml(keyword)}»
-                        پادکستی پیدا نشد.
-                    </p>
-
-                </div>
-
-            `;
-
-            return;
-
-        }
-
-
-        renderPodcasts(results);
-
+        return;
 
     }
-    catch(error){
 
-        console.error(
-            "NightCast Search Error:",
-            error
+
+    /*
+    ==========================================
+    SEARCH IN ALL PODCASTS
+    ==========================================
+    */
+
+    const results =
+        podcastsCache.filter(
+            podcast => {
+
+                const title =
+                    String(
+                        podcast.title || ""
+                    ).toLowerCase();
+
+
+                const book =
+                    String(
+                        podcast.book_name || ""
+                    ).toLowerCase();
+
+
+                const author =
+                    String(
+                        podcast.author_name || ""
+                    ).toLowerCase();
+
+
+                const category =
+                    String(
+                        podcast.category_name || ""
+                    ).toLowerCase();
+
+
+                const tags =
+                    String(
+                        podcast.tags || ""
+                    ).toLowerCase();
+
+
+                const summary =
+                    String(
+                        podcast.summary || ""
+                    ).toLowerCase();
+
+
+                const description =
+                    String(
+                        podcast.description || ""
+                    ).toLowerCase();
+
+
+                return (
+
+                    title.includes(searchTerm) ||
+
+                    book.includes(searchTerm) ||
+
+                    author.includes(searchTerm) ||
+
+                    category.includes(searchTerm) ||
+
+                    tags.includes(searchTerm) ||
+
+                    summary.includes(searchTerm) ||
+
+                    description.includes(searchTerm)
+
+                );
+
+            }
+
         );
 
+
+    /*
+    ==========================================
+    COUNTER
+    ==========================================
+    */
+
+    updatePodcastCounter(
+        results.length
+    );
+
+
+    /*
+    ==========================================
+    HIDE PAGINATION
+    ==========================================
+    */
+
+    const pagination =
+        document.getElementById(
+            "pagination"
+        );
+
+
+    if(pagination){
+
+        pagination.innerHTML = "";
+
+    }
+
+
+    /*
+    ==========================================
+    NO RESULT
+    ==========================================
+    */
+
+    if(results.length === 0){
 
         grid.innerHTML = `
 
             <div class="loading-card">
 
-                <i class="fa-solid fa-circle-exclamation"></i>
+                <i class="fa-solid fa-magnifying-glass"></i>
 
                 <p>
-                    ${escapeHtml(
-                        error.message ||
-                        "خطا در جستجو"
-                    )}
+                    برای «${escapeHtml(searchTerm)}»
+                    پادکستی پیدا نشد.
                 </p>
 
             </div>
 
         `;
 
+        return;
+
     }
 
- }
- 
 
+    /*
+    ==========================================
+    RENDER RESULTS
+    ==========================================
+    */
 
+    renderPodcasts(
+        results
+    );
 
+}
 
-
-
-
-
+    
 /* ==================================================
 LOAD CURRENT USER
 ================================================== */

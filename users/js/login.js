@@ -370,34 +370,32 @@ async googleCallback(response){
         ==========================================
         */
 
-        const result =
-            await fetch(
+      const googleAPI =
+    API_URL +
+    "/public/openid/google";
 
-                API_URL +
-                "/public/openid/google",
+console.log(
+    "NightCast Google API:",
+    googleAPI
+);
 
-                {
+const result =
+    await fetch(
+        googleAPI,
+        {
+            method:"POST",
 
-                    method:"POST",
+            headers:{
+                "Content-Type":
+                "application/json"
+            },
 
-                    headers:{
-
-                        "Content-Type":
-                        "application/json"
-
-                    },
-
-                    body:
-                    JSON.stringify({
-
-                        idToken:
-                        response.credential
-
-                    })
-
-                }
-
-            );
+            body:JSON.stringify({
+                idToken:
+                response.credential
+            })
+        }
+    );
 
 
         /*

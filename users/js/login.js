@@ -46,7 +46,7 @@ const Login = {
     console.log(
         "NightCast Login Loaded"
     );
-
+this.setupRedirectButton();
 
     /*
     ==========================================

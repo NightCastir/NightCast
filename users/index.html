@@ -1,11 +1,10 @@
-
 <!doctype html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="utf-8">
 
     <meta name="viewport"
-          content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+          content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 
     <meta name="theme-color" content="#090F19">
     <meta name="color-scheme" content="dark">
@@ -30,28 +29,29 @@
 
     <meta property="og:type" content="website">
     <meta property="og:locale" content="fa_IR">
-    <meta property="og:title"
-          content="NightCast | رادیو پادکست خلاصه و تحلیل کتاب">
+    <meta property="og:title" content="NightCast | رادیو پادکست خلاصه و تحلیل کتاب">
     <meta property="og:description"
           content="پادکست‌های خلاصه و تحلیل کتاب‌های ارزشمند در رادیو NightCast.">
     <meta property="og:url" content="https://nightcast.ir/">
     <meta property="og:site_name" content="NightCast">
-    <meta property="og:image"
-          content="https://nightcast.ir/logo.png">
+    <meta property="og:image" content="https://nightcast.ir/logo.png">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title"
-          content="NightCast | رادیو پادکست خلاصه و تحلیل کتاب">
-    <meta name="twitter:description"
-          content="رادیو NightCast؛ پلی به سوی آینده">
-    <meta name="twitter:image"
-          content="https://nightcast.ir/logo.png">
+    <meta name="twitter:title" content="NightCast | رادیو پادکست خلاصه و تحلیل کتاب">
+    <meta name="twitter:description" content="رادیو NightCast؛ پلی به سوی آینده">
+    <meta name="twitter:image" content="https://nightcast.ir/logo.png">
 
     <link rel="icon" href="./favicon.ico">
-    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="apple-touch-icon"
+          href="assets/icons/icon-192.png">
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
 
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap"
           rel="stylesheet">
@@ -64,21 +64,22 @@
 
     <script type="application/ld+json">
         {
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            "name": "NightCast",
-            "url": "https://nightcast.ir/",
-            "description": "رادیو NightCast؛ پادکست خلاصه و تحلیل کتاب‌های ارزشمند.",
-            "inLanguage": "fa-IR",
-            "potentialAction": {
-                "@type": "SearchAction",
-                "target": "https://nightcast.ir/?q={search_term_string}",
-                "query-input": "required name=search_term_string"
+            "@context":"https://schema.org",
+            "@type":"WebSite",
+            "name":"NightCast",
+            "url":"https://nightcast.ir/",
+            "description":"رادیو NightCast؛ پادکست خلاصه و تحلیل کتاب‌های ارزشمند.",
+            "inLanguage":"fa-IR",
+            "potentialAction":{
+                "@type":"SearchAction",
+                "target":"https://nightcast.ir/?q={search_term_string}",
+                "query-input":"required name=search_term_string"
             }
         }
     </script>
 
     <style>
+
         :root {
             --nc-bg: #0E1C2F;
             --nc-bg-dark: #090F19;
@@ -171,6 +172,11 @@
             background: #145078;
             border-radius: 99px;
         }
+
+
+        /* =========================================================
+           HEADER
+        ========================================================= */
 
         .nc-header {
             position: sticky;
@@ -266,6 +272,7 @@
             display: grid;
             place-items: center;
             transition: .2s;
+            overflow: hidden;
         }
 
             .icon-btn:hover {
@@ -273,6 +280,60 @@
                 border-color: rgba(5,157,249,.3);
                 box-shadow: 0 0 18px rgba(5,157,249,.08);
             }
+
+
+        /* =========================================================
+           USER AVATAR
+        ========================================================= */
+
+        .user-btn {
+            position: relative;
+            padding: 2px;
+        }
+
+            .user-btn .user-avatar {
+                width: 34px;
+                height: 34px;
+                border-radius: 50%;
+                object-fit: cover;
+                background: linear-gradient( 145deg, var(--nc-primary), var(--nc-primary-dark) );
+                display: none;
+            }
+
+            .user-btn.has-avatar {
+                padding: 2px;
+                border-color: rgba(5,157,249,.35);
+                box-shadow: 0 0 0 2px rgba(5,157,249,.08), 0 0 18px rgba(5,157,249,.12);
+            }
+
+                .user-btn.has-avatar .user-avatar {
+                    display: block;
+                }
+
+                .user-btn.has-avatar .user-icon {
+                    display: none;
+                }
+
+            .user-btn .user-online {
+                position: absolute;
+                width: 9px;
+                height: 9px;
+                right: 1px;
+                bottom: 1px;
+                border-radius: 50%;
+                background: #31d17c;
+                border: 2px solid var(--nc-bg-dark);
+                display: none;
+            }
+
+            .user-btn.has-avatar .user-online {
+                display: block;
+            }
+
+
+        /* =========================================================
+           SOCIAL
+        ========================================================= */
 
         .social-wrap {
             position: relative;
@@ -328,11 +389,21 @@
                 font-size: .85rem;
             }
 
+
+        /* =========================================================
+           MAIN
+        ========================================================= */
+
         main {
             max-width: var(--nc-max);
             margin: auto;
             padding: 0 18px;
         }
+
+
+        /* =========================================================
+           HERO
+        ========================================================= */
 
         .hero {
             padding: 55px 0 30px;
@@ -405,12 +476,6 @@
                 transform: translateY(-1px);
             }
 
-            .btn-primary:disabled {
-                opacity: .4;
-                box-shadow: none;
-                transform: none;
-            }
-
         .btn-secondary {
             background: rgba(255,255,255,.035);
             color: var(--nc-text);
@@ -474,8 +539,12 @@
 
             .latest-play:disabled {
                 opacity: .35;
-                cursor: not-allowed;
             }
+
+
+        /* =========================================================
+           SECTIONS
+        ========================================================= */
 
         .section {
             padding: 24px 0;
@@ -505,6 +574,11 @@
             font-size: .78rem;
         }
 
+
+        /* =========================================================
+           SEARCH
+        ========================================================= */
+
         .search-box {
             position: relative;
             max-width: 440px;
@@ -514,7 +588,7 @@
             .search-box input {
                 width: 100%;
                 height: 46px;
-                padding: 0 44px 0 44px;
+                padding: 0 44px;
                 background: var(--nc-surface);
                 border: 1px solid var(--nc-border);
                 border-radius: 13px;
@@ -534,7 +608,6 @@
                 top: 50%;
                 transform: translateY(-50%);
                 color: var(--nc-text-muted);
-                pointer-events: none;
             }
 
         .search-clear {
@@ -552,6 +625,11 @@
             .search-clear.show {
                 display: block;
             }
+
+
+        /* =========================================================
+           STATS
+        ========================================================= */
 
         .stats {
             display: grid;
@@ -582,6 +660,11 @@
                 color: var(--nc-primary);
                 margin-inline-end: 5px;
             }
+
+
+        /* =========================================================
+           PODCAST GRID
+        ========================================================= */
 
         .podcast-grid {
             display: grid;
@@ -623,7 +706,6 @@
             position: absolute;
             inset: 0;
             background: linear-gradient( 180deg, transparent 55%, rgba(0,0,0,.4) );
-            pointer-events: none;
         }
 
         .play-card {
@@ -644,11 +726,6 @@
             .play-card:hover {
                 transform: scale(1.05);
                 box-shadow: 0 0 25px rgba(5,157,249,.3);
-            }
-
-            .play-card:disabled {
-                opacity: .35;
-                transform: none;
             }
 
         .podcast-info {
@@ -719,14 +796,15 @@
             border: 1px solid var(--nc-border);
         }
 
-            .favorite:hover {
-                color: #ff6e9c;
-            }
-
             .favorite.active {
                 color: #ff6e9c;
                 border-color: rgba(255,110,156,.2);
             }
+
+
+        /* =========================================================
+           LOADING
+        ========================================================= */
 
         .loading-grid {
             display: grid;
@@ -768,6 +846,11 @@
             }
         }
 
+
+        /* =========================================================
+           EMPTY / ERROR
+        ========================================================= */
+
         .empty,
         .error-state {
             padding: 55px 20px;
@@ -797,6 +880,11 @@
                 font-size: .82rem;
             }
 
+
+        /* =========================================================
+           PAGINATION
+        ========================================================= */
+
         .pagination {
             display: flex;
             justify-content: center;
@@ -820,6 +908,11 @@
                 border-color: rgba(5,157,249,.3);
                 color: var(--nc-primary);
             }
+
+
+        /* =========================================================
+           FOOTER
+        ========================================================= */
 
         .nc-footer {
             margin-top: 35px;
@@ -859,6 +952,11 @@
             .footer-links a:hover {
                 color: var(--nc-primary);
             }
+
+
+        /* =========================================================
+           PLAYER
+        ========================================================= */
 
         .player {
             position: fixed;
@@ -908,7 +1006,6 @@
             object-fit: cover;
             border-radius: 11px;
             background: #0b1727;
-            flex: 0 0 auto;
         }
 
         .track-text {
@@ -969,7 +1066,6 @@
             gap: 7px;
             font-size: .62rem;
             color: var(--nc-text-muted);
-            min-width: 0;
         }
 
         .progress {
@@ -982,6 +1078,11 @@
             width: 100px;
             accent-color: var(--nc-primary);
         }
+
+
+        /* =========================================================
+           TOAST
+        ========================================================= */
 
         .toast {
             position: fixed;
@@ -999,8 +1100,6 @@
             font-size: .78rem;
             box-shadow: 0 12px 30px rgba(0,0,0,.3);
             transition: .25s;
-            max-width: min(90vw,500px);
-            text-align: center;
         }
 
             .toast.show {
@@ -1008,11 +1107,22 @@
                 transform: translate(-50%,0);
             }
 
+
+        /* =========================================================
+           MOBILE NAV
+        ========================================================= */
+
         .mobile-nav {
             display: none;
         }
 
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
         @media(max-width:1100px) {
+
             .podcast-grid,
             .loading-grid {
                 grid-template-columns: repeat(3,1fr);
@@ -1022,6 +1132,7 @@
                 grid-template-columns: 1fr .8fr;
             }
         }
+
 
         @media(max-width:800px) {
 
@@ -1181,6 +1292,7 @@
             }
         }
 
+
         @media(max-width:520px) {
 
             .podcast-grid,
@@ -1228,6 +1340,7 @@
             }
         }
 
+
         @media(prefers-reduced-motion:reduce) {
 
             *,
@@ -1241,6 +1354,7 @@
     </style>
 </head>
 
+
 <body>
 
     <header class="nc-header">
@@ -1250,6 +1364,7 @@
             <a class="brand"
                href="#home"
                aria-label="NightCast">
+
                 <span class="brand-mark">
                     <i class="fa-solid fa-headphones"></i>
                 </span>
@@ -1258,7 +1373,9 @@
                     <strong>NightCast</strong>
                     <small>پلی به سوی آیندست</small>
                 </span>
+
             </a>
+
 
             <div class="nav-links">
 
@@ -1279,6 +1396,7 @@
 
             </div>
 
+
             <div class="header-actions">
 
                 <div class="social-wrap"
@@ -1287,22 +1405,39 @@
                     <button class="icon-btn"
                             id="socialToggle"
                             aria-label="شبکه‌های اجتماعی"
-                            aria-expanded="false"
-                            type="button">
+                            aria-expanded="false">
+
                         <i class="fa-solid fa-share-nodes"></i>
+
                     </button>
 
                     <div class="social-menu"
                          id="socialMenu"
-                         aria-label="شبکه‌های اجتماعی"></div>
+                         aria-label="شبکه‌های اجتماعی">
+                    </div>
 
                 </div>
 
-                <button class="icon-btn"
+
+                <!-- =====================================================
+                     USER BUTTON
+                     ===================================================== -->
+
+                <button class="icon-btn user-btn"
                         id="loginBtn"
                         aria-label="حساب کاربری"
-                        type="button">
-                    <i class="fa-regular fa-user"></i>
+                        title="حساب کاربری">
+
+                    <i class="fa-regular fa-user user-icon"></i>
+
+                    <img class="user-avatar"
+                         id="userAvatar"
+                         alt="تصویر پروفایل کاربر"
+                         referrerpolicy="no-referrer">
+
+                    <span class="user-online"
+                          aria-hidden="true"></span>
+
                 </button>
 
             </div>
@@ -1314,40 +1449,63 @@
 
     <main id="home">
 
+
+        <!-- =========================================================
+             HERO
+        ========================================================= -->
+
         <section class="hero"
                  aria-labelledby="heroTitle">
 
             <div>
 
                 <div class="eyebrow">
+
                     <i class="fa-solid fa-circle"></i>
+
                     RADIO NIGHTCAST
+
                 </div>
 
+
                 <h1 id="heroTitle">
+
                     اندیشه های بزرگ ،
+
                     <br>
-                    <span>روایت های ماندگار</span>
+
+                    <span>
+                        روایت های ماندگار
+                    </span>
+
                 </h1>
+
 
                 <p>
                     پادکست‌های خلاصه و تحلیل کاربردی کتاب‌ها؛
                     ایده‌های مهم را بشنو، درک کن و در زندگی و کار به‌کار بگیر.
                 </p>
 
+
                 <div class="hero-actions">
 
                     <a class="btn btn-primary"
                        href="#podcasts">
+
                         <i class="fa-solid fa-headphones"></i>
+
                         شنیدن پادکست‌ها
+
                     </a>
 
+
                     <button class="btn btn-secondary"
-                            id="latestCta"
-                            type="button">
+                            id="latestCta">
+
                         <i class="fa-solid fa-play"></i>
+
                         آخرین پادکست
+
                     </button>
 
                 </div>
@@ -1359,26 +1517,38 @@
                  aria-live="polite">
 
                 <span class="latest-label">
+
                     <i class="fa-solid fa-bolt"></i>
+
                     جدیدترین پادکست
+
                 </span>
+
 
                 <div class="latest-title"
                      id="latestPodcastTitle">
+
                     در حال آماده‌سازی...
+
                 </div>
+
 
                 <button class="latest-play"
                         id="latestPodcastPlay"
-                        aria-label="پخش آخرین پادکست"
-                        type="button">
+                        aria-label="پخش آخرین پادکست">
+
                     <i class="fa-solid fa-play"></i>
+
                 </button>
 
             </div>
 
         </section>
 
+
+        <!-- =========================================================
+             PODCASTS
+        ========================================================= -->
 
         <section class="section"
                  id="podcasts"
@@ -1390,8 +1560,10 @@
 
                     <h2 class="section-title"
                         id="podcastHeading">
+
                         پادکست‌های
                         <span>NightCast</span>
+
                     </h2>
 
                     <p class="section-sub">
@@ -1414,9 +1586,10 @@
 
                     <button class="search-clear"
                             id="searchClear"
-                            aria-label="پاک کردن جستجو"
-                            type="button">
+                            aria-label="پاک کردن جستجو">
+
                         <i class="fa-solid fa-xmark"></i>
+
                     </button>
 
                 </div>
@@ -1428,27 +1601,44 @@
                  aria-label="آمار NightCast">
 
                 <div class="stat">
-                    <b id="podcastCount">۰</b>
+
+                    <b id="podcastCount">
+                        ۰
+                    </b>
+
                     <span>
                         <i class="fa-solid fa-microphone-lines"></i>
                         پادکست
                     </span>
+
                 </div>
 
+
                 <div class="stat">
-                    <b id="bookCount">۰</b>
+
+                    <b id="bookCount">
+                        ۰
+                    </b>
+
                     <span>
                         <i class="fa-solid fa-book"></i>
                         کتاب
                     </span>
+
                 </div>
 
+
                 <div class="stat">
-                    <b id="favoriteCount">۰</b>
+
+                    <b id="favoriteCount">
+                        ۰
+                    </b>
+
                     <span>
                         <i class="fa-solid fa-heart"></i>
                         علاقه‌مندی
                     </span>
+
                 </div>
 
             </div>
@@ -1456,15 +1646,21 @@
 
             <div id="podcastGrid"
                  class="podcast-grid"
-                 aria-live="polite"></div>
+                 aria-live="polite">
+            </div>
 
 
             <div id="pagination"
                  class="pagination"
-                 aria-label="صفحه‌بندی"></div>
+                 aria-label="صفحه‌بندی">
+            </div>
 
         </section>
 
+
+        <!-- =========================================================
+             ABOUT
+        ========================================================= -->
 
         <section class="section"
                  id="about">
@@ -1487,6 +1683,10 @@
 
     </main>
 
+
+    <!-- =============================================================
+         FOOTER
+    ============================================================= -->
 
     <footer class="nc-footer">
 
@@ -1530,6 +1730,10 @@
     </footer>
 
 
+    <!-- =============================================================
+         PLAYER
+    ============================================================= -->
+
     <div class="player"
          id="playerBar"
          aria-label="پخش‌کننده صوتی">
@@ -1547,12 +1751,16 @@
 
                     <div class="track-title"
                          id="playerTitle">
+
                         پادکستی انتخاب نشده
+
                     </div>
 
                     <div class="track-author"
                          id="playerAuthor">
+
                         NightCast Radio
+
                     </div>
 
                 </div>
@@ -1564,24 +1772,30 @@
 
                 <button class="control-btn"
                         id="prevBtn"
-                        aria-label="قبلی"
-                        type="button">
+                        aria-label="قبلی">
+
                     <i class="fa-solid fa-backward-step"></i>
+
                 </button>
+
 
                 <button class="control-btn main"
                         id="playButton"
-                        aria-label="پخش"
-                        type="button">
+                        aria-label="پخش">
+
                     <i class="fa-solid fa-play"
-                       id="playIcon"></i>
+                       id="playIcon">
+                    </i>
+
                 </button>
+
 
                 <button class="control-btn"
                         id="nextBtn"
-                        aria-label="بعدی"
-                        type="button">
+                        aria-label="بعدی">
+
                     <i class="fa-solid fa-forward-step"></i>
+
                 </button>
 
             </div>
@@ -1621,47 +1835,69 @@
     </div>
 
 
+    <!-- =============================================================
+         MOBILE NAV
+    ============================================================= -->
+
     <nav class="mobile-nav"
          aria-label="ناوبری موبایل">
 
         <a class="active"
            href="#home">
+
             <i class="fa-solid fa-house"></i>
-            <span>خانه</span>
+
+            <span>
+                خانه
+            </span>
+
         </a>
+
 
         <a href="#podcasts">
+
             <i class="fa-solid fa-headphones"></i>
-            <span>پادکست‌ها</span>
+
+            <span>
+                پادکست‌ها
+            </span>
+
         </a>
 
+
         <a href="#about">
+
             <i class="fa-solid fa-circle-info"></i>
-            <span>درباره</span>
+
+            <span>
+                درباره
+            </span>
+
         </a>
 
     </nav>
 
 
     <div class="toast"
-         id="toast"
-         role="status"
-         aria-live="polite"></div>
+         id="toast">
+    </div>
 
 
     <audio id="audioPlayer"
-           preload="metadata"></audio>
+           preload="metadata">
+    </audio>
 
 
     <script>
+
         (() => {
 
             "use strict";
 
 
             /* =========================================================
-               NIGHTCAST CONFIG
-               ========================================================= */
+               CONFIG
+            ========================================================= */
 
             const CONFIG = Object.freeze({
 
@@ -1686,14 +1922,11 @@
                 USER_KEY:
                     "NightCastUser",
 
-                RESUME_KEY:
-                    "NightCastResume",
+                LOGIN_PAGE:
+                    "login.html",
 
-                CURRENT_KEY:
-                    "NightCastCurrentPodcast",
-
-                VOLUME_KEY:
-                    "NightCastVolume",
+                PROFILE_PAGE:
+                    "profile.html",
 
                 SOCIALS: [
 
@@ -1746,13 +1979,13 @@
 
             /* =========================================================
                DOM
-               ========================================================= */
+            ========================================================= */
 
-            const $ = selector =>
-                document.querySelector(selector);
+            const $ =
+                s => document.querySelector(s);
 
-            const $$ = selector =>
-                [...document.querySelectorAll(selector)];
+            const $$ =
+                s => [...document.querySelectorAll(s)];
 
 
             const els = {
@@ -1839,14 +2072,17 @@
                     $("#socialMenu"),
 
                 loginBtn:
-                    $("#loginBtn")
+                    $("#loginBtn"),
+
+                userAvatar:
+                    $("#userAvatar")
 
             };
 
 
             /* =========================================================
                STATE
-               ========================================================= */
+            ========================================================= */
 
             let state = {
 
@@ -1864,58 +2100,42 @@
 
                 searchTimer: null,
 
-                toastTimer: null,
-
-                saveTimer: null
+                toastTimer: null
 
             };
 
 
-            let favoriteIds =
-                new Set();
+            document.body.classList.remove("player-open");
 
 
             const placeholder =
                 "https://placehold.co/600x600/11233A/E9BE70?text=NightCast";
 
 
-            document.body.classList.remove(
-                "player-open"
-            );
-
-
             /* =========================================================
                HELPERS
-               ========================================================= */
+            ========================================================= */
 
-            function escapeHtml(value) {
+            function escapeHtml(v) {
 
-                return String(value ?? "")
+                return String(v ?? "")
+
                     .replace(/&/g, "&amp;")
+
                     .replace(/</g, "&lt;")
+
                     .replace(/>/g, "&gt;")
+
                     .replace(/"/g, "&quot;")
+
                     .replace(/'/g, "&#039;");
 
             }
 
 
-            function normalizeId(value) {
+            function formatTime(sec) {
 
-                const id =
-                    Number(value);
-
-                return Number.isFinite(id)
-                    ? id
-                    : null;
-
-            }
-
-
-            function formatTime(seconds) {
-
-                let sec =
-                    Number(seconds);
+                sec = Number(sec);
 
                 if (
                     !Number.isFinite(sec) ||
@@ -1924,66 +2144,57 @@
                     return "00:00";
                 }
 
-                sec =
-                    Math.floor(sec);
-
-                const hours =
+                const h =
                     Math.floor(sec / 3600);
 
-                const minutes =
-                    Math.floor(
-                        (sec % 3600) / 60
-                    );
+                const m =
+                    Math.floor((sec % 3600) / 60);
 
-                const remainingSeconds =
-                    sec % 60;
+                const s =
+                    Math.floor(sec % 60);
 
 
-                if (hours) {
+                if (h) {
 
-                    return (
-                        String(hours).padStart(2, "0")
-                        + ":"
-                        + String(minutes).padStart(2, "0")
-                        + ":"
-                        + String(remainingSeconds).padStart(2, "0")
-                    );
+                    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 
                 }
 
 
-                return (
-                    String(minutes).padStart(2, "0")
-                    + ":"
-                    + String(remainingSeconds).padStart(2, "0")
-                );
+                return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 
             }
 
 
-            function toast(message) {
+            function toast(msg) {
 
                 els.toast.textContent =
-                    message;
+                    msg;
 
-                els.toast.classList.add(
-                    "show"
-                );
+                els.toast.classList.add("show");
+
 
                 clearTimeout(
                     state.toastTimer
                 );
 
+
                 state.toastTimer =
-                    setTimeout(() => {
-
-                        els.toast.classList.remove(
-                            "show"
-                        );
-
-                    }, 2800);
+                    setTimeout(
+                        () =>
+                            els.toast.classList.remove("show"),
+                        2800
+                    );
 
             }
+
+
+            /* =========================================================
+               AUTH
+            ========================================================= */
+
+            let favoriteIds =
+                new Set();
 
 
             function getToken() {
@@ -2006,11 +2217,20 @@
                             CONFIG.USER_KEY
                         );
 
-                    return raw
-                        ? JSON.parse(raw)
-                        : null;
 
-                } catch {
+                    if (!raw) {
+                        return null;
+                    }
+
+
+                    return JSON.parse(raw);
+
+                } catch (err) {
+
+                    console.error(
+                        "NightCast User Parse Error:",
+                        err
+                    );
 
                     return null;
 
@@ -2029,34 +2249,211 @@
             }
 
 
-            function goToLogin() {
+            /* =========================================================
+               GOOGLE PROFILE IMAGE
+            ========================================================= */
 
-                window.location.href =
-                    "login.html";
+            function getUserAvatar(user) {
+
+                if (!user) {
+                    return "";
+                }
+
+
+                const possibleImages = [
+
+                    user.picture,
+
+                    user.avatar,
+
+                    user.avatar_url,
+
+                    user.avatarUrl,
+
+                    user.photoURL,
+
+                    user.photoUrl,
+
+                    user.photo,
+
+                    user.profile_picture,
+
+                    user.profilePicture,
+
+                    user.image,
+
+                    user.image_url,
+
+                    user.imageUrl,
+
+                    user.picture_url,
+
+                    user.pictureUrl
+
+                ];
+
+
+                for (const image of possibleImages) {
+
+                    if (
+                        typeof image === "string" &&
+                        image.trim()
+                    ) {
+
+                        return image.trim();
+
+                    }
+
+                }
+
+
+                return "";
 
             }
 
 
-            function authHeaders(extra = {}) {
+            function getUserName(user) {
+
+                if (!user) {
+                    return "حساب کاربری";
+                }
+
+
+                return (
+                    user.name ||
+                    user.full_name ||
+                    user.fullName ||
+                    user.displayName ||
+                    user.username ||
+                    user.email ||
+                    "حساب کاربری"
+                );
+
+            }
+
+
+            function updateUserUI() {
+
+                const user =
+                    getSessionUser();
 
                 const token =
                     getToken();
 
-                const headers = {
-                    ...extra
-                };
 
-                if (token) {
+                if (
+                    !user ||
+                    !token
+                ) {
 
-                    headers.Authorization =
-                        `Bearer ${token}`;
+                    els.loginBtn.classList.remove(
+                        "has-avatar"
+                    );
+
+                    els.loginBtn.title =
+                        "ورود / حساب کاربری";
+
+                    els.loginBtn.setAttribute(
+                        "aria-label",
+                        "ورود / حساب کاربری"
+                    );
+
+                    els.userAvatar.removeAttribute(
+                        "src"
+                    );
+
+                    return;
 
                 }
 
-                return headers;
+
+                const avatar =
+                    getUserAvatar(user);
+
+                const name =
+                    getUserName(user);
+
+
+                els.loginBtn.title =
+                    name;
+
+                els.loginBtn.setAttribute(
+                    "aria-label",
+                    `حساب کاربری ${name}`
+                );
+
+
+                if (avatar) {
+
+                    els.userAvatar.src =
+                        avatar;
+
+                    els.userAvatar.alt =
+                        name;
+
+                    els.loginBtn.classList.add(
+                        "has-avatar"
+                    );
+
+
+                    els.userAvatar.onerror =
+                        () => {
+
+                            console.warn(
+                                "NightCast: تصویر پروفایل قابل بارگذاری نیست."
+                            );
+
+                            els.userAvatar.removeAttribute(
+                                "src"
+                            );
+
+                            els.loginBtn.classList.remove(
+                                "has-avatar"
+                            );
+
+                        };
+
+                } else {
+
+                    els.userAvatar.removeAttribute(
+                        "src"
+                    );
+
+                    els.loginBtn.classList.remove(
+                        "has-avatar"
+                    );
+
+                }
 
             }
 
+
+            function openUserAccount() {
+
+                if (!isLoggedIn()) {
+
+                    window.location.href =
+                        CONFIG.LOGIN_PAGE;
+
+                    return;
+
+                }
+
+
+                /*
+                 * اگر profile.html در پروژه وجود دارد،
+                 * کاربر به صفحه حساب کاربری می‌رود.
+                 */
+
+                window.location.href =
+                    CONFIG.PROFILE_PAGE;
+
+            }
+
+
+            /* =========================================================
+               FAVORITES
+            ========================================================= */
 
             function isFavorite(id) {
 
@@ -2067,14 +2464,11 @@
             }
 
 
-            /* =========================================================
-               FAVORITES
-               ========================================================= */
-
             async function loadFavorites() {
 
                 const token =
                     getToken();
+
 
                 if (!token) {
 
@@ -2090,32 +2484,24 @@
 
                 try {
 
-                    const response =
+                    const res =
                         await fetch(
                             `${CONFIG.API_BASE}/favorites`,
                             {
                                 method: "GET",
 
-                                headers:
-                                    authHeaders({
-                                        Accept:
-                                            "application/json"
-                                    }),
+                                headers: {
+                                    "Authorization":
+                                        `Bearer ${token}`,
 
-                                cache: "no-store"
+                                    "Accept":
+                                        "application/json"
+                                }
                             }
                         );
 
 
-                    if (response.status === 401) {
-
-                        localStorage.removeItem(
-                            CONFIG.TOKEN_KEY
-                        );
-
-                        localStorage.removeItem(
-                            CONFIG.USER_KEY
-                        );
+                    if (res.status === 401) {
 
                         favoriteIds =
                             new Set();
@@ -2128,13 +2514,11 @@
 
 
                     const data =
-                        await response
-                            .json()
-                            .catch(() => ({}));
+                        await res.json();
 
 
                     if (
-                        !response.ok ||
+                        !res.ok ||
                         data.success === false
                     ) {
 
@@ -2147,37 +2531,21 @@
 
 
                     const favorites =
-                        Array.isArray(
-                            data.favorites
-                        )
+                        Array.isArray(data.favorites)
                             ? data.favorites
                             : [];
 
 
                     favoriteIds =
                         new Set(
-                            favorites
-                                .map(item => {
-
-                                    if (
-                                        item &&
-                                        typeof item === "object"
-                                    ) {
-
-                                        return normalizeId(
-                                            item.podcast_id
-                                        );
-
-                                    }
-
-                                    return normalizeId(
-                                        item
-                                    );
-
-                                })
-                                .filter(
-                                    Number.isFinite
-                                )
+                            favorites.map(
+                                x =>
+                                    Number(
+                                        typeof x === "object"
+                                            ? x.podcast_id
+                                            : x
+                                    )
+                            )
                         );
 
 
@@ -2185,11 +2553,11 @@
 
                     applyView();
 
-                } catch (error) {
+                } catch (err) {
 
                     console.error(
                         "Favorites Load Error:",
-                        error
+                        err
                     );
 
                 }
@@ -2197,7 +2565,33 @@
             }
 
 
+            function updateStats() {
+
+                els.count.textContent =
+                    state.all.length.toLocaleString("fa-IR");
+
+
+                els.books.textContent =
+                    new Set(
+                        state.all
+                            .map(x => x.book_name)
+                            .filter(Boolean)
+                    )
+                        .size
+                        .toLocaleString("fa-IR");
+
+
+                els.favCount.textContent =
+                    favoriteIds.size.toLocaleString("fa-IR");
+
+            }
+
+
             async function toggleFavorite(id) {
+
+                const token =
+                    getToken();
+
 
                 if (!isLoggedIn()) {
 
@@ -2205,10 +2599,17 @@
                         "برای ذخیره علاقه‌مندی ابتدا وارد حساب کاربری شوید."
                     );
 
+
                     setTimeout(
-                        goToLogin,
-                        500
+                        () => {
+
+                            window.location.href =
+                                CONFIG.LOGIN_PAGE;
+
+                        },
+                        350
                     );
+
 
                     return;
 
@@ -2216,14 +2617,10 @@
 
 
                 const podcastId =
-                    normalizeId(id);
+                    Number(id);
 
 
-                if (
-                    !Number.isFinite(
-                        podcastId
-                    )
-                ) {
+                if (!Number.isFinite(podcastId)) {
 
                     toast(
                         "شناسه پادکست نامعتبر است."
@@ -2234,19 +2631,13 @@
                 }
 
 
-                const token =
-                    getToken();
-
-
                 const alreadyFavorite =
-                    favoriteIds.has(
-                        podcastId
-                    );
+                    favoriteIds.has(podcastId);
 
 
                 try {
 
-                    const response =
+                    const res =
                         await fetch(
                             `${CONFIG.API_BASE}/favorites`,
                             {
@@ -2255,14 +2646,16 @@
                                         ? "DELETE"
                                         : "POST",
 
-                                headers:
-                                    authHeaders({
-                                        "Content-Type":
-                                            "application/json",
+                                headers: {
+                                    "Authorization":
+                                        `Bearer ${token}`,
 
-                                        Accept:
-                                            "application/json"
-                                    }),
+                                    "Content-Type":
+                                        "application/json",
+
+                                    "Accept":
+                                        "application/json"
+                                },
 
                                 body:
                                     JSON.stringify({
@@ -2274,37 +2667,34 @@
 
 
                     const data =
-                        await response
+                        await res
                             .json()
-                            .catch(() => ({}));
+                            .catch(
+                                () => ({})
+                            );
 
 
-                    if (
-                        response.status === 401
-                    ) {
-
-                        localStorage.removeItem(
-                            CONFIG.TOKEN_KEY
-                        );
-
-                        localStorage.removeItem(
-                            CONFIG.USER_KEY
-                        );
+                    if (res.status === 401) {
 
                         favoriteIds.delete(
                             podcastId
                         );
 
-                        updateStats();
-
                         toast(
                             "نشست شما منقضی شده است. دوباره وارد شوید."
                         );
 
+
                         setTimeout(
-                            goToLogin,
-                            700
+                            () => {
+
+                                window.location.href =
+                                    CONFIG.LOGIN_PAGE;
+
+                            },
+                            500
                         );
+
 
                         return;
 
@@ -2312,7 +2702,7 @@
 
 
                     if (
-                        !response.ok ||
+                        !res.ok ||
                         data.success === false
                     ) {
 
@@ -2351,15 +2741,16 @@
 
                     applyView();
 
-                } catch (error) {
+                } catch (err) {
 
                     console.error(
                         "Favorite Error:",
-                        error
+                        err
                     );
 
+
                     toast(
-                        error.message ||
+                        err.message ||
                         "خطا در ذخیره علاقه‌مندی."
                     );
 
@@ -2369,51 +2760,10 @@
 
 
             /* =========================================================
-               STATS
-               ========================================================= */
+               PODCAST RENDER
+            ========================================================= */
 
-            function updateStats() {
-
-                els.count.textContent =
-                    state.all.length
-                        .toLocaleString("fa-IR");
-
-
-                const books =
-                    new Set(
-                        state.all
-                            .map(item =>
-                                String(
-                                    item.book_name ||
-                                    ""
-                                ).trim()
-                            )
-                            .filter(Boolean)
-                    ).size;
-
-
-                els.books.textContent =
-                    books.toLocaleString(
-                        "fa-IR"
-                    );
-
-
-                els.favCount.textContent =
-                    favoriteIds.size
-                        .toLocaleString(
-                            "fa-IR"
-                        );
-
-            }
-
-
-            /* =========================================================
-               SKELETON
-               ========================================================= */
-
-            function skeletons(
-                count = CONFIG.PAGE_SIZE
-            ) {
+            function skeletons(n = 4) {
 
                 els.grid.className =
                     "loading-grid";
@@ -2422,225 +2772,212 @@
                 els.grid.innerHTML =
                     Array.from(
                         {
-                            length: count
+                            length: n
                         },
                         () => `
-                                    <div class="sk-card">
+                            <div class="sk-card">
 
-                                        <div class="skeleton sk-cover"></div>
+                                <div class="skeleton sk-cover"></div>
 
-                                        <div class="skeleton sk-line"></div>
+                                <div class="skeleton sk-line"></div>
 
-                                        <div class="skeleton sk-line short"></div>
+                                <div class="skeleton sk-line short"></div>
 
-                                    </div>
-                                `
-                    ).join("");
+                            </div>
+                        `
+                    )
+                        .join("");
 
             }
 
 
-            /* =========================================================
-               CARD
-               ========================================================= */
-
-            function renderCard(podcast) {
+            function renderCard(p) {
 
                 const id =
-                    normalizeId(
-                        podcast.id
-                    );
+                    Number(p.id);
 
 
                 const title =
                     escapeHtml(
-                        podcast.title ||
+                        p.title ||
                         "بدون عنوان"
                     );
 
 
                 const author =
                     escapeHtml(
-                        podcast.author_name ||
+                        p.author_name ||
                         "NightCast"
                     );
 
 
                 const book =
                     escapeHtml(
-                        podcast.book_name ||
+                        p.book_name ||
                         ""
                     );
 
 
-                const description =
+                const desc =
                     escapeHtml(
-                        podcast.description ||
-                        podcast.summary ||
+                        p.description ||
+                        p.summary ||
                         "توضیحی برای این پادکست ثبت نشده است."
                     );
 
 
                 const cover =
                     escapeHtml(
-                        podcast.cover_url ||
+                        p.cover_url ||
                         placeholder
                     );
 
 
                 const audio =
                     escapeHtml(
-                        podcast.audio_url ||
+                        p.audio_url ||
                         ""
                     );
 
 
                 const duration =
                     formatTime(
-                        podcast.duration_seconds ||
+                        p.duration_seconds ||
                         0
                     );
 
 
-                const favorite =
+                const fav =
                     isFavorite(id);
 
 
                 return `
-                            <article
-                                class="podcast-card"
-                                data-id="${id ?? ""}"
-                            >
 
-                                <div class="podcast-cover">
+                    <article
+                        class="podcast-card"
+                        data-id="${id}">
 
-                                    <img
-                                        src="${cover}"
-                                        alt="${title}"
-                                        loading="lazy"
-                                        decoding="async"
-                                        onerror="this.onerror=null;this.src='${placeholder}'"
-                                    >
+                        <div class="podcast-cover">
 
-                                    <div class="cover-shade"></div>
+                            <img
+                                src="${cover}"
+                                alt="${title}"
+                                loading="lazy"
+                                decoding="async"
+                                onerror="this.onerror=null;this.src='${placeholder}'">
 
-                                    <button
-                                        class="play-card"
-                                        data-action="play"
-                                        data-id="${id ?? ""}"
-                                        aria-label="پخش ${title}"
-                                        type="button"
-                                        ${audio ? "" : "disabled"}
-                                    >
-                                        <i class="fa-solid fa-play"></i>
-                                    </button>
-
-                                </div>
+                            <div class="cover-shade"></div>
 
 
-                                <div class="podcast-info">
+                            <button
+                                class="play-card"
+                                data-action="play"
+                                data-id="${id}"
+                                aria-label="پخش ${title}"
+                                ${audio ? "" : "disabled"}>
 
-                                    <h3 class="podcast-title">
-                                        ${title}
-                                    </h3>
+                                <i class="fa-solid fa-play"></i>
+
+                            </button>
+
+                        </div>
 
 
-                                    <div class="meta">
+                        <div class="podcast-info">
 
-                                        ${author
+                            <h3 class="podcast-title">
+                                ${title}
+                            </h3>
+
+
+                            <div class="meta">
+
+                                ${author
                         ? `
-                                                    <span>
-                                                        <i class="fa-solid fa-user"></i>
-                                                        ${author}
-                                                    </span>
-                                                `
+                                            <span>
+                                                <i class="fa-solid fa-user"></i>
+                                                ${author}
+                                            </span>
+                                          `
                         : ""
                     }
 
 
-                                        ${book
+                                ${book
                         ? `
-                                                    <span>
-                                                        <i class="fa-solid fa-book"></i>
-                                                        ${book}
-                                                    </span>
-                                                `
+                                            <span>
+                                                <i class="fa-solid fa-book"></i>
+                                                ${book}
+                                            </span>
+                                          `
                         : ""
                     }
 
 
-                                        ${duration !== "00:00"
+                                ${duration !== "00:00"
                         ? `
-                                                    <span>
-                                                        <i class="fa-regular fa-clock"></i>
-                                                        ${duration}
-                                                    </span>
-                                                `
+                                            <span>
+                                                <i class="fa-regular fa-clock"></i>
+                                                ${duration}
+                                            </span>
+                                          `
                         : ""
                     }
 
-                                    </div>
+                            </div>
 
 
-                                    <p class="podcast-desc">
-                                        ${description}
-                                    </p>
+                            <p class="podcast-desc">
+                                ${desc}
+                            </p>
 
 
-                                    <div class="card-footer">
+                            <div class="card-footer">
 
-                                        <button
-                                            class="btn btn-primary"
-                                            data-action="play"
-                                            data-id="${id ?? ""}"
-                                            type="button"
-                                            ${audio ? "" : "disabled"}
-                                        >
-                                            <i class="fa-solid fa-play"></i>
-                                            پخش
-                                        </button>
+                                <button
+                                    class="btn btn-primary"
+                                    data-action="play"
+                                    data-id="${id}"
+                                    ${audio ? "" : "disabled"}>
 
+                                    <i class="fa-solid fa-play"></i>
 
-                                        <button
-                                            class="btn btn-secondary"
-                                            data-action="download"
-                                            data-id="${id ?? ""}"
-                                            type="button"
-                                            ${audio ? "" : "disabled"}
-                                            aria-label="دانلود"
-                                        >
-                                            <i class="fa-solid fa-download"></i>
-                                        </button>
+                                    پخش
+
+                                </button>
 
 
-                                        <button
-                                            class="favorite ${favorite ? "active" : ""}"
-                                            data-action="favorite"
-                                            data-id="${id ?? ""}"
-                                            aria-label="علاقه‌مندی"
-                                            type="button"
-                                        >
-                                            <i
-                                                class="${favorite
-                        ? "fa-solid"
-                        : "fa-regular"
-                    } fa-heart"
-                                            ></i>
-                                        </button>
+                                <button
+                                    class="btn btn-secondary"
+                                    data-action="download"
+                                    data-id="${id}"
+                                    ${audio ? "" : "disabled"}>
 
-                                    </div>
+                                    <i class="fa-solid fa-download"></i>
 
-                                </div>
+                                </button>
 
-                            </article>
-                        `;
+
+                                <button
+                                    class="favorite ${fav ? "active" : ""}"
+                                    data-action="favorite"
+                                    data-id="${id}"
+                                    aria-label="علاقه‌مندی">
+
+                                    <i class="${fav ? "fa-solid" : "fa-regular"} fa-heart"></i>
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                `;
 
             }
 
-
-            /* =========================================================
-               RENDER
-               ========================================================= */
 
             function render(items) {
 
@@ -2651,42 +2988,43 @@
                 if (!items.length) {
 
                     els.grid.innerHTML = `
-                                <div
-                                    class="empty"
-                                    style="grid-column:1/-1"
-                                >
 
-                                    <i class="fa-solid fa-magnifying-glass"></i>
+                        <div
+                            class="empty"
+                            style="grid-column:1/-1">
 
-                                    <h3>
-                                        ${state.query
+                            <i class="fa-solid fa-magnifying-glass"></i>
+
+                            <h3>
+                                ${state.query
                             ? `پادکستی برای «${escapeHtml(state.query)}» پیدا نشد.`
                             : "هنوز پادکستی ثبت نشده است."
                         }
-                                    </h3>
+                            </h3>
 
-                                    <p>
-                                        ${state.query
+                            <p>
+                                ${state.query
                             ? "عبارت دیگری را امتحان کنید."
                             : "به‌زودی محتوای جدید در NightCast منتشر می‌شود."
                         }
-                                    </p>
+                            </p>
 
-                                    ${state.query
+                            ${state.query
                             ? `
-                                                <button
-                                                    class="btn btn-secondary"
-                                                    data-action="clear-search"
-                                                    type="button"
-                                                >
-                                                    پاک کردن جستجو
-                                                </button>
-                                            `
+                                        <button
+                                            class="btn btn-secondary"
+                                            data-action="clear-search">
+
+                                            پاک کردن جستجو
+
+                                        </button>
+                                      `
                             : ""
                         }
 
-                                </div>
-                            `;
+                        </div>
+
+                    `;
 
                     return;
 
@@ -2710,45 +3048,33 @@
                     .forEach(card => {
 
                         const id =
-                            normalizeId(
+                            Number(
                                 card.dataset.id
                             );
 
 
                         const playing =
-                            Boolean(
-                                state.current &&
-                                normalizeId(
-                                    state.current.id
-                                ) === id &&
-                                !els.audio.paused
+                            state.current &&
+                            Number(
+                                state.current.id
+                            ) === id &&
+                            !els.audio.paused;
+
+
+                        const b =
+                            card.querySelector(
+                                '[data-action="play"] i'
                             );
 
 
-                        const buttons =
-                            card.querySelectorAll(
-                                '[data-action="play"]'
-                            );
+                        if (b) {
 
-
-                        buttons.forEach(button => {
-
-                            const icon =
-                                button.querySelector(
-                                    "i"
-                                );
-
-                            if (!icon) {
-                                return;
-                            }
-
-
-                            icon.className =
+                            b.className =
                                 playing
                                     ? "fa-solid fa-pause"
                                     : "fa-solid fa-play";
 
-                        });
+                        }
 
                     });
 
@@ -2757,7 +3083,7 @@
 
             /* =========================================================
                PAGINATION
-               ========================================================= */
+            ========================================================= */
 
             function renderPagination() {
 
@@ -2768,75 +3094,51 @@
                 if (
                     state.totalPages <= 1
                 ) {
-
                     return;
-
                 }
 
 
                 for (
-                    let page = 1;
-                    page <= state.totalPages;
-                    page++
+                    let i = 1;
+                    i <= state.totalPages;
+                    i++
                 ) {
 
-                    const button =
+                    const b =
                         document.createElement(
                             "button"
                         );
 
 
-                    button.type =
-                        "button";
-
-
-                    button.className =
-                        `page-btn ${page === state.page
+                    b.className =
+                        `page-btn ${i === state.page
                             ? "active"
                             : ""
                         }`;
 
 
-                    button.textContent =
-                        page.toLocaleString(
-                            "fa-IR"
-                        );
+                    b.textContent =
+                        i.toLocaleString("fa-IR");
 
 
-                    button.setAttribute(
-                        "aria-label",
-                        `صفحه ${page}`
-                    );
-
-
-                    if (
-                        page === state.page
-                    ) {
-
-                        button.setAttribute(
-                            "aria-current",
-                            "page"
-                        );
-
-                    }
-
-
-                    button.addEventListener(
+                    b.addEventListener(
                         "click",
                         () => {
 
                             state.page =
-                                page;
+                                i;
 
                             applyView();
+
 
                             document
                                 .getElementById(
                                     "podcasts"
                                 )
-                                ?.scrollIntoView({
+                                .scrollIntoView({
                                     behavior:
                                         "smooth",
+
                                     block:
                                         "start"
                                 });
@@ -2846,7 +3148,7 @@
 
 
                     els.pagination.appendChild(
-                        button
+                        b
                     );
 
                 }
@@ -2855,53 +3157,35 @@
 
 
             /* =========================================================
-               SEARCH / VIEW
-               ========================================================= */
+               VIEW
+            ========================================================= */
 
             function applyView() {
 
-                const query =
+                const q =
                     state.query
-                        .trim()
-                        .toLocaleLowerCase(
-                            "fa"
-                        );
+                        .toLocaleLowerCase("fa");
 
 
-                if (!query) {
+                state.visible =
+                    q
 
-                    state.visible =
-                        [...state.all];
+                        ? state.all.filter(
+                            p =>
+                                [
+                                    p.title,
+                                    p.book_name,
+                                    p.author_name,
+                                    p.description,
+                                    p.summary
+                                ]
+                                    .filter(Boolean)
+                                    .join(" ")
+                                    .toLocaleLowerCase("fa")
+                                    .includes(q)
+                        )
 
-                } else {
-
-                    state.visible =
-                        state.all.filter(
-                            podcast => {
-
-                                const searchable =
-                                    [
-                                        podcast.title,
-                                        podcast.book_name,
-                                        podcast.author_name,
-                                        podcast.description,
-                                        podcast.summary
-                                    ]
-                                        .filter(Boolean)
-                                        .join(" ")
-                                        .toLocaleLowerCase(
-                                            "fa"
-                                        );
-
-
-                                return searchable.includes(
-                                    query
-                                );
-
-                            }
-                        );
-
-                }
+                        : state.all;
 
 
                 state.totalPages =
@@ -2925,21 +3209,15 @@
 
 
                 const start =
-                    (
-                        state.page - 1
-                    ) *
+                    (state.page - 1) *
                     CONFIG.PAGE_SIZE;
 
 
-                const pageItems =
+                render(
                     state.visible.slice(
                         start,
                         start + CONFIG.PAGE_SIZE
-                    );
-
-
-                render(
-                    pageItems
+                    )
                 );
 
 
@@ -2951,142 +3229,8 @@
 
 
             /* =========================================================
-               LATEST
-               ========================================================= */
-
-            function getLatestPodcast(
-                items
-            ) {
-
-                if (
-                    !Array.isArray(items) ||
-                    !items.length
-                ) {
-
-                    return null;
-
-                }
-
-
-                return [
-                    ...items
-                ].sort(
-                    (a, b) => {
-
-                        const ta =
-                            Date.parse(
-                                a.published ||
-                                a.created_at ||
-                                a.date ||
-                                ""
-                            );
-
-
-                        const tb =
-                            Date.parse(
-                                b.published ||
-                                b.created_at ||
-                                b.date ||
-                                ""
-                            );
-
-
-                        if (
-                            Number.isFinite(tb) &&
-                            Number.isFinite(ta)
-                        ) {
-
-                            return tb - ta;
-
-                        }
-
-
-                        const idA =
-                            Number(a.id) || 0;
-
-                        const idB =
-                            Number(b.id) || 0;
-
-                        return idB - idA;
-
-                    }
-                )[0];
-
-            }
-
-
-            function updateLatest(
-                items
-            ) {
-
-                const latest =
-                    getLatestPodcast(
-                        items
-                    );
-
-
-                if (!latest) {
-
-                    els.latestTitle.textContent =
-                        "هنوز پادکستی ثبت نشده است.";
-
-                    els.latestPlay.disabled =
-                        true;
-
-                    els.latestCta.disabled =
-                        true;
-
-                    return;
-
-                }
-
-
-                els.latestTitle.textContent =
-                    latest.title ||
-                    "بدون عنوان";
-
-
-                const hasAudio =
-                    Boolean(
-                        latest.audio_url
-                    );
-
-
-                els.latestPlay.disabled =
-                    !hasAudio;
-
-                els.latestCta.disabled =
-                    !hasAudio;
-
-
-                const playLatest =
-                    () => {
-
-                        if (
-                            hasAudio
-                        ) {
-
-                            playPodcast(
-                                latest.id
-                            );
-
-                        }
-
-                    };
-
-
-                els.latestPlay.onclick =
-                    playLatest;
-
-                els.latestCta.onclick =
-                    playLatest;
-
-            }
-
-
-            /* =========================================================
-               FEED
-               ========================================================= */
+               LOAD PODCASTS
+            ========================================================= */
 
             async function loadPodcasts() {
 
@@ -3094,38 +3238,27 @@
                     CONFIG.CACHE_KEY;
 
 
-                let cached =
-                    [];
+                let cached = [];
 
 
                 try {
 
-                    const raw =
-                        localStorage.getItem(
-                            cacheKey
-                        );
-
-
-                    const parsed =
-                        raw
-                            ? JSON.parse(raw)
-                            : [];
-
-
                     cached =
-                        Array.isArray(parsed)
-                            ? parsed
-                            : [];
+                        JSON.parse(
+                            localStorage.getItem(
+                                cacheKey
+                            ) || "[]"
+                        );
 
                 } catch {
 
-                    cached =
-                        [];
+                    cached = [];
 
                 }
 
 
                 if (
+                    Array.isArray(cached) &&
                     cached.length
                 ) {
 
@@ -3147,58 +3280,41 @@
 
                 try {
 
-                    const response =
+                    const res =
                         await fetch(
-                            `${CONFIG.FEED_URL}?t=${Date.now()}`,
+                            CONFIG.FEED_URL,
                             {
                                 method: "GET",
 
-                                cache: "no-store",
+                                cache: "no-cache",
 
                                 headers: {
-                                    Accept:
+                                    "Accept":
                                         "application/json"
                                 }
                             }
                         );
 
 
-                    if (
-                        !response.ok
-                    ) {
+                    if (!res.ok) {
 
                         throw new Error(
-                            `خطای دریافت پادکست‌ها: ${response.status}`
+                            `خطای دریافت پادکست‌ها: ${res.status}`
                         );
 
                     }
 
 
                     const data =
-                        await response.json();
+                        await res.json();
 
 
                     const freshItems =
                         Array.isArray(data)
                             ? data
-                            : Array.isArray(
-                                data.podcasts
-                            )
+                            : Array.isArray(data.podcasts)
                                 ? data.podcasts
                                 : [];
-
-
-                    if (
-                        !Array.isArray(
-                            freshItems
-                        )
-                    ) {
-
-                        throw new Error(
-                            "ساختار Feed معتبر نیست."
-                        );
-
-                    }
 
 
                     const oldData =
@@ -3241,48 +3357,11 @@
 
                     applyView();
 
-
-                    /*
-                     * اگر پادکست فعلی هنوز در Feed وجود دارد،
-                     * اطلاعات آن را با نسخه جدید هماهنگ می‌کنیم.
-                     */
-
-                    if (
-                        state.current
-                    ) {
-
-                        const updated =
-                            state.all.find(
-                                item =>
-                                    Number(item.id) ===
-                                    Number(
-                                        state.current.id
-                                    )
-                            );
-
-
-                        if (updated) {
-
-                            state.current =
-                                updated;
-
-                            els.playerTitle.textContent =
-                                updated.title ||
-                                "بدون عنوان";
-
-                            els.playerAuthor.textContent =
-                                updated.author_name ||
-                                "NightCast Radio";
-
-                        }
-
-                    }
-
-                } catch (error) {
+                } catch (err) {
 
                     console.error(
                         "NightCast Feed Error:",
-                        error
+                        err
                     );
 
 
@@ -3300,35 +3379,37 @@
 
 
                     els.grid.innerHTML = `
-                                <div
-                                    class="error-state"
-                                    style="grid-column:1/-1"
-                                >
 
-                                    <i class="fa-solid fa-circle-exclamation"></i>
+                        <div
+                            class="error-state"
+                            style="grid-column:1/-1">
 
-                                    <h3>
-                                        دریافت پادکست‌ها ناموفق بود
-                                    </h3>
+                            <i class="fa-solid fa-circle-exclamation"></i>
 
-                                    <p>
-                                        ${escapeHtml(
-                        error.message ||
+                            <h3>
+                                دریافت پادکست‌ها ناموفق بود
+                            </h3>
+
+                            <p>
+                                ${escapeHtml(
+                        err.message ||
                         "خطای نامشخص"
                     )}
-                                    </p>
+                            </p>
 
-                                    <button
-                                        class="btn btn-primary"
-                                        data-action="reload"
-                                        type="button"
-                                    >
-                                        <i class="fa-solid fa-rotate"></i>
-                                        تلاش دوباره
-                                    </button>
+                            <button
+                                class="btn btn-primary"
+                                data-action="reload">
 
-                                </div>
-                            `;
+                                <i class="fa-solid fa-rotate"></i>
+
+                                تلاش دوباره
+
+                            </button>
+
+                        </div>
+
+                    `;
 
                 }
 
@@ -3336,311 +3417,72 @@
 
 
             /* =========================================================
-               RESUME
-               ========================================================= */
+               LATEST
+            ========================================================= */
 
-            function readResumeData() {
+            function updateLatest(items) {
 
-                try {
+                const latest =
+                    items[0];
 
-                    const raw =
-                        localStorage.getItem(
-                            CONFIG.RESUME_KEY
+
+                if (!latest) {
+
+                    els.latestTitle.textContent =
+                        "هنوز پادکستی ثبت نشده است.";
+
+
+                    els.latestPlay.disabled =
+                        true;
+
+
+                    return;
+
+                }
+
+
+                els.latestTitle.textContent =
+                    latest.title ||
+                    "بدون عنوان";
+
+
+                els.latestPlay.disabled =
+                    !latest.audio_url;
+
+
+                els.latestPlay.onclick =
+                    () =>
+                        latest.audio_url &&
+                        playPodcast(
+                            latest.id
                         );
 
 
-                    const parsed =
-                        raw
-                            ? JSON.parse(raw)
-                            : {};
-
-
-                    return (
-                        parsed &&
-                            typeof parsed === "object"
-                            ? parsed
-                            : {}
-                    );
-
-                } catch {
-
-                    return {};
-
-                }
-
-            }
-
-
-            function saveResumePosition() {
-
-                if (
-                    !state.current ||
-                    !Number.isFinite(
-                        els.audio.currentTime
-                    )
-                ) {
-
-                    return;
-
-                }
-
-
-                const id =
-                    normalizeId(
-                        state.current.id
-                    );
-
-
-                if (
-                    !Number.isFinite(id)
-                ) {
-
-                    return;
-
-                }
-
-
-                const resumeData =
-                    readResumeData();
-
-
-                resumeData[id] = {
-
-                    position:
-                        els.audio.currentTime,
-
-                    duration:
-                        Number.isFinite(
-                            els.audio.duration
-                        )
-                            ? els.audio.duration
-                            : 0,
-
-                    updatedAt:
-                        Date.now()
-
-                };
-
-
-                try {
-
-                    localStorage.setItem(
-                        CONFIG.RESUME_KEY,
-                        JSON.stringify(
-                            resumeData
-                        )
-                    );
-
-                } catch {
-
-                    /* ignore */
-
-                }
-
-            }
-
-
-            function getResumePosition(
-                id
-            ) {
-
-                const data =
-                    readResumeData();
-
-
-                const item =
-                    data[
-                    normalizeId(id)
-                    ];
-
-
-                if (
-                    !item ||
-                    !Number.isFinite(
-                        Number(item.position)
-                    )
-                ) {
-
-                    return 0;
-
-                }
-
-
-                return Math.max(
-                    0,
-                    Number(item.position)
-                );
-
-            }
-
-
-            function clearResumePosition(
-                id
-            ) {
-
-                const data =
-                    readResumeData();
-
-
-                delete data[
-                    normalizeId(id)
-                ];
-
-
-                try {
-
-                    localStorage.setItem(
-                        CONFIG.RESUME_KEY,
-                        JSON.stringify(
-                            data
-                        )
-                    );
-
-                } catch {
-
-                    /* ignore */
-
-                }
+                els.latestCta.onclick =
+                    () =>
+                        latest.audio_url &&
+                        playPodcast(
+                            latest.id
+                        );
 
             }
 
 
             /* =========================================================
                PLAYER
-               ========================================================= */
+            ========================================================= */
 
-            function setPlayerVisible(
-                visible
-            ) {
+            function playPodcast(id) {
 
-                els.player.classList.toggle(
-                    "show",
-                    visible
-                );
-
-
-                document.body.classList.toggle(
-                    "player-open",
-                    visible
-                );
-
-            }
-
-
-            function updateProgressUI() {
-
-                const duration =
-                    els.audio.duration;
-
-
-                const currentTime =
-                    els.audio.currentTime;
-
-
-                if (
-                    Number.isFinite(
-                        duration
-                    ) &&
-                    duration > 0
-                ) {
-
-                    els.progress.value =
-                        (
-                            currentTime /
-                            duration
-                        ) * 100;
-
-                } else {
-
-                    els.progress.value =
-                        0;
-
-                }
-
-
-                els.current.textContent =
-                    formatTime(
-                        currentTime
-                    );
-
-
-                els.duration.textContent =
-                    formatTime(
-                        duration
-                    );
-
-            }
-
-
-            function restoreVolume() {
-
-                const saved =
-                    Number(
-                        localStorage.getItem(
-                            CONFIG.VOLUME_KEY
-                        )
-                    );
-
-
-                if (
-                    Number.isFinite(saved) &&
-                    saved >= 0 &&
-                    saved <= 100
-                ) {
-
-                    els.volume.value =
-                        saved;
-
-                    els.audio.volume =
-                        saved / 100;
-
-                } else {
-
-                    els.volume.value =
-                        100;
-
-                    els.audio.volume =
-                        1;
-
-                }
-
-            }
-
-
-            function saveVolume() {
-
-                try {
-
-                    localStorage.setItem(
-                        CONFIG.VOLUME_KEY,
-                        String(
-                            els.volume.value
-                        )
-                    );
-
-                } catch {
-
-                    /* ignore */
-
-                }
-
-            }
-
-
-            async function playPodcast(
-                id,
-                options = {}
-            ) {
-
-                const podcast =
+                const p =
                     state.all.find(
-                        item =>
-                            Number(item.id) ===
+                        x =>
+                            Number(x.id) ===
                             Number(id)
                     );
 
 
-                if (!podcast) {
+                if (!p) {
 
                     toast(
                         "پادکست مورد نظر پیدا نشد."
@@ -3651,9 +3493,7 @@
                 }
 
 
-                if (
-                    !podcast.audio_url
-                ) {
+                if (!p.audio_url) {
 
                     toast(
                         "فایل صوتی این پادکست موجود نیست."
@@ -3664,200 +3504,61 @@
                 }
 
 
-                const samePodcast =
-                    state.current &&
-                    Number(
-                        state.current.id
-                    ) ===
-                    Number(
-                        podcast.id
-                    );
-
-
-                if (
-                    samePodcast &&
-                    els.audio.src
-                ) {
-
-                    if (
-                        els.audio.paused
-                    ) {
-
-                        try {
-
-                            await els.audio.play();
-
-                        } catch {
-
-                            toast(
-                                "امکان پخش فایل صوتی وجود ندارد."
-                            );
-
-                        }
-
-                    } else {
-
-                        els.audio.pause();
-
-                    }
-
-                    return;
-
-                }
-
-
-                saveResumePosition();
-
-
                 state.current =
-                    podcast;
+                    p;
 
 
-                setPlayerVisible(
-                    true
+                els.player.classList.add(
+                    "show"
+                );
+
+
+                document.body.classList.add(
+                    "player-open"
                 );
 
 
                 els.playerTitle.textContent =
-                    podcast.title ||
+                    p.title ||
                     "بدون عنوان";
 
 
                 els.playerAuthor.textContent =
-                    podcast.author_name ||
+                    p.author_name ||
                     "NightCast Radio";
 
 
                 els.playerCover.src =
-                    podcast.cover_url ||
+                    p.cover_url ||
                     placeholder;
 
 
                 els.playerCover.alt =
-                    podcast.title ||
+                    p.title ||
                     "NightCast";
 
-
-                els.progress.value =
-                    0;
-
-
-                els.current.textContent =
-                    "00:00";
-
-
-                els.duration.textContent =
-                    "00:00";
-
-
-                /*
-                 * قبل از تغییر src، listenerهای قدیمی
-                 * مشکلی ایجاد نمی‌کنند چون audio همان عنصر است.
-                 */
 
                 els.audio.pause();
 
 
                 els.audio.src =
-                    podcast.audio_url;
+                    p.audio_url;
 
 
                 els.audio.load();
 
 
-                try {
-
-                    localStorage.setItem(
-                        CONFIG.CURRENT_KEY,
-                        String(
-                            podcast.id
-                        )
-                    );
-
-                } catch {
-
-                    /* ignore */
-
-                }
-
-
-                /*
-                 * Resume
-                 */
-
-                const resume =
-                    options.resume === false
-                        ? 0
-                        : getResumePosition(
-                            podcast.id
-                        );
-
-
-                const startPlayback =
-                    async () => {
-
-                        if (
-                            Number.isFinite(
-                                resume
-                            ) &&
-                            resume > 3 &&
-                            resume <
-                            els.audio.duration - 3
-                        ) {
-
-                            try {
-
-                                els.audio.currentTime =
-                                    resume;
-
-                            } catch {
-
-                                /* ignore */
-
-                            }
-
-                        }
-
-
-                        try {
-
-                            await els.audio.play();
-
-                            updateMediaSession();
-
-                        } catch {
-
+                els.audio
+                    .play()
+                    .then(
+                        updateMediaSession
+                    )
+                    .catch(
+                        () =>
                             toast(
                                 "امکان پخش فایل صوتی وجود ندارد."
-                            );
-
-                        }
-
-                    };
-
-
-                /*
-                 * loadedmetadata ممکن است قبل یا بعد از play اتفاق بیفتد،
-                 * بنابراین listener یک‌بار مصرف ثبت می‌کنیم.
-                 */
-
-                if (
-                    els.audio.readyState >= 1
-                ) {
-
-                    await startPlayback();
-
-                } else {
-
-                    els.audio.addEventListener(
-                        "loadedmetadata",
-                        startPlayback,
-                        {
-                            once: true
-                        }
+                            )
                     );
-
-                }
 
 
                 updateCardPlaying();
@@ -3867,32 +3568,11 @@
 
             function togglePlay() {
 
-                if (
-                    !state.current
-                ) {
+                if (!state.current) {
 
-                    const latest =
-                        getLatestPodcast(
-                            state.all
-                        );
-
-
-                    if (
-                        latest &&
-                        latest.audio_url
-                    ) {
-
-                        playPodcast(
-                            latest.id
-                        );
-
-                    } else {
-
-                        toast(
-                            "ابتدا یک پادکست انتخاب کنید."
-                        );
-
-                    }
+                    toast(
+                        "ابتدا یک پادکست انتخاب کنید."
+                    );
 
                     return;
 
@@ -3905,13 +3585,12 @@
 
                     els.audio
                         .play()
-                        .catch(() => {
-
-                            toast(
-                                "امکان پخش فایل صوتی وجود ندارد."
-                            );
-
-                        });
+                        .catch(
+                            () =>
+                                toast(
+                                    "امکان پخش فایل صوتی وجود ندارد."
+                                )
+                        );
 
                 } else {
 
@@ -3922,145 +3601,49 @@
             }
 
 
-            function nextPodcast(
-                direction = 1
-            ) {
+            function nextPodcast(dir = 1) {
 
-                if (
-                    !state.current
-                ) {
-
+                if (!state.current) {
                     return;
-
                 }
 
 
-                const currentIndex =
+                const i =
                     state.all.findIndex(
-                        item =>
-                            Number(item.id) ===
+                        x =>
+                            Number(x.id) ===
                             Number(
                                 state.current.id
                             )
                     );
 
 
+                const n =
+                    i + dir;
+
+
                 if (
-                    currentIndex < 0
+                    n < 0 ||
+                    n >= state.all.length
                 ) {
+
+                    toast(
+                        dir > 0
+                            ? "این آخرین پادکست است."
+                            : "این اولین پادکست است."
+                    );
 
                     return;
 
                 }
 
 
-                let nextIndex =
-                    currentIndex +
-                    direction;
-
-
-                /*
-                 * فقط پادکست‌هایی که فایل صوتی دارند.
-                 */
-
-                while (
-                    nextIndex >= 0 &&
-                    nextIndex < state.all.length
-                ) {
-
-                    const candidate =
-                        state.all[
-                        nextIndex
-                        ];
-
-
-                    if (
-                        candidate &&
-                        candidate.audio_url
-                    ) {
-
-                        playPodcast(
-                            candidate.id
-                        );
-
-                        return;
-
-                    }
-
-
-                    nextIndex +=
-                        direction;
-
-                }
-
-
-                toast(
-                    direction > 0
-                        ? "این آخرین پادکست است."
-                        : "این اولین پادکست است."
+                playPodcast(
+                    state.all[n].id
                 );
 
             }
 
-
-            function downloadPodcast(
-                id
-            ) {
-
-                const podcast =
-                    state.all.find(
-                        item =>
-                            Number(item.id) ===
-                            Number(id)
-                    );
-
-
-                if (
-                    !podcast ||
-                    !podcast.audio_url
-                ) {
-
-                    toast(
-                        "فایل دانلود موجود نیست."
-                    );
-
-                    return;
-
-                }
-
-
-                /*
-                 * چون فایل ممکن است روی دامنه دیگری باشد،
-                 * download attribute همیشه توسط مرورگر تضمین نمی‌شود.
-                 * بنابراین لینک را در تب جدید باز می‌کنیم.
-                 */
-
-                const link =
-                    document.createElement(
-                        "a"
-                    );
-
-
-                link.href =
-                    podcast.audio_url;
-
-
-                link.target =
-                    "_blank";
-
-
-                link.rel =
-                    "noopener noreferrer";
-
-
-                link.click();
-
-            }
-
-
-            /* =========================================================
-               MEDIA SESSION
-               ========================================================= */
 
             function updateMediaSession() {
 
@@ -4137,76 +3720,84 @@
                             nextPodcast(-1)
                     );
 
-
-                    navigator.mediaSession.setActionHandler(
-                        "seekbackward",
-                        () => {
-
-                            els.audio.currentTime =
-                                Math.max(
-                                    0,
-                                    els.audio.currentTime - 10
-                                );
-
-                        }
-                    );
-
-
-                    navigator.mediaSession.setActionHandler(
-                        "seekforward",
-                        () => {
-
-                            if (
-                                Number.isFinite(
-                                    els.audio.duration
-                                )
-                            ) {
-
-                                els.audio.currentTime =
-                                    Math.min(
-                                        els.audio.duration,
-                                        els.audio.currentTime + 10
-                                    );
-
-                            }
-
-                        }
-                    );
-
-                } catch {
-
-                    /* Browser may not support all handlers */
-
-                }
+                } catch { }
 
             }
 
 
             /* =========================================================
-               SOCIALS
-               ========================================================= */
+               DOWNLOAD
+            ========================================================= */
+
+            function downloadPodcast(id) {
+
+                const p =
+                    state.all.find(
+                        x =>
+                            Number(x.id) ===
+                            Number(id)
+                    );
+
+
+                if (!p?.audio_url) {
+
+                    toast(
+                        "فایل دانلود موجود نیست."
+                    );
+
+                    return;
+
+                }
+
+
+                const a =
+                    document.createElement(
+                        "a"
+                    );
+
+
+                a.href =
+                    p.audio_url;
+
+                a.target =
+                    "_blank";
+
+                a.rel =
+                    "noopener";
+
+                a.click();
+
+            }
+
+
+            /* =========================================================
+               SOCIAL
+            ========================================================= */
 
             function renderSocials() {
 
                 els.socialMenu.innerHTML =
                     CONFIG.SOCIALS
                         .map(
-                            social => `
-                                        <a
-                                            class="social-item"
-                                            href="${escapeHtml(social.url || "#")}"
-                                            data-social="${escapeHtml(social.key)}"
-                                            ${social.url
+                            s =>
+                                `
+                                <a
+                                    class="social-item"
+                                    href="${s.url || "#"}"
+                                    data-social="${s.key}"
+                                    ${s.url
                                     ? 'target="_blank" rel="noopener noreferrer"'
                                     : ""
-                                }
-                                        >
-                                            <i class="${escapeHtml(social.icon)}"></i>
-                                            <span>
-                                                ${escapeHtml(social.label)}
-                                            </span>
-                                        </a>
-                                    `
+                                }>
+
+                                    <i class="${s.icon}"></i>
+
+                                    <span>
+                                        ${s.label}
+                                    </span>
+
+                                </a>
+                                `
                         )
                         .join("");
 
@@ -4214,127 +3805,37 @@
 
 
             /* =========================================================
-               NAV
-               ========================================================= */
-
-            function updateNavigation() {
-
-                const sections =
-                    [
-                        document.getElementById(
-                            "home"
-                        ),
-
-                        document.getElementById(
-                            "podcasts"
-                        ),
-
-                        document.getElementById(
-                            "about"
-                        )
-                    ];
-
-
-                const links =
-                    $$(".nav-link");
-
-
-                const mobileLinks =
-                    $$(".mobile-nav a");
-
-
-                const scrollPosition =
-                    window.scrollY +
-                    160;
-
-
-                let activeId =
-                    "home";
-
-
-                sections.forEach(
-                    section => {
-
-                        if (
-                            section &&
-                            section.offsetTop <=
-                            scrollPosition
-                        ) {
-
-                            activeId =
-                                section.id;
-
-                        }
-
-                    }
-                );
-
-
-                links.forEach(
-                    link => {
-
-                        link.classList.toggle(
-                            "active",
-                            link.getAttribute(
-                                "href"
-                            ) ===
-                            `#${activeId}`
-                        );
-
-                    }
-                );
-
-
-                mobileLinks.forEach(
-                    link => {
-
-                        link.classList.toggle(
-                            "active",
-                            link.getAttribute(
-                                "href"
-                            ) ===
-                            `#${activeId}`
-                        );
-
-                    }
-                );
-
-            }
-
-
-            /* =========================================================
                EVENTS
-               ========================================================= */
+            ========================================================= */
 
             function bindEvents() {
 
-                /*
-                 * Card actions
-                 */
+
+                /* -----------------------------------------------------
+                   Podcast Grid
+                ----------------------------------------------------- */
 
                 els.grid.addEventListener(
                     "click",
-                    event => {
+                    e => {
 
-                        const element =
-                            event.target.closest(
+                        const el =
+                            e.target.closest(
                                 "[data-action]"
                             );
 
 
-                        if (!element) {
-
+                        if (!el) {
                             return;
-
                         }
 
 
-                        const action =
-                            element.dataset.action;
-
-
                         const id =
-                            element.dataset.id;
+                            el.dataset.id;
+
+
+                        const action =
+                            el.dataset.action;
 
 
                         if (
@@ -4347,7 +3848,6 @@
 
                         }
 
-
                         else if (
                             action === "favorite"
                         ) {
@@ -4357,7 +3857,6 @@
                             );
 
                         }
-
 
                         else if (
                             action === "download"
@@ -4369,7 +3868,6 @@
 
                         }
 
-
                         else if (
                             action === "reload"
                         ) {
@@ -4378,27 +3876,24 @@
 
                         }
 
-
                         else if (
                             action === "clear-search"
                         ) {
 
-                            els.search.value =
-                                "";
-
                             state.query =
                                 "";
 
-                            state.page =
-                                1;
+                            els.search.value =
+                                "";
 
                             els.clear.classList.remove(
                                 "show"
                             );
 
-                            applyView();
+                            state.page =
+                                1;
 
-                            els.search.focus();
+                            applyView();
 
                         }
 
@@ -4406,9 +3901,9 @@
                 );
 
 
-                /*
-                 * Search
-                 */
+                /* -----------------------------------------------------
+                   Search
+                ----------------------------------------------------- */
 
                 els.search.addEventListener(
                     "input",
@@ -4420,9 +3915,7 @@
 
                         els.clear.classList.toggle(
                             "show",
-                            Boolean(
-                                state.query
-                            )
+                            !!state.query
                         );
 
 
@@ -4458,12 +3951,12 @@
                         state.query =
                             "";
 
-                        state.page =
-                            1;
-
                         els.clear.classList.remove(
                             "show"
                         );
+
+                        state.page =
+                            1;
 
                         applyView();
 
@@ -4473,9 +3966,9 @@
                 );
 
 
-                /*
-                 * Player
-                 */
+                /* -----------------------------------------------------
+                   Player
+                ----------------------------------------------------- */
 
                 els.play.addEventListener(
                     "click",
@@ -4501,24 +3994,16 @@
                     "input",
                     () => {
 
-                        const duration =
-                            els.audio.duration;
-
-
                         if (
-                            Number.isFinite(
-                                duration
-                            ) &&
-                            duration > 0
+                            els.audio.duration
                         ) {
 
                             els.audio.currentTime =
                                 (
-                                    Number(
-                                        els.progress.value
-                                    ) / 100
+                                    els.progress.value /
+                                    100
                                 ) *
-                                duration;
+                                els.audio.duration;
 
                         }
 
@@ -4528,33 +4013,17 @@
 
                 els.volume.addEventListener(
                     "input",
-                    () => {
-
-                        const value =
-                            Number(
-                                els.volume.value
-                            );
-
-
+                    () =>
                         els.audio.volume =
-                            Math.max(
-                                0,
-                                Math.min(
-                                    1,
-                                    value / 100
-                                )
-                            );
-
-
-                        saveVolume();
-
-                    }
+                        Number(
+                            els.volume.value
+                        ) / 100
                 );
 
 
-                /*
-                 * Audio Events
-                 */
+                els.audio.volume =
+                    1;
+
 
                 els.audio.addEventListener(
                     "play",
@@ -4564,8 +4033,6 @@
                             "fa-solid fa-pause";
 
                         updateCardPlaying();
-
-                        updateMediaSession();
 
                     }
                 );
@@ -4580,8 +4047,6 @@
 
                         updateCardPlaying();
 
-                        saveResumePosition();
-
                     }
                 );
 
@@ -4590,19 +4055,24 @@
                     "timeupdate",
                     () => {
 
-                        updateProgressUI();
+                        if (
+                            els.audio.duration
+                        ) {
+
+                            els.progress.value =
+                                (
+                                    els.audio.currentTime /
+                                    els.audio.duration
+                                ) *
+                                100;
 
 
-                        clearTimeout(
-                            state.saveTimer
-                        );
+                            els.current.textContent =
+                                formatTime(
+                                    els.audio.currentTime
+                                );
 
-
-                        state.saveTimer =
-                            setTimeout(
-                                saveResumePosition,
-                                700
-                            );
+                        }
 
                     }
                 );
@@ -4610,86 +4080,51 @@
 
                 els.audio.addEventListener(
                     "loadedmetadata",
-                    () => {
-
-                        updateProgressUI();
-
-                    }
+                    () =>
+                        els.duration.textContent =
+                        formatTime(
+                            els.audio.duration
+                        )
                 );
 
 
                 els.audio.addEventListener(
                     "ended",
-                    () => {
-
-                        if (
-                            state.current
-                        ) {
-
-                            clearResumePosition(
-                                state.current.id
-                            );
-
-                        }
-
-
-                        nextPodcast(1);
-
-                    }
+                    () =>
+                        nextPodcast(1)
                 );
 
 
                 els.audio.addEventListener(
                     "error",
-                    () => {
-
+                    () =>
                         toast(
                             "فایل صوتی قابل پخش نیست."
-                        );
-
-                        els.playIcon.className =
-                            "fa-solid fa-play";
-
-                        updateCardPlaying();
-
-                    }
+                        )
                 );
 
 
-                /*
-                 * Before unload
-                 */
-
-                window.addEventListener(
-                    "beforeunload",
-                    () => {
-
-                        saveResumePosition();
-
-                    }
-                );
-
-
-                /*
-                 * Social menu
-                 */
+                /* -----------------------------------------------------
+                   Social
+                ----------------------------------------------------- */
 
                 els.socialToggle.addEventListener(
                     "click",
-                    event => {
+                    e => {
 
-                        event.stopPropagation();
+                        e.stopPropagation();
 
 
-                        const open =
-                            els.socialWrap.classList.toggle(
-                                "open"
-                            );
+                        els.socialWrap.classList.toggle(
+                            "open"
+                        );
 
 
                         els.socialToggle.setAttribute(
                             "aria-expanded",
-                            String(open)
+                            els.socialWrap.classList.contains(
+                                "open"
+                            )
                         );
 
                     }
@@ -4698,11 +4133,11 @@
 
                 document.addEventListener(
                     "click",
-                    event => {
+                    e => {
 
                         if (
                             !els.socialWrap.contains(
-                                event.target
+                                e.target
                             )
                         ) {
 
@@ -4722,135 +4157,111 @@
                 );
 
 
-                /*
-                 * Login
-                 */
+                /* -----------------------------------------------------
+                   USER BUTTON
+                ----------------------------------------------------- */
 
                 els.loginBtn.addEventListener(
                     "click",
-                    () => {
-
-                        if (
-                            isLoggedIn()
-                        ) {
-
-                            /*
-                             * فعلاً صفحه حساب کاربری مستقل نداریم.
-                             * بنابراین اگر کاربر وارد شده باشد،
-                             * همان login.html مقصد مدیریت حساب است.
-                             */
-
-                            window.location.href =
-                                "login.html";
-
-                        } else {
-
-                            goToLogin();
-
-                        }
-
-                    }
+                    openUserAccount
                 );
 
 
-                /*
-                 * Mobile navigation
-                 */
+                /* -----------------------------------------------------
+                   Mobile Navigation
+                ----------------------------------------------------- */
 
                 $$(".mobile-nav a")
                     .forEach(
-                        link => {
-
-                            link.addEventListener(
+                        a =>
+                            a.addEventListener(
                                 "click",
                                 () => {
 
                                     $$(".mobile-nav a")
                                         .forEach(
-                                            item =>
-                                                item.classList.remove(
+                                            x =>
+                                                x.classList.remove(
                                                     "active"
                                                 )
                                         );
 
 
-                                    link.classList.add(
+                                    a.classList.add(
                                         "active"
                                     );
 
                                 }
-                            );
-
-                        }
+                            )
                     );
 
+            }
 
-                /*
-                 * Keyboard shortcuts
-                 */
+
+            /* =========================================================
+               PREVENT ZOOM
+            ========================================================= */
+
+            function preventZoom() {
 
                 document.addEventListener(
-                    "keydown",
-                    event => {
-
-                        const tag =
-                            event.target?.tagName;
-
-
-                        if (
-                            tag === "INPUT" ||
-                            tag === "TEXTAREA"
-                        ) {
-
-                            return;
-
-                        }
-
-
-                        if (
-                            event.code ===
-                            "Space"
-                        ) {
-
-                            event.preventDefault();
-
-                            togglePlay();
-
-                        }
-
-
-                        if (
-                            event.code ===
-                            "ArrowRight"
-                        ) {
-
-                            nextPodcast(1);
-
-                        }
-
-
-                        if (
-                            event.code ===
-                            "ArrowLeft"
-                        ) {
-
-                            nextPodcast(-1);
-
-                        }
-
-                    }
-                );
-
-
-                /*
-                 * Navigation on scroll
-                 */
-
-                window.addEventListener(
-                    "scroll",
-                    updateNavigation,
+                    "gesturestart",
+                    e =>
+                        e.preventDefault(),
                     {
-                        passive: true
+                        passive: false
+                    }
+                );
+
+
+                document.addEventListener(
+                    "gesturechange",
+                    e =>
+                        e.preventDefault(),
+                    {
+                        passive: false
+                    }
+                );
+
+
+                document.addEventListener(
+                    "gestureend",
+                    e =>
+                        e.preventDefault(),
+                    {
+                        passive: false
+                    }
+                );
+
+
+                let last =
+                    0;
+
+
+                document.addEventListener(
+                    "touchend",
+                    e => {
+
+                        const now =
+                            Date.now();
+
+
+                        if (
+                            now - last <
+                            300
+                        ) {
+
+                            e.preventDefault();
+
+                        }
+
+
+                        last =
+                            now;
+
+                    },
+                    {
+                        passive: false
                     }
                 );
 
@@ -4858,148 +4269,67 @@
 
 
             /* =========================================================
-               RESTORE LAST PODCAST
-               ========================================================= */
+               STORAGE / AUTH SYNC
+            ========================================================= */
 
-            function restoreLastPodcast() {
-
-                try {
-
-                    const raw =
-                        localStorage.getItem(
-                            CONFIG.CURRENT_KEY
-                        );
-
-
-                    if (!raw) {
-
-                        return;
-
-                    }
-
-
-                    const id =
-                        Number(raw);
-
+            window.addEventListener(
+                "storage",
+                event => {
 
                     if (
-                        !Number.isFinite(id)
+                        event.key ===
+                        CONFIG.USER_KEY ||
+                        event.key ===
+                        CONFIG.TOKEN_KEY
                     ) {
 
-                        return;
+                        updateUserUI();
+
+                        loadFavorites();
 
                     }
 
+                }
+            );
 
-                    const podcast =
-                        state.all.find(
-                            item =>
-                                Number(item.id) ===
-                                id
-                        );
 
+            window.addEventListener(
+                "pageshow",
+                () => {
+
+                    updateUserUI();
+
+                    loadFavorites();
+
+                }
+            );
+
+
+            document.addEventListener(
+                "visibilitychange",
+                () => {
 
                     if (
-                        !podcast ||
-                        !podcast.audio_url
+                        document.visibilityState ===
+                        "visible"
                     ) {
 
-                        return;
+                        updateUserUI();
 
                     }
 
-
-                    /*
-                     * Player را باز نمی‌کنیم.
-                     * فقط current را آماده می‌کنیم تا کاربر
-                     * با Play ادامه دهد.
-                     */
-
-                    state.current =
-                        podcast;
-
-
-                    els.playerTitle.textContent =
-                        podcast.title ||
-                        "بدون عنوان";
-
-
-                    els.playerAuthor.textContent =
-                        podcast.author_name ||
-                        "NightCast Radio";
-
-
-                    els.playerCover.src =
-                        podcast.cover_url ||
-                        placeholder;
-
-
-                    els.playerCover.alt =
-                        podcast.title ||
-                        "NightCast";
-
-                } catch {
-
-                    /* ignore */
-
                 }
-
-            }
-
-
-            /* =========================================================
-               SERVICE WORKER
-               ========================================================= */
-
-            async function registerServiceWorker() {
-
-                if (
-                    !("serviceWorker" in navigator)
-                ) {
-
-                    return;
-
-                }
-
-
-                try {
-
-                    await navigator.serviceWorker.register(
-                        "./sw.js",
-                        {
-                            scope: "./"
-                        }
-                    );
-
-
-                    console.info(
-                        "NightCast Service Worker registered."
-                    );
-
-                } catch (error) {
-
-                    /*
-                     * اگر sw.js هنوز ساخته نشده باشد،
-                     * سایت نباید خراب شود.
-                     */
-
-                    console.info(
-                        "NightCast Service Worker unavailable:",
-                        error.message
-                    );
-
-                }
-
-            }
+            );
 
 
             /* =========================================================
                INIT
-               ========================================================= */
+            ========================================================= */
 
-            async function init() {
+            function init() {
 
-                const year =
+
+                $("#year").textContent =
                     new Date()
                         .getFullYear()
                         .toLocaleString(
@@ -5007,60 +4337,56 @@
                         );
 
 
-                $("#year").textContent =
-                    year;
+                /*
+                 * مهم:
+                 * قبل از هر چیز وضعیت کاربر را
+                 * از localStorage بخوان.
+                 */
+
+                updateUserUI();
 
 
                 renderSocials();
 
 
-                restoreVolume();
-
-
                 bindEvents();
 
 
-                updateNavigation();
+                preventZoom();
 
 
-                await loadPodcasts();
+                loadPodcasts();
 
 
-                restoreLastPodcast();
+                loadFavorites();
 
 
-                await loadFavorites();
+                if (
+                    "serviceWorker" in
+                    navigator
+                ) {
 
+                    console.info(
+                        "NightCast PWA metadata enabled; add sw.js for full offline install support."
+                    );
 
-                registerServiceWorker();
+                }
 
             }
 
 
-            /*
-             * DOM Ready
-             */
+            document.readyState === "loading"
 
-            if (
-                document.readyState ===
-                "loading"
-            ) {
-
-                document.addEventListener(
+                ? document.addEventListener(
                     "DOMContentLoaded",
-                    init,
-                    {
-                        once: true
-                    }
-                );
+                    init
+                )
 
-            } else {
+                : init();
 
-                init();
-
-            }
 
         })();
+
     </script>
 
 </body>

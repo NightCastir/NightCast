@@ -7030,28 +7030,11 @@
 
             }
 
-
-            function openUserAccount() {
-
-                if (!isLoggedIn()) {
-
-                    window.location.href =
-                        CONFIG.LOGIN_PAGE;
-
-                    return;
-
-                }
-
-
-                /*
-                 * اگر profile.html در پروژه وجود دارد،
-                 * کاربر به صفحه حساب کاربری می‌رود.
-                 */
-
-                window.location.href =
-                    CONFIG.PROFILE_PAGE;
-
-            }
+function openUserAccount() {
+    if (typeof openProfilePanel === "function") {
+        openProfilePanel();
+    }
+}
 
 
             /* =========================================================

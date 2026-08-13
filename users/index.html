@@ -2515,7 +2515,8 @@
 
                     const data =
                         await res.json();
-
+                    totalFavoriteCount =
+                        Number(data.total || 0);
 
                     if (
                         !res.ok ||

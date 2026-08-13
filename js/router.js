@@ -53,7 +53,7 @@ const Router = {
 
         window.location.replace(
 
-            "/users/index.html"
+            "/users/login.html"
 
         );
 

@@ -1350,7 +1350,7 @@
     <audio id="audioPlayer" preload="metadata"></audio>
 
     <script>
-        (() => {
+    (() => {
             "use strict";
 
             /* =========================================================
@@ -1403,77 +1403,77 @@
                 els.toast.textContent = msg; els.toast.classList.add("show");
                 clearTimeout(state.toastTimer); state.toastTimer = setTimeout(() => els.toast.classList.remove("show"), 2800);
             }
-          
-let favoriteIds = new Set();
 
-function getToken() {
-    return localStorage.getItem(CONFIG.TOKEN_KEY) || "";
-}
+            let favoriteIds = new Set();
 
-function isFavorite(id) {
-    return favoriteIds.has(Number(id));
-}
+            function getToken() {
+                return localStorage.getItem(CONFIG.TOKEN_KEY) || "";
+            }
 
-async function loadFavorites() {
+            function isFavorite(id) {
+                return favoriteIds.has(Number(id));
+            }
 
-    const token = getToken();
+            async function loadFavorites() {
 
-    if (!token) {
-        favoriteIds = new Set();
-        updateStats();
-        return;
-    }
+                const token = getToken();
 
-    try {
+                if (!token) {
+                    favoriteIds = new Set();
+                    updateStats();
+                    return;
+                }
 
-        const res = await fetch(
-            `${CONFIG.API_BASE}/favorites`,
-            {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Accept": "application/json"
+                try {
+
+                    const res = await fetch(
+                        `${CONFIG.API_BASE}/favorites`,
+                        {
+                            method: "GET",
+                            headers: {
+                                "Authorization": `Bearer ${token}`,
+                                "Accept": "application/json"
+                            }
+                        }
+                    );
+
+                    if (res.status === 401) {
+                        favoriteIds = new Set();
+                        updateStats();
+                        return;
+                    }
+
+                    const data = await res.json();
+
+                    if (!res.ok || data.success === false) {
+                        throw new Error(data.message || "خطا در دریافت علاقه‌مندی‌ها");
+                    }
+
+                    const favorites = Array.isArray(data.favorites)
+                        ? data.favorites
+                        : [];
+
+                    favoriteIds = new Set(
+                        favorites.map(x =>
+                            Number(
+                                typeof x === "object"
+                                    ? x.podcast_id
+                                    : x
+                            )
+                        )
+                    );
+
+                    updateStats();
+                    applyView();
+
+                } catch (err) {
+
+                    console.error("Favorites Load Error:", err);
+
                 }
             }
-        );
 
-        if (res.status === 401) {
-            favoriteIds = new Set();
-            updateStats();
-            return;
-        }
 
-        const data = await res.json();
-
-        if (!res.ok || data.success === false) {
-            throw new Error(data.message || "خطا در دریافت علاقه‌مندی‌ها");
-        }
-
-        const favorites = Array.isArray(data.favorites)
-            ? data.favorites
-            : [];
-
-        favoriteIds = new Set(
-            favorites.map(x =>
-                Number(
-                    typeof x === "object"
-                        ? x.podcast_id
-                        : x
-                )
-            )
-        );
-
-        updateStats();
-        applyView();
-
-    } catch (err) {
-
-        console.error("Favorites Load Error:", err);
-
-    }
-}
-
-            
             function updateStats() {
                 els.count.textContent = state.all.length.toLocaleString("fa-IR");
                 els.books.textContent = new Set(state.all.map(x => x.book_name).filter(Boolean)).size.toLocaleString("fa-IR");
@@ -1491,26 +1491,26 @@ async function loadFavorites() {
                 const cover = escapeHtml(p.cover_url || placeholder), audio = escapeHtml(p.audio_url || "");
                 const duration = formatTime(p.duration_seconds || 0), fav = isFavorite(id);
                 return `<article class="podcast-card" data-id="${id}">
-                  <div class="podcast-cover">
-                    <img src="${cover}" alt="${title}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${placeholder}'">
-                    <div class="cover-shade"></div>
-                    <button class="play-card" data-action="play" data-id="${id}" aria-label="پخش ${title}" ${audio ? "" : "disabled"}><i class="fa-solid fa-play"></i></button>
-                  </div>
-                  <div class="podcast-info">
-                    <h3 class="podcast-title">${title}</h3>
-                    <div class="meta">
-                      ${author ? `<span><i class="fa-solid fa-user"></i>${author}</span>` : ""}
-                      ${book ? `<span><i class="fa-solid fa-book"></i>${book}</span>` : ""}
-                      ${duration !== "00:00" ? `<span><i class="fa-regular fa-clock"></i>${duration}</span>` : ""}
-                    </div>
-                    <p class="podcast-desc">${desc}</p>
-                    <div class="card-footer">
-                      <button class="btn btn-primary" data-action="play" data-id="${id}" ${audio ? "" : "disabled"}><i class="fa-solid fa-play"></i> پخش</button>
-                      <button class="btn btn-secondary" data-action="download" data-id="${id}" ${audio ? "" : "disabled"}><i class="fa-solid fa-download"></i></button>
-                      <button class="favorite ${fav ? "active" : ""}" data-action="favorite" data-id="${id}" aria-label="علاقه‌مندی"><i class="${fav ? "fa-solid" : "fa-regular"} fa-heart"></i></button>
-                    </div>
-                  </div>
-                </article>`;
+                      <div class="podcast-cover">
+                        <img src="${cover}" alt="${title}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${placeholder}'">
+                        <div class="cover-shade"></div>
+                        <button class="play-card" data-action="play" data-id="${id}" aria-label="پخش ${title}" ${audio ? "" : "disabled"}><i class="fa-solid fa-play"></i></button>
+                      </div>
+                      <div class="podcast-info">
+                        <h3 class="podcast-title">${title}</h3>
+                        <div class="meta">
+                          ${author ? `<span><i class="fa-solid fa-user"></i>${author}</span>` : ""}
+                          ${book ? `<span><i class="fa-solid fa-book"></i>${book}</span>` : ""}
+                          ${duration !== "00:00" ? `<span><i class="fa-regular fa-clock"></i>${duration}</span>` : ""}
+                        </div>
+                        <p class="podcast-desc">${desc}</p>
+                        <div class="card-footer">
+                          <button class="btn btn-primary" data-action="play" data-id="${id}" ${audio ? "" : "disabled"}><i class="fa-solid fa-play"></i> پخش</button>
+                          <button class="btn btn-secondary" data-action="download" data-id="${id}" ${audio ? "" : "disabled"}><i class="fa-solid fa-download"></i></button>
+                          <button class="favorite ${fav ? "active" : ""}" data-action="favorite" data-id="${id}" aria-label="علاقه‌مندی"><i class="${fav ? "fa-solid" : "fa-regular"} fa-heart"></i></button>
+                        </div>
+                      </div>
+                    </article>`;
             }
 
             function render(items) {
@@ -1627,18 +1627,18 @@ async function loadFavorites() {
                     els.grid.className = "podcast-grid";
 
                     els.grid.innerHTML = `
-                    <div class="error-state" style="grid-column:1/-1">
-                        <i class="fa-solid fa-circle-exclamation"></i>
-                        <h3>دریافت پادکست‌ها ناموفق بود</h3>
-                        <p>${escapeHtml(
+                        <div class="error-state" style="grid-column:1/-1">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <h3>دریافت پادکست‌ها ناموفق بود</h3>
+                            <p>${escapeHtml(
                         err.message || "خطای نامشخص"
                     )}</p>
-                        <button class="btn btn-primary" data-action="reload">
-                            <i class="fa-solid fa-rotate"></i>
-                            تلاش دوباره
-                        </button>
-                    </div>
-                `;
+                            <button class="btn btn-primary" data-action="reload">
+                                <i class="fa-solid fa-rotate"></i>
+                                تلاش دوباره
+                            </button>
+                        </div>
+                    `;
                 }
             }
 
@@ -1687,98 +1687,98 @@ async function loadFavorites() {
                 } catch { }
             }
 
-       
+
             async function toggleFavorite(id) {
 
-    const token = getToken();
+                const token = getToken();
 
-    if (!token) {
+                if (!token) {
 
-        toast("برای ذخیره علاقه‌مندی ابتدا وارد حساب کاربری شوید.");
+                    toast("برای ذخیره علاقه‌مندی ابتدا وارد حساب کاربری شوید.");
 
-        els.loginModal.classList.add("show");
+                    els.loginModal.classList.add("show");
 
-        return;
-    }
+                    return;
+                }
 
-    const podcastId = Number(id);
+                const podcastId = Number(id);
 
-    if (!Number.isFinite(podcastId)) {
-        toast("شناسه پادکست نامعتبر است.");
-        return;
-    }
+                if (!Number.isFinite(podcastId)) {
+                    toast("شناسه پادکست نامعتبر است.");
+                    return;
+                }
 
-    const alreadyFavorite = favoriteIds.has(podcastId);
+                const alreadyFavorite = favoriteIds.has(podcastId);
 
-    try {
+                try {
 
-        const res = await fetch(
-            `${CONFIG.API_BASE}/favorites`,
-            {
-                method: alreadyFavorite ? "DELETE" : "POST",
+                    const res = await fetch(
+                        `${CONFIG.API_BASE}/favorites`,
+                        {
+                            method: alreadyFavorite ? "DELETE" : "POST",
 
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    "Accept": "application/json"
-                },
+                            headers: {
+                                "Authorization": `Bearer ${token}`,
+                                "Content-Type": "application/json",
+                                "Accept": "application/json"
+                            },
 
-                body: JSON.stringify({
-                    podcast_id: podcastId
-                })
+                            body: JSON.stringify({
+                                podcast_id: podcastId
+                            })
+                        }
+                    );
+
+                    const data = await res.json().catch(() => ({}));
+
+                    if (res.status === 401) {
+
+                        favoriteIds.delete(podcastId);
+
+                        toast("نشست شما منقضی شده است. دوباره وارد شوید.");
+
+                        els.loginModal.classList.add("show");
+
+                        return;
+                    }
+
+                    if (!res.ok || data.success === false) {
+
+                        throw new Error(
+                            data.message ||
+                            "ذخیره علاقه‌مندی انجام نشد."
+                        );
+
+                    }
+
+                    if (alreadyFavorite) {
+
+                        favoriteIds.delete(podcastId);
+
+                        toast("از علاقه‌مندی‌ها حذف شد.");
+
+                    } else {
+
+                        favoriteIds.add(podcastId);
+
+                        toast("به علاقه‌مندی‌ها اضافه شد.");
+
+                    }
+
+                    updateStats();
+                    applyView();
+
+                } catch (err) {
+
+                    console.error("Favorite Error:", err);
+
+                    toast(
+                        err.message ||
+                        "خطا در ذخیره علاقه‌مندی."
+                    );
+
+                }
             }
-        );
-
-        const data = await res.json().catch(() => ({}));
-
-        if (res.status === 401) {
-
-            favoriteIds.delete(podcastId);
-
-            toast("نشست شما منقضی شده است. دوباره وارد شوید.");
-
-            els.loginModal.classList.add("show");
-
-            return;
-        }
-
-        if (!res.ok || data.success === false) {
-
-            throw new Error(
-                data.message ||
-                "ذخیره علاقه‌مندی انجام نشد."
-            );
-
-        }
-
-        if (alreadyFavorite) {
-
-            favoriteIds.delete(podcastId);
-
-            toast("از علاقه‌مندی‌ها حذف شد.");
-
-        } else {
-
-            favoriteIds.add(podcastId);
-
-            toast("به علاقه‌مندی‌ها اضافه شد.");
-
-        }
-
-        updateStats();
-        applyView();
-
-    } catch (err) {
-
-        console.error("Favorite Error:", err);
-
-        toast(
-            err.message ||
-            "خطا در ذخیره علاقه‌مندی."
-        );
-
-    }
-}
 
             function downloadPodcast(id) {
                 const p = state.all.find(x => Number(x.id) === Number(id));
@@ -1850,16 +1850,31 @@ async function loadFavorites() {
             }
 
             function init() {
-                $("#year").textContent = new Date().getFullYear().toLocaleString("fa-IR");
-                renderSocials(); bindEvents(); preventZoom(); loadPodcasts();
+
+                $("#year").textContent =
+                    new Date()
+                        .getFullYear()
+                        .toLocaleString("fa-IR");
+
+                renderSocials();
+
+                bindEvents();
+
+                preventZoom();
+
+                loadPodcasts();
+
+                loadFavorites();
+
                 if ("serviceWorker" in navigator) {
-                    /* A real Service Worker requires a separate same-origin sw.js file.
-                       This single-file build intentionally does not fake an offline worker. */
-                    console.info("NightCast PWA metadata enabled; add sw.js for full offline install support.");
+
+                    console.info(
+                        "NightCast PWA metadata enabled; add sw.js for full offline install support."
+                    );
+
                 }
             }
             document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", init) : init();
-        })();
-    </script>
+        })();</script>
 </body>
 </html>

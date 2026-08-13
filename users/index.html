@@ -1337,17 +1337,6 @@
         <a href="#podcasts"><i class="fa-solid fa-headphones"></i><span>پادکست‌ها</span></a>
         <a href="#about"><i class="fa-solid fa-circle-info"></i><span>درباره</span></a>
     </nav>
-
-    <div class="modal" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
-        <div class="modal-box">
-            <div class="modal-head"><h3 id="loginTitle">ورود به NightCast</h3><button class="icon-btn" id="loginClose" aria-label="بستن"><i class="fa-solid fa-xmark"></i></button></div>
-            <label for="loginValue">ایمیل یا شماره موبایل</label>
-            <input id="loginValue" type="text" autocomplete="email tel" placeholder="ایمیل یا شماره موبایل">
-            <button class="btn btn-primary" id="loginSubmit" style="width:100%;margin-top:14px"><i class="fa-solid fa-arrow-left"></i> ادامه</button>
-            <p style="font-size:.7rem;color:var(--nc-text-muted);margin:12px 0 0">احراز هویت از API موجود NightCast انجام می‌شود.</p>
-        </div>
-    </div>
-
     <div class="toast" id="toast"></div>
     <audio id="audioPlayer" preload="metadata"></audio>
 
@@ -1689,7 +1678,37 @@
                 } catch { }
             }
 
+function getSessionToken() {
+    return localStorage.getItem(CONFIG.TOKEN_KEY);
+}
 
+function getSessionUser() {
+    try {
+        const user = localStorage.getItem("NightCastUser");
+        return user ? JSON.parse(user) : null;
+    } catch {
+        return null;
+    }
+}
+
+function isLoggedIn() {
+    return !!getSessionToken() && !!getSessionUser();
+}
+        
+function authHeaders(extra = {}) {
+    const token = getSessionToken();
+
+    const headers = {
+        ...extra
+    };
+
+    if (token) {
+        headers.Authorization = `Bearer ${token}`;
+    }
+
+    return headers;
+}
+        
             async function toggleFavorite(id) {
 
                 const token = getToken();

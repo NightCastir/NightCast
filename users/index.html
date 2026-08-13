@@ -2428,6 +2428,29 @@
             }
 
 
+            function openUserAccount() {
+
+                if (!isLoggedIn()) {
+
+                    window.location.href =
+                        CONFIG.LOGIN_PAGE;
+
+                    return;
+
+                }
+
+
+                /*
+                 * اگر profile.html در پروژه وجود دارد،
+                 * کاربر به صفحه حساب کاربری می‌رود.
+                 */
+
+                window.location.href =
+                    CONFIG.PROFILE_PAGE;
+
+            }
+
+
             /* =========================================================
                FAVORITES
             ========================================================= */
@@ -2750,16 +2773,16 @@
                             length: n
                         },
                         () => `
-                                                                                    <div class="sk-card">
+                                                                        <div class="sk-card">
 
-                                                                                        <div class="skeleton sk-cover"></div>
+                                                                            <div class="skeleton sk-cover"></div>
 
-                                                                                        <div class="skeleton sk-line"></div>
+                                                                            <div class="skeleton sk-line"></div>
 
-                                                                                        <div class="skeleton sk-line short"></div>
+                                                                            <div class="skeleton sk-line short"></div>
 
-                                                                                    </div>
-                                                                                `
+                                                                        </div>
+                                                                    `
                     )
                         .join("");
 
@@ -2828,128 +2851,128 @@
 
                 return `
 
-                                                                            <article
-                                                                                class="podcast-card"
-                                                                                data-id="${id}">
+                                                                <article
+                                                                    class="podcast-card"
+                                                                    data-id="${id}">
 
-                                                                                <div class="podcast-cover">
+                                                                    <div class="podcast-cover">
 
-                                                                                    <img
-                                                                                        src="${cover}"
-                                                                                        alt="${title}"
-                                                                                        loading="lazy"
-                                                                                        decoding="async"
-                                                                                        onerror="this.onerror=null;this.src='${placeholder}'">
+                                                                        <img
+                                                                            src="${cover}"
+                                                                            alt="${title}"
+                                                                            loading="lazy"
+                                                                            decoding="async"
+                                                                            onerror="this.onerror=null;this.src='${placeholder}'">
 
-                                                                                    <div class="cover-shade"></div>
-
-
-                                                                                    <button
-                                                                                        class="play-card"
-                                                                                        data-action="play"
-                                                                                        data-id="${id}"
-                                                                                        aria-label="پخش ${title}"
-                                                                                        ${audio ? "" : "disabled"}>
-
-                                                                                        <i class="fa-solid fa-play"></i>
-
-                                                                                    </button>
-
-                                                                                </div>
+                                                                        <div class="cover-shade"></div>
 
 
-                                                                                <div class="podcast-info">
+                                                                        <button
+                                                                            class="play-card"
+                                                                            data-action="play"
+                                                                            data-id="${id}"
+                                                                            aria-label="پخش ${title}"
+                                                                            ${audio ? "" : "disabled"}>
 
-                                                                                    <h3 class="podcast-title">
-                                                                                        ${title}
-                                                                                    </h3>
+                                                                            <i class="fa-solid fa-play"></i>
+
+                                                                        </button>
+
+                                                                    </div>
 
 
-                                                                                    <div class="meta">
+                                                                    <div class="podcast-info">
 
-                                                                                        ${author
+                                                                        <h3 class="podcast-title">
+                                                                            ${title}
+                                                                        </h3>
+
+
+                                                                        <div class="meta">
+
+                                                                            ${author
                         ? `
-                                                                                                    <span>
-                                                                                                        <i class="fa-solid fa-user"></i>
-                                                                                                        ${author}
-                                                                                                    </span>
-                                                                                                  `
+                                                                                        <span>
+                                                                                            <i class="fa-solid fa-user"></i>
+                                                                                            ${author}
+                                                                                        </span>
+                                                                                      `
                         : ""
                     }
 
 
-                                                                                        ${book
+                                                                            ${book
                         ? `
-                                                                                                    <span>
-                                                                                                        <i class="fa-solid fa-book"></i>
-                                                                                                        ${book}
-                                                                                                    </span>
-                                                                                                  `
+                                                                                        <span>
+                                                                                            <i class="fa-solid fa-book"></i>
+                                                                                            ${book}
+                                                                                        </span>
+                                                                                      `
                         : ""
                     }
 
 
-                                                                                        ${duration !== "00:00"
+                                                                            ${duration !== "00:00"
                         ? `
-                                                                                                    <span>
-                                                                                                        <i class="fa-regular fa-clock"></i>
-                                                                                                        ${duration}
-                                                                                                    </span>
-                                                                                                  `
+                                                                                        <span>
+                                                                                            <i class="fa-regular fa-clock"></i>
+                                                                                            ${duration}
+                                                                                        </span>
+                                                                                      `
                         : ""
                     }
 
-                                                                                    </div>
+                                                                        </div>
 
 
-                                                                                    <p class="podcast-desc">
-                                                                                        ${desc}
-                                                                                    </p>
+                                                                        <p class="podcast-desc">
+                                                                            ${desc}
+                                                                        </p>
 
 
-                                                                                    <div class="card-footer">
+                                                                        <div class="card-footer">
 
-                                                                                        <button
-                                                                                            class="btn btn-primary"
-                                                                                            data-action="play"
-                                                                                            data-id="${id}"
-                                                                                            ${audio ? "" : "disabled"}>
+                                                                            <button
+                                                                                class="btn btn-primary"
+                                                                                data-action="play"
+                                                                                data-id="${id}"
+                                                                                ${audio ? "" : "disabled"}>
 
-                                                                                            <i class="fa-solid fa-play"></i>
+                                                                                <i class="fa-solid fa-play"></i>
 
-                                                                                            پخش
+                                                                                پخش
 
-                                                                                        </button>
-
-
-                                                                                        <button
-                                                                                            class="btn btn-secondary"
-                                                                                            data-action="download"
-                                                                                            data-id="${id}"
-                                                                                            ${audio ? "" : "disabled"}>
-
-                                                                                            <i class="fa-solid fa-download"></i>
-
-                                                                                        </button>
+                                                                            </button>
 
 
-                                                                                        <button
-                                                                                            class="favorite ${fav ? "active" : ""}"
-                                                                                            data-action="favorite"
-                                                                                            data-id="${id}"
-                                                                                            aria-label="علاقه‌مندی">
+                                                                            <button
+                                                                                class="btn btn-secondary"
+                                                                                data-action="download"
+                                                                                data-id="${id}"
+                                                                                ${audio ? "" : "disabled"}>
 
-                                                                                            <i class="${fav ? "fa-solid" : "fa-regular"} fa-heart"></i>
+                                                                                <i class="fa-solid fa-download"></i>
 
-                                                                                        </button>
+                                                                            </button>
 
-                                                                                    </div>
 
-                                                                                </div>
+                                                                            <button
+                                                                                class="favorite ${fav ? "active" : ""}"
+                                                                                data-action="favorite"
+                                                                                data-id="${id}"
+                                                                                aria-label="علاقه‌مندی">
 
-                                                                            </article>
+                                                                                <i class="${fav ? "fa-solid" : "fa-regular"} fa-heart"></i>
 
-                                                                        `;
+                                                                            </button>
+
+                                                                        </div>
+
+                                                                    </div>
+
+                                                                </article>
+
+                                                            `;
 
             }
 
@@ -2964,42 +2987,42 @@
 
                     els.grid.innerHTML = `
 
-                                                                                <div
-                                                                                    class="empty"
-                                                                                    style="grid-column:1/-1">
+                                                                    <div
+                                                                        class="empty"
+                                                                        style="grid-column:1/-1">
 
-                                                                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                                                        <i class="fa-solid fa-magnifying-glass"></i>
 
-                                                                                    <h3>
-                                                                                        ${state.query
+                                                                        <h3>
+                                                                            ${state.query
                             ? `پادکستی برای «${escapeHtml(state.query)}» پیدا نشد.`
                             : "هنوز پادکستی ثبت نشده است."
                         }
-                                                                                    </h3>
+                                                                        </h3>
 
-                                                                                    <p>
-                                                                                        ${state.query
+                                                                        <p>
+                                                                            ${state.query
                             ? "عبارت دیگری را امتحان کنید."
                             : "به‌زودی محتوای جدید در NightCast منتشر می‌شود."
                         }
-                                                                                    </p>
+                                                                        </p>
 
-                                                                                    ${state.query
+                                                                        ${state.query
                             ? `
-                                                                                                <button
-                                                                                                    class="btn btn-secondary"
-                                                                                                    data-action="clear-search">
+                                                                                    <button
+                                                                                        class="btn btn-secondary"
+                                                                                        data-action="clear-search">
 
-                                                                                                    پاک کردن جستجو
+                                                                                        پاک کردن جستجو
 
-                                                                                                </button>
-                                                                                              `
+                                                                                    </button>
+                                                                                  `
                             : ""
                         }
 
-                                                                                </div>
+                                                                    </div>
 
-                                                                            `;
+                                                                `;
 
                     return;
 
@@ -3355,36 +3378,36 @@
 
                     els.grid.innerHTML = `
 
-                                                                                <div
-                                                                                    class="error-state"
-                                                                                    style="grid-column:1/-1">
+                                                                    <div
+                                                                        class="error-state"
+                                                                        style="grid-column:1/-1">
 
-                                                                                    <i class="fa-solid fa-circle-exclamation"></i>
+                                                                        <i class="fa-solid fa-circle-exclamation"></i>
 
-                                                                                    <h3>
-                                                                                        دریافت پادکست‌ها ناموفق بود
-                                                                                    </h3>
+                                                                        <h3>
+                                                                            دریافت پادکست‌ها ناموفق بود
+                                                                        </h3>
 
-                                                                                    <p>
-                                                                                        ${escapeHtml(
+                                                                        <p>
+                                                                            ${escapeHtml(
                         err.message ||
                         "خطای نامشخص"
                     )}
-                                                                                    </p>
+                                                                        </p>
 
-                                                                                    <button
-                                                                                        class="btn btn-primary"
-                                                                                        data-action="reload">
+                                                                        <button
+                                                                            class="btn btn-primary"
+                                                                            data-action="reload">
 
-                                                                                        <i class="fa-solid fa-rotate"></i>
+                                                                            <i class="fa-solid fa-rotate"></i>
 
-                                                                                        تلاش دوباره
+                                                                            تلاش دوباره
 
-                                                                                    </button>
+                                                                        </button>
 
-                                                                                </div>
+                                                                    </div>
 
-                                                                            `;
+                                                                `;
 
                 }
 
@@ -3756,23 +3779,23 @@
                         .map(
                             s =>
                                 `
-                                                                                        <a
-                                                                                            class="social-item"
-                                                                                            href="${s.url || "#"}"
-                                                                                            data-social="${s.key}"
-                                                                                            ${s.url
+                                                                            <a
+                                                                                class="social-item"
+                                                                                href="${s.url || "#"}"
+                                                                                data-social="${s.key}"
+                                                                                ${s.url
                                     ? 'target="_blank" rel="noopener noreferrer"'
                                     : ""
                                 }>
 
-                                                                                            <i class="${s.icon}"></i>
+                                                                                <i class="${s.icon}"></i>
 
-                                                                                            <span>
-                                                                                                ${s.label}
-                                                                                            </span>
+                                                                                <span>
+                                                                                    ${s.label}
+                                                                                </span>
 
-                                                                                        </a>
-                                                                                        `
+                                                                            </a>
+                                                                            `
                         )
                         .join("");
 
@@ -4132,6 +4155,14 @@
                 );
 
 
+                /* -----------------------------------------------------
+                   USER BUTTON
+                ----------------------------------------------------- */
+
+                els.loginBtn.addEventListener(
+                    "click",
+                    openUserAccount
+                );
 
 
                 /* -----------------------------------------------------
@@ -4598,241 +4629,6 @@
             }
         }
     </style>
- 
-        <script>
-            (function () {
-                const $ = id => document.getElementById(id);
-                const overlay = $("profileOverlay");
-                const close = $("profileClose");
-                const avatar = $("profileAvatar");
-                const name = $("profileName");
-                const email = $("profileEmail");
-                const guest = $("profileGuest");
-                const logged = $("profileLogged");
-                const login = $("profileLogin");
-                const logout = $("profileLogout");
-                const favorites = $("profileFavorites");
-                const favoriteCount = $("profileFavoriteCount");
-                const podcastCount = $("profilePodcastCount");
-                const bookCount = $("profileBookCount");
-
-                function profileUser() {
-                    try {
-                        const raw = localStorage.getItem("NightCastUser");
-                        return raw ? JSON.parse(raw) : null;
-                    } catch (e) {
-                        console.error("Profile User Error:", e);
-                        return null;
-                    }
-                }
-
-                function profileLoggedIn() {
-                    return Boolean(
-                        localStorage.getItem("NightCastToken") &&
-                        profileUser()
-                    );
-                }
-
-                function profileUserName(user) {
-                    return user?.name ||
-                        user?.full_name ||
-                        user?.fullName ||
-                        user?.displayName ||
-                        user?.username ||
-                        user?.email ||
-                        user?.phone ||
-                        "حساب کاربری";
-                }
-
-                function profileAvatar(user) {
-                    return user?.picture ||
-                        user?.avatar ||
-                        user?.avatar_url ||
-                        user?.avatarUrl ||
-                        user?.photoURL ||
-                        user?.photoUrl ||
-                        user?.photo ||
-                        user?.profile_picture ||
-                        user?.profilePicture ||
-                        user?.image ||
-                        user?.image_url ||
-                        user?.imageUrl ||
-                        user?.picture_url ||
-                        user?.pictureUrl ||
-                        "";
-                }
-
-                function renderFavorites() {
-                    if (!favoriteIds.size) {
-                        favorites.innerHTML = `<div style="text-align:center;padding:30px 10px;color:rgba(255,255,255,.5)"><i class="fa-regular fa-heart" style="font-size:28px;margin-bottom:10px"></i><div>هنوز پادکستی به علاقه‌مندی‌ها اضافه نکرده‌اید.</div></div>`;
-                        return;
-                    }
-
-                    const items = state.all.filter(
-                        p => favoriteIds.has(Number(p.id))
-                    );
-
-                    if (!items.length) {
-                        favorites.innerHTML = `<div style="text-align:center;padding:30px 10px;color:rgba(255,255,255,.5)">علاقه‌مندی‌های شما در حال بارگذاری است...</div>`;
-                        return;
-                    }
-
-                    favorites.innerHTML = items.map(p => {
-                        const id = Number(p.id);
-                        const title = escapeHtml(p.title || "بدون عنوان");
-                        const cover = escapeHtml(p.cover_url || placeholder);
-                        const book = escapeHtml(p.book_name || "NightCast");
-
-                        return `<div class="profile-favorite-item">
-                                        <img class="profile-favorite-cover" src="${cover}" alt="${title}" loading="lazy" onerror="this.onerror=null;this.src='${placeholder}'">
-                                        <div class="profile-favorite-info">
-                                            <strong>${title}</strong>
-                                            <span>${book}</span>
-                                        </div>
-                                        <div class="profile-favorite-actions">
-                                            <button type="button" data-profile-play="${id}" title="پخش"><i class="fa-solid fa-play"></i></button>
-                                            <button type="button" data-profile-remove="${id}" title="حذف"><i class="fa-solid fa-heart-crack"></i></button>
-                                        </div>
-                                    </div>`;
-                    }).join("");
-                }
-
-                function openProfilePanel() {
-                    const token = localStorage.getItem("NightCastToken");
-                    let user = null;
-                    try {
-                        const raw = localStorage.getItem("NightCastUser");
-                        user = raw ? JSON.parse(raw) : null;
-                    } catch (e) {
-                        console.error("Profile User Error:", e);
-                    }
-
-                    const isUserLoggedIn = Boolean(token && user);
-
-                    overlay.classList.add("show");
-                    document.body.style.overflow = "hidden";
-
-                    if (!isUserLoggedIn) {
-                        name.textContent = "مهمان";
-                        email.textContent = "برای استفاده از امکانات حساب وارد شوید.";
-                        avatar.src = placeholder;
-                        guest.hidden = false;
-                        logged.hidden = true;
-                        return;
-                    }
-
-                    guest.hidden = true;
-                    logged.hidden = false;
-
-                    name.textContent =
-                        user.name ||
-                        user.full_name ||
-                        user.fullName ||
-                        user.displayName ||
-                        user.username ||
-                        user.email ||
-                        user.phone ||
-                        "حساب کاربری";
-
-                    email.textContent =
-                        user.email ||
-                        user.phone ||
-                        "حساب کاربری NightCast";
-
-                    avatar.src =
-                        user.picture ||
-                        user.avatar ||
-                        user.avatar_url ||
-                        user.avatarUrl ||
-                        user.photoURL ||
-                        user.photoUrl ||
-                        user.photo ||
-                        user.profile_picture ||
-                        user.profilePicture ||
-                        user.image ||
-                        user.image_url ||
-                        user.imageUrl ||
-                        placeholder;
-
-                    favoriteCount.textContent =
-                        Number(totalFavoriteCount || 0).toLocaleString("fa-IR");
-
-                    podcastCount.textContent =
-                        state.all.length.toLocaleString("fa-IR");
-
-                    bookCount.textContent =
-                        new Set(
-                            state.all
-                                .map(p => p.book_name)
-                                .filter(Boolean)
-                        ).size.toLocaleString("fa-IR");
-
-                    renderFavorites();
-                }
-
-
-                function closeProfilePanel() {
-                    overlay.classList.remove("show");
-                    document.body.style.overflow = "";
-                }
-
-                close.addEventListener("click", closeProfilePanel);
-
-                overlay.addEventListener("click", e => {
-                    if (e.target === overlay) closeProfilePanel();
-                });
-
-                document.addEventListener("keydown", e => {
-                    if (
-                        e.key === "Escape" &&
-                        overlay.classList.contains("show")
-                    ) {
-                        closeProfilePanel();
-                    }
-                });
-
-                login.addEventListener("click", () => {
-                    window.location.href = CONFIG.LOGIN_PAGE;
-                });
-
-                logout.addEventListener("click", () => {
-                    localStorage.removeItem(CONFIG.TOKEN_KEY);
-                    localStorage.removeItem(CONFIG.USER_KEY);
-
-                    favoriteIds.clear();
-                    totalFavoriteCount = 0;
-
-                    closeProfilePanel();
-                    updateUserUI();
-                    updateStats();
-                    applyView();
-
-                    toast("با موفقیت از حساب خارج شدید.");
-                });
-
-                favorites.addEventListener("click", async e => {
-                    const play = e.target.closest("[data-profile-play]");
-                    const remove = e.target.closest("[data-profile-remove]");
-
-                    if (play) {
-                        closeProfilePanel();
-                        playPodcast(play.dataset.profilePlay);
-                        return;
-                    }
-
-                    if (remove) {
-                        await toggleFavorite(remove.dataset.profileRemove);
-
-                        if (overlay.classList.contains("show")) {
-                            openProfilePanel();
-                        }
-                    }
-                });
-
-                window.openProfilePanel = openProfilePanel;
-            })();
-        </script>
-    </body>
+    <script>(function () { const $ = id => document.getElementById(id); const overlay = $("profileOverlay"); const close = $("profileClose"); const avatar = $("profileAvatar"); const name = $("profileName"); const email = $("profileEmail"); const guest = $("profileGuest"); const logged = $("profileLogged"); const login = $("profileLogin"); const logout = $("profileLogout"); const favorites = $("profileFavorites"); const favoriteCount = $("profileFavoriteCount"); const podcastCount = $("profilePodcastCount"); const bookCount = $("profileBookCount"); function renderFavorites() { if (!favoriteIds.size) { favorites.innerHTML = `<div style="text-align:center;padding:30px 10px;color:rgba(255,255,255,.5)"><i class="fa-regular fa-heart" style="font-size:28px;margin-bottom:10px"></i><div>هنوز پادکستی به علاقه‌مندی‌ها اضافه نکرده‌اید.</div></div>`; return; } const items = state.all.filter(p => favoriteIds.has(Number(p.id))); if (!items.length) { favorites.innerHTML = `<div style="text-align:center;padding:30px 10px;color:rgba(255,255,255,.5)">علاقه‌مندی‌های شما در حال بارگذاری است...</div>`; return; } favorites.innerHTML = items.map(p => { const id = Number(p.id); const title = escapeHtml(p.title || "بدون عنوان"); const cover = escapeHtml(p.cover_url || placeholder); const book = escapeHtml(p.book_name || "NightCast"); return `<div class="profile-favorite-item"> <img class="profile-favorite-cover" src="${cover}" alt="${title}" loading="lazy" onerror="this.onerror=null;this.src='${placeholder}'"> <div class="profile-favorite-info"><strong>${title}</strong><span>${book}</span></div> <div class="profile-favorite-actions"> <button type="button" data-profile-play="${id}" title="پخش"><i class="fa-solid fa-play"></i></button> <button type="button" data-profile-remove="${id}" title="حذف"><i class="fa-solid fa-heart-crack"></i></button> </div> </div>`; }).join(""); } function openProfilePanel() { const user = getSessionUser(); const isUser = isLoggedIn(); overlay.classList.add("show"); document.body.style.overflow = "hidden"; if (!isUser) { name.textContent = "مهمان"; email.textContent = "برای استفاده از امکانات حساب وارد شوید."; avatar.src = placeholder; guest.hidden = false; logged.hidden = true; return; } guest.hidden = true; logged.hidden = false; name.textContent = getUserName(user); email.textContent = user.email || user.phone || "حساب کاربری NightCast"; avatar.src = getUserAvatar(user) || placeholder; favoriteCount.textContent = totalFavoriteCount.toLocaleString("fa-IR"); podcastCount.textContent = state.all.length.toLocaleString("fa-IR"); bookCount.textContent = new Set(state.all.map(p => p.book_name).filter(Boolean)).size.toLocaleString("fa-IR"); renderFavorites(); } function closeProfilePanel() { overlay.classList.remove("show"); document.body.style.overflow = ""; } close.addEventListener("click", closeProfilePanel); overlay.addEventListener("click", e => { if (e.target === overlay) closeProfilePanel(); }); document.addEventListener("keydown", e => { if (e.key === "Escape" && overlay.classList.contains("show")) closeProfilePanel(); }); login.addEventListener("click", () => { window.location.href = CONFIG.LOGIN_PAGE; }); logout.addEventListener("click", () => { localStorage.removeItem(CONFIG.TOKEN_KEY); localStorage.removeItem(CONFIG.USER_KEY); favoriteIds.clear(); totalFavoriteCount = 0; closeProfilePanel(); updateUserUI(); updateStats(); applyView(); toast("با موفقیت از حساب خارج شدید."); }); favorites.addEventListener("click", async e => { const play = e.target.closest("[data-profile-play]"); const remove = e.target.closest("[data-profile-remove]"); if (play) { closeProfilePanel(); playPodcast(play.dataset.profilePlay); return; } if (remove) { await toggleFavorite(remove.dataset.profileRemove); if (overlay.classList.contains("show")) openProfilePanel(); } }); window.openProfilePanel = openProfilePanel; })();</script>
+</body>
 </html>
-
-

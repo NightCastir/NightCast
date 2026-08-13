@@ -2428,27 +2428,190 @@
             }
 
 
-            function openUserAccount() {
+     function openUserAccount() {
 
-                if (!isLoggedIn()) {
+```
+/* -----------------------------------------
+   کاربر وارد نشده
+----------------------------------------- */
 
-                    window.location.href =
-                        CONFIG.LOGIN_PAGE;
+if (!isLoggedIn()) {
 
-                    return;
+    window.location.href =
+        CONFIG.LOGIN_PAGE;
 
-                }
+    return;
+
+}
 
 
-                /*
-                 * اگر profile.html در پروژه وجود دارد،
-                 * کاربر به صفحه حساب کاربری می‌رود.
-                 */
+/* -----------------------------------------
+   کاربر وارد شده
+   نمایش فرم پروفایل
+----------------------------------------- */
 
-                window.location.href =
-                    CONFIG.PROFILE_PAGE;
+const modal =
+    document.getElementById(
+        "profileModal"
+    );
 
-            }
+const user =
+    getSessionUser();
+
+
+if (!modal || !user) {
+
+    console.error(
+        "NightCast: Profile Modal یا User پیدا نشد."
+    );
+
+    return;
+
+}
+
+
+/* -----------------------------------------
+   عناصر فرم
+----------------------------------------- */
+
+const email =
+    document.getElementById(
+        "profileModalEmail"
+    );
+
+const title =
+    document.getElementById(
+        "profileModalTitle"
+    );
+
+const avatar =
+    document.getElementById(
+        "profileModalAvatar"
+    );
+
+const avatarFallback =
+    document.getElementById(
+        "profileModalAvatarFallback"
+    );
+
+
+/* -----------------------------------------
+   نام کاربر
+----------------------------------------- */
+
+const name =
+    getUserName(user);
+
+
+if (title) {
+
+    title.textContent =
+        name;
+
+}
+
+
+/* -----------------------------------------
+   ایمیل
+----------------------------------------- */
+
+if (email) {
+
+    email.textContent =
+        user.email ||
+        user.mail ||
+        "ایمیل ثبت نشده";
+
+}
+
+
+/* -----------------------------------------
+   تصویر پروفایل
+----------------------------------------- */
+
+const userImage =
+    getUserAvatar(user);
+
+
+if (
+    avatar &&
+    avatarFallback
+) {
+
+    if (userImage) {
+
+        avatar.src =
+            userImage;
+
+        avatar.alt =
+            name;
+
+        avatar.classList.add(
+            "visible"
+        );
+
+        avatarFallback.classList.add(
+            "hidden"
+        );
+
+
+        avatar.onerror =
+            () => {
+
+                avatar.removeAttribute(
+                    "src"
+                );
+
+                avatar.classList.remove(
+                    "visible"
+                );
+
+                avatarFallback.classList.remove(
+                    "hidden"
+                );
+
+            };
+
+    } else {
+
+        avatar.removeAttribute(
+            "src"
+        );
+
+        avatar.classList.remove(
+            "visible"
+        );
+
+        avatarFallback.classList.remove(
+            "hidden"
+        );
+
+    }
+
+}
+
+
+/* -----------------------------------------
+   نمایش Modal
+----------------------------------------- */
+
+modal.classList.add(
+    "show"
+);
+
+modal.setAttribute(
+    "aria-hidden",
+    "false"
+);
+
+
+/* جلوگیری از اسکرول صفحه */
+document.body.style.overflow =
+    "hidden";
+```
+
+}
+
 
 
             /* =========================================================

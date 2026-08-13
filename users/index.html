@@ -1403,11 +1403,77 @@
                 els.toast.textContent = msg; els.toast.classList.add("show");
                 clearTimeout(state.toastTimer); state.toastTimer = setTimeout(() => els.toast.classList.remove("show"), 2800);
             }
-            function getFavorites() {
-                try { return JSON.parse(localStorage.getItem(CONFIG.FAVORITE_KEY) || "[]") } catch { return [] }
+          
+let favoriteIds = new Set();
+
+function getToken() {
+    return localStorage.getItem(CONFIG.TOKEN_KEY) || "";
+}
+
+function isFavorite(id) {
+    return favoriteIds.has(Number(id));
+}
+
+async function loadFavorites() {
+
+    const token = getToken();
+
+    if (!token) {
+        favoriteIds = new Set();
+        updateStats();
+        return;
+    }
+
+    try {
+
+        const res = await fetch(
+            `${CONFIG.API_BASE}/favorites`,
+            {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Accept": "application/json"
+                }
             }
-            function saveFavorites(v) { localStorage.setItem(CONFIG.FAVORITE_KEY, JSON.stringify(v)) }
-            function isFavorite(id) { return getFavorites().some(x => Number(x) === Number(id)) }
+        );
+
+        if (res.status === 401) {
+            favoriteIds = new Set();
+            updateStats();
+            return;
+        }
+
+        const data = await res.json();
+
+        if (!res.ok || data.success === false) {
+            throw new Error(data.message || "خطا در دریافت علاقه‌مندی‌ها");
+        }
+
+        const favorites = Array.isArray(data.favorites)
+            ? data.favorites
+            : [];
+
+        favoriteIds = new Set(
+            favorites.map(x =>
+                Number(
+                    typeof x === "object"
+                        ? x.podcast_id
+                        : x
+                )
+            )
+        );
+
+        updateStats();
+        applyView();
+
+    } catch (err) {
+
+        console.error("Favorites Load Error:", err);
+
+    }
+}
+
+            
             function updateStats() {
                 els.count.textContent = state.all.length.toLocaleString("fa-IR");
                 els.books.textContent = new Set(state.all.map(x => x.book_name).filter(Boolean)).size.toLocaleString("fa-IR");

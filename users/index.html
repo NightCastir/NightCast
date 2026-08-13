@@ -1847,21 +1847,6 @@ function authHeaders(extra = {}) {
                 document.addEventListener("contextmenu", e => { });
             }
 
-            async function startAuth() {
-                const value = els.loginValue.value.trim();
-                if (!value) { toast("ایمیل یا شماره موبایل را وارد کنید."); return }
-                /* Uses the existing NightCast endpoint. The exact response flow remains API-driven. */
-                try {
-                    const isEmail = value.includes("@");
-                    const type = isEmail ? "email" : "phone";
-                    const res = await fetch(`${CONFIG.API_BASE}/auth/start`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type, value }) });
-                    const data = await res.json().catch(() => ({}));
-                    if (!res.ok || data.success === false) throw new Error(data.message || `خطای ورود: ${res.status}`);
-                    toast(data.message || "کد تأیید ارسال شد.");
-                    els.loginModal.classList.remove("show");
-                } catch (err) { console.error("Auth:", err); toast(err.message || "خطا در ارتباط با سرویس ورود."); }
-            }
-
             function preventZoom() {
                 document.addEventListener("gesturestart", e => e.preventDefault(), { passive: false });
                 document.addEventListener("gesturechange", e => e.preventDefault(), { passive: false });

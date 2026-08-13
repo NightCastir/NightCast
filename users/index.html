@@ -2470,19 +2470,23 @@
                     getToken();
 
 
-                if (!token) {
-
-                    favoriteIds =
-                        new Set();
-
-                    updateStats();
-
-                    return;
-
-                }
-
-
                 try {
+
+                    const headers = {
+
+                        "Accept":
+                            "application/json"
+
+                    };
+
+
+                    if (token) {
+
+                        headers.Authorization =
+                            `Bearer ${token}`;
+
+                    }
+
 
                     const res =
                         await fetch(
@@ -2490,71 +2494,83 @@
                             {
                                 method: "GET",
 
-                                headers: {
-                                    "Authorization":
-                                        `Bearer ${token}`,
-
-                                    "Accept":
-                                        "application/json"
-                                }
+                                headers
                             }
                         );
 
 
-                    if (res.status === 401) {
+                    if (!res.ok) {
 
-                        favoriteIds =
-                            new Set();
-
-                        updateStats();
-
-                        return;
+                        throw new Error(
+                            `خطا در دریافت تعداد علاقه‌مندی‌ها: ${res.status}`
+                        );
 
                     }
 
 
                     const data =
                         await res.json();
+
+
                     totalFavoriteCount =
-                        Number(data.total || 0);
-
-                    if (
-                        !res.ok ||
-                        data.success === false
-                    ) {
-
-                        throw new Error(
-                            data.message ||
-                            "خطا در دریافت علاقه‌مندی‌ها"
+                        Number(
+                            data.total || 0
                         );
+
+
+                    /*
+                     * اگر کاربر لاگین باشد،
+                     * لیست علاقه‌مندی‌های خودش را هم بگیر.
+                     */
+
+                    if (token) {
+
+                        const favorites =
+                            Array.isArray(data.favorites)
+                                ? data.favorites
+                                : [];
+
+
+                        favoriteIds =
+                            new Set(
+
+                                favorites.map(
+
+                                    x =>
+                                        Number(
+                                            typeof x === "object"
+                                                ? x.podcast_id || x.id
+                                                : x
+                                        )
+
+                                )
+
+                            );
+
+                    } else {
+
+                        /*
+                         * کاربر مهمان:
+                         * فقط تعداد کل سایت را نمایش بده.
+                         */
+
+                        favoriteIds =
+                            new Set();
 
                     }
 
 
-                    const favorites =
-                        Array.isArray(data.favorites)
-                            ? data.favorites
-                            : [];
-
-
-                    favoriteIds =
-                        new Set(
-                            favorites.map(
-                                x =>
-                                    Number(
-                                        typeof x === "object"
-                                            ? x.podcast_id
-                                            : x
-                                    )
-                            )
-                        );
-
-
                     updateStats();
 
-                    applyView();
 
-                } catch (err) {
+                    if (token) {
+
+                        applyView();
+
+                    }
+
+                }
+                catch (err) {
 
                     console.error(
                         "Favorites Load Error:",
@@ -2566,38 +2582,182 @@
             }
 
 
-            function updateStats() {
+            if (res.status === 401) {
 
-                els.count.textContent =
-                    state.all.length.toLocaleString("fa-IR");
+                favoriteIds =
+                    new Set();
 
+                updateStats();
 
-                els.books.textContent =
-                    new Set(
-                        state.all
-                            .map(x => x.book_name)
-                            .filter(Boolean)
-                    )
-                        .size
-                        .toLocaleString("fa-IR");
-
-
-                els.favCount.textContent =
-                    totalFavoriteCount.toLocaleString("fa-IR");
+                return;
 
             }
 
 
-            async function toggleFavorite(id) {
+            const data =
+                await res.json();
+            totalFavoriteCount =
+                Number(data.total || 0);
 
-                const token =
-                    getToken();
+            if (
+                !res.ok ||
+                data.success === false
+            ) {
+
+                throw new Error(
+                    data.message ||
+                    "خطا در دریافت علاقه‌مندی‌ها"
+                );
+
+            }
 
 
-                if (!isLoggedIn()) {
+            const favorites =
+                Array.isArray(data.favorites)
+                    ? data.favorites
+                    : [];
+
+
+            favoriteIds =
+                new Set(
+                    favorites.map(
+                        x =>
+                            Number(
+                                typeof x === "object"
+                                    ? x.podcast_id
+                                    : x
+                            )
+                    )
+                );
+
+
+            updateStats();
+
+            applyView();
+
+        } catch (err) {
+
+            console.error(
+                "Favorites Load Error:",
+                err
+            );
+
+        }
+
+                    }
+
+
+        function updateStats() {
+
+            els.count.textContent =
+                state.all.length.toLocaleString("fa-IR");
+
+
+            els.books.textContent =
+                new Set(
+                    state.all
+                        .map(x => x.book_name)
+                        .filter(Boolean)
+                )
+                    .size
+                    .toLocaleString("fa-IR");
+
+
+            els.favCount.textContent =
+                totalFavoriteCount.toLocaleString("fa-IR");
+
+        }
+
+
+        async function toggleFavorite(id) {
+
+            const token =
+                getToken();
+
+
+            if (!isLoggedIn()) {
+
+                toast(
+                    "برای ذخیره علاقه‌مندی ابتدا وارد حساب کاربری شوید."
+                );
+
+
+                setTimeout(
+                    () => {
+
+                        window.location.href =
+                            CONFIG.LOGIN_PAGE;
+
+                    },
+                    350
+                );
+
+
+                return;
+
+            }
+
+
+            const podcastId =
+                Number(id);
+
+
+            if (!Number.isFinite(podcastId)) {
+
+                toast(
+                    "شناسه پادکست نامعتبر است."
+                );
+
+                return;
+
+            }
+
+
+            const alreadyFavorite =
+                favoriteIds.has(podcastId);
+
+
+            try {
+
+                const res =
+                    await fetch(
+                        `${CONFIG.API_BASE}/public/favorites/${podcastId}`,
+                        {
+                            method:
+                                alreadyFavorite
+                                    ? "DELETE"
+                                    : "POST",
+
+                            headers: {
+                                "Authorization":
+                                    `Bearer ${token}`,
+
+                                "Content-Type":
+                                    "application/json",
+
+                                "Accept":
+                                    "application/json"
+                            }
+                        }
+                    );
+
+
+                const data =
+                    await res
+                        .json()
+                        .catch(
+                            () => ({})
+                        );
+
+
+                if (res.status === 401) {
+
+                    favoriteIds.delete(
+                        podcastId
+                    );
 
                     toast(
-                        "برای ذخیره علاقه‌مندی ابتدا وارد حساب کاربری شوید."
+                        "نشست شما منقضی شده است. دوباره وارد شوید."
                     );
 
 
@@ -2608,7 +2768,7 @@
                                 CONFIG.LOGIN_PAGE;
 
                         },
-                        350
+                        500
                     );
 
 
@@ -2617,945 +2777,898 @@
                 }
 
 
-                const podcastId =
-                    Number(id);
+                if (
+                    !res.ok ||
+                    data.success === false
+                ) {
 
-
-                if (!Number.isFinite(podcastId)) {
-
-                    toast(
-                        "شناسه پادکست نامعتبر است."
+                    throw new Error(
+                        data.message ||
+                        "ذخیره علاقه‌مندی انجام نشد."
                     );
 
-                    return;
+                }
+
+
+                if (alreadyFavorite) {
+
+                    favoriteIds.delete(
+                        podcastId
+                    );
+
+                    totalFavoriteCount =
+                        Math.max(
+                            0,
+                            totalFavoriteCount - 1
+                        );
+
+                    toast(
+                        "از علاقه‌مندی‌ها حذف شد."
+                    );
+
+                } else {
+
+                    favoriteIds.add(
+                        podcastId
+                    );
+
+                    totalFavoriteCount += 1;
+
+                    toast(
+                        "به علاقه‌مندی‌ها اضافه شد."
+                    );
 
                 }
 
 
-                const alreadyFavorite =
-                    favoriteIds.has(podcastId);
+                updateStats();
+
+                applyView();
+
+            } catch (err) {
+
+                console.error(
+                    "Favorite Error:",
+                    err
+                );
 
 
-                try {
+                toast(
+                    err.message ||
+                    "خطا در ذخیره علاقه‌مندی."
+                );
 
-                    const res =
-                        await fetch(
-                            `${CONFIG.API_BASE}/public/favorites/${podcastId}`,
-                            {
-                                method:
-                                    alreadyFavorite
-                                        ? "DELETE"
-                                        : "POST",
+            }
 
-                                headers: {
-                                    "Authorization":
-                                        `Bearer ${token}`,
-
-                                    "Content-Type":
-                                        "application/json",
-
-                                    "Accept":
-                                        "application/json"
-                                }
-                            }
-                        );
+        }
 
 
-                    const data =
-                        await res
-                            .json()
-                            .catch(
-                                () => ({})
-                            );
+        /* =========================================================
+           PODCAST RENDER
+        ========================================================= */
+
+        function skeletons(n = 4) {
+
+            els.grid.className =
+                "loading-grid";
 
 
-                    if (res.status === 401) {
+            els.grid.innerHTML =
+                Array.from(
+                    {
+                        length: n
+                    },
+                    () => `
+                                                            <div class="sk-card">
 
-                        favoriteIds.delete(
-                            podcastId
-                        );
+                                                                <div class="skeleton sk-cover"></div>
 
-                        toast(
-                            "نشست شما منقضی شده است. دوباره وارد شوید."
-                        );
+                                                                <div class="skeleton sk-line"></div>
 
+                                                                <div class="skeleton sk-line short"></div>
 
-                        setTimeout(
-                            () => {
+                                                            </div>
+                                                        `
+                )
+                    .join("");
 
-                                window.location.href =
-                                    CONFIG.LOGIN_PAGE;
-
-                            },
-                            500
-                        );
-
-
-                        return;
-
-                    }
+        }
 
 
-                    if (
-                        !res.ok ||
-                        data.success === false
-                    ) {
+        function renderCard(p) {
 
-                        throw new Error(
-                            data.message ||
-                            "ذخیره علاقه‌مندی انجام نشد."
-                        );
-
-                    }
+            const id =
+                Number(p.id);
 
 
-                    if (alreadyFavorite) {
-
-                        favoriteIds.delete(
-                            podcastId
-                        );
-
-                        totalFavoriteCount =
-                            Math.max(
-                                0,
-                                totalFavoriteCount - 1
-                            );
-
-                        toast(
-                            "از علاقه‌مندی‌ها حذف شد."
-                        );
-
-                    } else {
-
-                        favoriteIds.add(
-                            podcastId
-                        );
-
-                        totalFavoriteCount += 1;
-
-                        toast(
-                            "به علاقه‌مندی‌ها اضافه شد."
-                        );
-
-                    }
+            const title =
+                escapeHtml(
+                    p.title ||
+                    "بدون عنوان"
+                );
 
 
-                    updateStats();
-
-                    applyView();
-
-                } catch (err) {
-
-                    console.error(
-                        "Favorite Error:",
-                        err
-                    );
+            const author =
+                escapeHtml(
+                    p.author_name ||
+                    "NightCast"
+                );
 
 
-                    toast(
-                        err.message ||
-                        "خطا در ذخیره علاقه‌مندی."
-                    );
+            const book =
+                escapeHtml(
+                    p.book_name ||
+                    ""
+                );
 
+
+            const desc =
+                escapeHtml(
+                    p.description ||
+                    p.summary ||
+                    "توضیحی برای این پادکست ثبت نشده است."
+                );
+
+
+            const cover =
+                escapeHtml(
+                    p.cover_url ||
+                    placeholder
+                );
+
+
+            const audio =
+                escapeHtml(
+                    p.audio_url ||
+                    ""
+                );
+
+
+            const duration =
+                formatTime(
+                    p.duration_seconds ||
+                    0
+                );
+
+
+            const fav =
+                isFavorite(id);
+
+
+            return `
+
+                                                    <article
+                                                        class="podcast-card"
+                                                        data-id="${id}">
+
+                                                        <div class="podcast-cover">
+
+                                                            <img
+                                                                src="${cover}"
+                                                                alt="${title}"
+                                                                loading="lazy"
+                                                                decoding="async"
+                                                                onerror="this.onerror=null;this.src='${placeholder}'">
+
+                                                            <div class="cover-shade"></div>
+
+
+                                                            <button
+                                                                class="play-card"
+                                                                data-action="play"
+                                                                data-id="${id}"
+                                                                aria-label="پخش ${title}"
+                                                                ${audio ? "" : "disabled"}>
+
+                                                                <i class="fa-solid fa-play"></i>
+
+                                                            </button>
+
+                                                        </div>
+
+
+                                                        <div class="podcast-info">
+
+                                                            <h3 class="podcast-title">
+                                                                ${title}
+                                                            </h3>
+
+
+                                                            <div class="meta">
+
+                                                                ${author
+                    ? `
+                                                                            <span>
+                                                                                <i class="fa-solid fa-user"></i>
+                                                                                ${author}
+                                                                            </span>
+                                                                          `
+                    : ""
                 }
+
+
+                                                                ${book
+                    ? `
+                                                                            <span>
+                                                                                <i class="fa-solid fa-book"></i>
+                                                                                ${book}
+                                                                            </span>
+                                                                          `
+                    : ""
+                }
+
+
+                                                                ${duration !== "00:00"
+                    ? `
+                                                                            <span>
+                                                                                <i class="fa-regular fa-clock"></i>
+                                                                                ${duration}
+                                                                            </span>
+                                                                          `
+                    : ""
+                }
+
+                                                            </div>
+
+
+                                                            <p class="podcast-desc">
+                                                                ${desc}
+                                                            </p>
+
+
+                                                            <div class="card-footer">
+
+                                                                <button
+                                                                    class="btn btn-primary"
+                                                                    data-action="play"
+                                                                    data-id="${id}"
+                                                                    ${audio ? "" : "disabled"}>
+
+                                                                    <i class="fa-solid fa-play"></i>
+
+                                                                    پخش
+
+                                                                </button>
+
+
+                                                                <button
+                                                                    class="btn btn-secondary"
+                                                                    data-action="download"
+                                                                    data-id="${id}"
+                                                                    ${audio ? "" : "disabled"}>
+
+                                                                    <i class="fa-solid fa-download"></i>
+
+                                                                </button>
+
+
+                                                                <button
+                                                                    class="favorite ${fav ? "active" : ""}"
+                                                                    data-action="favorite"
+                                                                    data-id="${id}"
+                                                                    aria-label="علاقه‌مندی">
+
+                                                                    <i class="${fav ? "fa-solid" : "fa-regular"} fa-heart"></i>
+
+                                                                </button>
+
+                                                            </div>
+
+                                                        </div>
+
+                                                    </article>
+
+                                                `;
+
+        }
+
+
+        function render(items) {
+
+            els.grid.className =
+                "podcast-grid";
+
+
+            if (!items.length) {
+
+                els.grid.innerHTML = `
+
+                                                        <div
+                                                            class="empty"
+                                                            style="grid-column:1/-1">
+
+                                                            <i class="fa-solid fa-magnifying-glass"></i>
+
+                                                            <h3>
+                                                                ${state.query
+                        ? `پادکستی برای «${escapeHtml(state.query)}» پیدا نشد.`
+                        : "هنوز پادکستی ثبت نشده است."
+                    }
+                                                            </h3>
+
+                                                            <p>
+                                                                ${state.query
+                        ? "عبارت دیگری را امتحان کنید."
+                        : "به‌زودی محتوای جدید در NightCast منتشر می‌شود."
+                    }
+                                                            </p>
+
+                                                            ${state.query
+                        ? `
+                                                                        <button
+                                                                            class="btn btn-secondary"
+                                                                            data-action="clear-search">
+
+                                                                            پاک کردن جستجو
+
+                                                                        </button>
+                                                                      `
+                        : ""
+                    }
+
+                                                        </div>
+
+                                                    `;
+
+                return;
 
             }
 
 
-            /* =========================================================
-               PODCAST RENDER
-            ========================================================= */
-
-            function skeletons(n = 4) {
-
-                els.grid.className =
-                    "loading-grid";
+            els.grid.innerHTML =
+                items
+                    .map(renderCard)
+                    .join("");
 
 
-                els.grid.innerHTML =
-                    Array.from(
-                        {
-                            length: n
-                        },
-                        () => `
-                                                    <div class="sk-card">
+            updateCardPlaying();
 
-                                                        <div class="skeleton sk-cover"></div>
+        }
 
-                                                        <div class="skeleton sk-line"></div>
 
-                                                        <div class="skeleton sk-line short"></div>
+        function updateCardPlaying() {
 
-                                                    </div>
-                                                `
+            $$(".podcast-card")
+                .forEach(card => {
+
+                    const id =
+                        Number(
+                            card.dataset.id
+                        );
+
+
+                    const playing =
+                        state.current &&
+                        Number(
+                            state.current.id
+                        ) === id &&
+                        !els.audio.paused;
+
+
+                    const b =
+                        card.querySelector(
+                            '[data-action="play"] i'
+                        );
+
+
+                    if (b) {
+
+                        b.className =
+                            playing
+                                ? "fa-solid fa-pause"
+                                : "fa-solid fa-play";
+
+                    }
+
+                });
+
+        }
+
+
+        /* =========================================================
+           PAGINATION
+        ========================================================= */
+
+        function renderPagination() {
+
+            els.pagination.innerHTML =
+                "";
+
+
+            if (
+                state.totalPages <= 1
+            ) {
+                return;
+            }
+
+
+            for (
+                let i = 1;
+                i <= state.totalPages;
+                i++
+            ) {
+
+                const b =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                b.className =
+                    `page-btn ${i === state.page
+                        ? "active"
+                        : ""
+                    }`;
+
+
+                b.textContent =
+                    i.toLocaleString("fa-IR");
+
+
+                b.addEventListener(
+                    "click",
+                    () => {
+
+                        state.page =
+                            i;
+
+                        applyView();
+
+
+                        document
+                            .getElementById(
+                                "podcasts"
+                            )
+                            .scrollIntoView({
+                                behavior:
+                                    "smooth",
+
+                                block:
+                                    "start"
+                            });
+
+                    }
+                );
+
+
+                els.pagination.appendChild(
+                    b
+                );
+
+            }
+
+        }
+
+
+        /* =========================================================
+           VIEW
+        ========================================================= */
+
+        function applyView() {
+
+            const q =
+                state.query
+                    .toLocaleLowerCase("fa");
+
+
+            state.visible =
+                q
+
+                    ? state.all.filter(
+                        p =>
+                            [
+                                p.title,
+                                p.book_name,
+                                p.author_name,
+                                p.description,
+                                p.summary
+                            ]
+                                .filter(Boolean)
+                                .join(" ")
+                                .toLocaleLowerCase("fa")
+                                .includes(q)
                     )
-                        .join("");
+
+                    : state.all;
+
+
+            state.totalPages =
+                Math.max(
+                    1,
+                    Math.ceil(
+                        state.visible.length /
+                        CONFIG.PAGE_SIZE
+                    )
+                );
+
+
+            if (
+                state.page >
+                state.totalPages
+            ) {
+
+                state.page = 1;
 
             }
 
 
-            function renderCard(p) {
+            const start =
+                (state.page - 1) *
+                CONFIG.PAGE_SIZE;
 
-                const id =
-                    Number(p.id);
+
+            render(
+                state.visible.slice(
+                    start,
+                    start + CONFIG.PAGE_SIZE
+                )
+            );
 
 
-                const title =
-                    escapeHtml(
-                        p.title ||
-                        "بدون عنوان"
+            renderPagination();
+
+            updateStats();
+
+        }
+
+
+        /* =========================================================
+           LOAD PODCASTS
+        ========================================================= */
+
+        async function loadPodcasts() {
+
+            const cacheKey =
+                CONFIG.CACHE_KEY;
+
+
+            let cached = [];
+
+
+            try {
+
+                cached =
+                    JSON.parse(
+                        localStorage.getItem(
+                            cacheKey
+                        ) || "[]"
                     );
 
+            } catch {
 
-                const author =
-                    escapeHtml(
-                        p.author_name ||
-                        "NightCast"
-                    );
-
-
-                const book =
-                    escapeHtml(
-                        p.book_name ||
-                        ""
-                    );
-
-
-                const desc =
-                    escapeHtml(
-                        p.description ||
-                        p.summary ||
-                        "توضیحی برای این پادکست ثبت نشده است."
-                    );
-
-
-                const cover =
-                    escapeHtml(
-                        p.cover_url ||
-                        placeholder
-                    );
-
-
-                const audio =
-                    escapeHtml(
-                        p.audio_url ||
-                        ""
-                    );
-
-
-                const duration =
-                    formatTime(
-                        p.duration_seconds ||
-                        0
-                    );
-
-
-                const fav =
-                    isFavorite(id);
-
-
-                return `
-
-                                            <article
-                                                class="podcast-card"
-                                                data-id="${id}">
-
-                                                <div class="podcast-cover">
-
-                                                    <img
-                                                        src="${cover}"
-                                                        alt="${title}"
-                                                        loading="lazy"
-                                                        decoding="async"
-                                                        onerror="this.onerror=null;this.src='${placeholder}'">
-
-                                                    <div class="cover-shade"></div>
-
-
-                                                    <button
-                                                        class="play-card"
-                                                        data-action="play"
-                                                        data-id="${id}"
-                                                        aria-label="پخش ${title}"
-                                                        ${audio ? "" : "disabled"}>
-
-                                                        <i class="fa-solid fa-play"></i>
-
-                                                    </button>
-
-                                                </div>
-
-
-                                                <div class="podcast-info">
-
-                                                    <h3 class="podcast-title">
-                                                        ${title}
-                                                    </h3>
-
-
-                                                    <div class="meta">
-
-                                                        ${author
-                        ? `
-                                                                    <span>
-                                                                        <i class="fa-solid fa-user"></i>
-                                                                        ${author}
-                                                                    </span>
-                                                                  `
-                        : ""
-                    }
-
-
-                                                        ${book
-                        ? `
-                                                                    <span>
-                                                                        <i class="fa-solid fa-book"></i>
-                                                                        ${book}
-                                                                    </span>
-                                                                  `
-                        : ""
-                    }
-
-
-                                                        ${duration !== "00:00"
-                        ? `
-                                                                    <span>
-                                                                        <i class="fa-regular fa-clock"></i>
-                                                                        ${duration}
-                                                                    </span>
-                                                                  `
-                        : ""
-                    }
-
-                                                    </div>
-
-
-                                                    <p class="podcast-desc">
-                                                        ${desc}
-                                                    </p>
-
-
-                                                    <div class="card-footer">
-
-                                                        <button
-                                                            class="btn btn-primary"
-                                                            data-action="play"
-                                                            data-id="${id}"
-                                                            ${audio ? "" : "disabled"}>
-
-                                                            <i class="fa-solid fa-play"></i>
-
-                                                            پخش
-
-                                                        </button>
-
-
-                                                        <button
-                                                            class="btn btn-secondary"
-                                                            data-action="download"
-                                                            data-id="${id}"
-                                                            ${audio ? "" : "disabled"}>
-
-                                                            <i class="fa-solid fa-download"></i>
-
-                                                        </button>
-
-
-                                                        <button
-                                                            class="favorite ${fav ? "active" : ""}"
-                                                            data-action="favorite"
-                                                            data-id="${id}"
-                                                            aria-label="علاقه‌مندی">
-
-                                                            <i class="${fav ? "fa-solid" : "fa-regular"} fa-heart"></i>
-
-                                                        </button>
-
-                                                    </div>
-
-                                                </div>
-
-                                            </article>
-
-                                        `;
+                cached = [];
 
             }
 
 
-            function render(items) {
+            if (
+                Array.isArray(cached) &&
+                cached.length
+            ) {
+
+                state.all =
+                    cached;
+
+                updateLatest(
+                    cached
+                );
+
+                applyView();
+
+            } else {
+
+                skeletons();
+
+            }
+
+
+            try {
+
+                const res =
+                    await fetch(
+                        CONFIG.FEED_URL,
+                        {
+                            method: "GET",
+
+                            cache: "no-cache",
+
+                            headers: {
+                                "Accept":
+                                    "application/json"
+                            }
+                        }
+                    );
+
+
+                if (!res.ok) {
+
+                    throw new Error(
+                        `خطای دریافت پادکست‌ها: ${res.status}`
+                    );
+
+                }
+
+
+                const data =
+                    await res.json();
+
+
+                const freshItems =
+                    Array.isArray(data)
+                        ? data
+                        : Array.isArray(data.podcasts)
+                            ? data.podcasts
+                            : [];
+
+
+                const oldData =
+                    JSON.stringify(
+                        cached
+                    );
+
+
+                const newData =
+                    JSON.stringify(
+                        freshItems
+                    );
+
+
+                if (
+                    oldData === newData
+                ) {
+
+                    return;
+
+                }
+
+
+                state.all =
+                    freshItems;
+
+
+                localStorage.setItem(
+                    cacheKey,
+                    JSON.stringify(
+                        freshItems
+                    )
+                );
+
+
+                updateLatest(
+                    freshItems
+                );
+
+
+                applyView();
+
+            } catch (err) {
+
+                console.error(
+                    "NightCast Feed Error:",
+                    err
+                );
+
+
+                if (
+                    cached.length
+                ) {
+
+                    return;
+
+                }
+
 
                 els.grid.className =
                     "podcast-grid";
 
 
-                if (!items.length) {
+                els.grid.innerHTML = `
 
-                    els.grid.innerHTML = `
+                                                        <div
+                                                            class="error-state"
+                                                            style="grid-column:1/-1">
 
-                                                <div
-                                                    class="empty"
-                                                    style="grid-column:1/-1">
+                                                            <i class="fa-solid fa-circle-exclamation"></i>
 
-                                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                                            <h3>
+                                                                دریافت پادکست‌ها ناموفق بود
+                                                            </h3>
 
-                                                    <h3>
-                                                        ${state.query
-                            ? `پادکستی برای «${escapeHtml(state.query)}» پیدا نشد.`
-                            : "هنوز پادکستی ثبت نشده است."
-                        }
-                                                    </h3>
+                                                            <p>
+                                                                ${escapeHtml(
+                    err.message ||
+                    "خطای نامشخص"
+                )}
+                                                            </p>
 
-                                                    <p>
-                                                        ${state.query
-                            ? "عبارت دیگری را امتحان کنید."
-                            : "به‌زودی محتوای جدید در NightCast منتشر می‌شود."
-                        }
-                                                    </p>
+                                                            <button
+                                                                class="btn btn-primary"
+                                                                data-action="reload">
 
-                                                    ${state.query
-                            ? `
-                                                                <button
-                                                                    class="btn btn-secondary"
-                                                                    data-action="clear-search">
+                                                                <i class="fa-solid fa-rotate"></i>
 
-                                                                    پاک کردن جستجو
+                                                                تلاش دوباره
 
-                                                                </button>
-                                                              `
-                            : ""
-                        }
+                                                            </button>
 
-                                                </div>
+                                                        </div>
 
-                                            `;
-
-                    return;
-
-                }
-
-
-                els.grid.innerHTML =
-                    items
-                        .map(renderCard)
-                        .join("");
-
-
-                updateCardPlaying();
+                                                    `;
 
             }
 
+        }
 
-            function updateCardPlaying() {
 
-                $$(".podcast-card")
-                    .forEach(card => {
+        /* =========================================================
+           LATEST
+        ========================================================= */
 
-                        const id =
-                            Number(
-                                card.dataset.id
-                            );
+        function updateLatest(items) {
 
+            const latest =
+                items[0];
 
-                        const playing =
-                            state.current &&
-                            Number(
-                                state.current.id
-                            ) === id &&
-                            !els.audio.paused;
 
-
-                        const b =
-                            card.querySelector(
-                                '[data-action="play"] i'
-                            );
-
-
-                        if (b) {
-
-                            b.className =
-                                playing
-                                    ? "fa-solid fa-pause"
-                                    : "fa-solid fa-play";
-
-                        }
-
-                    });
-
-            }
-
-
-            /* =========================================================
-               PAGINATION
-            ========================================================= */
-
-            function renderPagination() {
-
-                els.pagination.innerHTML =
-                    "";
-
-
-                if (
-                    state.totalPages <= 1
-                ) {
-                    return;
-                }
-
-
-                for (
-                    let i = 1;
-                    i <= state.totalPages;
-                    i++
-                ) {
-
-                    const b =
-                        document.createElement(
-                            "button"
-                        );
-
-
-                    b.className =
-                        `page-btn ${i === state.page
-                            ? "active"
-                            : ""
-                        }`;
-
-
-                    b.textContent =
-                        i.toLocaleString("fa-IR");
-
-
-                    b.addEventListener(
-                        "click",
-                        () => {
-
-                            state.page =
-                                i;
-
-                            applyView();
-
-
-                            document
-                                .getElementById(
-                                    "podcasts"
-                                )
-                                .scrollIntoView({
-                                    behavior:
-                                        "smooth",
-
-                                    block:
-                                        "start"
-                                });
-
-                        }
-                    );
-
-
-                    els.pagination.appendChild(
-                        b
-                    );
-
-                }
-
-            }
-
-
-            /* =========================================================
-               VIEW
-            ========================================================= */
-
-            function applyView() {
-
-                const q =
-                    state.query
-                        .toLocaleLowerCase("fa");
-
-
-                state.visible =
-                    q
-
-                        ? state.all.filter(
-                            p =>
-                                [
-                                    p.title,
-                                    p.book_name,
-                                    p.author_name,
-                                    p.description,
-                                    p.summary
-                                ]
-                                    .filter(Boolean)
-                                    .join(" ")
-                                    .toLocaleLowerCase("fa")
-                                    .includes(q)
-                        )
-
-                        : state.all;
-
-
-                state.totalPages =
-                    Math.max(
-                        1,
-                        Math.ceil(
-                            state.visible.length /
-                            CONFIG.PAGE_SIZE
-                        )
-                    );
-
-
-                if (
-                    state.page >
-                    state.totalPages
-                ) {
-
-                    state.page = 1;
-
-                }
-
-
-                const start =
-                    (state.page - 1) *
-                    CONFIG.PAGE_SIZE;
-
-
-                render(
-                    state.visible.slice(
-                        start,
-                        start + CONFIG.PAGE_SIZE
-                    )
-                );
-
-
-                renderPagination();
-
-                updateStats();
-
-            }
-
-
-            /* =========================================================
-               LOAD PODCASTS
-            ========================================================= */
-
-            async function loadPodcasts() {
-
-                const cacheKey =
-                    CONFIG.CACHE_KEY;
-
-
-                let cached = [];
-
-
-                try {
-
-                    cached =
-                        JSON.parse(
-                            localStorage.getItem(
-                                cacheKey
-                            ) || "[]"
-                        );
-
-                } catch {
-
-                    cached = [];
-
-                }
-
-
-                if (
-                    Array.isArray(cached) &&
-                    cached.length
-                ) {
-
-                    state.all =
-                        cached;
-
-                    updateLatest(
-                        cached
-                    );
-
-                    applyView();
-
-                } else {
-
-                    skeletons();
-
-                }
-
-
-                try {
-
-                    const res =
-                        await fetch(
-                            CONFIG.FEED_URL,
-                            {
-                                method: "GET",
-
-                                cache: "no-cache",
-
-                                headers: {
-                                    "Accept":
-                                        "application/json"
-                                }
-                            }
-                        );
-
-
-                    if (!res.ok) {
-
-                        throw new Error(
-                            `خطای دریافت پادکست‌ها: ${res.status}`
-                        );
-
-                    }
-
-
-                    const data =
-                        await res.json();
-
-
-                    const freshItems =
-                        Array.isArray(data)
-                            ? data
-                            : Array.isArray(data.podcasts)
-                                ? data.podcasts
-                                : [];
-
-
-                    const oldData =
-                        JSON.stringify(
-                            cached
-                        );
-
-
-                    const newData =
-                        JSON.stringify(
-                            freshItems
-                        );
-
-
-                    if (
-                        oldData === newData
-                    ) {
-
-                        return;
-
-                    }
-
-
-                    state.all =
-                        freshItems;
-
-
-                    localStorage.setItem(
-                        cacheKey,
-                        JSON.stringify(
-                            freshItems
-                        )
-                    );
-
-
-                    updateLatest(
-                        freshItems
-                    );
-
-
-                    applyView();
-
-                } catch (err) {
-
-                    console.error(
-                        "NightCast Feed Error:",
-                        err
-                    );
-
-
-                    if (
-                        cached.length
-                    ) {
-
-                        return;
-
-                    }
-
-
-                    els.grid.className =
-                        "podcast-grid";
-
-
-                    els.grid.innerHTML = `
-
-                                                <div
-                                                    class="error-state"
-                                                    style="grid-column:1/-1">
-
-                                                    <i class="fa-solid fa-circle-exclamation"></i>
-
-                                                    <h3>
-                                                        دریافت پادکست‌ها ناموفق بود
-                                                    </h3>
-
-                                                    <p>
-                                                        ${escapeHtml(
-                        err.message ||
-                        "خطای نامشخص"
-                    )}
-                                                    </p>
-
-                                                    <button
-                                                        class="btn btn-primary"
-                                                        data-action="reload">
-
-                                                        <i class="fa-solid fa-rotate"></i>
-
-                                                        تلاش دوباره
-
-                                                    </button>
-
-                                                </div>
-
-                                            `;
-
-                }
-
-            }
-
-
-            /* =========================================================
-               LATEST
-            ========================================================= */
-
-            function updateLatest(items) {
-
-                const latest =
-                    items[0];
-
-
-                if (!latest) {
-
-                    els.latestTitle.textContent =
-                        "هنوز پادکستی ثبت نشده است.";
-
-
-                    els.latestPlay.disabled =
-                        true;
-
-
-                    return;
-
-                }
-
+            if (!latest) {
 
                 els.latestTitle.textContent =
-                    latest.title ||
-                    "بدون عنوان";
+                    "هنوز پادکستی ثبت نشده است.";
 
 
                 els.latestPlay.disabled =
-                    !latest.audio_url;
+                    true;
 
 
-                els.latestPlay.onclick =
-                    () =>
-                        latest.audio_url &&
-                        playPodcast(
-                            latest.id
-                        );
-
-
-                els.latestCta.onclick =
-                    () =>
-                        latest.audio_url &&
-                        playPodcast(
-                            latest.id
-                        );
+                return;
 
             }
 
 
-            /* =========================================================
-               PLAYER
-            ========================================================= */
+            els.latestTitle.textContent =
+                latest.title ||
+                "بدون عنوان";
 
-            function playPodcast(id) {
 
-                const p =
-                    state.all.find(
-                        x =>
-                            Number(x.id) ===
-                            Number(id)
+            els.latestPlay.disabled =
+                !latest.audio_url;
+
+
+            els.latestPlay.onclick =
+                () =>
+                    latest.audio_url &&
+                    playPodcast(
+                        latest.id
                     );
 
 
-                if (!p) {
-
-                    toast(
-                        "پادکست مورد نظر پیدا نشد."
+            els.latestCta.onclick =
+                () =>
+                    latest.audio_url &&
+                    playPodcast(
+                        latest.id
                     );
 
-                    return;
-
-                }
+        }
 
 
-                if (!p.audio_url) {
+        /* =========================================================
+           PLAYER
+        ========================================================= */
 
-                    toast(
-                        "فایل صوتی این پادکست موجود نیست."
-                    );
+        function playPodcast(id) {
 
-                    return;
-
-                }
-
-
-                state.current =
-                    p;
-
-
-                els.player.classList.add(
-                    "show"
+            const p =
+                state.all.find(
+                    x =>
+                        Number(x.id) ===
+                        Number(id)
                 );
 
 
-                document.body.classList.add(
-                    "player-open"
+            if (!p) {
+
+                toast(
+                    "پادکست مورد نظر پیدا نشد."
+                );
+
+                return;
+
+            }
+
+
+            if (!p.audio_url) {
+
+                toast(
+                    "فایل صوتی این پادکست موجود نیست."
+                );
+
+                return;
+
+            }
+
+
+            state.current =
+                p;
+
+
+            els.player.classList.add(
+                "show"
+            );
+
+
+            document.body.classList.add(
+                "player-open"
+            );
+
+
+            els.playerTitle.textContent =
+                p.title ||
+                "بدون عنوان";
+
+
+            els.playerAuthor.textContent =
+                p.author_name ||
+                "NightCast Radio";
+
+
+            els.playerCover.src =
+                p.cover_url ||
+                placeholder;
+
+
+            els.playerCover.alt =
+                p.title ||
+                "NightCast";
+
+
+            els.audio.pause();
+
+
+            els.audio.src =
+                p.audio_url;
+
+
+            els.audio.load();
+
+
+            els.audio
+                .play()
+                .then(
+                    updateMediaSession
+                )
+                .catch(
+                    () =>
+                        toast(
+                            "امکان پخش فایل صوتی وجود ندارد."
+                        )
                 );
 
 
-                els.playerTitle.textContent =
-                    p.title ||
-                    "بدون عنوان";
+            updateCardPlaying();
+
+        }
 
 
-                els.playerAuthor.textContent =
-                    p.author_name ||
-                    "NightCast Radio";
+        function togglePlay() {
+
+            if (!state.current) {
+
+                toast(
+                    "ابتدا یک پادکست انتخاب کنید."
+                );
+
+                return;
+
+            }
 
 
-                els.playerCover.src =
-                    p.cover_url ||
-                    placeholder;
-
-
-                els.playerCover.alt =
-                    p.title ||
-                    "NightCast";
-
-
-                els.audio.pause();
-
-
-                els.audio.src =
-                    p.audio_url;
-
-
-                els.audio.load();
-
+            if (
+                els.audio.paused
+            ) {
 
                 els.audio
                     .play()
-                    .then(
-                        updateMediaSession
-                    )
                     .catch(
                         () =>
                             toast(
@@ -3563,395 +3676,298 @@
                             )
                     );
 
+            } else {
 
-                updateCardPlaying();
+                els.audio.pause();
+
+            }
+
+        }
+
+
+        function nextPodcast(dir = 1) {
+
+            if (!state.current) {
+                return;
+            }
+
+
+            const i =
+                state.all.findIndex(
+                    x =>
+                        Number(x.id) ===
+                        Number(
+                            state.current.id
+                        )
+                );
+
+
+            const n =
+                i + dir;
+
+
+            if (
+                n < 0 ||
+                n >= state.all.length
+            ) {
+
+                toast(
+                    dir > 0
+                        ? "این آخرین پادکست است."
+                        : "این اولین پادکست است."
+                );
+
+                return;
 
             }
 
 
-            function togglePlay() {
+            playPodcast(
+                state.all[n].id
+            );
 
-                if (!state.current) {
-
-                    toast(
-                        "ابتدا یک پادکست انتخاب کنید."
-                    );
-
-                    return;
-
-                }
+        }
 
 
-                if (
-                    els.audio.paused
-                ) {
+        function updateMediaSession() {
 
-                    els.audio
-                        .play()
-                        .catch(
-                            () =>
-                                toast(
-                                    "امکان پخش فایل صوتی وجود ندارد."
-                                )
+            if (
+                !("mediaSession" in navigator) ||
+                !state.current
+            ) {
+
+                return;
+
+            }
+
+
+            try {
+
+                navigator.mediaSession.metadata =
+                    new MediaMetadata({
+
+                        title:
+                            state.current.title ||
+                            "NightCast",
+
+                        artist:
+                            state.current.author_name ||
+                            "NightCast Radio",
+
+                        album:
+                            state.current.book_name ||
+                            "NightCast Radio",
+
+                        artwork: [
+
+                            {
+                                src:
+                                    state.current.cover_url ||
+                                    placeholder,
+
+                                sizes:
+                                    "512x512",
+
+                                type:
+                                    "image/png"
+                            }
+
+                        ]
+
+                    });
+
+
+                navigator.mediaSession.setActionHandler(
+                    "play",
+                    () =>
+                        els.audio.play()
+                );
+
+
+                navigator.mediaSession.setActionHandler(
+                    "pause",
+                    () =>
+                        els.audio.pause()
+                );
+
+
+                navigator.mediaSession.setActionHandler(
+                    "nexttrack",
+                    () =>
+                        nextPodcast(1)
+                );
+
+
+                navigator.mediaSession.setActionHandler(
+                    "previoustrack",
+                    () =>
+                        nextPodcast(-1)
+                );
+
+            } catch { }
+
+        }
+
+
+        /* =========================================================
+           DOWNLOAD
+        ========================================================= */
+
+        function downloadPodcast(id) {
+
+            const p =
+                state.all.find(
+                    x =>
+                        Number(x.id) ===
+                        Number(id)
+                );
+
+
+            if (!p?.audio_url) {
+
+                toast(
+                    "فایل دانلود موجود نیست."
+                );
+
+                return;
+
+            }
+
+
+            const a =
+                document.createElement(
+                    "a"
+                );
+
+
+            a.href =
+                p.audio_url;
+
+            a.target =
+                "_blank";
+
+            a.rel =
+                "noopener";
+
+            a.click();
+
+        }
+
+
+        /* =========================================================
+           SOCIAL
+        ========================================================= */
+
+        function renderSocials() {
+
+            els.socialMenu.innerHTML =
+                CONFIG.SOCIALS
+                    .map(
+                        s =>
+                            `
+                                                                <a
+                                                                    class="social-item"
+                                                                    href="${s.url || "#"}"
+                                                                    data-social="${s.key}"
+                                                                    ${s.url
+                                ? 'target="_blank" rel="noopener noreferrer"'
+                                : ""
+                            }>
+
+                                                                    <i class="${s.icon}"></i>
+
+                                                                    <span>
+                                                                        ${s.label}
+                                                                    </span>
+
+                                                                </a>
+                                                                `
+                    )
+                    .join("");
+
+        }
+
+
+        /* =========================================================
+           EVENTS
+        ========================================================= */
+
+        function bindEvents() {
+
+
+            /* -----------------------------------------------------
+               Podcast Grid
+            ----------------------------------------------------- */
+
+            els.grid.addEventListener(
+                "click",
+                e => {
+
+                    const el =
+                        e.target.closest(
+                            "[data-action]"
                         );
 
-                } else {
 
-                    els.audio.pause();
+                    if (!el) {
+                        return;
+                    }
 
-                }
 
-            }
+                    const id =
+                        el.dataset.id;
 
 
-            function nextPodcast(dir = 1) {
+                    const action =
+                        el.dataset.action;
 
-                if (!state.current) {
-                    return;
-                }
 
+                    if (
+                        action === "play"
+                    ) {
 
-                const i =
-                    state.all.findIndex(
-                        x =>
-                            Number(x.id) ===
-                            Number(
-                                state.current.id
-                            )
-                    );
-
-
-                const n =
-                    i + dir;
-
-
-                if (
-                    n < 0 ||
-                    n >= state.all.length
-                ) {
-
-                    toast(
-                        dir > 0
-                            ? "این آخرین پادکست است."
-                            : "این اولین پادکست است."
-                    );
-
-                    return;
-
-                }
-
-
-                playPodcast(
-                    state.all[n].id
-                );
-
-            }
-
-
-            function updateMediaSession() {
-
-                if (
-                    !("mediaSession" in navigator) ||
-                    !state.current
-                ) {
-
-                    return;
-
-                }
-
-
-                try {
-
-                    navigator.mediaSession.metadata =
-                        new MediaMetadata({
-
-                            title:
-                                state.current.title ||
-                                "NightCast",
-
-                            artist:
-                                state.current.author_name ||
-                                "NightCast Radio",
-
-                            album:
-                                state.current.book_name ||
-                                "NightCast Radio",
-
-                            artwork: [
-
-                                {
-                                    src:
-                                        state.current.cover_url ||
-                                        placeholder,
-
-                                    sizes:
-                                        "512x512",
-
-                                    type:
-                                        "image/png"
-                                }
-
-                            ]
-
-                        });
-
-
-                    navigator.mediaSession.setActionHandler(
-                        "play",
-                        () =>
-                            els.audio.play()
-                    );
-
-
-                    navigator.mediaSession.setActionHandler(
-                        "pause",
-                        () =>
-                            els.audio.pause()
-                    );
-
-
-                    navigator.mediaSession.setActionHandler(
-                        "nexttrack",
-                        () =>
-                            nextPodcast(1)
-                    );
-
-
-                    navigator.mediaSession.setActionHandler(
-                        "previoustrack",
-                        () =>
-                            nextPodcast(-1)
-                    );
-
-                } catch { }
-
-            }
-
-
-            /* =========================================================
-               DOWNLOAD
-            ========================================================= */
-
-            function downloadPodcast(id) {
-
-                const p =
-                    state.all.find(
-                        x =>
-                            Number(x.id) ===
-                            Number(id)
-                    );
-
-
-                if (!p?.audio_url) {
-
-                    toast(
-                        "فایل دانلود موجود نیست."
-                    );
-
-                    return;
-
-                }
-
-
-                const a =
-                    document.createElement(
-                        "a"
-                    );
-
-
-                a.href =
-                    p.audio_url;
-
-                a.target =
-                    "_blank";
-
-                a.rel =
-                    "noopener";
-
-                a.click();
-
-            }
-
-
-            /* =========================================================
-               SOCIAL
-            ========================================================= */
-
-            function renderSocials() {
-
-                els.socialMenu.innerHTML =
-                    CONFIG.SOCIALS
-                        .map(
-                            s =>
-                                `
-                                                        <a
-                                                            class="social-item"
-                                                            href="${s.url || "#"}"
-                                                            data-social="${s.key}"
-                                                            ${s.url
-                                    ? 'target="_blank" rel="noopener noreferrer"'
-                                    : ""
-                                }>
-
-                                                            <i class="${s.icon}"></i>
-
-                                                            <span>
-                                                                ${s.label}
-                                                            </span>
-
-                                                        </a>
-                                                        `
-                        )
-                        .join("");
-
-            }
-
-
-            /* =========================================================
-               EVENTS
-            ========================================================= */
-
-            function bindEvents() {
-
-
-                /* -----------------------------------------------------
-                   Podcast Grid
-                ----------------------------------------------------- */
-
-                els.grid.addEventListener(
-                    "click",
-                    e => {
-
-                        const el =
-                            e.target.closest(
-                                "[data-action]"
-                            );
-
-
-                        if (!el) {
-                            return;
-                        }
-
-
-                        const id =
-                            el.dataset.id;
-
-
-                        const action =
-                            el.dataset.action;
-
-
-                        if (
-                            action === "play"
-                        ) {
-
-                            playPodcast(
-                                id
-                            );
-
-                        }
-
-                        else if (
-                            action === "favorite"
-                        ) {
-
-                            toggleFavorite(
-                                id
-                            );
-
-                        }
-
-                        else if (
-                            action === "download"
-                        ) {
-
-                            downloadPodcast(
-                                id
-                            );
-
-                        }
-
-                        else if (
-                            action === "reload"
-                        ) {
-
-                            loadPodcasts();
-
-                        }
-
-                        else if (
-                            action === "clear-search"
-                        ) {
-
-                            state.query =
-                                "";
-
-                            els.search.value =
-                                "";
-
-                            els.clear.classList.remove(
-                                "show"
-                            );
-
-                            state.page =
-                                1;
-
-                            applyView();
-
-                        }
+                        playPodcast(
+                            id
+                        );
 
                     }
-                );
 
+                    else if (
+                        action === "favorite"
+                    ) {
 
-                /* -----------------------------------------------------
-                   Search
-                ----------------------------------------------------- */
+                        toggleFavorite(
+                            id
+                        );
 
-                els.search.addEventListener(
-                    "input",
-                    () => {
+                    }
+
+                    else if (
+                        action === "download"
+                    ) {
+
+                        downloadPodcast(
+                            id
+                        );
+
+                    }
+
+                    else if (
+                        action === "reload"
+                    ) {
+
+                        loadPodcasts();
+
+                    }
+
+                    else if (
+                        action === "clear-search"
+                    ) {
 
                         state.query =
-                            els.search.value.trim();
-
-
-                        els.clear.classList.toggle(
-                            "show",
-                            !!state.query
-                        );
-
-
-                        clearTimeout(
-                            state.searchTimer
-                        );
-
-
-                        state.searchTimer =
-                            setTimeout(
-                                () => {
-
-                                    state.page =
-                                        1;
-
-                                    applyView();
-
-                                },
-                                180
-                            );
-
-                    }
-                );
-
-
-                els.clear.addEventListener(
-                    "click",
-                    () => {
-
-                        els.search.value =
                             "";
 
-                        state.query =
+                        els.search.value =
                             "";
 
                         els.clear.classList.remove(
@@ -3963,332 +3979,115 @@
 
                         applyView();
 
-                        els.search.focus();
-
                     }
-                );
 
+                }
+            );
 
-                /* -----------------------------------------------------
-                   Player
-                ----------------------------------------------------- */
 
-                els.play.addEventListener(
-                    "click",
-                    togglePlay
-                );
+            /* -----------------------------------------------------
+               Search
+            ----------------------------------------------------- */
 
+            els.search.addEventListener(
+                "input",
+                () => {
 
-                els.prev.addEventListener(
-                    "click",
-                    () =>
-                        nextPodcast(-1)
-                );
+                    state.query =
+                        els.search.value.trim();
 
 
-                els.next.addEventListener(
-                    "click",
-                    () =>
-                        nextPodcast(1)
-                );
-
-
-                els.progress.addEventListener(
-                    "input",
-                    () => {
-
-                        if (
-                            els.audio.duration
-                        ) {
-
-                            els.audio.currentTime =
-                                (
-                                    els.progress.value /
-                                    100
-                                ) *
-                                els.audio.duration;
-
-                        }
-
-                    }
-                );
-
-
-                els.volume.addEventListener(
-                    "input",
-                    () =>
-                        els.audio.volume =
-                        Number(
-                            els.volume.value
-                        ) / 100
-                );
-
-
-                els.audio.volume =
-                    1;
-
-
-                els.audio.addEventListener(
-                    "play",
-                    () => {
-
-                        els.playIcon.className =
-                            "fa-solid fa-pause";
-
-                        updateCardPlaying();
-
-                    }
-                );
-
-
-                els.audio.addEventListener(
-                    "pause",
-                    () => {
-
-                        els.playIcon.className =
-                            "fa-solid fa-play";
-
-                        updateCardPlaying();
-
-                    }
-                );
-
-
-                els.audio.addEventListener(
-                    "timeupdate",
-                    () => {
-
-                        if (
-                            els.audio.duration
-                        ) {
-
-                            els.progress.value =
-                                (
-                                    els.audio.currentTime /
-                                    els.audio.duration
-                                ) *
-                                100;
-
-
-                            els.current.textContent =
-                                formatTime(
-                                    els.audio.currentTime
-                                );
-
-                        }
-
-                    }
-                );
-
-
-                els.audio.addEventListener(
-                    "loadedmetadata",
-                    () =>
-                        els.duration.textContent =
-                        formatTime(
-                            els.audio.duration
-                        )
-                );
-
-
-                els.audio.addEventListener(
-                    "ended",
-                    () =>
-                        nextPodcast(1)
-                );
-
-
-                els.audio.addEventListener(
-                    "error",
-                    () =>
-                        toast(
-                            "فایل صوتی قابل پخش نیست."
-                        )
-                );
-
-
-                /* -----------------------------------------------------
-                   Social
-                ----------------------------------------------------- */
-
-                els.socialToggle.addEventListener(
-                    "click",
-                    e => {
-
-                        e.stopPropagation();
-
-
-                        els.socialWrap.classList.toggle(
-                            "open"
-                        );
-
-
-                        els.socialToggle.setAttribute(
-                            "aria-expanded",
-                            els.socialWrap.classList.contains(
-                                "open"
-                            )
-                        );
-
-                    }
-                );
-
-
-                document.addEventListener(
-                    "click",
-                    e => {
-
-                        if (
-                            !els.socialWrap.contains(
-                                e.target
-                            )
-                        ) {
-
-                            els.socialWrap.classList.remove(
-                                "open"
-                            );
-
-
-                            els.socialToggle.setAttribute(
-                                "aria-expanded",
-                                "false"
-                            );
-
-                        }
-
-                    }
-                );
-
-
-                /* -----------------------------------------------------
-                   USER BUTTON
-                ----------------------------------------------------- */
-
-                els.loginBtn.addEventListener(
-                    "click",
-                    openUserAccount
-                );
-
-
-                /* -----------------------------------------------------
-                   Mobile Navigation
-                ----------------------------------------------------- */
-
-                $$(".mobile-nav a")
-                    .forEach(
-                        a =>
-                            a.addEventListener(
-                                "click",
-                                () => {
-
-                                    $$(".mobile-nav a")
-                                        .forEach(
-                                            x =>
-                                                x.classList.remove(
-                                                    "active"
-                                                )
-                                        );
-
-
-                                    a.classList.add(
-                                        "active"
-                                    );
-
-                                }
-                            )
+                    els.clear.classList.toggle(
+                        "show",
+                        !!state.query
                     );
 
-            }
+
+                    clearTimeout(
+                        state.searchTimer
+                    );
 
 
-            /* =========================================================
-               PREVENT ZOOM
-            ========================================================= */
+                    state.searchTimer =
+                        setTimeout(
+                            () => {
 
-            function preventZoom() {
+                                state.page =
+                                    1;
 
-                document.addEventListener(
-                    "gesturestart",
-                    e =>
-                        e.preventDefault(),
-                    {
-                        passive: false
-                    }
-                );
+                                applyView();
 
+                            },
+                            180
+                        );
 
-                document.addEventListener(
-                    "gesturechange",
-                    e =>
-                        e.preventDefault(),
-                    {
-                        passive: false
-                    }
-                );
+                }
+            );
 
 
-                document.addEventListener(
-                    "gestureend",
-                    e =>
-                        e.preventDefault(),
-                    {
-                        passive: false
-                    }
-                );
+            els.clear.addEventListener(
+                "click",
+                () => {
+
+                    els.search.value =
+                        "";
+
+                    state.query =
+                        "";
+
+                    els.clear.classList.remove(
+                        "show"
+                    );
+
+                    state.page =
+                        1;
+
+                    applyView();
+
+                    els.search.focus();
+
+                }
+            );
 
 
-                let last =
-                    0;
+            /* -----------------------------------------------------
+               Player
+            ----------------------------------------------------- */
+
+            els.play.addEventListener(
+                "click",
+                togglePlay
+            );
 
 
-                document.addEventListener(
-                    "touchend",
-                    e => {
-
-                        const now =
-                            Date.now();
-
-
-                        if (
-                            now - last <
-                            300
-                        ) {
-
-                            e.preventDefault();
-
-                        }
+            els.prev.addEventListener(
+                "click",
+                () =>
+                    nextPodcast(-1)
+            );
 
 
-                        last =
-                            now;
-
-                    },
-                    {
-                        passive: false
-                    }
-                );
-
-            }
+            els.next.addEventListener(
+                "click",
+                () =>
+                    nextPodcast(1)
+            );
 
 
-            /* =========================================================
-               STORAGE / AUTH SYNC
-            ========================================================= */
-
-            window.addEventListener(
-                "storage",
-                event => {
+            els.progress.addEventListener(
+                "input",
+                () => {
 
                     if (
-                        event.key ===
-                        CONFIG.USER_KEY ||
-                        event.key ===
-                        CONFIG.TOKEN_KEY
+                        els.audio.duration
                     ) {
 
-                        updateUserUI();
-
-                        loadFavorites();
+                        els.audio.currentTime =
+                            (
+                                els.progress.value /
+                                100
+                            ) *
+                            els.audio.duration;
 
                     }
 
@@ -4296,28 +4095,145 @@
             );
 
 
-            window.addEventListener(
-                "pageshow",
+            els.volume.addEventListener(
+                "input",
+                () =>
+                    els.audio.volume =
+                    Number(
+                        els.volume.value
+                    ) / 100
+            );
+
+
+            els.audio.volume =
+                1;
+
+
+            els.audio.addEventListener(
+                "play",
                 () => {
 
-                    updateUserUI();
+                    els.playIcon.className =
+                        "fa-solid fa-pause";
 
-                    loadFavorites();
+                    updateCardPlaying();
+
+                }
+            );
+
+
+            els.audio.addEventListener(
+                "pause",
+                () => {
+
+                    els.playIcon.className =
+                        "fa-solid fa-play";
+
+                    updateCardPlaying();
+
+                }
+            );
+
+
+            els.audio.addEventListener(
+                "timeupdate",
+                () => {
+
+                    if (
+                        els.audio.duration
+                    ) {
+
+                        els.progress.value =
+                            (
+                                els.audio.currentTime /
+                                els.audio.duration
+                            ) *
+                            100;
+
+
+                        els.current.textContent =
+                            formatTime(
+                                els.audio.currentTime
+                            );
+
+                    }
+
+                }
+            );
+
+
+            els.audio.addEventListener(
+                "loadedmetadata",
+                () =>
+                    els.duration.textContent =
+                    formatTime(
+                        els.audio.duration
+                    )
+            );
+
+
+            els.audio.addEventListener(
+                "ended",
+                () =>
+                    nextPodcast(1)
+            );
+
+
+            els.audio.addEventListener(
+                "error",
+                () =>
+                    toast(
+                        "فایل صوتی قابل پخش نیست."
+                    )
+            );
+
+
+            /* -----------------------------------------------------
+               Social
+            ----------------------------------------------------- */
+
+            els.socialToggle.addEventListener(
+                "click",
+                e => {
+
+                    e.stopPropagation();
+
+
+                    els.socialWrap.classList.toggle(
+                        "open"
+                    );
+
+
+                    els.socialToggle.setAttribute(
+                        "aria-expanded",
+                        els.socialWrap.classList.contains(
+                            "open"
+                        )
+                    );
 
                 }
             );
 
 
             document.addEventListener(
-                "visibilitychange",
-                () => {
+                "click",
+                e => {
 
                     if (
-                        document.visibilityState ===
-                        "visible"
+                        !els.socialWrap.contains(
+                            e.target
+                        )
                     ) {
 
-                        updateUserUI();
+                        els.socialWrap.classList.remove(
+                            "open"
+                        );
+
+
+                        els.socialToggle.setAttribute(
+                            "aria-expanded",
+                            "false"
+                        );
 
                     }
 
@@ -4325,70 +4241,235 @@
             );
 
 
-            /* =========================================================
-               INIT
-            ========================================================= */
+            /* -----------------------------------------------------
+               USER BUTTON
+            ----------------------------------------------------- */
 
-            function init() {
-
-
-                $("#year").textContent =
-                    new Date()
-                        .getFullYear()
-                        .toLocaleString(
-                            "fa-IR"
-                        );
+            els.loginBtn.addEventListener(
+                "click",
+                openUserAccount
+            );
 
 
-                /*
-                 * مهم:
-                 * قبل از هر چیز وضعیت کاربر را
-                 * از localStorage بخوان.
-                 */
+            /* -----------------------------------------------------
+               Mobile Navigation
+            ----------------------------------------------------- */
 
-                updateUserUI();
+            $$(".mobile-nav a")
+                .forEach(
+                    a =>
+                        a.addEventListener(
+                            "click",
+                            () => {
+
+                                $$(".mobile-nav a")
+                                    .forEach(
+                                        x =>
+                                            x.classList.remove(
+                                                "active"
+                                            )
+                                    );
 
 
-                renderSocials();
+                                a.classList.add(
+                                    "active"
+                                );
+
+                            }
+                        )
+                );
+
+        }
 
 
-                bindEvents();
+        /* =========================================================
+           PREVENT ZOOM
+        ========================================================= */
+
+        function preventZoom() {
+
+            document.addEventListener(
+                "gesturestart",
+                e =>
+                    e.preventDefault(),
+                {
+                    passive: false
+                }
+            );
 
 
-                preventZoom();
+            document.addEventListener(
+                "gesturechange",
+                e =>
+                    e.preventDefault(),
+                {
+                    passive: false
+                }
+            );
 
 
-                loadPodcasts();
+            document.addEventListener(
+                "gestureend",
+                e =>
+                    e.preventDefault(),
+                {
+                    passive: false
+                }
+            );
 
 
-                loadFavorites();
+            let last =
+                0;
 
+
+            document.addEventListener(
+                "touchend",
+                e => {
+
+                    const now =
+                        Date.now();
+
+
+                    if (
+                        now - last <
+                        300
+                    ) {
+
+                        e.preventDefault();
+
+                    }
+
+
+                    last =
+                        now;
+
+                },
+                {
+                    passive: false
+                }
+            );
+
+        }
+
+
+        /* =========================================================
+           STORAGE / AUTH SYNC
+        ========================================================= */
+
+        window.addEventListener(
+            "storage",
+            event => {
 
                 if (
-                    "serviceWorker" in
-                    navigator
+                    event.key ===
+                    CONFIG.USER_KEY ||
+                    event.key ===
+                    CONFIG.TOKEN_KEY
                 ) {
 
-                    console.info(
-                        "NightCast PWA metadata enabled; add sw.js for full offline install support."
-                    );
+                    updateUserUI();
+
+                    loadFavorites();
 
                 }
 
             }
+        );
 
 
-            document.readyState === "loading"
+        window.addEventListener(
+            "pageshow",
+            () => {
 
-                ? document.addEventListener(
-                    "DOMContentLoaded",
-                    init
-                )
+                updateUserUI();
 
-                : init();
+                loadFavorites();
+
+            }
+        );
 
 
-        })();
+        document.addEventListener(
+            "visibilitychange",
+            () => {
+
+                if (
+                    document.visibilityState ===
+                    "visible"
+                ) {
+
+                    updateUserUI();
+
+                }
+
+            }
+        );
+
+
+        /* =========================================================
+           INIT
+        ========================================================= */
+
+        function init() {
+
+
+            $("#year").textContent =
+                new Date()
+                    .getFullYear()
+                    .toLocaleString(
+                        "fa-IR"
+                    );
+
+
+            /*
+             * مهم:
+             * قبل از هر چیز وضعیت کاربر را
+             * از localStorage بخوان.
+             */
+
+            updateUserUI();
+
+
+            renderSocials();
+
+
+            bindEvents();
+
+
+            preventZoom();
+
+
+            loadPodcasts();
+
+
+            loadFavorites();
+
+
+            if (
+                "serviceWorker" in
+                navigator
+            ) {
+
+                console.info(
+                    "NightCast PWA metadata enabled; add sw.js for full offline install support."
+                );
+
+            }
+
+        }
+
+
+        document.readyState === "loading"
+
+            ? document.addEventListener(
+                "DOMContentLoaded",
+                init
+            )
+
+            : init();
+
+
+                }) ();
 
     </script>
 

@@ -1245,9 +1245,9 @@
                     <button class="icon-btn" id="socialToggle" aria-label="شبکه‌های اجتماعی" aria-expanded="false"><i class="fa-solid fa-share-nodes"></i></button>
                     <div class="social-menu" id="socialMenu" aria-label="شبکه‌های اجتماعی"></div>
                 </div>
-               <button class="icon-btn" id="loginBtn" aria-label="حساب کاربری">
-    <i class="fa-regular fa-user"></i>
-</button>
+                <button class="icon-btn" id="loginBtn" aria-label="حساب کاربری">
+                    <i class="fa-regular fa-user"></i>
+                </button>
             </div>
         </nav>
     </header>
@@ -1341,7 +1341,7 @@
     <audio id="audioPlayer" preload="metadata"></audio>
 
     <script>
-    (() => {
+        (() => {
             "use strict";
 
             /* =========================================================
@@ -1482,26 +1482,26 @@
                 const cover = escapeHtml(p.cover_url || placeholder), audio = escapeHtml(p.audio_url || "");
                 const duration = formatTime(p.duration_seconds || 0), fav = isFavorite(id);
                 return `<article class="podcast-card" data-id="${id}">
-                      <div class="podcast-cover">
-                        <img src="${cover}" alt="${title}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${placeholder}'">
-                        <div class="cover-shade"></div>
-                        <button class="play-card" data-action="play" data-id="${id}" aria-label="پخش ${title}" ${audio ? "" : "disabled"}><i class="fa-solid fa-play"></i></button>
-                      </div>
-                      <div class="podcast-info">
-                        <h3 class="podcast-title">${title}</h3>
-                        <div class="meta">
-                          ${author ? `<span><i class="fa-solid fa-user"></i>${author}</span>` : ""}
-                          ${book ? `<span><i class="fa-solid fa-book"></i>${book}</span>` : ""}
-                          ${duration !== "00:00" ? `<span><i class="fa-regular fa-clock"></i>${duration}</span>` : ""}
-                        </div>
-                        <p class="podcast-desc">${desc}</p>
-                        <div class="card-footer">
-                          <button class="btn btn-primary" data-action="play" data-id="${id}" ${audio ? "" : "disabled"}><i class="fa-solid fa-play"></i> پخش</button>
-                          <button class="btn btn-secondary" data-action="download" data-id="${id}" ${audio ? "" : "disabled"}><i class="fa-solid fa-download"></i></button>
-                          <button class="favorite ${fav ? "active" : ""}" data-action="favorite" data-id="${id}" aria-label="علاقه‌مندی"><i class="${fav ? "fa-solid" : "fa-regular"} fa-heart"></i></button>
-                        </div>
-                      </div>
-                    </article>`;
+                              <div class="podcast-cover">
+                                <img src="${cover}" alt="${title}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${placeholder}'">
+                                <div class="cover-shade"></div>
+                                <button class="play-card" data-action="play" data-id="${id}" aria-label="پخش ${title}" ${audio ? "" : "disabled"}><i class="fa-solid fa-play"></i></button>
+                              </div>
+                              <div class="podcast-info">
+                                <h3 class="podcast-title">${title}</h3>
+                                <div class="meta">
+                                  ${author ? `<span><i class="fa-solid fa-user"></i>${author}</span>` : ""}
+                                  ${book ? `<span><i class="fa-solid fa-book"></i>${book}</span>` : ""}
+                                  ${duration !== "00:00" ? `<span><i class="fa-regular fa-clock"></i>${duration}</span>` : ""}
+                                </div>
+                                <p class="podcast-desc">${desc}</p>
+                                <div class="card-footer">
+                                  <button class="btn btn-primary" data-action="play" data-id="${id}" ${audio ? "" : "disabled"}><i class="fa-solid fa-play"></i> پخش</button>
+                                  <button class="btn btn-secondary" data-action="download" data-id="${id}" ${audio ? "" : "disabled"}><i class="fa-solid fa-download"></i></button>
+                                  <button class="favorite ${fav ? "active" : ""}" data-action="favorite" data-id="${id}" aria-label="علاقه‌مندی"><i class="${fav ? "fa-solid" : "fa-regular"} fa-heart"></i></button>
+                                </div>
+                              </div>
+                            </article>`;
             }
 
             function render(items) {
@@ -1618,18 +1618,18 @@
                     els.grid.className = "podcast-grid";
 
                     els.grid.innerHTML = `
-                        <div class="error-state" style="grid-column:1/-1">
-                            <i class="fa-solid fa-circle-exclamation"></i>
-                            <h3>دریافت پادکست‌ها ناموفق بود</h3>
-                            <p>${escapeHtml(
+                                <div class="error-state" style="grid-column:1/-1">
+                                    <i class="fa-solid fa-circle-exclamation"></i>
+                                    <h3>دریافت پادکست‌ها ناموفق بود</h3>
+                                    <p>${escapeHtml(
                         err.message || "خطای نامشخص"
                     )}</p>
-                            <button class="btn btn-primary" data-action="reload">
-                                <i class="fa-solid fa-rotate"></i>
-                                تلاش دوباره
-                            </button>
-                        </div>
-                    `;
+                                    <button class="btn btn-primary" data-action="reload">
+                                        <i class="fa-solid fa-rotate"></i>
+                                        تلاش دوباره
+                                    </button>
+                                </div>
+                            `;
                 }
             }
 
@@ -1678,47 +1678,44 @@
                 } catch { }
             }
 
-function getSessionToken() {
-    return localStorage.getItem(CONFIG.TOKEN_KEY);
-}
+            function getSessionToken() {
+                return localStorage.getItem(CONFIG.TOKEN_KEY);
+            }
 
-function getSessionUser() {
-    try {
-        const user = localStorage.getItem("NightCastUser");
-        return user ? JSON.parse(user) : null;
-    } catch {
-        return null;
-    }
-}
+            function getSessionUser() {
+                try {
+                    const user = localStorage.getItem("NightCastUser");
+                    return user ? JSON.parse(user) : null;
+                } catch {
+                    return null;
+                }
+            }
 
-function isLoggedIn() {
-    return !!getSessionToken() && !!getSessionUser();
-}
-        
-function authHeaders(extra = {}) {
-    const token = getSessionToken();
+            function isLoggedIn() {
+                return !!getSessionToken() && !!getSessionUser();
+            }
 
-    const headers = {
-        ...extra
-    };
+            function authHeaders(extra = {}) {
+                const token = getSessionToken();
 
-    if (token) {
-        headers.Authorization = `Bearer ${token}`;
-    }
+                const headers = {
+                    ...extra
+                };
 
-    return headers;
-}
-        
+                if (token) {
+                    headers.Authorization = `Bearer ${token}`;
+                }
+
+                return headers;
+            }
+
             async function toggleFavorite(id) {
 
                 const token = getToken();
 
-                if (!token) {
-
+                if (!isLoggedIn()) {
                     toast("برای ذخیره علاقه‌مندی ابتدا وارد حساب کاربری شوید.");
-
-                    els.loginModal.classList.add("show");
-
+                    window.location.href = "login.html";
                     return;
                 }
 

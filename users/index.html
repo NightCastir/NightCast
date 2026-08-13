@@ -1477,7 +1477,7 @@ async function loadFavorites() {
             function updateStats() {
                 els.count.textContent = state.all.length.toLocaleString("fa-IR");
                 els.books.textContent = new Set(state.all.map(x => x.book_name).filter(Boolean)).size.toLocaleString("fa-IR");
-                els.favCount.textContent = getFavorites().length.toLocaleString("fa-IR");
+                els.favCount.textContent = favoriteIds.size.toLocaleString("fa-IR");
             }
 
             function skeletons(n = 4) {

@@ -1687,11 +1687,98 @@ async function loadFavorites() {
                 } catch { }
             }
 
-            function toggleFavorite(id) {
-                let f = getFavorites(), n = Number(id);
-                f = f.some(x => Number(x) === n) ? f.filter(x => Number(x) !== n) : [...f, n];
-                saveFavorites(f); updateStats(); applyView();
+       
+            async function toggleFavorite(id) {
+
+    const token = getToken();
+
+    if (!token) {
+
+        toast("برای ذخیره علاقه‌مندی ابتدا وارد حساب کاربری شوید.");
+
+        els.loginModal.classList.add("show");
+
+        return;
+    }
+
+    const podcastId = Number(id);
+
+    if (!Number.isFinite(podcastId)) {
+        toast("شناسه پادکست نامعتبر است.");
+        return;
+    }
+
+    const alreadyFavorite = favoriteIds.has(podcastId);
+
+    try {
+
+        const res = await fetch(
+            `${CONFIG.API_BASE}/favorites`,
+            {
+                method: alreadyFavorite ? "DELETE" : "POST",
+
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+
+                body: JSON.stringify({
+                    podcast_id: podcastId
+                })
             }
+        );
+
+        const data = await res.json().catch(() => ({}));
+
+        if (res.status === 401) {
+
+            favoriteIds.delete(podcastId);
+
+            toast("نشست شما منقضی شده است. دوباره وارد شوید.");
+
+            els.loginModal.classList.add("show");
+
+            return;
+        }
+
+        if (!res.ok || data.success === false) {
+
+            throw new Error(
+                data.message ||
+                "ذخیره علاقه‌مندی انجام نشد."
+            );
+
+        }
+
+        if (alreadyFavorite) {
+
+            favoriteIds.delete(podcastId);
+
+            toast("از علاقه‌مندی‌ها حذف شد.");
+
+        } else {
+
+            favoriteIds.add(podcastId);
+
+            toast("به علاقه‌مندی‌ها اضافه شد.");
+
+        }
+
+        updateStats();
+        applyView();
+
+    } catch (err) {
+
+        console.error("Favorite Error:", err);
+
+        toast(
+            err.message ||
+            "خطا در ذخیره علاقه‌مندی."
+        );
+
+    }
+}
 
             function downloadPodcast(id) {
                 const p = state.all.find(x => Number(x.id) === Number(id));

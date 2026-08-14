@@ -2665,8 +2665,97 @@
 
             }
 
+            /* =========================================================
+                CLOSE PROFILE OVERLAY
+            ========================================================= */
+
+            function closeProfileOverlay() {
+
+                const overlay =
+                    document.getElementById(
+                        "profileOverlay"
+                    );
+
+                if (!overlay) {
+                    return;
+                }
+
+                overlay.classList.remove(
+                    "show"
+                );
+
+                overlay.setAttribute(
+                    "aria-hidden",
+                    "true"
+                );
+
+                document.body.style.overflow =
+                    "";
+
+            }
 
 
+            /* =========================================================
+LOGOUT
+========================================================= */
+
+            function logoutUser() {
+
+                /* -----------------------------------------
+                   حذف نشست کاربر
+                ----------------------------------------- */
+
+                localStorage.removeItem(
+                    CONFIG.TOKEN_KEY
+                );
+
+                localStorage.removeItem(
+                    CONFIG.USER_KEY
+                );
+
+
+                /* -----------------------------------------
+                   پاک کردن علاقه‌مندی‌های محلی
+                ----------------------------------------- */
+
+                favoriteIds =
+                    new Set();
+
+
+                totalFavoriteCount =
+                    0;
+
+
+                /* -----------------------------------------
+                   بستن Profile
+                ----------------------------------------- */
+
+                closeProfileOverlay();
+
+
+                /* -----------------------------------------
+                   به‌روزرسانی وضعیت Header
+                ----------------------------------------- */
+
+                updateUserUI();
+
+
+                /* -----------------------------------------
+                   به‌روزرسانی علاقه‌مندی‌ها
+                ----------------------------------------- */
+
+                loadFavorites();
+
+
+                /* -----------------------------------------
+                   پیام
+                ----------------------------------------- */
+
+                toast(
+                    "با موفقیت از حساب کاربری خارج شدید."
+                );
+
+            }
             /* =========================================================
                FAVORITES
             ========================================================= */
@@ -2989,16 +3078,16 @@
                             length: n
                         },
                         () => `
-                                                                                    <div class="sk-card">
+                                                                                            <div class="sk-card">
 
-                                                                                        <div class="skeleton sk-cover"></div>
+                                                                                                <div class="skeleton sk-cover"></div>
 
-                                                                                        <div class="skeleton sk-line"></div>
+                                                                                                <div class="skeleton sk-line"></div>
 
-                                                                                        <div class="skeleton sk-line short"></div>
+                                                                                                <div class="skeleton sk-line short"></div>
 
-                                                                                    </div>
-                                                                                `
+                                                                                            </div>
+                                                                                        `
                     )
                         .join("");
 
@@ -3067,128 +3156,128 @@
 
                 return `
 
-                                                                            <article
-                                                                                class="podcast-card"
-                                                                                data-id="${id}">
+                                                                                    <article
+                                                                                        class="podcast-card"
+                                                                                        data-id="${id}">
 
-                                                                                <div class="podcast-cover">
+                                                                                        <div class="podcast-cover">
 
-                                                                                    <img
-                                                                                        src="${cover}"
-                                                                                        alt="${title}"
-                                                                                        loading="lazy"
-                                                                                        decoding="async"
-                                                                                        onerror="this.onerror=null;this.src='${placeholder}'">
+                                                                                            <img
+                                                                                                src="${cover}"
+                                                                                                alt="${title}"
+                                                                                                loading="lazy"
+                                                                                                decoding="async"
+                                                                                                onerror="this.onerror=null;this.src='${placeholder}'">
 
-                                                                                    <div class="cover-shade"></div>
-
-
-                                                                                    <button
-                                                                                        class="play-card"
-                                                                                        data-action="play"
-                                                                                        data-id="${id}"
-                                                                                        aria-label="پخش ${title}"
-                                                                                        ${audio ? "" : "disabled"}>
-
-                                                                                        <i class="fa-solid fa-play"></i>
-
-                                                                                    </button>
-
-                                                                                </div>
+                                                                                            <div class="cover-shade"></div>
 
 
-                                                                                <div class="podcast-info">
+                                                                                            <button
+                                                                                                class="play-card"
+                                                                                                data-action="play"
+                                                                                                data-id="${id}"
+                                                                                                aria-label="پخش ${title}"
+                                                                                                ${audio ? "" : "disabled"}>
 
-                                                                                    <h3 class="podcast-title">
-                                                                                        ${title}
-                                                                                    </h3>
+                                                                                                <i class="fa-solid fa-play"></i>
+
+                                                                                            </button>
+
+                                                                                        </div>
 
 
-                                                                                    <div class="meta">
+                                                                                        <div class="podcast-info">
 
-                                                                                        ${author
+                                                                                            <h3 class="podcast-title">
+                                                                                                ${title}
+                                                                                            </h3>
+
+
+                                                                                            <div class="meta">
+
+                                                                                                ${author
                         ? `
-                                                                                                    <span>
-                                                                                                        <i class="fa-solid fa-user"></i>
-                                                                                                        ${author}
-                                                                                                    </span>
-                                                                                                  `
+                                                                                                            <span>
+                                                                                                                <i class="fa-solid fa-user"></i>
+                                                                                                                ${author}
+                                                                                                            </span>
+                                                                                                          `
                         : ""
                     }
 
 
-                                                                                        ${book
+                                                                                                ${book
                         ? `
-                                                                                                    <span>
-                                                                                                        <i class="fa-solid fa-book"></i>
-                                                                                                        ${book}
-                                                                                                    </span>
-                                                                                                  `
+                                                                                                            <span>
+                                                                                                                <i class="fa-solid fa-book"></i>
+                                                                                                                ${book}
+                                                                                                            </span>
+                                                                                                          `
                         : ""
                     }
 
 
-                                                                                        ${duration !== "00:00"
+                                                                                                ${duration !== "00:00"
                         ? `
-                                                                                                    <span>
-                                                                                                        <i class="fa-regular fa-clock"></i>
-                                                                                                        ${duration}
-                                                                                                    </span>
-                                                                                                  `
+                                                                                                            <span>
+                                                                                                                <i class="fa-regular fa-clock"></i>
+                                                                                                                ${duration}
+                                                                                                            </span>
+                                                                                                          `
                         : ""
                     }
 
-                                                                                    </div>
+                                                                                            </div>
 
 
-                                                                                    <p class="podcast-desc">
-                                                                                        ${desc}
-                                                                                    </p>
+                                                                                            <p class="podcast-desc">
+                                                                                                ${desc}
+                                                                                            </p>
 
 
-                                                                                    <div class="card-footer">
+                                                                                            <div class="card-footer">
 
-                                                                                        <button
-                                                                                            class="btn btn-primary"
-                                                                                            data-action="play"
-                                                                                            data-id="${id}"
-                                                                                            ${audio ? "" : "disabled"}>
+                                                                                                <button
+                                                                                                    class="btn btn-primary"
+                                                                                                    data-action="play"
+                                                                                                    data-id="${id}"
+                                                                                                    ${audio ? "" : "disabled"}>
 
-                                                                                            <i class="fa-solid fa-play"></i>
+                                                                                                    <i class="fa-solid fa-play"></i>
 
-                                                                                            پخش
+                                                                                                    پخش
 
-                                                                                        </button>
-
-
-                                                                                        <button
-                                                                                            class="btn btn-secondary"
-                                                                                            data-action="download"
-                                                                                            data-id="${id}"
-                                                                                            ${audio ? "" : "disabled"}>
-
-                                                                                            <i class="fa-solid fa-download"></i>
-
-                                                                                        </button>
+                                                                                                </button>
 
 
-                                                                                        <button
-                                                                                            class="favorite ${fav ? "active" : ""}"
-                                                                                            data-action="favorite"
-                                                                                            data-id="${id}"
-                                                                                            aria-label="علاقه‌مندی">
+                                                                                                <button
+                                                                                                    class="btn btn-secondary"
+                                                                                                    data-action="download"
+                                                                                                    data-id="${id}"
+                                                                                                    ${audio ? "" : "disabled"}>
 
-                                                                                            <i class="${fav ? "fa-solid" : "fa-regular"} fa-heart"></i>
+                                                                                                    <i class="fa-solid fa-download"></i>
 
-                                                                                        </button>
+                                                                                                </button>
 
-                                                                                    </div>
 
-                                                                                </div>
+                                                                                                <button
+                                                                                                    class="favorite ${fav ? "active" : ""}"
+                                                                                                    data-action="favorite"
+                                                                                                    data-id="${id}"
+                                                                                                    aria-label="علاقه‌مندی">
 
-                                                                            </article>
+                                                                                                    <i class="${fav ? "fa-solid" : "fa-regular"} fa-heart"></i>
 
-                                                                        `;
+                                                                                                </button>
+
+                                                                                            </div>
+
+                                                                                        </div>
+
+                                                                                    </article>
+
+                                                                                `;
 
             }
 
@@ -3203,42 +3292,42 @@
 
                     els.grid.innerHTML = `
 
-                                                                                <div
-                                                                                    class="empty"
-                                                                                    style="grid-column:1/-1">
+                                                                                        <div
+                                                                                            class="empty"
+                                                                                            style="grid-column:1/-1">
 
-                                                                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                                                                            <i class="fa-solid fa-magnifying-glass"></i>
 
-                                                                                    <h3>
-                                                                                        ${state.query
+                                                                                            <h3>
+                                                                                                ${state.query
                             ? `پادکستی برای «${escapeHtml(state.query)}» پیدا نشد.`
                             : "هنوز پادکستی ثبت نشده است."
                         }
-                                                                                    </h3>
+                                                                                            </h3>
 
-                                                                                    <p>
-                                                                                        ${state.query
+                                                                                            <p>
+                                                                                                ${state.query
                             ? "عبارت دیگری را امتحان کنید."
                             : "به‌زودی محتوای جدید در NightCast منتشر می‌شود."
                         }
-                                                                                    </p>
+                                                                                            </p>
 
-                                                                                    ${state.query
+                                                                                            ${state.query
                             ? `
-                                                                                                <button
-                                                                                                    class="btn btn-secondary"
-                                                                                                    data-action="clear-search">
+                                                                                                        <button
+                                                                                                            class="btn btn-secondary"
+                                                                                                            data-action="clear-search">
 
-                                                                                                    پاک کردن جستجو
+                                                                                                            پاک کردن جستجو
 
-                                                                                                </button>
-                                                                                              `
+                                                                                                        </button>
+                                                                                                      `
                             : ""
                         }
 
-                                                                                </div>
+                                                                                        </div>
 
-                                                                            `;
+                                                                                    `;
 
                     return;
 
@@ -3594,36 +3683,36 @@
 
                     els.grid.innerHTML = `
 
-                                                                                <div
-                                                                                    class="error-state"
-                                                                                    style="grid-column:1/-1">
+                                                                                        <div
+                                                                                            class="error-state"
+                                                                                            style="grid-column:1/-1">
 
-                                                                                    <i class="fa-solid fa-circle-exclamation"></i>
+                                                                                            <i class="fa-solid fa-circle-exclamation"></i>
 
-                                                                                    <h3>
-                                                                                        دریافت پادکست‌ها ناموفق بود
-                                                                                    </h3>
+                                                                                            <h3>
+                                                                                                دریافت پادکست‌ها ناموفق بود
+                                                                                            </h3>
 
-                                                                                    <p>
-                                                                                        ${escapeHtml(
+                                                                                            <p>
+                                                                                                ${escapeHtml(
                         err.message ||
                         "خطای نامشخص"
                     )}
-                                                                                    </p>
+                                                                                            </p>
 
-                                                                                    <button
-                                                                                        class="btn btn-primary"
-                                                                                        data-action="reload">
+                                                                                            <button
+                                                                                                class="btn btn-primary"
+                                                                                                data-action="reload">
 
-                                                                                        <i class="fa-solid fa-rotate"></i>
+                                                                                                <i class="fa-solid fa-rotate"></i>
 
-                                                                                        تلاش دوباره
+                                                                                                تلاش دوباره
 
-                                                                                    </button>
+                                                                                            </button>
 
-                                                                                </div>
+                                                                                        </div>
 
-                                                                            `;
+                                                                                    `;
 
                 }
 
@@ -3995,23 +4084,23 @@
                         .map(
                             s =>
                                 `
-                                                                                        <a
-                                                                                            class="social-item"
-                                                                                            href="${s.url || "#"}"
-                                                                                            data-social="${s.key}"
-                                                                                            ${s.url
+                                                                                                <a
+                                                                                                    class="social-item"
+                                                                                                    href="${s.url || "#"}"
+                                                                                                    data-social="${s.key}"
+                                                                                                    ${s.url
                                     ? 'target="_blank" rel="noopener noreferrer"'
                                     : ""
                                 }>
 
-                                                                                            <i class="${s.icon}"></i>
+                                                                                                    <i class="${s.icon}"></i>
 
-                                                                                            <span>
-                                                                                                ${s.label}
-                                                                                            </span>
+                                                                                                    <span>
+                                                                                                        ${s.label}
+                                                                                                    </span>
 
-                                                                                        </a>
-                                                                                        `
+                                                                                                </a>
+                                                                                                `
                         )
                         .join("");
 
@@ -4380,6 +4469,72 @@
                     openUserAccount
                 );
 
+                /* -----------------------------------------------------
+                     PROFILE CLOSE
+                ----------------------------------------------------- */
+
+                const profileClose =
+                    document.getElementById(
+                        "profileClose"
+                    );
+
+                if (profileClose) {
+
+                    profileClose.addEventListener(
+                        "click",
+                        closeProfileOverlay
+                    );
+
+                }
+
+
+                /* -----------------------------------------------------
+                      PROFILE LOGOUT
+                 ----------------------------------------------------- */
+
+                const profileLogout =
+                    document.getElementById(
+                        "profileLogout"
+                    );
+
+                if (profileLogout) {
+
+                    profileLogout.addEventListener(
+                        "click",
+                        logoutUser
+                    );
+
+                }
+
+
+                /* -----------------------------------------------------
+                   PROFILE BACKDROP
+                ----------------------------------------------------- */
+
+                const profileOverlay =
+                    document.getElementById(
+                        "profileOverlay"
+                    );
+
+                if (profileOverlay) {
+
+                    profileOverlay.addEventListener(
+                        "click",
+                        event => {
+
+                            if (
+                                event.target ===
+                                profileOverlay
+                            ) {
+
+                                closeProfileOverlay();
+
+                            }
+
+                        }
+                    );
+
+                }
 
                 /* -----------------------------------------------------
                    Mobile Navigation
@@ -4411,7 +4566,38 @@
 
             }
 
+            /* -----------------------------------------------------
+               PROFILE ESCAPE KEY
+              ----------------------------------------------------- */
 
+            document.addEventListener(
+                "keydown",
+                event => {
+
+                    if (
+                        event.key === "Escape"
+                    ) {
+
+                        const overlay =
+                            document.getElementById(
+                                "profileOverlay"
+                            );
+
+                        if (
+                            overlay &&
+                            overlay.classList.contains(
+                                "show"
+                            )
+                        ) {
+
+                            closeProfileOverlay();
+
+                        }
+
+                    }
+
+                }
+            );
             /* =========================================================
                PREVENT ZOOM
             ========================================================= */

@@ -2428,188 +2428,242 @@
             }
 
 
-     function openUserAccount() {
+            function openUserAccount() {
 
-/* -----------------------------------------
-   کاربر وارد نشده
------------------------------------------ */
+                /* =========================================================
+                   USER NOT LOGGED IN
+                ========================================================= */
 
-if (!isLoggedIn()) {
+                if (!isLoggedIn()) {
 
-    window.location.href =
-        CONFIG.LOGIN_PAGE;
+                    window.location.href =
+                        CONFIG.LOGIN_PAGE;
 
-    return;
+                    return;
 
-}
-
-
-/* -----------------------------------------
-   کاربر وارد شده
-   نمایش فرم پروفایل
------------------------------------------ */
-
-const modal =
-    document.getElementById(
-        "profileModal"
-    );
-
-const user =
-    getSessionUser();
+                }
 
 
-if (!modal || !user) {
+                /* =========================================================
+                   GET EXISTING PROFILE OVERLAY
+                ========================================================= */
 
-    console.error(
-        "NightCast: Profile Modal یا User پیدا نشد."
-    );
+                const overlay =
+                    document.getElementById(
+                        "profileOverlay"
+                    );
 
-    return;
-
-}
-
-
-/* -----------------------------------------
-   عناصر فرم
------------------------------------------ */
-
-const email =
-    document.getElementById(
-        "profileModalEmail"
-    );
-
-const title =
-    document.getElementById(
-        "profileModalTitle"
-    );
-
-const avatar =
-    document.getElementById(
-        "profileModalAvatar"
-    );
-
-const avatarFallback =
-    document.getElementById(
-        "profileModalAvatarFallback"
-    );
+                const user =
+                    getSessionUser();
 
 
-/* -----------------------------------------
-   نام کاربر
------------------------------------------ */
+                if (!overlay || !user) {
 
-const name =
-    getUserName(user);
+                    console.error(
+                        "NightCast: Profile Overlay یا اطلاعات کاربر پیدا نشد."
+                    );
 
+                    return;
 
-if (title) {
-
-    title.textContent =
-        name;
-
-}
+                }
 
 
-/* -----------------------------------------
-   ایمیل
------------------------------------------ */
+                /* =========================================================
+                   USER INFORMATION
+                ========================================================= */
 
-if (email) {
+                const name =
+                    getUserName(user);
 
-    email.textContent =
-        user.email ||
-        user.mail ||
-        "ایمیل ثبت نشده";
+                const email =
+                    user.email ||
+                    user.mail ||
+                    "ایمیل ثبت نشده";
 
-}
-
-
-/* -----------------------------------------
-   تصویر پروفایل
------------------------------------------ */
-
-const userImage =
-    getUserAvatar(user);
+                const avatar =
+                    getUserAvatar(user);
 
 
-if (
-    avatar &&
-    avatarFallback
-) {
+                /* =========================================================
+                   PROFILE ELEMENTS
+                ========================================================= */
 
-    if (userImage) {
+                const profileName =
+                    document.getElementById(
+                        "profileName"
+                    );
 
-        avatar.src =
-            userImage;
+                const profileEmail =
+                    document.getElementById(
+                        "profileEmail"
+                    );
 
-        avatar.alt =
-            name;
+                const profileAvatar =
+                    document.getElementById(
+                        "profileAvatar"
+                    );
 
-        avatar.classList.add(
-            "visible"
-        );
+                const profileGuest =
+                    document.getElementById(
+                        "profileGuest"
+                    );
 
-        avatarFallback.classList.add(
-            "hidden"
-        );
+                const profileLogged =
+                    document.getElementById(
+                        "profileLogged"
+                    );
+
+                const profileFavoriteCount =
+                    document.getElementById(
+                        "profileFavoriteCount"
+                    );
+
+                const profilePodcastCount =
+                    document.getElementById(
+                        "profilePodcastCount"
+                    );
+
+                const profileBookCount =
+                    document.getElementById(
+                        "profileBookCount"
+                    );
 
 
-        avatar.onerror =
-            () => {
+                /* =========================================================
+                   NAME
+                ========================================================= */
 
-                avatar.removeAttribute(
-                    "src"
+                if (profileName) {
+
+                    profileName.textContent =
+                        name;
+
+                }
+
+
+                /* =========================================================
+                   EMAIL
+                ========================================================= */
+
+                if (profileEmail) {
+
+                    profileEmail.textContent =
+                        email;
+
+                }
+
+
+                /* =========================================================
+                   AVATAR
+                ========================================================= */
+
+                if (profileAvatar) {
+
+                    if (avatar) {
+
+                        profileAvatar.src =
+                            avatar;
+
+                        profileAvatar.alt =
+                            name;
+
+                    } else {
+
+                        profileAvatar.removeAttribute(
+                            "src"
+                        );
+
+                        profileAvatar.alt =
+                            name;
+
+                    }
+
+                }
+
+
+                /* =========================================================
+                   SHOW LOGGED-IN PROFILE
+                ========================================================= */
+
+                if (profileGuest) {
+
+                    profileGuest.hidden =
+                        true;
+
+                }
+
+
+                if (profileLogged) {
+
+                    profileLogged.hidden =
+                        false;
+
+                }
+
+
+                /* =========================================================
+                   PROFILE STATISTICS
+                ========================================================= */
+
+                if (profileFavoriteCount) {
+
+                    profileFavoriteCount.textContent =
+                        totalFavoriteCount.toLocaleString(
+                            "fa-IR"
+                        );
+
+                }
+
+
+                if (profilePodcastCount) {
+
+                    profilePodcastCount.textContent =
+                        state.all.length.toLocaleString(
+                            "fa-IR"
+                        );
+
+                }
+
+
+                if (profileBookCount) {
+
+                    profileBookCount.textContent =
+                        new Set(
+                            state.all
+                                .map(
+                                    x =>
+                                        x.book_name
+                                )
+                                .filter(Boolean)
+                        )
+                            .size
+                            .toLocaleString(
+                                "fa-IR"
+                            );
+
+                }
+
+
+                /* =========================================================
+                   SHOW PROFILE OVERLAY
+                ========================================================= */
+
+                overlay.classList.add(
+                    "show"
                 );
 
-                avatar.classList.remove(
-                    "visible"
+                overlay.setAttribute(
+                    "aria-hidden",
+                    "false"
                 );
 
-                avatarFallback.classList.remove(
-                    "hidden"
-                );
 
-            };
+                /* Prevent background scrolling */
 
-    } else {
+                document.body.style.overflow =
+                    "hidden";
 
-        avatar.removeAttribute(
-            "src"
-        );
-
-        avatar.classList.remove(
-            "visible"
-        );
-
-        avatarFallback.classList.remove(
-            "hidden"
-        );
-
-    }
-
-}
-
-
-/* -----------------------------------------
-   نمایش Modal
------------------------------------------ */
-
-modal.classList.add(
-    "show"
-);
-
-modal.setAttribute(
-    "aria-hidden",
-    "false"
-);
-
-
-/* جلوگیری از اسکرول صفحه */
-document.body.style.overflow =
-    "hidden";
-
-
-}
+            }
 
 
 
@@ -2935,16 +2989,16 @@ document.body.style.overflow =
                             length: n
                         },
                         () => `
-                                                                                <div class="sk-card">
+                                                                                    <div class="sk-card">
 
-                                                                                    <div class="skeleton sk-cover"></div>
+                                                                                        <div class="skeleton sk-cover"></div>
 
-                                                                                    <div class="skeleton sk-line"></div>
+                                                                                        <div class="skeleton sk-line"></div>
 
-                                                                                    <div class="skeleton sk-line short"></div>
+                                                                                        <div class="skeleton sk-line short"></div>
 
-                                                                                </div>
-                                                                            `
+                                                                                    </div>
+                                                                                `
                     )
                         .join("");
 
@@ -3013,128 +3067,128 @@ document.body.style.overflow =
 
                 return `
 
-                                                                        <article
-                                                                            class="podcast-card"
-                                                                            data-id="${id}">
+                                                                            <article
+                                                                                class="podcast-card"
+                                                                                data-id="${id}">
 
-                                                                            <div class="podcast-cover">
+                                                                                <div class="podcast-cover">
 
-                                                                                <img
-                                                                                    src="${cover}"
-                                                                                    alt="${title}"
-                                                                                    loading="lazy"
-                                                                                    decoding="async"
-                                                                                    onerror="this.onerror=null;this.src='${placeholder}'">
+                                                                                    <img
+                                                                                        src="${cover}"
+                                                                                        alt="${title}"
+                                                                                        loading="lazy"
+                                                                                        decoding="async"
+                                                                                        onerror="this.onerror=null;this.src='${placeholder}'">
 
-                                                                                <div class="cover-shade"></div>
+                                                                                    <div class="cover-shade"></div>
 
-
-                                                                                <button
-                                                                                    class="play-card"
-                                                                                    data-action="play"
-                                                                                    data-id="${id}"
-                                                                                    aria-label="پخش ${title}"
-                                                                                    ${audio ? "" : "disabled"}>
-
-                                                                                    <i class="fa-solid fa-play"></i>
-
-                                                                                </button>
-
-                                                                            </div>
-
-
-                                                                            <div class="podcast-info">
-
-                                                                                <h3 class="podcast-title">
-                                                                                    ${title}
-                                                                                </h3>
-
-
-                                                                                <div class="meta">
-
-                                                                                    ${author
-                        ? `
-                                                                                                <span>
-                                                                                                    <i class="fa-solid fa-user"></i>
-                                                                                                    ${author}
-                                                                                                </span>
-                                                                                              `
-                        : ""
-                    }
-
-
-                                                                                    ${book
-                        ? `
-                                                                                                <span>
-                                                                                                    <i class="fa-solid fa-book"></i>
-                                                                                                    ${book}
-                                                                                                </span>
-                                                                                              `
-                        : ""
-                    }
-
-
-                                                                                    ${duration !== "00:00"
-                        ? `
-                                                                                                <span>
-                                                                                                    <i class="fa-regular fa-clock"></i>
-                                                                                                    ${duration}
-                                                                                                </span>
-                                                                                              `
-                        : ""
-                    }
-
-                                                                                </div>
-
-
-                                                                                <p class="podcast-desc">
-                                                                                    ${desc}
-                                                                                </p>
-
-
-                                                                                <div class="card-footer">
 
                                                                                     <button
-                                                                                        class="btn btn-primary"
+                                                                                        class="play-card"
                                                                                         data-action="play"
                                                                                         data-id="${id}"
+                                                                                        aria-label="پخش ${title}"
                                                                                         ${audio ? "" : "disabled"}>
 
                                                                                         <i class="fa-solid fa-play"></i>
 
-                                                                                        پخش
-
-                                                                                    </button>
-
-
-                                                                                    <button
-                                                                                        class="btn btn-secondary"
-                                                                                        data-action="download"
-                                                                                        data-id="${id}"
-                                                                                        ${audio ? "" : "disabled"}>
-
-                                                                                        <i class="fa-solid fa-download"></i>
-
-                                                                                    </button>
-
-
-                                                                                    <button
-                                                                                        class="favorite ${fav ? "active" : ""}"
-                                                                                        data-action="favorite"
-                                                                                        data-id="${id}"
-                                                                                        aria-label="علاقه‌مندی">
-
-                                                                                        <i class="${fav ? "fa-solid" : "fa-regular"} fa-heart"></i>
-
                                                                                     </button>
 
                                                                                 </div>
 
-                                                                            </div>
 
-                                                                        </article>
+                                                                                <div class="podcast-info">
 
-                                                                    `;
+                                                                                    <h3 class="podcast-title">
+                                                                                        ${title}
+                                                                                    </h3>
+
+
+                                                                                    <div class="meta">
+
+                                                                                        ${author
+                        ? `
+                                                                                                    <span>
+                                                                                                        <i class="fa-solid fa-user"></i>
+                                                                                                        ${author}
+                                                                                                    </span>
+                                                                                                  `
+                        : ""
+                    }
+
+
+                                                                                        ${book
+                        ? `
+                                                                                                    <span>
+                                                                                                        <i class="fa-solid fa-book"></i>
+                                                                                                        ${book}
+                                                                                                    </span>
+                                                                                                  `
+                        : ""
+                    }
+
+
+                                                                                        ${duration !== "00:00"
+                        ? `
+                                                                                                    <span>
+                                                                                                        <i class="fa-regular fa-clock"></i>
+                                                                                                        ${duration}
+                                                                                                    </span>
+                                                                                                  `
+                        : ""
+                    }
+
+                                                                                    </div>
+
+
+                                                                                    <p class="podcast-desc">
+                                                                                        ${desc}
+                                                                                    </p>
+
+
+                                                                                    <div class="card-footer">
+
+                                                                                        <button
+                                                                                            class="btn btn-primary"
+                                                                                            data-action="play"
+                                                                                            data-id="${id}"
+                                                                                            ${audio ? "" : "disabled"}>
+
+                                                                                            <i class="fa-solid fa-play"></i>
+
+                                                                                            پخش
+
+                                                                                        </button>
+
+
+                                                                                        <button
+                                                                                            class="btn btn-secondary"
+                                                                                            data-action="download"
+                                                                                            data-id="${id}"
+                                                                                            ${audio ? "" : "disabled"}>
+
+                                                                                            <i class="fa-solid fa-download"></i>
+
+                                                                                        </button>
+
+
+                                                                                        <button
+                                                                                            class="favorite ${fav ? "active" : ""}"
+                                                                                            data-action="favorite"
+                                                                                            data-id="${id}"
+                                                                                            aria-label="علاقه‌مندی">
+
+                                                                                            <i class="${fav ? "fa-solid" : "fa-regular"} fa-heart"></i>
+
+                                                                                        </button>
+
+                                                                                    </div>
+
+                                                                                </div>
+
+                                                                            </article>
+
+                                                                        `;
 
             }
 
@@ -3149,42 +3203,42 @@ document.body.style.overflow =
 
                     els.grid.innerHTML = `
 
-                                                                            <div
-                                                                                class="empty"
-                                                                                style="grid-column:1/-1">
+                                                                                <div
+                                                                                    class="empty"
+                                                                                    style="grid-column:1/-1">
 
-                                                                                <i class="fa-solid fa-magnifying-glass"></i>
+                                                                                    <i class="fa-solid fa-magnifying-glass"></i>
 
-                                                                                <h3>
-                                                                                    ${state.query
+                                                                                    <h3>
+                                                                                        ${state.query
                             ? `پادکستی برای «${escapeHtml(state.query)}» پیدا نشد.`
                             : "هنوز پادکستی ثبت نشده است."
                         }
-                                                                                </h3>
+                                                                                    </h3>
 
-                                                                                <p>
-                                                                                    ${state.query
+                                                                                    <p>
+                                                                                        ${state.query
                             ? "عبارت دیگری را امتحان کنید."
                             : "به‌زودی محتوای جدید در NightCast منتشر می‌شود."
                         }
-                                                                                </p>
+                                                                                    </p>
 
-                                                                                ${state.query
+                                                                                    ${state.query
                             ? `
-                                                                                            <button
-                                                                                                class="btn btn-secondary"
-                                                                                                data-action="clear-search">
+                                                                                                <button
+                                                                                                    class="btn btn-secondary"
+                                                                                                    data-action="clear-search">
 
-                                                                                                پاک کردن جستجو
+                                                                                                    پاک کردن جستجو
 
-                                                                                            </button>
-                                                                                          `
+                                                                                                </button>
+                                                                                              `
                             : ""
                         }
 
-                                                                            </div>
+                                                                                </div>
 
-                                                                        `;
+                                                                            `;
 
                     return;
 
@@ -3540,36 +3594,36 @@ document.body.style.overflow =
 
                     els.grid.innerHTML = `
 
-                                                                            <div
-                                                                                class="error-state"
-                                                                                style="grid-column:1/-1">
+                                                                                <div
+                                                                                    class="error-state"
+                                                                                    style="grid-column:1/-1">
 
-                                                                                <i class="fa-solid fa-circle-exclamation"></i>
+                                                                                    <i class="fa-solid fa-circle-exclamation"></i>
 
-                                                                                <h3>
-                                                                                    دریافت پادکست‌ها ناموفق بود
-                                                                                </h3>
+                                                                                    <h3>
+                                                                                        دریافت پادکست‌ها ناموفق بود
+                                                                                    </h3>
 
-                                                                                <p>
-                                                                                    ${escapeHtml(
+                                                                                    <p>
+                                                                                        ${escapeHtml(
                         err.message ||
                         "خطای نامشخص"
                     )}
-                                                                                </p>
+                                                                                    </p>
 
-                                                                                <button
-                                                                                    class="btn btn-primary"
-                                                                                    data-action="reload">
+                                                                                    <button
+                                                                                        class="btn btn-primary"
+                                                                                        data-action="reload">
 
-                                                                                    <i class="fa-solid fa-rotate"></i>
+                                                                                        <i class="fa-solid fa-rotate"></i>
 
-                                                                                    تلاش دوباره
+                                                                                        تلاش دوباره
 
-                                                                                </button>
+                                                                                    </button>
 
-                                                                            </div>
+                                                                                </div>
 
-                                                                        `;
+                                                                            `;
 
                 }
 
@@ -3941,23 +3995,23 @@ document.body.style.overflow =
                         .map(
                             s =>
                                 `
-                                                                                    <a
-                                                                                        class="social-item"
-                                                                                        href="${s.url || "#"}"
-                                                                                        data-social="${s.key}"
-                                                                                        ${s.url
+                                                                                        <a
+                                                                                            class="social-item"
+                                                                                            href="${s.url || "#"}"
+                                                                                            data-social="${s.key}"
+                                                                                            ${s.url
                                     ? 'target="_blank" rel="noopener noreferrer"'
                                     : ""
                                 }>
 
-                                                                                        <i class="${s.icon}"></i>
+                                                                                            <i class="${s.icon}"></i>
 
-                                                                                        <span>
-                                                                                            ${s.label}
-                                                                                        </span>
+                                                                                            <span>
+                                                                                                ${s.label}
+                                                                                            </span>
 
-                                                                                    </a>
-                                                                                    `
+                                                                                        </a>
+                                                                                        `
                         )
                         .join("");
 
@@ -4791,113 +4845,7 @@ document.body.style.overflow =
             }
         }
     </style>
-    <!-- =========================================================
-         NIGHTCAST PROFILE MODAL
-    ========================================================= -->
 
-    <div id="profileModal"
-         class="nc-profile-modal"
-         aria-hidden="true">
-
- 
-        <div class="nc-profile-overlay"
-             data-profile-close></div>
-
-        <div class="nc-profile-card"
-             role="dialog"
-             aria-modal="true"
-             aria-labelledby="profileModalTitle">
-
-            <!-- Close -->
-            <button type="button"
-                    class="nc-profile-close"
-                    id="profileModalClose"
-                    aria-label="بستن">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-
-
-            <!-- Header -->
-            <div class="nc-profile-header">
-
-                <div class="nc-profile-avatar">
-
-                    <img id="profileModalAvatar"
-                         src=""
-                         alt="تصویر پروفایل">
-
-                    <div id="profileModalAvatarFallback"
-                         class="nc-profile-avatar-fallback">
-                        <i class="fa-solid fa-user"></i>
-                    </div>
-
-                </div>
-
-
-                <div class="nc-profile-title">
-
-                    <h2 id="profileModalTitle">
-                        حساب کاربری
-                    </h2>
-
-                    <span>
-                        حساب کاربری NightCast
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <!-- User Information -->
-            <div class="nc-profile-info">
-
-                <div class="nc-profile-info-label">
-                    <i class="fa-solid fa-envelope"></i>
-
-                    <span>
-                        ایمیل
-                    </span>
-                </div>
-
-
-                <div id="profileModalEmail"
-                     class="nc-profile-email">
-                    —
-                </div>
-
-            </div>
-
-
-            <!-- Account Status -->
-            <div class="nc-profile-status">
-
-                <span class="nc-status-dot"></span>
-
-                <span>
-                    شما وارد حساب کاربری خود هستید
-                </span>
-
-            </div>
-
-
-            <!-- Logout -->
-            <button type="button"
-                    id="profileModalLogout"
-                    class="nc-profile-logout">
-
-                <i class="fa-solid fa-right-from-bracket"></i>
-
-                <span>
-                    خروج از حساب
-                </span>
-
-            </button>
-
-        </div>
-
-
-    </div>
 
 </body>
 </html>

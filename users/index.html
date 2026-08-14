@@ -619,9 +619,9 @@
 
             function openUserAccount() {
 
-                /* -----------------------------------------
-                   کاربر وارد نشده
-                ----------------------------------------- */
+                /* =========================================================
+                   USER NOT LOGGED IN
+                ========================================================= */
 
                 if (!isLoggedIn()) {
 
@@ -633,24 +633,24 @@
                 }
 
 
-                /* -----------------------------------------
-                   کاربر وارد شده
-                   نمایش فرم پروفایل
-                ----------------------------------------- */
+                /* =========================================================
+                   LOGGED-IN USER
+                   OPEN EXISTING PROFILE OVERLAY
+                ========================================================= */
 
-                const modal =
+                const overlay =
                     document.getElementById(
-                        "profileModal"
+                        "profileOverlay"
                     );
 
                 const user =
                     getSessionUser();
 
 
-                if (!modal || !user) {
+                if (!overlay || !user) {
 
                     console.error(
-                        "NightCast: Profile Modal یا User پیدا نشد."
+                        "NightCast: Profile Overlay یا User پیدا نشد."
                     );
 
                     return;
@@ -658,145 +658,112 @@
                 }
 
 
-                /* -----------------------------------------
-                   عناصر فرم
-                ----------------------------------------- */
-
-                const email =
-                    document.getElementById(
-                        "profileModalEmail"
-                    );
-
-                const title =
-                    document.getElementById(
-                        "profileModalTitle"
-                    );
-
-                const avatar =
-                    document.getElementById(
-                        "profileModalAvatar"
-                    );
-
-                const avatarFallback =
-                    document.getElementById(
-                        "profileModalAvatarFallback"
-                    );
-
-
-                /* -----------------------------------------
-                   نام کاربر
-                ----------------------------------------- */
+                /* =========================================================
+                   USER DATA
+                ========================================================= */
 
                 const name =
                     getUserName(user);
 
+                const email =
+                    user.email ||
+                    user.mail ||
+                    "ایمیل ثبت نشده";
 
-                if (title) {
+                const avatar =
+                    getUserAvatar(user);
 
-                    title.textContent =
+
+                /* =========================================================
+                   PROFILE ELEMENTS
+                ========================================================= */
+
+                const profileName =
+                    document.getElementById(
+                        "profileName"
+                    );
+
+                const profileEmail =
+                    document.getElementById(
+                        "profileEmail"
+                    );
+
+                const profileAvatar =
+                    document.getElementById(
+                        "profileAvatar"
+                    );
+
+
+                /* =========================================================
+                   NAME
+                ========================================================= */
+
+                if (profileName) {
+
+                    profileName.textContent =
                         name;
 
                 }
 
 
-                /* -----------------------------------------
-                   ایمیل
-                ----------------------------------------- */
+                /* =========================================================
+                   EMAIL
+                ========================================================= */
 
-                if (email) {
+                if (profileEmail) {
 
-                    email.textContent =
-                        user.email ||
-                        user.mail ||
-                        "ایمیل ثبت نشده";
+                    profileEmail.textContent =
+                        email;
 
                 }
 
 
-                /* -----------------------------------------
-                   تصویر پروفایل
-                ----------------------------------------- */
+                /* =========================================================
+                   AVATAR
+                ========================================================= */
 
-                const userImage =
-                    getUserAvatar(user);
+                if (profileAvatar) {
 
+                    if (avatar) {
 
-                if (
-                    avatar &&
-                    avatarFallback
-                ) {
+                        profileAvatar.src =
+                            avatar;
 
-                    if (userImage) {
-
-                        avatar.src =
-                            userImage;
-
-                        avatar.alt =
+                        profileAvatar.alt =
                             name;
-
-                        avatar.classList.add(
-                            "visible"
-                        );
-
-                        avatarFallback.classList.add(
-                            "hidden"
-                        );
-
-
-                        avatar.onerror =
-                            () => {
-
-                                avatar.removeAttribute(
-                                    "src"
-                                );
-
-                                avatar.classList.remove(
-                                    "visible"
-                                );
-
-                                avatarFallback.classList.remove(
-                                    "hidden"
-                                );
-
-                            };
 
                     } else {
 
-                        avatar.removeAttribute(
+                        profileAvatar.removeAttribute(
                             "src"
                         );
 
-                        avatar.classList.remove(
-                            "visible"
-                        );
-
-                        avatarFallback.classList.remove(
-                            "hidden"
-                        );
+                        profileAvatar.alt =
+                            name;
 
                     }
 
                 }
 
 
-                /* -----------------------------------------
-                   نمایش Modal
-                ----------------------------------------- */
+                /* =========================================================
+                   SHOW EXISTING PROFILE OVERLAY
+                ========================================================= */
 
-                modal.classList.add(
+                overlay.classList.add(
                     "show"
                 );
 
-                modal.setAttribute(
+                overlay.setAttribute(
                     "aria-hidden",
                     "false"
                 );
 
 
-                /* جلوگیری از اسکرول صفحه */
+                /* Prevent background scrolling */
+
                 document.body.style.overflow =
                     "hidden";
-
 
             }
 
@@ -4863,117 +4830,6 @@
             </div>
         </div>
     </div>
-    <div id="profileModal"
-         class="nc-profile-modal"
-         aria-hidden="true">
-
-
-        <div class="nc-profile-overlay"
-             data-profile-close>
-
-        </div>
-
-        <div class="nc-profile-card"
-             role="dialog"
-             aria-modal="true"
-             aria-labelledby="profileModalTitle">
-
-            <!-- Close -->
-            <button type="button"
-                    class="nc-profile-close"
-                    id="profileModalClose"
-                    aria-label="بستن">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-
-
-            <!-- Header -->
-            <div class="nc-profile-header">
-
-                <div class="nc-profile-avatar">
-
-                    <img id="profileModalAvatar"
-                         src=""
-                         alt="تصویر پروفایل">
-
-                    <div id="profileModalAvatarFallback"
-                         class="nc-profile-avatar-fallback">
-                        <i class="fa-solid fa-user"></i>
-                    </div>
-
-                </div>
-
-
-                <div class="nc-profile-title">
-
-                    <h2 id="profileModalTitle">
-                        حساب کاربری
-                    </h2>
-
-                    <span>
-                        حساب کاربری NightCast
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <!-- User Information -->
-            <div class="nc-profile-info">
-
-                <div class="nc-profile-info-label">
-                    <i class="fa-solid fa-envelope"></i>
-
-                    <span>
-                        ایمیل
-                    </span>
-                </div>
-
-
-                <div id="profileModalEmail"
-                     class="nc-profile-email">
-                    —
-                </div>
-
-            </div>
-
-
-            <!-- Account Status -->
-            <div class="nc-profile-status">
-
-                <span class="nc-status-dot"></span>
-
-                <span>
-                    شما وارد حساب کاربری خود هستید
-                </span>
-
-            </div>
-
-
-            <!-- Logout -->
-            <button type="button"
-                    id="profileModalLogout"
-                    class="nc-profile-logout">
-
-                <i class="fa-solid fa-right-from-bracket"></i>
-
-                <span>
-                    خروج از حساب
-                </span>
-
-            </button>
-
-        </div>
-
-
-    </div>
-
-
-
-
-
-
 
 </body>
 </html>

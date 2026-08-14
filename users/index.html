@@ -294,7 +294,13 @@
             };
 
 
-            document.body.classList.remove("player-open");
+            if (document.body) {
+
+                document.body.classList.remove(
+                    "player-open"
+                );
+
+            }
 
 
             const placeholder =

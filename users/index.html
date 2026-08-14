@@ -1351,6 +1351,248 @@
                 transition: none !important;
             }
         }
+
+
+        .profile-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(4,10,20,.72);
+            backdrop-filter: blur(8px)
+        }
+
+            .profile-overlay.show {
+                display: flex
+            }
+
+        .profile-panel {
+            position: relative;
+            width: min(560px,100%);
+            max-height: min(760px,90vh);
+            overflow-y: auto;
+            padding: 28px;
+            border-radius: 24px;
+            background: linear-gradient(145deg,#11233a,#091522);
+            border: 1px solid rgba(233,190,112,.18);
+            box-shadow: 0 30px 80px rgba(0,0,0,.45);
+            color: #fff
+        }
+
+        .profile-close {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            width: 38px;
+            height: 38px;
+            border: 0;
+            border-radius: 50%;
+            cursor: pointer;
+            color: #fff;
+            background: rgba(255,255,255,.08)
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(255,255,255,.08)
+        }
+
+        .profile-avatar-wrap {
+            width: 82px;
+            height: 82px;
+            flex: 0 0 82px;
+            overflow: hidden;
+            border-radius: 50%;
+            background: #1b344f;
+            border: 3px solid rgba(233,190,112,.7)
+        }
+
+        .profile-avatar {
+            width: 100%;
+            height: 100%;
+            object-fit: cover
+        }
+
+        .profile-user-info h2 {
+            margin: 0 0 7px;
+            font-size: 21px
+        }
+
+        .profile-user-info p {
+            margin: 0;
+            color: rgba(255,255,255,.62);
+            direction: ltr;
+            text-align: right
+        }
+
+        .profile-section {
+            padding-top: 24px
+        }
+
+            .profile-section[hidden] {
+                display: none !important
+            }
+
+        .profile-icon {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            border-radius: 50%;
+            color: #e9be70;
+            background: rgba(233,190,112,.1);
+            font-size: 24px
+        }
+
+        .profile-section h3 {
+            margin: 0 0 10px;
+            text-align: center
+        }
+
+        .profile-section > p {
+            max-width: 420px;
+            margin: 0 auto 20px;
+            text-align: center;
+            line-height: 1.9;
+            color: rgba(255,255,255,.65)
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+            gap: 10px;
+            margin-bottom: 26px
+        }
+
+        .profile-stat {
+            padding: 16px 8px;
+            text-align: center;
+            border-radius: 16px;
+            background: rgba(255,255,255,.05)
+        }
+
+            .profile-stat strong {
+                display: block;
+                margin-bottom: 5px;
+                color: #e9be70;
+                font-size: 22px
+            }
+
+            .profile-stat span {
+                font-size: 12px;
+                color: rgba(255,255,255,.55)
+            }
+
+        .profile-title-row h3 {
+            margin: 0 0 14px;
+            font-size: 17px
+        }
+
+        .profile-favorites {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 330px;
+            overflow-y: auto
+        }
+
+        .profile-favorite-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            border-radius: 15px;
+            background: rgba(255,255,255,.045)
+        }
+
+        .profile-favorite-cover {
+            width: 58px;
+            height: 58px;
+            flex: 0 0 58px;
+            object-fit: cover;
+            border-radius: 10px
+        }
+
+        .profile-favorite-info {
+            min-width: 0;
+            flex: 1
+        }
+
+            .profile-favorite-info strong, .profile-favorite-info span {
+                display: block;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap
+            }
+
+            .profile-favorite-info strong {
+                font-size: 14px
+            }
+
+            .profile-favorite-info span {
+                margin-top: 5px;
+                font-size: 11px;
+                color: rgba(255,255,255,.5)
+            }
+
+        .profile-favorite-actions {
+            display: flex;
+            gap: 6px
+        }
+
+            .profile-favorite-actions button {
+                width: 34px;
+                height: 34px;
+                border: 0;
+                border-radius: 50%;
+                cursor: pointer;
+                color: #fff;
+                background: rgba(255,255,255,.08)
+            }
+
+                .profile-favorite-actions button:hover {
+                    background: rgba(233,190,112,.18);
+                    color: #e9be70
+                }
+
+        .profile-logout {
+            width: 100%;
+            margin-top: 20px;
+            padding: 13px;
+            border: 1px solid rgba(255,80,80,.2);
+            border-radius: 13px;
+            cursor: pointer;
+            color: #ff8585;
+            background: rgba(255,70,70,.07)
+        }
+
+        @media(max-width:600px) {
+            .profile-overlay {
+                align-items: flex-end;
+                padding: 0
+            }
+
+            .profile-panel {
+                width: 100%;
+                max-height: 88vh;
+                border-radius: 24px 24px 0 0;
+                padding: 24px 18px
+            }
+
+            .profile-avatar-wrap {
+                width: 68px;
+                height: 68px;
+                flex-basis: 68px
+            }
+        }
     </style>
 </head>
 
@@ -1886,7 +2128,187 @@
     <audio id="audioPlayer"
            preload="metadata">
     </audio>
+    <div id="profileOverlay" class="profile-overlay">
+        <div class="profile-panel">
+            <button type="button" id="profileClose" class="profile-close" aria-label="بستن">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="profile-header">
+                <div class="profile-avatar-wrap">
+                    <img id="profileAvatar" class="profile-avatar" src="" alt="حساب کاربری">
+                </div>
+                <div class="profile-user-info">
+                    <h2 id="profileName">
+                        حساب کاربری
+                    </h2>
+                    <p id="profileEmail">
+                        مهمان
+                    </p>
+                </div>
+            </div>
+            <div id="profileGuest" class="profile-section">
+                <div class="profile-icon">
+                    <i class="fa-solid fa-user-lock">
+                    </i>
+                </div>
+                <h3>
+                    به NightCast خوش آمدید
+                </h3>
+                <p>
+                    برای ذخیره پادکست‌های موردعلاقه، وارد حساب کاربری خود شوید.
+                </p>
+                <button type="button" id="profileLogin" class="btn btn-primary">
+                    <i class="fa-solid fa-right-to-bracket">
+                    </i> ورود به حساب
+                </button>
+            </div>
+            <div id="profileLogged" class="profile-section" hidden>
+                <div class="profile-stats">
+                    <div class="profile-stat">
+                        <strong id="profileFavoriteCount">
+                            ۰
+                        </strong>
+                        <span>
+                            علاقه‌مندی
+                        </span>
+                    </div>
+                    <div class="profile-stat">
+                        <strong id="profilePodcastCount">
+                            ۰
+                        </strong>
+                        <span>
+                            پادکست
+                        </span>
+                    </div>
+                    <div class="profile-stat">
+                        <strong id="profileBookCount">
+                            ۰
+                        </strong>
+                        <span>
+                            کتاب
+                        </span>
+                    </div>
+                </div>
+                <div class="profile-title-row">
+                    <h3>
+                        علاقه‌مندی‌های من
+                    </h3>
+                </div>
+                <div id="profileFavorites" class="profile-favorites">
 
+                </div>
+                <button type="button" id="profileLogout" class="profile-logout">
+                    <i class="fa-solid fa-right-from-bracket">
+                    </i> خروج از حساب
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="profileModal"
+         class="nc-profile-modal"
+         aria-hidden="true">
+
+
+        <div class="nc-profile-overlay"
+             data-profile-close>
+
+        </div>
+
+        <div class="nc-profile-card"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="profileModalTitle">
+
+            <!-- Close -->
+            <button type="button"
+                    class="nc-profile-close"
+                    id="profileModalClose"
+                    aria-label="بستن">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+
+            <!-- Header -->
+            <div class="nc-profile-header">
+
+                <div class="nc-profile-avatar">
+
+                    <img id="profileModalAvatar"
+                         src=""
+                         alt="تصویر پروفایل">
+
+                    <div id="profileModalAvatarFallback"
+                         class="nc-profile-avatar-fallback">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+
+                </div>
+
+
+                <div class="nc-profile-title">
+
+                    <h2 id="profileModalTitle">
+                        حساب کاربری
+                    </h2>
+
+                    <span>
+                        حساب کاربری NightCast
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- User Information -->
+            <div class="nc-profile-info">
+
+                <div class="nc-profile-info-label">
+                    <i class="fa-solid fa-envelope"></i>
+
+                    <span>
+                        ایمیل
+                    </span>
+                </div>
+
+
+                <div id="profileModalEmail"
+                     class="nc-profile-email">
+                    —
+                </div>
+
+            </div>
+
+
+            <!-- Account Status -->
+            <div class="nc-profile-status">
+
+                <span class="nc-status-dot"></span>
+
+                <span>
+                    شما وارد حساب کاربری خود هستید
+                </span>
+
+            </div>
+
+
+            <!-- Logout -->
+            <button type="button"
+                    id="profileModalLogout"
+                    class="nc-profile-logout">
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+
+                <span>
+                    خروج از حساب
+                </span>
+
+            </button>
+
+        </div>
+
+
+    </div>
 
     <script>
 
@@ -2428,188 +2850,188 @@
             }
 
 
-     function openUserAccount() {
+            function openUserAccount() {
 
-/* -----------------------------------------
-   کاربر وارد نشده
------------------------------------------ */
+                /* -----------------------------------------
+                   کاربر وارد نشده
+                ----------------------------------------- */
 
-if (!isLoggedIn()) {
+                if (!isLoggedIn()) {
 
-    window.location.href =
-        CONFIG.LOGIN_PAGE;
+                    window.location.href =
+                        CONFIG.LOGIN_PAGE;
 
-    return;
+                    return;
 
-}
-
-
-/* -----------------------------------------
-   کاربر وارد شده
-   نمایش فرم پروفایل
------------------------------------------ */
-
-const modal =
-    document.getElementById(
-        "profileModal"
-    );
-
-const user =
-    getSessionUser();
+                }
 
 
-if (!modal || !user) {
+                /* -----------------------------------------
+                   کاربر وارد شده
+                   نمایش فرم پروفایل
+                ----------------------------------------- */
 
-    console.error(
-        "NightCast: Profile Modal یا User پیدا نشد."
-    );
+                const modal =
+                    document.getElementById(
+                        "profileModal"
+                    );
 
-    return;
-
-}
-
-
-/* -----------------------------------------
-   عناصر فرم
------------------------------------------ */
-
-const email =
-    document.getElementById(
-        "profileModalEmail"
-    );
-
-const title =
-    document.getElementById(
-        "profileModalTitle"
-    );
-
-const avatar =
-    document.getElementById(
-        "profileModalAvatar"
-    );
-
-const avatarFallback =
-    document.getElementById(
-        "profileModalAvatarFallback"
-    );
+                const user =
+                    getSessionUser();
 
 
-/* -----------------------------------------
-   نام کاربر
------------------------------------------ */
+                if (!modal || !user) {
 
-const name =
-    getUserName(user);
+                    console.error(
+                        "NightCast: Profile Modal یا User پیدا نشد."
+                    );
 
+                    return;
 
-if (title) {
-
-    title.textContent =
-        name;
-
-}
+                }
 
 
-/* -----------------------------------------
-   ایمیل
------------------------------------------ */
+                /* -----------------------------------------
+                   عناصر فرم
+                ----------------------------------------- */
 
-if (email) {
+                const email =
+                    document.getElementById(
+                        "profileModalEmail"
+                    );
 
-    email.textContent =
-        user.email ||
-        user.mail ||
-        "ایمیل ثبت نشده";
+                const title =
+                    document.getElementById(
+                        "profileModalTitle"
+                    );
 
-}
+                const avatar =
+                    document.getElementById(
+                        "profileModalAvatar"
+                    );
 
-
-/* -----------------------------------------
-   تصویر پروفایل
------------------------------------------ */
-
-const userImage =
-    getUserAvatar(user);
-
-
-if (
-    avatar &&
-    avatarFallback
-) {
-
-    if (userImage) {
-
-        avatar.src =
-            userImage;
-
-        avatar.alt =
-            name;
-
-        avatar.classList.add(
-            "visible"
-        );
-
-        avatarFallback.classList.add(
-            "hidden"
-        );
+                const avatarFallback =
+                    document.getElementById(
+                        "profileModalAvatarFallback"
+                    );
 
 
-        avatar.onerror =
-            () => {
+                /* -----------------------------------------
+                   نام کاربر
+                ----------------------------------------- */
 
-                avatar.removeAttribute(
-                    "src"
+                const name =
+                    getUserName(user);
+
+
+                if (title) {
+
+                    title.textContent =
+                        name;
+
+                }
+
+
+                /* -----------------------------------------
+                   ایمیل
+                ----------------------------------------- */
+
+                if (email) {
+
+                    email.textContent =
+                        user.email ||
+                        user.mail ||
+                        "ایمیل ثبت نشده";
+
+                }
+
+
+                /* -----------------------------------------
+                   تصویر پروفایل
+                ----------------------------------------- */
+
+                const userImage =
+                    getUserAvatar(user);
+
+
+                if (
+                    avatar &&
+                    avatarFallback
+                ) {
+
+                    if (userImage) {
+
+                        avatar.src =
+                            userImage;
+
+                        avatar.alt =
+                            name;
+
+                        avatar.classList.add(
+                            "visible"
+                        );
+
+                        avatarFallback.classList.add(
+                            "hidden"
+                        );
+
+
+                        avatar.onerror =
+                            () => {
+
+                                avatar.removeAttribute(
+                                    "src"
+                                );
+
+                                avatar.classList.remove(
+                                    "visible"
+                                );
+
+                                avatarFallback.classList.remove(
+                                    "hidden"
+                                );
+
+                            };
+
+                    } else {
+
+                        avatar.removeAttribute(
+                            "src"
+                        );
+
+                        avatar.classList.remove(
+                            "visible"
+                        );
+
+                        avatarFallback.classList.remove(
+                            "hidden"
+                        );
+
+                    }
+
+                }
+
+
+                /* -----------------------------------------
+                   نمایش Modal
+                ----------------------------------------- */
+
+                modal.classList.add(
+                    "show"
                 );
 
-                avatar.classList.remove(
-                    "visible"
+                modal.setAttribute(
+                    "aria-hidden",
+                    "false"
                 );
 
-                avatarFallback.classList.remove(
-                    "hidden"
-                );
 
-            };
-
-    } else {
-
-        avatar.removeAttribute(
-            "src"
-        );
-
-        avatar.classList.remove(
-            "visible"
-        );
-
-        avatarFallback.classList.remove(
-            "hidden"
-        );
-
-    }
-
-}
+                /* جلوگیری از اسکرول صفحه */
+                document.body.style.overflow =
+                    "hidden";
 
 
-/* -----------------------------------------
-   نمایش Modal
------------------------------------------ */
-
-modal.classList.add(
-    "show"
-);
-
-modal.setAttribute(
-    "aria-hidden",
-    "false"
-);
-
-
-/* جلوگیری از اسکرول صفحه */
-document.body.style.overflow =
-    "hidden";
-
-
-}
+            }
 
 
 
@@ -2935,16 +3357,16 @@ document.body.style.overflow =
                             length: n
                         },
                         () => `
-                                                                                <div class="sk-card">
+                                                                                                            <div class="sk-card">
 
-                                                                                    <div class="skeleton sk-cover"></div>
+                                                                                                                <div class="skeleton sk-cover"></div>
 
-                                                                                    <div class="skeleton sk-line"></div>
+                                                                                                                <div class="skeleton sk-line"></div>
 
-                                                                                    <div class="skeleton sk-line short"></div>
+                                                                                                                <div class="skeleton sk-line short"></div>
 
-                                                                                </div>
-                                                                            `
+                                                                                                            </div>
+                                                                                                        `
                     )
                         .join("");
 
@@ -3013,128 +3435,128 @@ document.body.style.overflow =
 
                 return `
 
-                                                                        <article
-                                                                            class="podcast-card"
-                                                                            data-id="${id}">
+                                                                                                    <article
+                                                                                                        class="podcast-card"
+                                                                                                        data-id="${id}">
 
-                                                                            <div class="podcast-cover">
+                                                                                                        <div class="podcast-cover">
 
-                                                                                <img
-                                                                                    src="${cover}"
-                                                                                    alt="${title}"
-                                                                                    loading="lazy"
-                                                                                    decoding="async"
-                                                                                    onerror="this.onerror=null;this.src='${placeholder}'">
+                                                                                                            <img
+                                                                                                                src="${cover}"
+                                                                                                                alt="${title}"
+                                                                                                                loading="lazy"
+                                                                                                                decoding="async"
+                                                                                                                onerror="this.onerror=null;this.src='${placeholder}'">
 
-                                                                                <div class="cover-shade"></div>
-
-
-                                                                                <button
-                                                                                    class="play-card"
-                                                                                    data-action="play"
-                                                                                    data-id="${id}"
-                                                                                    aria-label="پخش ${title}"
-                                                                                    ${audio ? "" : "disabled"}>
-
-                                                                                    <i class="fa-solid fa-play"></i>
-
-                                                                                </button>
-
-                                                                            </div>
+                                                                                                            <div class="cover-shade"></div>
 
 
-                                                                            <div class="podcast-info">
+                                                                                                            <button
+                                                                                                                class="play-card"
+                                                                                                                data-action="play"
+                                                                                                                data-id="${id}"
+                                                                                                                aria-label="پخش ${title}"
+                                                                                                                ${audio ? "" : "disabled"}>
 
-                                                                                <h3 class="podcast-title">
-                                                                                    ${title}
-                                                                                </h3>
+                                                                                                                <i class="fa-solid fa-play"></i>
+
+                                                                                                            </button>
+
+                                                                                                        </div>
 
 
-                                                                                <div class="meta">
+                                                                                                        <div class="podcast-info">
 
-                                                                                    ${author
+                                                                                                            <h3 class="podcast-title">
+                                                                                                                ${title}
+                                                                                                            </h3>
+
+
+                                                                                                            <div class="meta">
+
+                                                                                                                ${author
                         ? `
-                                                                                                <span>
-                                                                                                    <i class="fa-solid fa-user"></i>
-                                                                                                    ${author}
-                                                                                                </span>
-                                                                                              `
+                                                                                                                            <span>
+                                                                                                                                <i class="fa-solid fa-user"></i>
+                                                                                                                                ${author}
+                                                                                                                            </span>
+                                                                                                                          `
                         : ""
                     }
 
 
-                                                                                    ${book
+                                                                                                                ${book
                         ? `
-                                                                                                <span>
-                                                                                                    <i class="fa-solid fa-book"></i>
-                                                                                                    ${book}
-                                                                                                </span>
-                                                                                              `
+                                                                                                                            <span>
+                                                                                                                                <i class="fa-solid fa-book"></i>
+                                                                                                                                ${book}
+                                                                                                                            </span>
+                                                                                                                          `
                         : ""
                     }
 
 
-                                                                                    ${duration !== "00:00"
+                                                                                                                ${duration !== "00:00"
                         ? `
-                                                                                                <span>
-                                                                                                    <i class="fa-regular fa-clock"></i>
-                                                                                                    ${duration}
-                                                                                                </span>
-                                                                                              `
+                                                                                                                            <span>
+                                                                                                                                <i class="fa-regular fa-clock"></i>
+                                                                                                                                ${duration}
+                                                                                                                            </span>
+                                                                                                                          `
                         : ""
                     }
 
-                                                                                </div>
+                                                                                                            </div>
 
 
-                                                                                <p class="podcast-desc">
-                                                                                    ${desc}
-                                                                                </p>
+                                                                                                            <p class="podcast-desc">
+                                                                                                                ${desc}
+                                                                                                            </p>
 
 
-                                                                                <div class="card-footer">
+                                                                                                            <div class="card-footer">
 
-                                                                                    <button
-                                                                                        class="btn btn-primary"
-                                                                                        data-action="play"
-                                                                                        data-id="${id}"
-                                                                                        ${audio ? "" : "disabled"}>
+                                                                                                                <button
+                                                                                                                    class="btn btn-primary"
+                                                                                                                    data-action="play"
+                                                                                                                    data-id="${id}"
+                                                                                                                    ${audio ? "" : "disabled"}>
 
-                                                                                        <i class="fa-solid fa-play"></i>
+                                                                                                                    <i class="fa-solid fa-play"></i>
 
-                                                                                        پخش
+                                                                                                                    پخش
 
-                                                                                    </button>
-
-
-                                                                                    <button
-                                                                                        class="btn btn-secondary"
-                                                                                        data-action="download"
-                                                                                        data-id="${id}"
-                                                                                        ${audio ? "" : "disabled"}>
-
-                                                                                        <i class="fa-solid fa-download"></i>
-
-                                                                                    </button>
+                                                                                                                </button>
 
 
-                                                                                    <button
-                                                                                        class="favorite ${fav ? "active" : ""}"
-                                                                                        data-action="favorite"
-                                                                                        data-id="${id}"
-                                                                                        aria-label="علاقه‌مندی">
+                                                                                                                <button
+                                                                                                                    class="btn btn-secondary"
+                                                                                                                    data-action="download"
+                                                                                                                    data-id="${id}"
+                                                                                                                    ${audio ? "" : "disabled"}>
 
-                                                                                        <i class="${fav ? "fa-solid" : "fa-regular"} fa-heart"></i>
+                                                                                                                    <i class="fa-solid fa-download"></i>
 
-                                                                                    </button>
+                                                                                                                </button>
 
-                                                                                </div>
 
-                                                                            </div>
+                                                                                                                <button
+                                                                                                                    class="favorite ${fav ? "active" : ""}"
+                                                                                                                    data-action="favorite"
+                                                                                                                    data-id="${id}"
+                                                                                                                    aria-label="علاقه‌مندی">
 
-                                                                        </article>
+                                                                                                                    <i class="${fav ? "fa-solid" : "fa-regular"} fa-heart"></i>
 
-                                                                    `;
+                                                                                                                </button>
+
+                                                                                                            </div>
+
+                                                                                                        </div>
+
+                                                                                                    </article>
+
+                                                                                                `;
 
             }
 
@@ -3149,42 +3571,42 @@ document.body.style.overflow =
 
                     els.grid.innerHTML = `
 
-                                                                            <div
-                                                                                class="empty"
-                                                                                style="grid-column:1/-1">
+                                                                                                        <div
+                                                                                                            class="empty"
+                                                                                                            style="grid-column:1/-1">
 
-                                                                                <i class="fa-solid fa-magnifying-glass"></i>
+                                                                                                            <i class="fa-solid fa-magnifying-glass"></i>
 
-                                                                                <h3>
-                                                                                    ${state.query
+                                                                                                            <h3>
+                                                                                                                ${state.query
                             ? `پادکستی برای «${escapeHtml(state.query)}» پیدا نشد.`
                             : "هنوز پادکستی ثبت نشده است."
                         }
-                                                                                </h3>
+                                                                                                            </h3>
 
-                                                                                <p>
-                                                                                    ${state.query
+                                                                                                            <p>
+                                                                                                                ${state.query
                             ? "عبارت دیگری را امتحان کنید."
                             : "به‌زودی محتوای جدید در NightCast منتشر می‌شود."
                         }
-                                                                                </p>
+                                                                                                            </p>
 
-                                                                                ${state.query
+                                                                                                            ${state.query
                             ? `
-                                                                                            <button
-                                                                                                class="btn btn-secondary"
-                                                                                                data-action="clear-search">
+                                                                                                                        <button
+                                                                                                                            class="btn btn-secondary"
+                                                                                                                            data-action="clear-search">
 
-                                                                                                پاک کردن جستجو
+                                                                                                                            پاک کردن جستجو
 
-                                                                                            </button>
-                                                                                          `
+                                                                                                                        </button>
+                                                                                                                      `
                             : ""
                         }
 
-                                                                            </div>
+                                                                                                        </div>
 
-                                                                        `;
+                                                                                                    `;
 
                     return;
 
@@ -3540,36 +3962,36 @@ document.body.style.overflow =
 
                     els.grid.innerHTML = `
 
-                                                                            <div
-                                                                                class="error-state"
-                                                                                style="grid-column:1/-1">
+                                                                                                        <div
+                                                                                                            class="error-state"
+                                                                                                            style="grid-column:1/-1">
 
-                                                                                <i class="fa-solid fa-circle-exclamation"></i>
+                                                                                                            <i class="fa-solid fa-circle-exclamation"></i>
 
-                                                                                <h3>
-                                                                                    دریافت پادکست‌ها ناموفق بود
-                                                                                </h3>
+                                                                                                            <h3>
+                                                                                                                دریافت پادکست‌ها ناموفق بود
+                                                                                                            </h3>
 
-                                                                                <p>
-                                                                                    ${escapeHtml(
+                                                                                                            <p>
+                                                                                                                ${escapeHtml(
                         err.message ||
                         "خطای نامشخص"
                     )}
-                                                                                </p>
+                                                                                                            </p>
 
-                                                                                <button
-                                                                                    class="btn btn-primary"
-                                                                                    data-action="reload">
+                                                                                                            <button
+                                                                                                                class="btn btn-primary"
+                                                                                                                data-action="reload">
 
-                                                                                    <i class="fa-solid fa-rotate"></i>
+                                                                                                                <i class="fa-solid fa-rotate"></i>
 
-                                                                                    تلاش دوباره
+                                                                                                                تلاش دوباره
 
-                                                                                </button>
+                                                                                                            </button>
 
-                                                                            </div>
+                                                                                                        </div>
 
-                                                                        `;
+                                                                                                    `;
 
                 }
 
@@ -3941,23 +4363,23 @@ document.body.style.overflow =
                         .map(
                             s =>
                                 `
-                                                                                    <a
-                                                                                        class="social-item"
-                                                                                        href="${s.url || "#"}"
-                                                                                        data-social="${s.key}"
-                                                                                        ${s.url
+                                                                                                                <a
+                                                                                                                    class="social-item"
+                                                                                                                    href="${s.url || "#"}"
+                                                                                                                    data-social="${s.key}"
+                                                                                                                    ${s.url
                                     ? 'target="_blank" rel="noopener noreferrer"'
                                     : ""
                                 }>
 
-                                                                                        <i class="${s.icon}"></i>
+                                                                                                                    <i class="${s.icon}"></i>
 
-                                                                                        <span>
-                                                                                            ${s.label}
-                                                                                        </span>
+                                                                                                                    <span>
+                                                                                                                        ${s.label}
+                                                                                                                    </span>
 
-                                                                                    </a>
-                                                                                    `
+                                                                                                                </a>
+                                                                                                                `
                         )
                         .join("");
 
@@ -4548,356 +4970,10 @@ document.body.style.overflow =
         })();
 
     </script>
-    <div id="profileOverlay" class="profile-overlay"> <div class="profile-panel"> <button type="button" id="profileClose" class="profile-close" aria-label="بستن"><i class="fa-solid fa-xmark"></i></button> <div class="profile-header"> <div class="profile-avatar-wrap"><img id="profileAvatar" class="profile-avatar" src="" alt="حساب کاربری"></div> <div class="profile-user-info"> <h2 id="profileName">حساب کاربری</h2> <p id="profileEmail">مهمان</p> </div> </div> <div id="profileGuest" class="profile-section"> <div class="profile-icon"><i class="fa-solid fa-user-lock"></i></div> <h3>به NightCast خوش آمدید</h3> <p>برای ذخیره پادکست‌های موردعلاقه، وارد حساب کاربری خود شوید.</p> <button type="button" id="profileLogin" class="btn btn-primary"><i class="fa-solid fa-right-to-bracket"></i> ورود به حساب</button> </div> <div id="profileLogged" class="profile-section" hidden> <div class="profile-stats"> <div class="profile-stat"><strong id="profileFavoriteCount">۰</strong><span>علاقه‌مندی</span></div> <div class="profile-stat"><strong id="profilePodcastCount">۰</strong><span>پادکست</span></div> <div class="profile-stat"><strong id="profileBookCount">۰</strong><span>کتاب</span></div> </div> <div class="profile-title-row"><h3>علاقه‌مندی‌های من</h3></div> <div id="profileFavorites" class="profile-favorites"></div> <button type="button" id="profileLogout" class="profile-logout"><i class="fa-solid fa-right-from-bracket"></i> خروج از حساب</button> </div> </div> </div>
-    <style>
-        .profile-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 99999;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            background: rgba(4,10,20,.72);
-            backdrop-filter: blur(8px)
-        }
 
-            .profile-overlay.show {
-                display: flex
-            }
 
-        .profile-panel {
-            position: relative;
-            width: min(560px,100%);
-            max-height: min(760px,90vh);
-            overflow-y: auto;
-            padding: 28px;
-            border-radius: 24px;
-            background: linear-gradient(145deg,#11233a,#091522);
-            border: 1px solid rgba(233,190,112,.18);
-            box-shadow: 0 30px 80px rgba(0,0,0,.45);
-            color: #fff
-        }
 
-        .profile-close {
-            position: absolute;
-            top: 16px;
-            left: 16px;
-            width: 38px;
-            height: 38px;
-            border: 0;
-            border-radius: 50%;
-            cursor: pointer;
-            color: #fff;
-            background: rgba(255,255,255,.08)
-        }
 
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            padding-bottom: 24px;
-            border-bottom: 1px solid rgba(255,255,255,.08)
-        }
-
-        .profile-avatar-wrap {
-            width: 82px;
-            height: 82px;
-            flex: 0 0 82px;
-            overflow: hidden;
-            border-radius: 50%;
-            background: #1b344f;
-            border: 3px solid rgba(233,190,112,.7)
-        }
-
-        .profile-avatar {
-            width: 100%;
-            height: 100%;
-            object-fit: cover
-        }
-
-        .profile-user-info h2 {
-            margin: 0 0 7px;
-            font-size: 21px
-        }
-
-        .profile-user-info p {
-            margin: 0;
-            color: rgba(255,255,255,.62);
-            direction: ltr;
-            text-align: right
-        }
-
-        .profile-section {
-            padding-top: 24px
-        }
-
-            .profile-section[hidden] {
-                display: none !important
-            }
-
-        .profile-icon {
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 15px;
-            border-radius: 50%;
-            color: #e9be70;
-            background: rgba(233,190,112,.1);
-            font-size: 24px
-        }
-
-        .profile-section h3 {
-            margin: 0 0 10px;
-            text-align: center
-        }
-
-        .profile-section > p {
-            max-width: 420px;
-            margin: 0 auto 20px;
-            text-align: center;
-            line-height: 1.9;
-            color: rgba(255,255,255,.65)
-        }
-
-        .profile-stats {
-            display: grid;
-            grid-template-columns: repeat(3,1fr);
-            gap: 10px;
-            margin-bottom: 26px
-        }
-
-        .profile-stat {
-            padding: 16px 8px;
-            text-align: center;
-            border-radius: 16px;
-            background: rgba(255,255,255,.05)
-        }
-
-            .profile-stat strong {
-                display: block;
-                margin-bottom: 5px;
-                color: #e9be70;
-                font-size: 22px
-            }
-
-            .profile-stat span {
-                font-size: 12px;
-                color: rgba(255,255,255,.55)
-            }
-
-        .profile-title-row h3 {
-            margin: 0 0 14px;
-            font-size: 17px
-        }
-
-        .profile-favorites {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-height: 330px;
-            overflow-y: auto
-        }
-
-        .profile-favorite-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px;
-            border-radius: 15px;
-            background: rgba(255,255,255,.045)
-        }
-
-        .profile-favorite-cover {
-            width: 58px;
-            height: 58px;
-            flex: 0 0 58px;
-            object-fit: cover;
-            border-radius: 10px
-        }
-
-        .profile-favorite-info {
-            min-width: 0;
-            flex: 1
-        }
-
-            .profile-favorite-info strong, .profile-favorite-info span {
-                display: block;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap
-            }
-
-            .profile-favorite-info strong {
-                font-size: 14px
-            }
-
-            .profile-favorite-info span {
-                margin-top: 5px;
-                font-size: 11px;
-                color: rgba(255,255,255,.5)
-            }
-
-        .profile-favorite-actions {
-            display: flex;
-            gap: 6px
-        }
-
-            .profile-favorite-actions button {
-                width: 34px;
-                height: 34px;
-                border: 0;
-                border-radius: 50%;
-                cursor: pointer;
-                color: #fff;
-                background: rgba(255,255,255,.08)
-            }
-
-                .profile-favorite-actions button:hover {
-                    background: rgba(233,190,112,.18);
-                    color: #e9be70
-                }
-
-        .profile-logout {
-            width: 100%;
-            margin-top: 20px;
-            padding: 13px;
-            border: 1px solid rgba(255,80,80,.2);
-            border-radius: 13px;
-            cursor: pointer;
-            color: #ff8585;
-            background: rgba(255,70,70,.07)
-        }
-
-        @media(max-width:600px) {
-            .profile-overlay {
-                align-items: flex-end;
-                padding: 0
-            }
-
-            .profile-panel {
-                width: 100%;
-                max-height: 88vh;
-                border-radius: 24px 24px 0 0;
-                padding: 24px 18px
-            }
-
-            .profile-avatar-wrap {
-                width: 68px;
-                height: 68px;
-                flex-basis: 68px
-            }
-        }
-    </style>
-    <!-- =========================================================
-         NIGHTCAST PROFILE MODAL
-    ========================================================= -->
-
-    <div id="profileModal"
-         class="nc-profile-modal"
-         aria-hidden="true">
-
- 
-        <div class="nc-profile-overlay"
-             data-profile-close></div>
-
-        <div class="nc-profile-card"
-             role="dialog"
-             aria-modal="true"
-             aria-labelledby="profileModalTitle">
-
-            <!-- Close -->
-            <button type="button"
-                    class="nc-profile-close"
-                    id="profileModalClose"
-                    aria-label="بستن">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-
-
-            <!-- Header -->
-            <div class="nc-profile-header">
-
-                <div class="nc-profile-avatar">
-
-                    <img id="profileModalAvatar"
-                         src=""
-                         alt="تصویر پروفایل">
-
-                    <div id="profileModalAvatarFallback"
-                         class="nc-profile-avatar-fallback">
-                        <i class="fa-solid fa-user"></i>
-                    </div>
-
-                </div>
-
-
-                <div class="nc-profile-title">
-
-                    <h2 id="profileModalTitle">
-                        حساب کاربری
-                    </h2>
-
-                    <span>
-                        حساب کاربری NightCast
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <!-- User Information -->
-            <div class="nc-profile-info">
-
-                <div class="nc-profile-info-label">
-                    <i class="fa-solid fa-envelope"></i>
-
-                    <span>
-                        ایمیل
-                    </span>
-                </div>
-
-
-                <div id="profileModalEmail"
-                     class="nc-profile-email">
-                    —
-                </div>
-
-            </div>
-
-
-            <!-- Account Status -->
-            <div class="nc-profile-status">
-
-                <span class="nc-status-dot"></span>
-
-                <span>
-                    شما وارد حساب کاربری خود هستید
-                </span>
-
-            </div>
-
-
-            <!-- Logout -->
-            <button type="button"
-                    id="profileModalLogout"
-                    class="nc-profile-logout">
-
-                <i class="fa-solid fa-right-from-bracket"></i>
-
-                <span>
-                    خروج از حساب
-                </span>
-
-            </button>
-
-        </div>
-
-
-    </div>
 
 </body>
 </html>

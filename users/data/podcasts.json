@@ -1,8 +1,26 @@
 {
   "success": true,
-  "total": 18,
-  "updated_at": "2026-08-16T08:00:58.275Z",
+  "total": 19,
+  "updated_at": "2026-08-16T10:00:54.715Z",
   "podcasts": [
+    {
+      "id": 26,
+      "title": "بیشعوری؛ نگاهی متفاوت به رفتارهای روزمره",
+      "slug": "بیشعوری؛-نگاهی-متفاوت-به-رفتارهای-روزمره",
+      "book_name": "بیشعوری",
+      "author_name": "خاویر کرمنت",
+      "category_name": "خودشناسی و توسعه فردی",
+      "tags": "بیشعوری، خاویر کرمنت، خودشناسی، رفتارشناسی، روابط انسانی، توسعه فردی، مسئولیت‌پذیری",
+      "episode_number": 1,
+      "summary": "آیا گاهی خود ما همان رفتاری را با دیگران داریم که از آن گلایه می‌کنیم؟ در این اپیزود، چکیده و تحلیل مفهومی کتاب «بیشعوری» را مرور می‌کنیم؛ از شناخت رفتارهای مخرب و تأثیر آن‌ها بر روابط و جامعه، تا پذیرش مسئولیت و تلاش برای تغییر رفتار خودمان.",
+      "description": null,
+      "duration_seconds": 599,
+      "audio_url": "https://raw.githubusercontent.com/NightCastir/NightCast-Media/main/audio/1786870300982-a49dc10c-2644-47f0-9b4b-f2dbb7cc3a86.mp3",
+      "cover_url": "https://raw.githubusercontent.com/NightCastir/NightCast-Media/main/covers/1786870299271-d703ea6f-72b1-4f53-abd8-d790befe9196.jpg",
+      "listen_count": 0,
+      "publish_date": null,
+      "created_at": "2026-08-16 08:51:42"
+    },
     {
       "id": 25,
       "title": "سیستم 5S",

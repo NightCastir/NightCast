@@ -1,8 +1,26 @@
 {
   "success": true,
-  "total": 19,
-  "updated_at": "2026-08-18T10:00:07.067Z",
+  "total": 20,
+  "updated_at": "2026-08-18T12:00:07.323Z",
   "podcasts": [
+    {
+      "id": 27,
+      "title": "خلاصه کتاب اثر مرکب نوشته دارن هاردی",
+      "slug": "خلاصه-کتاب-اثر-مرکب-نوشته-دارن-هاردی",
+      "book_name": "اثر مرکب",
+      "author_name": "دارن هاردی",
+      "category_name": "توسعه فردی و موفقیت",
+      "tags": "اثرمرکب, دارنهاردی, کتاباثرمرکب, موفقیت, توسعهفردی, خودسازی, موفقیتفردی, عادتسازی, عادتهایخوب, رشدشخصی, انگیزشی, هدفگذاری, موفقیتدرزندگی, پیشرفت, موفقیتشغلی, کسبوکار, ثروتسازی, ذهنیتموفقیت, نظمفردی, انضباطشخصی, اثرمرکبزندگی, رادیونایتکست, NightCast, پادکست, کتابخوب",
+      "episode_number": 1,
+      "summary": "موفقیت‌های بزرگ، حاصل قدم‌های کوچک اما پیوسته‌ای هستند که در طول زمان روی هم جمع می‌شوند",
+      "description": null,
+      "duration_seconds": 619,
+      "audio_url": "https://raw.githubusercontent.com/NightCastir/NightCast-Media/main/audio/1787047265345-48a297b3-45ee-4138-96b5-e6827a325fd9.mp3",
+      "cover_url": "https://raw.githubusercontent.com/NightCastir/NightCast-Media/main/covers/1787047257786-c367ecff-c26b-4405-8858-ae06e1e622dc.jpg",
+      "listen_count": 0,
+      "publish_date": null,
+      "created_at": "2026-08-18 10:01:07"
+    },
     {
       "id": 26,
       "title": "بیشعوری؛ نگاهی متفاوت به رفتارهای روزمره",

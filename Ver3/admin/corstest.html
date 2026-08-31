@@ -1,0 +1,679 @@
+<!DOCTYPE html><html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex,nofollow"><title>NightCast CORS Login Test</title><style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    padding:20px;
+    background:#0f172a;
+    color:#f8fafc;
+    font-family:Tahoma,Arial,sans-serif;
+}
+
+.container{
+    max-width:700px;
+    margin:30px auto;
+}
+
+.card{
+    background:#1e293b;
+    border:1px solid #334155;
+    border-radius:16px;
+    padding:22px;
+    margin-bottom:16px;
+}
+
+h1{
+    text-align:center;
+    font-size:22px;
+}
+
+p{
+    color:#cbd5e1;
+    line-height:1.9;
+    font-size:13px;
+}
+
+button{
+    width:100%;
+    padding:15px;
+    margin-top:10px;
+    border:0;
+    border-radius:9px;
+    font-weight:bold;
+    font-size:15px;
+    cursor:pointer;
+}
+
+#testButton{
+    background:#fff;
+    color:#0f172a;
+}
+
+#clearButton{
+    background:#334155;
+    color:#fff;
+}
+
+button:disabled{
+    opacity:.5;
+}
+
+#status{
+    margin-top:15px;
+    padding:15px;
+    border-radius:10px;
+    background:#020617;
+    text-align:center;
+}
+
+#log{
+    direction:ltr;
+    text-align:left;
+    white-space:pre-wrap;
+    word-break:break-word;
+    background:#020617;
+    padding:15px;
+    border-radius:10px;
+    font-family:monospace;
+    font-size:12px;
+    line-height:1.8;
+    min-height:200px;
+    max-height:600px;
+    overflow:auto;
+}
+
+.ok{
+    color:#86efac;
+}
+
+.error{
+    color:#fca5a5;
+}
+
+.warn{
+    color:#fde68a;
+}
+
+</style></head><body><div class="container"><div class="card"><h1>
+NightCast
+</h1><p style="text-align:center">
+تست دقیق CORS و اتصال Login به Worker
+</p><p>این تست برای تشخیص مشکل ارتباط مرورگر با
+Worker
+است.
+
+<br>هیچ Password و Token واقعی ارسال یا نمایش داده نمی‌شود.
+
+</p><button
+id="testButton"
+type="button"
+
+«»
+
+🔍 شروع تست
+
+</button><button
+id="clearButton"
+type="button"
+
+«»
+
+پاک کردن گزارش
+
+</button><div id="status">آماده تست...
+
+</div></div><div class="card"><h3>
+📋 گزارش کامل
+</h3><div id="log">صفحه آماده است.
+
+</div></div></div><script>
+
+"use strict";
+
+
+const API_BASE =
+"https://nightcast-api.tomasgermany2580.workers.dev/api/v1";
+
+
+const testButton =
+document.getElementById(
+    "testButton"
+);
+
+
+const clearButton =
+document.getElementById(
+    "clearButton"
+);
+
+
+const statusBox =
+document.getElementById(
+    "status"
+);
+
+
+const logBox =
+document.getElementById(
+    "log"
+);
+
+
+
+function log(text){
+
+    const time =
+        new Date()
+        .toLocaleTimeString(
+            "fa-IR"
+        );
+
+
+    logBox.textContent +=
+        "\n[" +
+        time +
+        "] " +
+        text;
+
+
+    logBox.scrollTop =
+        logBox.scrollHeight;
+
+}
+
+
+
+function status(text){
+
+    statusBox.textContent =
+        text;
+
+}
+
+
+
+function headerValue(
+    headers,
+    name
+){
+
+    return (
+        headers.get(name) ||
+        "وجود ندارد"
+    );
+
+}
+
+
+
+/*
+|--------------------------------------------------------------------------
+| TEST
+|--------------------------------------------------------------------------
+*/
+
+testButton.addEventListener(
+    "click",
+    async function(){
+
+        logBox.textContent =
+            "";
+
+
+        testButton.disabled =
+            true;
+
+
+        status(
+            "⏳ تست در حال اجرا..."
+        );
+
+
+        log(
+            "======================================"
+        );
+
+
+        log(
+            "شروع تست CORS / Login"
+        );
+
+
+        log(
+            "======================================"
+        );
+
+
+        log(
+            "Origin صفحه:"
+        );
+
+
+        log(
+            window.location.origin
+        );
+
+
+        log(
+            "API:"
+        );
+
+
+        log(
+            API_BASE
+        );
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | STEP 1
+        |--------------------------------------------------------------------------
+        */
+
+        log(
+            ""
+        );
+
+
+        log(
+            "STEP 1 — ارسال OPTIONS"
+        );
+
+
+        try{
+
+
+            const optionsResponse =
+                await fetch(
+
+                    API_BASE +
+                    "/auth/login",
+
+                    {
+
+                        method:"OPTIONS",
+
+                        mode:"cors",
+
+                        cache:"no-store",
+
+                        headers:{
+
+                            "Origin":
+                                window.location.origin,
+
+                            "Access-Control-Request-Method":
+                                "POST",
+
+                            "Access-Control-Request-Headers":
+                                "content-type"
+
+                        }
+
+                    }
+
+                );
+
+
+            log(
+                "OPTIONS HTTP: " +
+                optionsResponse.status
+            );
+
+
+            log(
+                "Access-Control-Allow-Origin: " +
+                headerValue(
+                    optionsResponse.headers,
+                    "Access-Control-Allow-Origin"
+                )
+            );
+
+
+            log(
+                "Access-Control-Allow-Methods: " +
+                headerValue(
+                    optionsResponse.headers,
+                    "Access-Control-Allow-Methods"
+                )
+            );
+
+
+            log(
+                "Access-Control-Allow-Headers: " +
+                headerValue(
+                    optionsResponse.headers,
+                    "Access-Control-Allow-Headers"
+                )
+            );
+
+
+            log(
+                "Content-Type: " +
+                headerValue(
+                    optionsResponse.headers,
+                    "Content-Type"
+                )
+            );
+
+
+        }
+
+        catch(error){
+
+            log(
+                "❌ OPTIONS ERROR:"
+            );
+
+
+            log(
+                error.message ||
+                String(error)
+            );
+
+
+            status(
+                "❌ OPTIONS شکست خورد."
+            );
+
+
+            testButton.disabled =
+                false;
+
+
+            return;
+
+        }
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | STEP 2
+        |--------------------------------------------------------------------------
+        */
+
+        log(
+            ""
+        );
+
+
+        log(
+            "STEP 2 — POST بدون Credential"
+        );
+
+
+        log(
+            "⚠️ این درخواست Login واقعی نیست."
+        );
+
+
+        log(
+            "برای جلوگیری از ارسال رمز، Username و Password ساختگی ارسال می‌شود."
+        );
+
+
+        try{
+
+
+            const fakeBody = {
+
+                username:
+                    "__CORS_TEST_INVALID__",
+
+                password:
+                    "__CORS_TEST_INVALID__"
+
+            };
+
+
+            const postResponse =
+                await fetch(
+
+                    API_BASE +
+                    "/auth/login",
+
+                    {
+
+                        method:"POST",
+
+                        mode:"cors",
+
+                        credentials:"omit",
+
+                        cache:"no-store",
+
+                        headers:{
+
+                            "Content-Type":
+                                "application/json",
+
+                            "Accept":
+                                "application/json"
+
+                        },
+
+                        body:
+                            JSON.stringify(
+                                fakeBody
+                            )
+
+                    }
+
+                );
+
+
+            log(
+                "POST HTTP: " +
+                postResponse.status
+            );
+
+
+            log(
+                "POST به مرورگر پاسخ داد."
+            );
+
+
+            log(
+                "Access-Control-Allow-Origin: " +
+                headerValue(
+                    postResponse.headers,
+                    "Access-Control-Allow-Origin"
+                )
+            );
+
+
+            log(
+                "Access-Control-Allow-Credentials: " +
+                headerValue(
+                    postResponse.headers,
+                    "Access-Control-Allow-Credentials"
+                )
+            );
+
+
+            log(
+                "Content-Type: " +
+                headerValue(
+                    postResponse.headers,
+                    "Content-Type"
+                )
+            );
+
+
+            const raw =
+                await postResponse.text();
+
+
+            log(
+                "Response Body:"
+            );
+
+
+            log(
+                raw || "[خالی]"
+            );
+
+
+            status(
+                "✅ POST از نظر مرورگر قابل دریافت بود."
+            );
+
+
+        }
+
+        catch(error){
+
+            log(
+                "❌ POST توسط مرورگر دریافت نشد."
+            );
+
+
+            log(
+                "ERROR:"
+            );
+
+
+            log(
+                error.message ||
+                String(error)
+            );
+
+
+            log(
+                ""
+            );
+
+
+            log(
+                "نتیجه:"
+            );
+
+
+            log(
+                "Worker قابل دسترسی است، اما مرورگر پاسخ POST را به JavaScript تحویل نداده است."
+            );
+
+
+            status(
+                "❌ مشکل در CORS / پاسخ POST"
+            );
+
+
+            testButton.disabled =
+                false;
+
+
+            return;
+
+        }
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | STEP 3
+        |--------------------------------------------------------------------------
+        */
+
+        log(
+            ""
+        );
+
+
+        log(
+            "STEP 3 — بررسی امنیتی Response"
+        );
+
+
+        log(
+            "Password در این تست ارسال واقعی نشده است."
+        );
+
+
+        log(
+            "Token واقعی دریافت نشده است."
+        );
+
+
+        log(
+            "Credential مرورگر: omit"
+        );
+
+
+        log(
+            "Origin:"
+        );
+
+
+        log(
+            window.location.origin
+        );
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | FINAL
+        |--------------------------------------------------------------------------
+        */
+
+        log(
+            ""
+        );
+
+
+        log(
+            "======================================"
+        );
+
+
+        log(
+            "تست کامل شد."
+        );
+
+
+        log(
+            "======================================"
+        );
+
+
+        status(
+            "✅ ارتباط POST از دید مرورگر برقرار است."
+        );
+
+
+        testButton.disabled =
+            false;
+
+    }
+);
+
+
+
+/*
+|--------------------------------------------------------------------------
+| CLEAR
+|--------------------------------------------------------------------------
+*/
+
+clearButton.addEventListener(
+    "click",
+    function(){
+
+        logBox.textContent =
+            "گزارش پاک شد.";
+
+
+        status(
+            "آماده تست..."
+        );
+
+    }
+);
+
+</script></body></html>

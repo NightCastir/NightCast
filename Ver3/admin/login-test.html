@@ -1,150 +1,621 @@
-<!DOCTYPE html><html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex,nofollow"><title>NightCast Admin Login Test</title><style>
 
-body{
-    margin:0;
-    padding:20px;
-    background:#0f172a;
-    color:#fff;
-    font-family:Tahoma,Arial,sans-serif;
-}
+<!DOCTYPE html><html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
 
-.box{
-    max-width:550px;
-    margin:40px auto;
-    background:#1e293b;
-    padding:25px;
-    border-radius:16px;
-}
+«»
 
-h1{
-    text-align:center;
-    font-size:22px;
-}
+<meta
+name="robots"
+content="noindex,nofollow,noarchive"
 
-label{
-    display:block;
-    margin:15px 0 7px;
-}
+«»
 
-input{
-    width:100%;
-    padding:13px;
-    border:1px solid #475569;
-    border-radius:8px;
-    background:#0f172a;
-    color:white;
-    font-size:16px;
+<title>NightCast Admin Security Test</title><style>
+
+*{
     box-sizing:border-box;
 }
 
-button{
+body{
+
+    margin:0;
+
+    min-height:100vh;
+
+    padding:20px;
+
+    background:#0b1120;
+
+    color:#f8fafc;
+
+    font-family:
+        Tahoma,
+        Arial,
+        sans-serif;
+
+}
+
+.container{
+
     width:100%;
-    padding:14px;
-    margin-top:20px;
-    border:0;
-    border-radius:8px;
-    background:white;
-    color:#111827;
-    font-size:16px;
-    font-weight:bold;
-    cursor:pointer;
+
+    max-width:760px;
+
+    margin:20px auto;
+
 }
 
-#message{
-    margin-top:18px;
-    padding:14px;
-    background:#020617;
-    border-radius:8px;
+.card{
+
+    background:#111827;
+
+    border:1px solid #263244;
+
+    border-radius:16px;
+
+    padding:22px;
+
+    margin-bottom:16px;
+
+}
+
+h1{
+
+    margin:0 0 8px;
+
+    font-size:22px;
+
     text-align:center;
-    line-height:1.8;
+
 }
 
-#log{
-    margin-top:10px;
-    padding:15px;
-    background:#020617;
-    border-radius:8px;
-    direction:ltr;
-    text-align:left;
-    white-space:pre-wrap;
-    word-break:break-word;
-    font-family:monospace;
-    font-size:12px;
+.subtitle{
+
+    color:#94a3b8;
+
+    text-align:center;
+
+    font-size:13px;
+
     line-height:1.8;
-    min-height:120px;
+
+    margin-bottom:25px;
+
+}
+
+.field{
+
+    margin-bottom:16px;
+
+}
+
+label{
+
+    display:block;
+
+    margin-bottom:7px;
+
+    font-size:14px;
+
+    color:#cbd5e1;
+
+}
+
+input{
+
+    width:100%;
+
+    padding:13px;
+
+    border-radius:9px;
+
+    border:1px solid #334155;
+
+    background:#020617;
+
+    color:#fff;
+
+    outline:none;
+
+    font-size:15px;
+
+}
+
+input:focus{
+
+    border-color:#64748b;
+
+}
+
+button{
+
+    width:100%;
+
+    padding:14px;
+
+    border:0;
+
+    border-radius:9px;
+
+    background:#f8fafc;
+
+    color:#0f172a;
+
+    font-size:15px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    margin-top:6px;
+
+}
+
+button:disabled{
+
+    opacity:.5;
+
+    cursor:not-allowed;
+
+}
+
+.secondary{
+
+    background:#1e293b;
+
+    color:#f8fafc;
+
+    border:1px solid #475569;
+
+}
+
+#overall{
+
+    margin-top:18px;
+
+    padding:15px;
+
+    border-radius:10px;
+
+    background:#020617;
+
+    text-align:center;
+
+    font-size:15px;
+
+    line-height:1.9;
+
 }
 
 .success{
+
     color:#86efac;
+
 }
 
 .error{
+
     color:#fca5a5;
+
 }
 
-</style></head><body><div class="box"><h1>
+.warning{
+
+    color:#fde68a;
+
+}
+
+.info{
+
+    color:#93c5fd;
+
+}
+
+.tests{
+
+    margin-top:18px;
+
+}
+
+.test{
+
+    display:grid;
+
+    grid-template-columns:40px 1fr auto;
+
+    gap:10px;
+
+    align-items:center;
+
+    padding:11px 0;
+
+    border-bottom:1px solid #1e293b;
+
+}
+
+.test:last-child{
+
+    border-bottom:0;
+
+}
+
+.icon{
+
+    font-size:17px;
+
+}
+
+.name{
+
+    font-size:13px;
+
+}
+
+.result{
+
+    font-size:12px;
+
+    text-align:left;
+
+}
+
+.pass{
+
+    color:#86efac;
+
+}
+
+.fail{
+
+    color:#fca5a5;
+
+}
+
+.skip{
+
+    color:#fde68a;
+
+}
+
+.pending{
+
+    color:#94a3b8;
+
+}
+
+#logTitle{
+
+    margin-top:22px;
+
+    margin-bottom:8px;
+
+    font-weight:bold;
+
+}
+
+#log{
+
+    direction:ltr;
+
+    text-align:left;
+
+    background:#020617;
+
+    border-radius:10px;
+
+    padding:15px;
+
+    min-height:150px;
+
+    max-height:500px;
+
+    overflow:auto;
+
+    white-space:pre-wrap;
+
+    word-break:break-word;
+
+    font-family:monospace;
+
+    font-size:12px;
+
+    line-height:1.8;
+
+}
+
+.warning-box{
+
+    background:#17130a;
+
+    border:1px solid #4b3b16;
+
+    color:#fde68a;
+
+    border-radius:10px;
+
+    padding:12px;
+
+    margin-bottom:18px;
+
+    font-size:12px;
+
+    line-height:1.8;
+
+}
+
+</style></head><body><div class="container"><div class="card"><h1>
 NightCast
-</h1><p style="text-align:center;color:#94a3b8;">
-تست واقعی ورود پنل مدیریت
-</p><form
-    id="loginForm"
-    onsubmit="return login(event);"
-><label for="username">
+</h1><div class="subtitle">تست اتصال، Session و امنیت Login پنل مدیریت
+
+<br>این صفحه هیچ Token یا Password را در لاگ نمایش نمی‌دهد.
+
+</div><div class="warning-box">⚠️ این فایل فقط برای تست است.
+<br>
+با زدن «شروع تست» یک Login واقعی به Worker انجام می‌شود و برای تست Session ایجاد می‌شود.
+
+</div><div class="field"><label for="username">
 نام کاربری
 </label><input
 id="username"
 type="text"
 value="hamed"
 autocomplete="username"
+maxlength="100"
 
 «»
 
-<label for="password">
+</div><div class="field"><label for="password">
 رمز عبور
 </label><input
 id="password"
 type="password"
 autocomplete="current-password"
+maxlength="200"
 
 «»
 
-<button
-id="loginButton"
-type="submit"
+</div><button
+id="testButton"
+type="button"
 
 «»
 
-ورود
+🔐 شروع تست کامل
 
-</button></form><div id="message">
-آماده ورود...
-</div><h3>
-📋 گزارش عملیات
-</h3><div id="log">
-صفحه Login آماده است.
-</div></div><script>
+</button><button
+id="clearButton"
+type="button"
+class="secondary"
+
+«»
+
+پاک کردن Session قبلی
+
+</button><div id="overall">آماده تست...
+
+</div></div><div class="card"><h3>
+نتیجه تست‌ها
+</h3><div class="tests"><div
+    class="test"
+    id="test-js"
+><div class="icon">
+⏳
+</div><div class="name">
+اجرای JavaScript
+</div><div class="result pending">
+در انتظار
+</div></div><div
+    class="test"
+    id="test-https"
+><div class="icon">
+⏳
+</div><div class="name">
+امنیت HTTPS صفحه
+</div><div class="result pending">
+در انتظار
+</div></div><div
+    class="test"
+    id="test-input"
+><div class="icon">
+⏳
+</div><div class="name">
+اعتبارسنجی ورودی‌ها
+</div><div class="result pending">
+در انتظار
+</div></div><div
+    class="test"
+    id="test-options"
+><div class="icon">
+⏳
+</div><div class="name">
+ارتباط Worker / CORS
+</div><div class="result pending">
+در انتظار
+</div></div><div
+    class="test"
+    id="test-login"
+><div class="icon">
+⏳
+</div><div class="name">
+POST /auth/login
+</div><div class="result pending">
+در انتظار
+</div></div><div
+    class="test"
+    id="test-json"
+><div class="icon">
+⏳
+</div><div class="name">
+Response JSON
+</div><div class="result pending">
+در انتظار
+</div></div><div
+    class="test"
+    id="test-token"
+><div class="icon">
+⏳
+</div><div class="name">
+Session Token
+</div><div class="result pending">
+در انتظار
+</div></div><div
+    class="test"
+    id="test-password"
+><div class="icon">
+⏳
+</div><div class="name">
+عدم ذخیره Password
+</div><div class="result pending">
+در انتظار
+</div></div><div
+    class="test"
+    id="test-me"
+><div class="icon">
+⏳
+</div><div class="name">
+GET /auth/me
+</div><div class="result pending">
+در انتظار
+</div></div><div
+    class="test"
+    id="test-user"
+><div class="icon">
+⏳
+</div><div class="name">
+تشخیص Admin / Role
+</div><div class="result pending">
+در انتظار
+</div></div><div
+    class="test"
+    id="test-session"
+><div class="icon">
+⏳
+</div><div class="name">
+اعتبار Session
+</div><div class="result pending">
+در انتظار
+</div></div><div
+    class="test"
+    id="test-logout"
+><div class="icon">
+⏳
+</div><div class="name">
+Logout / ابطال Session
+</div><div class="result pending">
+در انتظار
+</div></div><div
+    class="test"
+    id="test-revoked"
+><div class="icon">
+⏳
+</div><div class="name">
+بررسی Session بعد از Logout
+</div><div class="result pending">
+در انتظار
+</div></div></div><div id="logTitle">
+📋 گزارش کامل عملیات
+</div><div id="log">صفحه آماده است.
+
+</div></div><div class="card"><button
+id="dashboardButton"
+type="button"
+disabled
+
+«»
+
+ورود به Dashboard
+
+</button></div></div><script>
+
+"use strict";
 
 
 /*
 |--------------------------------------------------------------------------
-| API
+| CONFIG
 |--------------------------------------------------------------------------
 */
 
-var API =
+const API_BASE =
 "https://nightcast-api.tomasgermany2580.workers.dev/api/v1";
 
 
-var logBox =
-document.getElementById("log");
+const TOKEN_KEY =
+"NightCastToken";
 
 
-var messageBox =
-document.getElementById("message");
+const USER_KEY =
+"NightCastAdminUser";
 
 
-var loginButton =
-document.getElementById("loginButton");
+const formDashboard =
+"dashboard.html";
+
+
+let sessionToken =
+null;
+
+
+let loginSucceeded =
+false;
+
+
+let testsPassed =
+0;
+
+
+let testsFailed =
+0;
+
+
+
+/*
+|--------------------------------------------------------------------------
+| Elements
+|--------------------------------------------------------------------------
+*/
+
+const usernameInput =
+document.getElementById(
+    "username"
+);
+
+
+const passwordInput =
+document.getElementById(
+    "password"
+);
+
+
+const testButton =
+document.getElementById(
+    "testButton"
+);
+
+
+const clearButton =
+document.getElementById(
+    "clearButton"
+);
+
+
+const dashboardButton =
+document.getElementById(
+    "dashboardButton"
+);
+
+
+const overall =
+document.getElementById(
+    "overall"
+);
+
+
+const logBox =
+document.getElementById(
+    "log"
+);
 
 
 
@@ -154,16 +625,24 @@ document.getElementById("loginButton");
 |--------------------------------------------------------------------------
 */
 
-function addLog(text){
+function log(message){
 
-    var time =
-        new Date().toLocaleTimeString("fa-IR");
+    const time =
+        new Date()
+        .toLocaleTimeString(
+            "fa-IR"
+        );
 
-    logBox.innerHTML +=
+
+    logBox.textContent +=
         "\n[" +
         time +
         "] " +
-        text;
+        message;
+
+
+    logBox.scrollTop =
+        logBox.scrollHeight;
 
 }
 
@@ -171,17 +650,64 @@ function addLog(text){
 
 /*
 |--------------------------------------------------------------------------
-| Message
+| Test State
 |--------------------------------------------------------------------------
 */
 
-function message(text, type){
+function setTest(
+    id,
+    state,
+    text
+){
 
-    messageBox.textContent =
+    const element =
+        document.getElementById(id);
+
+
+    if(!element){
+        return;
+    }
+
+
+    const icon =
+        element.querySelector(
+            ".icon"
+        );
+
+
+    const result =
+        element.querySelector(
+            ".result"
+        );
+
+
+    icon.textContent =
+        state === "pass"
+            ? "✅"
+            : state === "fail"
+                ? "❌"
+                : state === "skip"
+                    ? "⚠️"
+                    : "⏳";
+
+
+    result.textContent =
         text;
 
-    messageBox.className =
-        type || "";
+
+    result.className =
+        "result " +
+        state;
+
+
+    if(state === "pass"){
+        testsPassed++;
+    }
+
+
+    if(state === "fail"){
+        testsFailed++;
+    }
 
 }
 
@@ -189,55 +715,99 @@ function message(text, type){
 
 /*
 |--------------------------------------------------------------------------
-| REAL LOGIN
+| Initial JS test
 |--------------------------------------------------------------------------
 */
 
-async function login(event){
+setTest(
+    "test-js",
+    "pass",
+    "JavaScript فعال"
+);
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | این خط باید بلافاصله بعد از کلیک اجرا شود.
-    |--------------------------------------------------------------------------
-    */
-
-    event.preventDefault();
+log(
+    "JavaScript با موفقیت اجرا شد."
+);
 
 
-    addLog(
-        "✅ تابع Login اجرا شد."
+
+/*
+|--------------------------------------------------------------------------
+| HTTPS
+|--------------------------------------------------------------------------
+*/
+
+function testHTTPS(){
+
+    if(
+        location.protocol ===
+        "https:"
+    ){
+
+        setTest(
+            "test-https",
+            "pass",
+            "HTTPS"
+        );
+
+
+        log(
+            "HTTPS: امن"
+        );
+
+        return true;
+
+    }
+
+
+    setTest(
+        "test-https",
+        "fail",
+        "HTTP"
     );
 
 
-    var username =
-        document
-        .getElementById("username")
-        .value
-        .trim();
-
-
-    var password =
-        document
-        .getElementById("password")
-        .value;
-
-
-    addLog(
-        "Username دریافت شد."
+    log(
+        "HTTPS: ❌ صفحه با HTTP باز شده است."
     );
+
+
+    return false;
+
+}
+
+
+
+/*
+|--------------------------------------------------------------------------
+| Input validation
+|--------------------------------------------------------------------------
+*/
+
+function testInputs(){
+
+    const username =
+        usernameInput.value.trim();
+
+
+    const password =
+        passwordInput.value;
 
 
     if(!username){
 
-        addLog(
-            "❌ Username خالی است."
+        setTest(
+            "test-input",
+            "fail",
+            "Username خالی"
         );
 
-        message(
-            "نام کاربری را وارد کنید.",
-            "error"
+
+        log(
+            "Input: ❌ Username خالی است."
         );
+
 
         return false;
 
@@ -246,58 +816,257 @@ async function login(event){
 
     if(!password){
 
-        addLog(
-            "❌ Password خالی است."
+        setTest(
+            "test-input",
+            "fail",
+            "Password خالی"
         );
 
-        message(
-            "رمز عبور را وارد کنید.",
-            "error"
+
+        log(
+            "Input: ❌ Password خالی است."
         );
+
 
         return false;
 
     }
 
 
-    loginButton.disabled =
-        true;
+    if(
+        username.length > 100 ||
+        password.length > 200
+    ){
+
+        setTest(
+            "test-input",
+            "fail",
+            "طول نامعتبر"
+        );
 
 
-    loginButton.textContent =
-        "در حال ورود...";
+        log(
+            "Input: ❌ طول ورودی نامعتبر است."
+        );
 
 
-    message(
-        "⏳ در حال اتصال به Worker..."
+        return false;
+
+    }
+
+
+    setTest(
+        "test-input",
+        "pass",
+        "معتبر"
     );
 
 
-    addLog(
-        "درخواست POST به /auth/login"
+    log(
+        "Input validation: ✅"
     );
 
 
-    addLog(
-        "API: " +
-        API +
-        "/auth/login"
+    return true;
+
+}
+
+
+
+/*
+|--------------------------------------------------------------------------
+| CORS / Worker OPTIONS
+|--------------------------------------------------------------------------
+*/
+
+async function testOptions(){
+
+    log(
+        "در حال بررسی ارتباط Worker..."
     );
 
 
     try{
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | LOGIN REQUEST
-        |--------------------------------------------------------------------------
-        */
+        const controller =
+            new AbortController();
 
-        var response =
+
+        const timeout =
+            setTimeout(
+                function(){
+                    controller.abort();
+                },
+                8000
+            );
+
+
+        const response =
             await fetch(
 
-                API +
+                API_BASE +
+                "/auth/login",
+
+                {
+
+                    method:"OPTIONS",
+
+                    mode:"cors",
+
+                    cache:"no-store",
+
+                    signal:
+                        controller.signal
+
+                }
+
+            );
+
+
+        clearTimeout(timeout);
+
+
+        log(
+            "Worker OPTIONS HTTP: " +
+            response.status
+        );
+
+
+        const allowOrigin =
+            response.headers.get(
+                "Access-Control-Allow-Origin"
+            );
+
+
+        const allowMethods =
+            response.headers.get(
+                "Access-Control-Allow-Methods"
+            );
+
+
+        if(
+            response.status >= 200 &&
+            response.status < 500
+        ){
+
+            setTest(
+                "test-options",
+                "pass",
+                "Worker پاسخ داد"
+            );
+
+
+            log(
+                "CORS: Worker قابل دسترسی است."
+            );
+
+
+            log(
+                "CORS Origin: " +
+                (
+                    allowOrigin ||
+                    "ارسال نشده"
+                )
+            );
+
+
+            log(
+                "CORS Methods: " +
+                (
+                    allowMethods ||
+                    "ارسال نشده"
+                )
+            );
+
+
+            return true;
+
+        }
+
+
+        setTest(
+            "test-options",
+            "fail",
+            "HTTP " +
+            response.status
+        );
+
+
+        return false;
+
+    }
+
+    catch(error){
+
+        setTest(
+            "test-options",
+            "fail",
+            error.name ===
+            "AbortError"
+                ? "Timeout"
+                : "Fetch Error"
+        );
+
+
+        log(
+            "CORS/Worker ERROR: " +
+            (
+                error.message ||
+                String(error)
+            )
+        );
+
+
+        return false;
+
+    }
+
+}
+
+
+
+/*
+|--------------------------------------------------------------------------
+| LOGIN
+|--------------------------------------------------------------------------
+*/
+
+async function testLogin(){
+
+    const username =
+        usernameInput.value.trim();
+
+
+    const password =
+        passwordInput.value;
+
+
+    log(
+        "ارسال POST /auth/login ..."
+    );
+
+
+    try{
+
+
+        const controller =
+            new AbortController();
+
+
+        const timeout =
+            setTimeout(
+                function(){
+                    controller.abort();
+                },
+                10000
+            );
+
+
+        const response =
+            await fetch(
+
+                API_BASE +
                 "/auth/login",
 
                 {
@@ -305,6 +1074,13 @@ async function login(event){
                     method:"POST",
 
                     mode:"cors",
+
+                    credentials:"include",
+
+                    cache:"no-store",
+
+                    signal:
+                        controller.signal,
 
                     headers:{
 
@@ -332,265 +1108,1083 @@ async function login(event){
             );
 
 
-        addLog(
-            "Worker پاسخ داد."
-        );
+        clearTimeout(timeout);
 
 
-        addLog(
-            "HTTP Status: " +
+        log(
+            "Login HTTP Status: " +
             response.status
         );
 
 
-        var text =
+        const raw =
             await response.text();
 
 
-        addLog(
-            "Response دریافت شد."
-        );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | JSON
-        |--------------------------------------------------------------------------
-        */
-
-        var data;
+        let data =
+            null;
 
 
         try{
 
             data =
-                JSON.parse(text);
+                JSON.parse(raw);
+
+
+            setTest(
+                "test-json",
+                "pass",
+                "JSON معتبر"
+            );
+
+
+            log(
+                "Response JSON: ✅"
+            );
 
         }
 
         catch(error){
 
-            addLog(
-                "❌ Response JSON نیست."
+            setTest(
+                "test-json",
+                "fail",
+                "JSON نامعتبر"
             );
 
 
-            addLog(
-                "Response:"
+            log(
+                "Response JSON: ❌"
             );
 
 
-            addLog(
-                text
+            log(
+                "Response Type: متن غیر JSON"
             );
 
 
-            message(
-                "❌ Worker پاسخ JSON نداد.",
-                "error"
-            );
-
-
-            return false;
+            return null;
 
         }
 
 
-        addLog(
-            "JSON معتبر است."
+        if(
+            !response.ok ||
+            data.success !== true
+        ){
+
+            setTest(
+                "test-login",
+                "fail",
+                "HTTP " +
+                response.status
+            );
+
+
+            log(
+                "❌ Login ناموفق."
+            );
+
+
+            log(
+                "Server Message: " +
+                (
+                    data.message ||
+                    "بدون پیام"
+                )
+            );
+
+
+            return null;
+
+        }
+
+
+        setTest(
+            "test-login",
+            "pass",
+            "موفق"
+        );
+
+
+        log(
+            "✅ Login موفق."
         );
 
 
         /*
         |--------------------------------------------------------------------------
-        | LOGIN RESULT
+        | Token
         |--------------------------------------------------------------------------
         */
+
+        if(
+            typeof data.token !==
+            "string" ||
+            data.token.length < 32
+        ){
+
+            setTest(
+                "test-token",
+                "fail",
+                "Token نامعتبر"
+            );
+
+
+            log(
+                "Token: ❌"
+            );
+
+
+            return null;
+
+        }
+
+
+        sessionToken =
+            data.token;
+
+
+        setTest(
+            "test-token",
+            "pass",
+            "دریافت شد"
+        );
+
+
+        log(
+            "Token: ✅ دریافت شد."
+        );
+
+
+        log(
+            "Token عمداً نمایش داده نمی‌شود."
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Password storage test
+        |--------------------------------------------------------------------------
+        */
+
+        const passwordInLocal =
+            localStorage.getItem(
+                "password"
+            );
+
+
+        const passwordInSession =
+            sessionStorage.getItem(
+                "password"
+            );
+
+
+        if(
+            passwordInLocal === null &&
+            passwordInSession === null
+        ){
+
+            setTest(
+                "test-password",
+                "pass",
+                "ذخیره نشده"
+            );
+
+
+            log(
+                "Password Storage: ✅"
+            );
+
+        }
+
+        else{
+
+            setTest(
+                "test-password",
+                "fail",
+                "Password پیدا شد"
+            );
+
+
+            log(
+                "Password Storage: ❌"
+            );
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | User
+        |--------------------------------------------------------------------------
+        */
+
+        if(
+            data.user &&
+            typeof data.user ===
+            "object"
+        ){
+
+            setTest(
+                "test-user",
+                "pass",
+                data.user.role ||
+                "User دریافت شد"
+            );
+
+
+            log(
+                "User object: ✅"
+            );
+
+
+            log(
+                "Role: " +
+                (
+                    data.user.role ||
+                    "نامشخص"
+                )
+            );
+
+        }
+
+        else{
+
+            setTest(
+                "test-user",
+                "fail",
+                "User موجود نیست"
+            );
+
+
+            log(
+                "User object: ❌"
+            );
+
+        }
+
+
+        return data;
+
+    }
+
+    catch(error){
+
+        setTest(
+            "test-login",
+            "fail",
+            error.name ===
+            "AbortError"
+                ? "Timeout"
+                : "Fetch Error"
+        );
+
+
+        log(
+            "Login ERROR: " +
+            (
+                error.message ||
+                String(error)
+            )
+        );
+
+
+        return null;
+
+    }
+
+}
+
+
+
+/*
+|--------------------------------------------------------------------------
+| AUTH ME
+|--------------------------------------------------------------------------
+*/
+
+async function testMe(){
+
+    if(!sessionToken){
+
+        setTest(
+            "test-me",
+            "fail",
+            "Token وجود ندارد"
+        );
+
+
+        return false;
+
+    }
+
+
+    log(
+        "در حال بررسی Session با /auth/me ..."
+    );
+
+
+    try{
+
+
+        const response =
+            await fetch(
+
+                API_BASE +
+                "/auth/me",
+
+                {
+
+                    method:"GET",
+
+                    mode:"cors",
+
+                    cache:"no-store",
+
+                    headers:{
+
+                        "Accept":
+                            "application/json",
+
+                        "Authorization":
+                            "Bearer " +
+                            sessionToken
+
+                    }
+
+                }
+
+            );
+
+
+        log(
+            "/auth/me HTTP: " +
+            response.status
+        );
+
+
+        const data =
+            await response.json();
+
 
         if(
             response.ok &&
             data.success === true
         ){
 
-            addLog(
-                "✅ Login موفق بود."
+            setTest(
+                "test-me",
+                "pass",
+                "Session معتبر"
             );
 
 
-            if(data.token){
+            setTest(
+                "test-session",
+                "pass",
+                "فعال"
+            );
 
-                addLog(
-                    "✅ Token دریافت شد."
-                );
 
-            }
-            else{
-
-                addLog(
-                    "❌ Token دریافت نشد."
-                );
-
-            }
+            log(
+                "Session: ✅ معتبر است."
+            );
 
 
             if(data.user){
 
-                addLog(
-                    "Admin User دریافت شد."
-                );
-
-
-                if(data.user.username){
-
-                    addLog(
-                        "Username: " +
-                        data.user.username
-                    );
-
-                }
-
-
-                if(data.user.role){
-
-                    addLog(
-                        "Role: " +
-                        data.user.role
-                    );
-
-                }
-
-            }
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Store temporary token
-            |--------------------------------------------------------------------------
-            */
-
-            if(data.token){
-
-                sessionStorage.setItem(
-                    "NightCastToken",
-                    data.token
-                );
-
-
-                addLog(
-                    "✅ Token در SessionStorage ذخیره شد."
+                log(
+                    "Authenticated User: " +
+                    (
+                        data.user.username ||
+                        "unknown"
+                    )
                 );
 
             }
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | Dashboard
-            |--------------------------------------------------------------------------
-            */
-
-            message(
-
-                "✅ با موفقیت وارد شدید.\n" +
-                "در حال اتصال به Dashboard...",
-
-                "success"
-
-            );
-
-
-            addLog(
-                "در حال انتقال به dashboard.html ..."
-            );
-
-
-            setTimeout(
-
-                function(){
-
-                    window.location.href =
-                        "dashboard.html";
-
-                },
-
-                1000
-
-            );
-
+            return true;
 
         }
 
-        else{
+
+        setTest(
+            "test-me",
+            "fail",
+            "Unauthorized"
+        );
 
 
-            addLog(
-                "❌ Login ناموفق بود."
-            );
+        setTest(
+            "test-session",
+            "fail",
+            "نامعتبر"
+        );
 
 
-            if(data.message){
-
-                addLog(
-                    "Server Message: " +
-                    data.message
-                );
-
-            }
+        log(
+            "Session: ❌ Unauthorized"
+        );
 
 
-            message(
-
-                data.message ||
-                "نام کاربری یا رمز عبور اشتباه است.",
-
-                "error"
-
-            );
-
-        }
-
+        return false;
 
     }
 
     catch(error){
 
-
-        addLog(
-            "❌ خطای ارتباط:"
+        setTest(
+            "test-me",
+            "fail",
+            "Fetch Error"
         );
 
 
-        addLog(
-            error.message ||
-            String(error)
+        setTest(
+            "test-session",
+            "fail",
+            "نامشخص"
         );
 
 
-        message(
-
-            "❌ ارتباط با Worker برقرار نشد.",
-
-            "error"
-
+        log(
+            "/auth/me ERROR: " +
+            (
+                error.message ||
+                String(error)
+            )
         );
+
+
+        return false;
+
+    }
+
+}
+
+
+
+/*
+|--------------------------------------------------------------------------
+| Logout
+|--------------------------------------------------------------------------
+*/
+
+async function testLogout(){
+
+    if(!sessionToken){
+
+        setTest(
+            "test-logout",
+            "skip",
+            "Token نیست"
+        );
+
+
+        setTest(
+            "test-revoked",
+            "skip",
+            "Token نیست"
+        );
+
+
+        return false;
 
     }
 
 
-    finally{
+    log(
+        "در حال Logout ..."
+    );
 
-        loginButton.disabled =
+
+    try{
+
+
+        const response =
+            await fetch(
+
+                API_BASE +
+                "/auth/logout",
+
+                {
+
+                    method:"POST",
+
+                    mode:"cors",
+
+                    cache:"no-store",
+
+                    headers:{
+
+                        "Accept":
+                            "application/json",
+
+                        "Authorization":
+                            "Bearer " +
+                            sessionToken
+
+                    }
+
+                }
+
+            );
+
+
+        log(
+            "/auth/logout HTTP: " +
+            response.status
+        );
+
+
+        if(response.ok){
+
+            setTest(
+                "test-logout",
+                "pass",
+                "موفق"
+            );
+
+
+            log(
+                "Logout: ✅"
+            );
+
+
+            return true;
+
+        }
+
+
+        setTest(
+            "test-logout",
+            "fail",
+            "HTTP " +
+            response.status
+        );
+
+
+        return false;
+
+    }
+
+    catch(error){
+
+        setTest(
+            "test-logout",
+            "fail",
+            "Fetch Error"
+        );
+
+
+        log(
+            "Logout ERROR: " +
+            (
+                error.message ||
+                String(error)
+            )
+        );
+
+
+        return false;
+
+    }
+
+}
+
+
+
+/*
+|--------------------------------------------------------------------------
+| Verify revoked session
+|--------------------------------------------------------------------------
+*/
+
+async function testRevoked(){
+
+    if(!sessionToken){
+
+        setTest(
+            "test-revoked",
+            "skip",
+            "Token نیست"
+        );
+
+
+        return;
+
+    }
+
+
+    log(
+        "بررسی Token بعد از Logout ..."
+    );
+
+
+    try{
+
+
+        const response =
+            await fetch(
+
+                API_BASE +
+                "/auth/me",
+
+                {
+
+                    method:"GET",
+
+                    mode:"cors",
+
+                    cache:"no-store",
+
+                    headers:{
+
+                        "Accept":
+                            "application/json",
+
+                        "Authorization":
+                            "Bearer " +
+                            sessionToken
+
+                    }
+
+                }
+
+            );
+
+
+        if(response.status === 401){
+
+            setTest(
+                "test-revoked",
+                "pass",
+                "Session باطل شد"
+            );
+
+
+            log(
+                "Revoked Session: ✅"
+            );
+
+
+            return;
+
+        }
+
+
+        setTest(
+            "test-revoked",
+            "fail",
+            "هنوز معتبر"
+        );
+
+
+        log(
+            "Revoked Session: ❌ Token هنوز معتبر است."
+        );
+
+    }
+
+    catch(error){
+
+        setTest(
+            "test-revoked",
+            "fail",
+            "Fetch Error"
+        );
+
+
+        log(
+            "Revoked Check ERROR: " +
+            (
+                error.message ||
+                String(error)
+            )
+        );
+
+    }
+
+}
+
+
+
+/*
+|--------------------------------------------------------------------------
+| Clear old session
+|--------------------------------------------------------------------------
+*/
+
+clearButton.addEventListener(
+    "click",
+    function(){
+
+        localStorage.removeItem(
+            TOKEN_KEY
+        );
+
+
+        localStorage.removeItem(
+            USER_KEY
+        );
+
+
+        sessionStorage.removeItem(
+            TOKEN_KEY
+        );
+
+
+        sessionStorage.removeItem(
+            USER_KEY
+        );
+
+
+        sessionToken =
+            null;
+
+
+        loginSucceeded =
             false;
 
 
-        loginButton.textContent =
-            "ورود";
+        dashboardButton.disabled =
+            true;
+
+
+        overall.textContent =
+            "Session قبلی پاک شد.";
+
+
+        log(
+            "Session ذخیره‌شده در مرورگر پاک شد."
+        );
+
+    }
+);
+
+
+
+/*
+|--------------------------------------------------------------------------
+| MAIN TEST
+|--------------------------------------------------------------------------
+*/
+
+testButton.addEventListener(
+    "click",
+    async function(){
+
+        testsPassed =
+            0;
+
+
+        testsFailed =
+            0;
+
+
+        loginSucceeded =
+            false;
+
+
+        dashboardButton.disabled =
+            true;
+
+
+        testButton.disabled =
+            true;
+
+
+        logBox.textContent =
+            "";
+
+
+        log(
+            "================================"
+        );
+
+
+        log(
+            "شروع تست کامل NightCast Admin"
+        );
+
+
+        log(
+            "================================"
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Basic tests
+        |--------------------------------------------------------------------------
+        */
+
+        testHTTPS();
+
+
+        if(!testInputs()){
+
+            testButton.disabled =
+                false;
+
+            return;
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Worker
+        |--------------------------------------------------------------------------
+        */
+
+        const workerOK =
+            await testOptions();
+
+
+        if(!workerOK){
+
+            overall.innerHTML =
+                "❌ ارتباط با Worker برقرار نشد.";
+
+
+            overall.className =
+                "error";
+
+
+            testButton.disabled =
+                false;
+
+
+            return;
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Login
+        |--------------------------------------------------------------------------
+        */
+
+        const loginData =
+            await testLogin();
+
+
+        if(!loginData){
+
+            overall.textContent =
+                "❌ Login موفق نبود.";
+
+
+            overall.className =
+                "error";
+
+
+            testButton.disabled =
+                false;
+
+
+            return;
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Session
+        |--------------------------------------------------------------------------
+        */
+
+        const sessionOK =
+            await testMe();
+
+
+        if(!sessionOK){
+
+            overall.textContent =
+                "❌ Session معتبر نیست.";
+
+
+            overall.className =
+                "error";
+
+
+            testButton.disabled =
+                false;
+
+
+            return;
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Save ONLY for dashboard compatibility
+        |--------------------------------------------------------------------------
+        |
+        | تست فعلی Token را در SessionStorage قرار می‌دهد.
+        | Token در لاگ چاپ نمی‌شود.
+        |
+        */
+
+        sessionStorage.setItem(
+            TOKEN_KEY,
+            sessionToken
+        );
+
+
+        if(loginData.user){
+
+            sessionStorage.setItem(
+
+                USER_KEY,
+
+                JSON.stringify({
+
+                    id:
+                        loginData.user.id ??
+                        null,
+
+                    username:
+                        loginData.user.username ??
+                        null,
+
+                    full_name:
+                        loginData.user.full_name ??
+                        null,
+
+                    role:
+                        loginData.user.role ??
+                        null
+
+                })
+
+            );
+
+        }
+
+
+        log(
+            "Session برای تست Dashboard آماده شد."
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Logout test
+        |--------------------------------------------------------------------------
+        |
+        | Logout باعث می‌شود Session نهایی باطل شود.
+        | بنابراین بعد از تست Logout نمی‌توانیم با همان Token
+        | وارد Dashboard شویم.
+        |
+        */
+
+        await testLogout();
+
+
+        await testRevoked();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Final
+        |--------------------------------------------------------------------------
+        */
+
+        loginSucceeded =
+            true;
+
+
+        dashboardButton.disabled =
+            false;
+
+
+        overall.innerHTML =
+
+            "✅ تست Login و Session با موفقیت انجام شد." +
+
+            "<br>" +
+
+            "موفق: " +
+            testsPassed +
+
+            " | ناموفق: " +
+            testsFailed +
+
+            "<br><br>" +
+
+            "برای ورود واقعی به Dashboard، دوباره Login انجام دهید.";
+
+
+        overall.className =
+            testsFailed === 0
+                ? "success"
+                : "warning";
+
+
+        log(
+            "================================"
+        );
+
+
+        log(
+            "پایان تست"
+        );
+
+
+        log(
+            "Passed: " +
+            testsPassed
+        );
+
+
+        log(
+            "Failed: " +
+            testsFailed
+        );
+
+
+        log(
+            "================================"
+        );
+
+
+        testButton.disabled =
+            false;
 
     }
 
+);
 
-    return false;
 
-}
+
+/*
+|--------------------------------------------------------------------------
+| Dashboard button
+|--------------------------------------------------------------------------
+*/
+
+dashboardButton.addEventListener(
+    "click",
+    function(){
+
+        /*
+        |--------------------------------------------------------------------------
+        | توجه:
+        | تست Logout قبلاً Session را باطل کرده است.
+        | بنابراین این دکمه صرفاً Dashboard را باز می‌کند.
+        |--------------------------------------------------------------------------
+        */
+
+        window.location.href =
+            formDashboard;
+
+    }
+);
 
 </script></body></html>

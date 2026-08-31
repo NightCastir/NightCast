@@ -4,7 +4,13 @@ content="width=device-width, initial-scale=1.0"
 
 «»
 
-<title>NightCast Admin Login Test</title><style>
+<meta
+name="robots"
+content="noindex,nofollow"
+
+«»
+
+<title>NightCast - Login Diagnostic</title><style>
 
 *{
     box-sizing:border-box;
@@ -14,22 +20,22 @@ body{
 
     margin:0;
 
-    padding:20px;
+    padding:16px;
 
     font-family:
         Tahoma,
         Arial,
         sans-serif;
 
-    background:#111827;
+    background:#0f172a;
 
-    color:#fff;
+    color:#f8fafc;
 
 }
 
 .container{
 
-    max-width:700px;
+    max-width:800px;
 
     margin:auto;
 
@@ -37,19 +43,21 @@ body{
 
 .box{
 
-    background:#1f2937;
+    background:#1e293b;
 
-    border-radius:16px;
+    border:1px solid #334155;
 
-    padding:20px;
+    border-radius:14px;
 
-    margin-bottom:20px;
+    padding:18px;
+
+    margin-bottom:16px;
 
 }
 
 h1{
 
-    font-size:22px;
+    font-size:20px;
 
     margin-top:0;
 
@@ -57,7 +65,7 @@ h1{
 
 h2{
 
-    font-size:17px;
+    font-size:16px;
 
 }
 
@@ -68,15 +76,15 @@ input{
     padding:13px;
 
     margin:
-        7px 0 15px;
+        6px 0 14px;
 
     border-radius:8px;
 
-    border:1px solid #4b5563;
+    border:1px solid #475569;
 
-    background:#111827;
+    background:#0f172a;
 
-    color:#fff;
+    color:white;
 
     font-size:15px;
 
@@ -92,15 +100,27 @@ button{
 
     border-radius:8px;
 
-    background:#fff;
-
-    color:#111827;
-
-    font-weight:bold;
+    margin-top:8px;
 
     cursor:pointer;
 
-    margin-top:5px;
+    font-weight:bold;
+
+}
+
+.primary{
+
+    background:#fff;
+
+    color:#0f172a;
+
+}
+
+.secondary{
+
+    background:#334155;
+
+    color:white;
 
 }
 
@@ -108,55 +128,29 @@ button:disabled{
 
     opacity:.5;
 
+    cursor:not-allowed;
+
 }
 
 .status{
 
-    padding:12px;
+    background:#020617;
 
     border-radius:8px;
 
-    background:#111827;
+    padding:14px;
 
-    margin-top:15px;
+    margin-top:12px;
 
     white-space:pre-wrap;
 
     word-break:break-word;
 
-}
-
-.row{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    gap:15px;
-
-    padding:9px 0;
-
-    border-bottom:1px solid #374151;
+    line-height:1.8;
 
 }
 
-.label{
-
-    color:#9ca3af;
-
-}
-
-.value{
-
-    text-align:left;
-
-    direction:ltr;
-
-    word-break:break-all;
-
-}
-
-.success{
+.ok{
 
     color:#86efac;
 
@@ -174,21 +168,69 @@ button:disabled{
 
 }
 
-.small{
+.info{
+
+    color:#93c5fd;
+
+}
+
+.log{
+
+    direction:ltr;
+
+    text-align:left;
+
+    font-family:monospace;
 
     font-size:12px;
 
-    color:#9ca3af;
+    max-height:400px;
+
+    overflow:auto;
+
+}
+
+.row{
+
+    display:grid;
+
+    grid-template-columns:160px 1fr;
+
+    gap:10px;
+
+    padding:9px 0;
+
+    border-bottom:1px solid #334155;
+
+}
+
+.label{
+
+    color:#94a3b8;
+
+}
+
+.value{
+
+    word-break:break-all;
+
+}
+
+.small{
+
+    color:#94a3b8;
+
+    font-size:12px;
 
     line-height:1.8;
 
 }
 
 </style></head><body><div class="container"><div class="box"><h1>
-تست Login پنل مدیریت NightCast
-</h1><div class="small">این صفحه فقط برای تست ارتباط Login با Worker ساخته شده است.
+🔐 تست تشخیصی Login NightCast
+</h1><div class="small">این صفحه برای پیدا کردن علت کار نکردن Login ساخته شده است.
 <br>
-هیچ Token یا رمز عبوری در صفحه نمایش داده نمی‌شود.
+هیچ Password یا Token واقعی در خروجی نمایش داده نمی‌شود.
 
 </div></div><div class="box"><h2>
 اطلاعات ورود
@@ -197,6 +239,7 @@ button:disabled{
 </label><input
 id="username"
 type="text"
+value="hamed"
 autocomplete="username"
 
 «»
@@ -211,246 +254,410 @@ autocomplete="current-password"
 «»
 
 <button
-id="loginBtn"
+id="testBtn"
+class="primary"
+type="button"
 
 «»
 
-تست ورود
+شروع تست کامل
+
+</button><button
+id="workerBtn"
+class="secondary"
+type="button"
+
+«»
+
+فقط تست ارتباط Worker
 
 </button><div
-    id="status"
+    id="mainStatus"
     class="status"
 >آماده تست...
 
 </div></div><div class="box"><h2>
-نتیجه تست
-</h2><div class="row"><span class="label">
-وضعیت ارتباط
-</span><span
-id="connection"
-class="value"
-
-«»
-
-- 
-
-</span></div><div class="row"><span class="label">
-HTTP Status
-</span><span
-id="httpStatus"
-class="value"
-
-«»
-
-- 
-
-</span></div><div class="row"><span class="label">
-Response Type
-</span><span
-id="responseType"
-class="value"
-
-«»
-
-- 
-
-</span></div><div class="row"><span class="label">
-success
-</span><span
-id="successValue"
-class="value"
-
-«»
-
-- 
-
-</span></div><div class="row"><span class="label">
-Token
-</span><span
-id="tokenValue"
-class="value"
-
-«»
-
-بررسی شد
-</span>
-
-</div><div class="row"><span class="label">
-User
-</span><span
-id="userValue"
-class="value"
-
-«»
-
-بررسی شد
-</span>
-
-</div><div class="row"><span class="label">
-Cookie
-</span><span
-id="cookieValue"
-class="value"
-
-«»
-
-بررسی شد
-</span>
-
-</div></div><div class="box"><h2>
+وضعیت مراحل
+</h2><div class="row"><div class="label">
+JavaScript
+</div><div
+    id="jsStatus"
+    class="value"
+>
+⏳
+</div></div><div class="row"><div class="label">
+API URL
+</div><div
+    id="apiStatus"
+    class="value"
+>
+⏳
+</div></div><div class="row"><div class="label">
+Worker
+</div><div
+    id="workerStatus"
+    class="value"
+>
+⏳
+</div></div><div class="row"><div class="label">
+HTTP
+</div><div
+    id="httpStatus"
+    class="value"
+>
+⏳
+</div></div><div class="row"><div class="label">
+JSON
+</div><div
+    id="jsonStatus"
+    class="value"
+>
+⏳
+</div></div><div class="row"><div class="label">
+Login
+</div><div
+    id="loginStatus"
+    class="value"
+>
+⏳
+</div></div></div><div class="box"><h2>
 پاسخ Worker
 </h2><div
     id="serverResponse"
     class="status"
 >
 هنوز درخواستی ارسال نشده است.
+</div></div><div class="box"><h2>
+گزارش اجرای تست
+</h2><div
+    id="logs"
+    class="status log"
+>
+شروع نشده است.
 </div></div></div><script>
 
+
 "use strict";
+
+
+/*
+|--------------------------------------------------------------------------
+| CONFIG
+|--------------------------------------------------------------------------
+*/
 
 
 const API_URL =
 "https://nightcast-api.tomasgermany2580.workers.dev/api/v1";
 
 
-const loginBtn =
-document.getElementById("loginBtn");
+/*
+|--------------------------------------------------------------------------
+| Elements
+|--------------------------------------------------------------------------
+*/
 
 
-const username =
+const usernameInput =
 document.getElementById("username");
 
 
-const password =
+const passwordInput =
 document.getElementById("password");
 
 
-const status =
-document.getElementById("status");
+const testBtn =
+document.getElementById("testBtn");
 
 
-const connection =
-document.getElementById("connection");
+const workerBtn =
+document.getElementById("workerBtn");
+
+
+const mainStatus =
+document.getElementById("mainStatus");
+
+
+const jsStatus =
+document.getElementById("jsStatus");
+
+
+const apiStatus =
+document.getElementById("apiStatus");
+
+
+const workerStatus =
+document.getElementById("workerStatus");
 
 
 const httpStatus =
 document.getElementById("httpStatus");
 
 
-const responseType =
-document.getElementById("responseType");
+const jsonStatus =
+document.getElementById("jsonStatus");
 
 
-const successValue =
-document.getElementById("successValue");
-
-
-const tokenValue =
-document.getElementById("tokenValue");
-
-
-const userValue =
-document.getElementById("userValue");
-
-
-const cookieValue =
-document.getElementById("cookieValue");
+const loginStatus =
+document.getElementById("loginStatus");
 
 
 const serverResponse =
 document.getElementById("serverResponse");
 
 
-
-function setText(element,text){
-
-    element.textContent =
-        text;
-
-}
+const logs =
+document.getElementById("logs");
 
 
 
-function resetResults(){
+/*
+|--------------------------------------------------------------------------
+| Log
+|--------------------------------------------------------------------------
+*/
 
-    setText(connection,"در حال تست...");
 
-    setText(httpStatus,"-");
+let logLines = [];
 
-    setText(responseType,"-");
 
-    setText(successValue,"-");
+function log(text){
 
-    setText(tokenValue,"بررسی شد");
+    const time =
+        new Date()
+            .toLocaleTimeString(
+                "fa-IR"
+            );
 
-    setText(userValue,"بررسی شد");
 
-    setText(cookieValue,"بررسی شد");
-
-    setText(
-        serverResponse,
-        "در حال دریافت پاسخ..."
+    logLines.push(
+        "[" +
+        time +
+        "] " +
+        text
     );
 
+
+    logs.textContent =
+        logLines.join("\n");
+
+
+    logs.scrollTop =
+        logs.scrollHeight;
+
 }
 
 
 
-loginBtn.addEventListener(
-    "click",
-    testLogin
+/*
+|--------------------------------------------------------------------------
+| Initial JS Test
+|--------------------------------------------------------------------------
+*/
+
+
+log(
+    "JavaScript اجرا شد."
+);
+
+
+jsStatus.textContent =
+    "✅ اجرا شد";
+
+
+apiStatus.textContent =
+    API_URL;
+
+
+log(
+    "API URL: " +
+    API_URL
 );
 
 
 
-async function testLogin(){
+/*
+|--------------------------------------------------------------------------
+| Button Check
+|--------------------------------------------------------------------------
+*/
 
 
-    const user =
-        username.value.trim();
+log(
+    "دکمه‌ها پیدا شدند."
+);
 
 
-    const pass =
-        password.value;
+testBtn.addEventListener(
+    "click",
+    function(){
 
-
-    if(!user){
-
-        setText(
-            status,
-            "❌ نام کاربری را وارد کنید."
+        log(
+            "دکمه «شروع تست کامل» کلیک شد."
         );
 
-        username.focus();
+        runFullTest();
+
+    }
+);
+
+
+workerBtn.addEventListener(
+    "click",
+    function(){
+
+        log(
+            "دکمه «فقط تست ارتباط Worker» کلیک شد."
+        );
+
+        testWorkerOnly();
+
+    }
+);
+
+
+
+/*
+|--------------------------------------------------------------------------
+| Full Test
+|--------------------------------------------------------------------------
+*/
+
+
+async function runFullTest(){
+
+
+    logLines = [];
+
+
+    logs.textContent = "";
+
+
+    log(
+        "شروع تست کامل..."
+    );
+
+
+    testBtn.disabled = true;
+
+    workerBtn.disabled = true;
+
+
+    mainStatus.textContent =
+        "⏳ تست در حال اجرا است...";
+
+
+    workerStatus.textContent =
+        "⏳";
+
+
+    httpStatus.textContent =
+        "⏳";
+
+
+    jsonStatus.textContent =
+        "⏳";
+
+
+    loginStatus.textContent =
+        "⏳";
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Validate Inputs
+    |--------------------------------------------------------------------------
+    */
+
+
+    const username =
+        usernameInput.value.trim();
+
+
+    const password =
+        passwordInput.value;
+
+
+    log(
+        "Username دریافت شد: " +
+        (
+            username
+                ? "بله"
+                : "خیر"
+        )
+    );
+
+
+    log(
+        "Password دریافت شد: " +
+        (
+            password
+                ? "بله"
+                : "خیر"
+        )
+    );
+
+
+    if(!username){
+
+        log(
+            "خطا: Username خالی است."
+        );
+
+
+        mainStatus.textContent =
+            "❌ نام کاربری خالی است.";
+
+
+        testBtn.disabled = false;
+
+        workerBtn.disabled = false;
 
         return;
 
     }
 
 
-    if(!pass){
+    if(!password){
 
-        setText(
-            status,
-            "❌ رمز عبور را وارد کنید."
+        log(
+            "خطا: Password خالی است."
         );
 
-        password.focus();
+
+        mainStatus.textContent =
+            "❌ رمز عبور خالی است.";
+
+
+        testBtn.disabled = false;
+
+        workerBtn.disabled = false;
 
         return;
 
     }
 
 
-    loginBtn.disabled = true;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Fetch Login
+    |--------------------------------------------------------------------------
+    */
 
 
-    resetResults();
+    const endpoint =
+        API_URL +
+        "/auth/login";
 
 
-    setText(
-        status,
-        "⏳ در حال ارسال درخواست به Worker..."
+    log(
+        "Endpoint ساخته شد."
+    );
+
+
+    log(
+        "ارسال POST به Worker..."
     );
 
 
@@ -463,7 +670,15 @@ async function testLogin(){
 
         const timeout =
             setTimeout(
-                () => controller.abort(),
+                function(){
+
+                    log(
+                        "Timeout بعد از 15 ثانیه."
+                    );
+
+                    controller.abort();
+
+                },
                 15000
             );
 
@@ -473,14 +688,21 @@ async function testLogin(){
 
         try{
 
+
             response =
                 await fetch(
 
-                    API_URL + "/auth/login",
+                    endpoint,
 
                     {
 
                         method:"POST",
+
+                        mode:"cors",
+
+                        credentials:"include",
+
+                        cache:"no-store",
 
                         headers:{
 
@@ -492,25 +714,24 @@ async function testLogin(){
 
                         },
 
-                        credentials:"include",
-
-                        cache:"no-store",
-
-                        signal:
-                            controller.signal,
-
                         body:
                             JSON.stringify({
 
-                                username:user,
+                                username:
+                                    username,
 
-                                password:pass
+                                password:
+                                    password
 
-                            })
+                            }),
+
+                        signal:
+                            controller.signal
 
                     }
 
                 );
+
 
         }
 
@@ -521,303 +742,313 @@ async function testLogin(){
         }
 
 
-
-        setText(
-            connection,
-            "✅ ارتباط برقرار شد"
+        log(
+            "Fetch با موفقیت Response دریافت کرد."
         );
 
 
-        setText(
-            httpStatus,
+        workerStatus.textContent =
+            "✅ پاسخ دریافت شد";
+
+
+        httpStatus.textContent =
             response.status +
             " " +
-            response.statusText
+            response.statusText;
+
+
+        log(
+            "HTTP Status: " +
+            response.status
         );
-
-
-        setText(
-            responseType,
-            response.headers.get(
-                "content-type"
-            ) || "نامشخص"
-        );
-
-
-
-        let rawText = "";
-
-
-        try{
-
-            rawText =
-                await response.text();
-
-        }
-
-        catch(error){
-
-            rawText =
-                "امکان خواندن پاسخ وجود نداشت.";
-
-        }
-
 
 
         /*
         |--------------------------------------------------------------------------
-        | تلاش برای JSON
+        | Read response
         |--------------------------------------------------------------------------
         */
 
-        let data = null;
+
+        const raw =
+            await response.text();
+
+
+        log(
+            "Response Text دریافت شد."
+        );
+
+
+        if(!raw){
+
+            jsonStatus.textContent =
+                "❌ خالی";
+
+
+            serverResponse.textContent =
+                "Worker پاسخ خالی برگرداند.";
+
+
+            loginStatus.textContent =
+                "❌ نامشخص";
+
+
+            mainStatus.textContent =
+                "⚠️ Worker پاسخ خالی برگرداند.";
+
+
+            log(
+                "Response خالی بود."
+            );
+
+
+            return;
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Parse JSON
+        |--------------------------------------------------------------------------
+        */
+
+
+        let data;
 
 
         try{
 
             data =
-                JSON.parse(rawText);
+                JSON.parse(raw);
+
+
+            jsonStatus.textContent =
+                "✅ JSON معتبر";
+
+
+            log(
+                "JSON با موفقیت Parse شد."
+            );
 
         }
 
-        catch{
+        catch(error){
 
-            data = null;
-
-        }
-
+            jsonStatus.textContent =
+                "❌ JSON نامعتبر";
 
 
-        if(data){
+            serverResponse.textContent =
+                raw;
 
-            setText(
-                serverResponse,
-                JSON.stringify(
-                    sanitizeResponse(data),
-                    null,
-                    2
-                )
+
+            loginStatus.textContent =
+                "❌ ناموفق";
+
+
+            mainStatus.textContent =
+                "❌ Worker پاسخ JSON معتبر برنگرداند.";
+
+
+            log(
+                "خطا در JSON.parse"
             );
 
 
-            setText(
-                successValue,
-                data.success === true
-                    ? "✅ true"
-                    : String(data.success)
-            );
-
-
-            if(
-                typeof data.token ===
-                "string"
-                &&
-                data.token.length > 0
-            ){
-
-                setText(
-                    tokenValue,
-                    "✅ Token دریافت شد"
-                );
-
-            }
-
-            else{
-
-                setText(
-                    tokenValue,
-                    "❌ Token دریافت نشد"
-                );
-
-            }
-
-
-            if(
-                data.user &&
-                typeof data.user === "object"
-            ){
-
-                setText(
-                    userValue,
-                    "✅ اطلاعات User دریافت شد"
-                );
-
-            }
-
-            else{
-
-                setText(
-                    userValue,
-                    "❌ User دریافت نشد"
-                );
-
-            }
-
-
-            if(
-                response.ok &&
-                data.success === true
-            ){
-
-                setText(
-                    status,
-                    "✅ Login با موفقیت توسط Worker تأیید شد."
-                );
-
-            }
-
-            else{
-
-                setText(
-                    status,
-                    "⚠️ Worker پاسخ داد، اما Login موفق نبود."
-                );
-
-            }
-
-        }
-
-        else{
-
-
-            setText(
-                serverResponse,
-                rawText ||
-                "پاسخ خالی بود."
-            );
-
-
-            setText(
-                successValue,
-                "❌ پاسخ JSON نیست"
-            );
-
-
-            setText(
-                tokenValue,
-                "نامشخص"
-            );
-
-
-            setText(
-                userValue,
-                "نامشخص"
-            );
-
-
-            setText(
-                status,
-                "❌ Worker پاسخ JSON معتبر برنگرداند."
-            );
+            return;
 
         }
 
 
         /*
         |--------------------------------------------------------------------------
-        | Cookie
+        | Safe Response
         |--------------------------------------------------------------------------
-        |
-        | JavaScript عمداً نمی‌تواند HttpOnly Cookie را بخواند.
-        | بنابراین فقط توضیح می‌دهیم که Cookie قابل خواندن از JS نیست.
-        |
         */
 
-        setText(
-            cookieValue,
-            "به دلیل امنیت، Cookie از JavaScript قابل خواندن نیست."
-        );
 
-    }
-
-
-    catch(error){
+        const safeData = {};
 
 
         if(
-            error.name ===
-            "AbortError"
+            Object.prototype.hasOwnProperty.call(
+                data,
+                "success"
+            )
         ){
 
-            setText(
-                connection,
-                "❌ Timeout"
+            safeData.success =
+                data.success;
+
+        }
+
+
+        if(
+            Object.prototype.hasOwnProperty.call(
+                data,
+                "message"
+            )
+        ){
+
+            safeData.message =
+                data.message;
+
+        }
+
+
+        if(
+            data.user &&
+            typeof data.user === "object"
+        ){
+
+            safeData.user = {
+
+                id:
+                    data.user.id ?? null,
+
+                username:
+                    data.user.username ?? null,
+
+                full_name:
+                    data.user.full_name ?? null,
+
+                role:
+                    data.user.role ?? null
+
+            };
+
+        }
+
+
+        if(data.token){
+
+            safeData.token =
+                "[HIDDEN]";
+
+        }
+
+
+        serverResponse.textContent =
+            JSON.stringify(
+                safeData,
+                null,
+                2
             );
 
 
-            setText(
-                status,
-                "❌ Worker در ۱۵ ثانیه پاسخ نداد."
+        /*
+        |--------------------------------------------------------------------------
+        | Login Result
+        |--------------------------------------------------------------------------
+        */
+
+
+        if(
+            response.ok &&
+            data.success === true
+        ){
+
+            loginStatus.textContent =
+                "✅ موفق";
+
+
+            mainStatus.textContent =
+                "✅ Worker Login را موفق اعلام کرد.";
+
+
+            log(
+                "Login موفق است."
             );
+
+
+            if(data.token){
+
+                log(
+                    "Token دریافت شده است."
+                );
+
+            }
+            else{
+
+                log(
+                    "⚠️ Login موفق است ولی Token در پاسخ نیست."
+                );
+
+            }
+
 
         }
 
         else{
 
 
-            setText(
-                connection,
-                "❌ خطا در Fetch"
-            );
+            loginStatus.textContent =
+                "❌ ناموفق";
 
 
-            setText(
-                status,
-                "❌ ارتباط با Worker برقرار نشد."
+            mainStatus.textContent =
+                "❌ Worker Login را موفق اعلام نکرد.";
+
+
+            log(
+                "Login ناموفق."
             );
 
         }
 
 
-        setText(
-            serverResponse,
-            error.message ||
-            "خطای نامشخص"
+    }
+
+    catch(error){
+
+
+        workerStatus.textContent =
+            "❌ خطا";
+
+
+        loginStatus.textContent =
+            "❌ اجرا نشد";
+
+
+        mainStatus.textContent =
+            "❌ درخواست Fetch با خطا متوقف شد.";
+
+
+        log(
+            "ERROR: " +
+            (
+                error &&
+                error.message
+                    ? error.message
+                    : String(error)
+            )
         );
 
 
-        setText(
-            httpStatus,
-            "-"
-        );
+        serverResponse.textContent =
+            "خطا:\n" +
+            (
+                error &&
+                error.message
+                    ? error.message
+                    : String(error)
+            );
 
-
-        setText(
-            responseType,
-            "-"
-        );
-
-
-        setText(
-            successValue,
-            "نامشخص"
-        );
-
-
-        setText(
-            tokenValue,
-            "نامشخص"
-        );
-
-
-        setText(
-            userValue,
-            "نامشخص"
-        );
-
-
-        setText(
-            cookieValue,
-            "نامشخص"
-        );
 
     }
 
-
     finally{
 
-        loginBtn.disabled =
-            false;
+
+        testBtn.disabled = false;
+
+        workerBtn.disabled = false;
+
+
+        log(
+            "پایان تست."
+        );
 
     }
 
@@ -827,76 +1058,206 @@ async function testLogin(){
 
 /*
 |--------------------------------------------------------------------------
-| حذف Token از نمایش
+| Worker Only Test
 |--------------------------------------------------------------------------
 */
 
-function sanitizeResponse(data){
 
-    const result = {};
-
-
-    if(
-        Object.prototype.hasOwnProperty.call(
-            data,
-            "success"
-        )
-    ){
-
-        result.success =
-            data.success;
-
-    }
+async function testWorkerOnly(){
 
 
-    if(
-        Object.prototype.hasOwnProperty.call(
-            data,
-            "message"
-        )
-    ){
-
-        result.message =
-            data.message;
-
-    }
+    logLines = [];
 
 
-    if(
-        data.user &&
-        typeof data.user === "object"
-    ){
+    logs.textContent = "";
 
-        result.user = {
 
-            id:
-                data.user.id ?? null,
+    log(
+        "شروع تست ارتباط Worker..."
+    );
 
-            username:
-                data.user.username ?? null,
 
-            full_name:
-                data.user.full_name ?? null,
+    workerBtn.disabled = true;
 
-            role:
-                data.user.role ?? null
+    testBtn.disabled = true;
+
+
+    mainStatus.textContent =
+        "⏳ در حال تست Worker...";
+
+
+    try{
+
+
+        const controller =
+            new AbortController();
+
+
+        const timeout =
+            setTimeout(
+                function(){
+
+                    controller.abort();
+
+                },
+                10000
+            );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | فقط OPTIONS
+        |--------------------------------------------------------------------------
+        */
+
+        log(
+            "ارسال OPTIONS به API..."
+        );
+
+
+        const response =
+            await fetch(
+
+                API_URL + "/auth/login",
+
+                {
+
+                    method:"OPTIONS",
+
+                    mode:"cors",
+
+                    cache:"no-store",
+
+                    signal:
+                        controller.signal
+
+                }
+
+            );
+
+
+        clearTimeout(timeout);
+
+
+        log(
+            "OPTIONS پاسخ دریافت کرد."
+        );
+
+
+        workerStatus.textContent =
+            "✅ Worker قابل دسترسی است";
+
+
+        httpStatus.textContent =
+            response.status +
+            " " +
+            response.statusText;
+
+
+        const headers = {
+
+            contentType:
+                response.headers.get(
+                    "content-type"
+                ),
+
+            allowOrigin:
+                response.headers.get(
+                    "access-control-allow-origin"
+                ),
+
+            allowMethods:
+                response.headers.get(
+                    "access-control-allow-methods"
+                ),
+
+            allowHeaders:
+                response.headers.get(
+                    "access-control-allow-headers"
+                )
 
         };
 
+
+        serverResponse.textContent =
+            JSON.stringify(
+                headers,
+                null,
+                2
+            );
+
+
+        mainStatus.textContent =
+            "✅ Worker پاسخ داد. اکنون تست Login را انجام بده.";
+
+
+        log(
+            "CORS Origin: " +
+            (
+                headers.allowOrigin ||
+                "وجود ندارد"
+            )
+        );
+
+
+        log(
+            "CORS Methods: " +
+            (
+                headers.allowMethods ||
+                "وجود ندارد"
+            )
+        );
+
+
+        log(
+            "CORS Headers: " +
+            (
+                headers.allowHeaders ||
+                "وجود ندارد"
+            )
+        );
+
+
+    }
+
+    catch(error){
+
+
+        workerStatus.textContent =
+            "❌ Worker قابل دسترسی نیست";
+
+
+        mainStatus.textContent =
+            "❌ ارتباط با Worker برقرار نشد.";
+
+
+        serverResponse.textContent =
+            error.message ||
+            String(error);
+
+
+        log(
+            "ERROR: " +
+            (
+                error.message ||
+                String(error)
+            )
+        );
+
     }
 
 
-    if(
-        data.token
-    ){
+    finally{
 
-        result.token =
-            "[HIDDEN — Token دریافت شده است]";
+        workerBtn.disabled = false;
+
+        testBtn.disabled = false;
+
+        log(
+            "پایان تست Worker."
+        );
 
     }
-
-
-    return result;
 
 }
 

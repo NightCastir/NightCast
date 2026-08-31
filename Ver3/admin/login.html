@@ -1,275 +1,900 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<!DOCTYPE html><html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
 
-<head>
+«»
 
-<meta charset="UTF-8">
+<meta
+name="robots"
+content="noindex,nofollow,noarchive"
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+«»
 
-<title>NightCast Login</title>
+<title>ورود مدیریت NightCast</title><style>
 
-</head>
+*{
+    box-sizing:border-box;
+}
 
+html,
+body{
+    margin:0;
+    padding:0;
+    width:100%;
+    min-height:100%;
+}
 
-<body>
+body{
 
+    font-family:
+        Tahoma,
+        Arial,
+        sans-serif;
 
-<h2>
-ورود به پنل مدیریت NightCast
-</h2>
+    background:
+        linear-gradient(
+            135deg,
+            #0f172a,
+            #111827
+        );
 
+    color:#fff;
 
-<form id="loginForm">
+    display:flex;
 
+    align-items:center;
 
-<div>
+    justify-content:center;
 
-<label>
-نام کاربری:
-</label>
+    padding:20px;
 
-<br>
+}
 
-<input 
+.login-box{
+
+    width:100%;
+
+    max-width:380px;
+
+    background:
+        rgba(255,255,255,.06);
+
+    border:
+        1px solid
+        rgba(255,255,255,.12);
+
+    border-radius:20px;
+
+    padding:30px;
+
+    box-shadow:
+        0 20px 60px
+        rgba(0,0,0,.35);
+
+    backdrop-filter:
+        blur(12px);
+
+}
+
+.logo{
+
+    text-align:center;
+
+    font-size:28px;
+
+    font-weight:bold;
+
+    margin-bottom:8px;
+
+}
+
+.subtitle{
+
+    text-align:center;
+
+    color:#cbd5e1;
+
+    font-size:14px;
+
+    margin-bottom:28px;
+
+}
+
+.field{
+
+    margin-bottom:18px;
+
+}
+
+label{
+
+    display:block;
+
+    margin-bottom:8px;
+
+    font-size:14px;
+
+    color:#e2e8f0;
+
+}
+
+input{
+
+    width:100%;
+
+    padding:13px 14px;
+
+    border-radius:10px;
+
+    border:
+        1px solid
+        rgba(255,255,255,.15);
+
+    background:
+        rgba(0,0,0,.25);
+
+    color:#fff;
+
+    font-size:15px;
+
+    outline:none;
+
+}
+
+input:focus{
+
+    border-color:
+        rgba(255,255,255,.45);
+
+}
+
+button{
+
+    width:100%;
+
+    border:0;
+
+    border-radius:10px;
+
+    padding:13px;
+
+    background:#fff;
+
+    color:#111827;
+
+    font-size:15px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+}
+
+button:hover{
+
+    opacity:.92;
+
+}
+
+button:disabled{
+
+    opacity:.5;
+
+    cursor:not-allowed;
+
+}
+
+.message{
+
+    min-height:22px;
+
+    margin-top:18px;
+
+    text-align:center;
+
+    font-size:14px;
+
+    color:#f8fafc;
+
+}
+
+.security-note{
+
+    text-align:center;
+
+    margin-top:20px;
+
+    color:#94a3b8;
+
+    font-size:11px;
+
+}
+
+</style></head><body><div class="login-box"><div class="logo">NightCast
+
+</div><div class="subtitle">ورود به پنل مدیریت
+
+</div><form
+    id="loginForm"
+    autocomplete="on"
+    novalidate
+><div class="field"><label for="username">نام کاربری
+
+</label><input
+
 id="username"
+
+name="username"
+
 type="text"
-value=""
->
 
-</div>
+autocomplete="username"
 
+autocapitalize="none"
 
-<br>
+spellcheck="false"
 
+maxlength="100"
 
-<div>
+required
 
-<label>
-رمز عبور:
-</label>
+«»
 
-<br>
+</div><div class="field"><label for="password">رمز عبور
 
-<input 
+</label><input
+
 id="password"
+
+name="password"
+
 type="password"
-value=""
->
 
-</div>
+autocomplete="current-password"
 
+maxlength="200"
 
-<br>
+required
 
+«»
 
-<button type="submit">
+</div><button
+id="loginBtn"
+type="submit"
+
+«»
 
 ورود
 
-</button>
+</button></form><div
+    id="message"
+    class="message"
+    role="status"
+    aria-live="polite"
+></div><div class="security-note">دسترسی این بخش فقط برای مدیریت NightCast است.
+
+</div></div><script>
 
 
-</form>
+"use strict";
 
 
-
-<p id="message"></p>
-
-
-
-<script>
+/*
+|--------------------------------------------------------------------------
+| NightCast Admin Login
+|--------------------------------------------------------------------------
+|
+| این نسخه عمداً با API فعلی Worker کار می‌کند.
+|
+| فعلاً Token در LocalStorage نگهداری می‌شود چون Worker فعلی
+| برای احراز هویت Dashboard به Authorization: Bearer نیاز دارد.
+|
+| در مرحله بعد، Session را به HttpOnly Cookie منتقل می‌کنیم.
+|
+|--------------------------------------------------------------------------
+*/
 
 
 const API_URL =
-
-"https://nightcast-api.tomasgermany2580.workers.dev/api/v1";
-
+    "https://nightcast-api.tomasgermany2580.workers.dev/api/v1";
 
 
+const TOKEN_KEY =
+    "NightCastToken";
 
 
-document
-
-.getElementById("loginForm")
-
-.addEventListener(
-
-"submit",
-
-async function(e){
+const USER_KEY =
+    "NightCastAdminUser";
 
 
-e.preventDefault();
+const form =
+    document.getElementById("loginForm");
 
 
-
-const username =
-
-document
-
-.getElementById("username")
-
-.value;
+const usernameInput =
+    document.getElementById("username");
 
 
+const passwordInput =
+    document.getElementById("password");
 
-const password =
 
-document
+const loginBtn =
+    document.getElementById("loginBtn");
 
-.getElementById("password")
 
-.value;
+const message =
+    document.getElementById("message");
 
 
 
-document
-
-.getElementById("message")
-
-.innerHTML =
-
-"در حال بررسی...";
-
-
-
-
-try{
+/*
+|--------------------------------------------------------------------------
+| Session موجود
+|--------------------------------------------------------------------------
+|
+| اگر قبلاً Login شده‌ایم، مستقیماً Dashboard را باز می‌کنیم.
+|
+*/
 
 
-const response =
+(function checkExistingSession(){
 
-await fetch(
+    const token =
+        localStorage.getItem(TOKEN_KEY);
 
-API_URL + "/auth/login",
+    if(!token){
 
-{
+        return;
 
-
-method:"POST",
-
-
-headers:{
-
-"Content-Type":"application/json"
-
-},
+    }
 
 
-body:JSON.stringify({
+    /*
+    |--------------------------------------------------------------------------
+    | فعلاً وجود Token را کافی نمی‌دانیم.
+    | Session واقعی باید از Worker تأیید شود.
+    |--------------------------------------------------------------------------
+    */
 
-username:username,
+    verifyExistingSession(token);
 
-password:password
+})();
 
-})
 
+
+async function verifyExistingSession(token){
+
+    try{
+
+        const controller =
+            new AbortController();
+
+
+        const timeout =
+            setTimeout(
+                () => controller.abort(),
+                8000
+            );
+
+
+        const response =
+            await fetch(
+
+                API_URL + "/auth/me",
+
+                {
+
+                    method:"GET",
+
+                    headers:{
+
+                        "Authorization":
+                            "Bearer " + token
+
+                    },
+
+                    cache:"no-store",
+
+                    signal:
+                        controller.signal
+
+                }
+
+            );
+
+
+        clearTimeout(timeout);
+
+
+        if(
+            response.ok
+        ){
+
+            window.location.replace(
+                "dashboard.html"
+            );
+
+            return;
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Token نامعتبر یا منقضی شده.
+        |--------------------------------------------------------------------------
+        */
+
+        clearSession();
+
+    }
+
+    catch(error){
+
+        /*
+        |--------------------------------------------------------------------------
+        | اگر Worker فعلی endpoint /auth/me نداشته باشد،
+        | فعلاً Login را متوقف نمی‌کنیم.
+        |--------------------------------------------------------------------------
+        */
+
+        console.warn(
+            "Session verification failed:",
+            error
+        );
+
+    }
 
 }
 
+
+
+form.addEventListener(
+    "submit",
+    handleLogin
 );
 
 
 
+async function handleLogin(event){
+
+    event.preventDefault();
 
 
-const data =
+    if(loginBtn.disabled){
 
-await response.json();
+        return;
 
-
-
-
-
-console.log(data);
+    }
 
 
+    const username =
+        usernameInput.value.trim();
+
+
+    const password =
+        passwordInput.value;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Validation
+    |--------------------------------------------------------------------------
+    */
+
+    if(!username){
+
+        showMessage(
+            "نام کاربری را وارد کنید."
+        );
+
+        usernameInput.focus();
+
+        return;
+
+    }
+
+
+    if(!password){
+
+        showMessage(
+            "رمز عبور را وارد کنید."
+        );
+
+        passwordInput.focus();
+
+        return;
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | محدود کردن طول ورودی
+    |--------------------------------------------------------------------------
+    */
+
+    if(username.length > 100){
+
+        showMessage(
+            "اطلاعات ورود نامعتبر است."
+        );
+
+        return;
+
+    }
+
+
+    if(password.length > 200){
+
+        showMessage(
+            "اطلاعات ورود نامعتبر است."
+        );
+
+        return;
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Lock UI
+    |--------------------------------------------------------------------------
+    */
+
+    setLoading(true);
+
+
+    showMessage(
+        "در حال بررسی اطلاعات ورود..."
+    );
+
+
+    try{
+
+
+        const controller =
+            new AbortController();
+
+
+        const timeout =
+            setTimeout(
+                () => controller.abort(),
+                10000
+            );
+
+
+        const response =
+            await fetch(
+
+                API_URL + "/auth/login",
+
+                {
+
+                    method:"POST",
+
+                    headers:{
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Accept":
+                            "application/json"
+
+                    },
+
+                    credentials:"include",
+
+                    cache:"no-store",
+
+                    signal:
+                        controller.signal,
+
+                    body:
+                        JSON.stringify({
+
+                            username:
+                                username,
+
+                            password:
+                                password
+
+                        })
+
+                }
+
+            );
+
+
+        clearTimeout(timeout);
+
+
+        let data = null;
+
+
+        try{
+
+            data =
+                await response.json();
+
+        }
+
+        catch{
+
+            data = null;
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Login موفق
+        |--------------------------------------------------------------------------
+        */
+
+        if(
+            response.ok &&
+            data &&
+            data.success === true &&
+            typeof data.token === "string" &&
+            data.token.length >= 32
+        ){
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Token قبلی را پاک می‌کنیم.
+            |--------------------------------------------------------------------------
+            */
+
+            localStorage.removeItem(
+                TOKEN_KEY
+            );
+
+
+            localStorage.removeItem(
+                USER_KEY
+            );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Token جدید
+            |--------------------------------------------------------------------------
+            */
+
+            localStorage.setItem(
+                TOKEN_KEY,
+                data.token
+            );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | User information
+            |--------------------------------------------------------------------------
+            |
+            | اطلاعات غیرحساس را نگه می‌داریم.
+            | Password هیچ‌وقت ذخیره نمی‌شود.
+            |
+            */
+
+            if(
+                data.user &&
+                typeof data.user === "object"
+            ){
+
+                try{
+
+                    localStorage.setItem(
+                        USER_KEY,
+                        JSON.stringify({
+                            id:
+                                data.user.id ?? null,
+
+                            username:
+                                data.user.username ?? null,
+
+                            full_name:
+                                data.user.full_name ?? null,
+
+                            role:
+                                data.user.role ?? null
+                        })
+                    );
+
+                }
+
+                catch{
+
+                    /*
+                    | اگر ذخیره اطلاعات User شکست خورد،
+                    | Session همچنان معتبر است.
+                    */
+
+                }
+
+            }
+
+
+            showMessage(
+                "ورود موفق بود."
+            );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | جلوگیری از برگشت به Login
+            |--------------------------------------------------------------------------
+            */
+
+            setTimeout(
+
+                () => {
+
+                    window.location.replace(
+                        "dashboard.html"
+                    );
+
+                },
+
+                300
+
+            );
+
+
+            return;
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Login شکست خورد
+        |--------------------------------------------------------------------------
+        |
+        | عمداً پیام دقیق Worker را نمایش نمی‌دهیم.
+        | این کار Account Enumeration را سخت‌تر می‌کند.
+        |--------------------------------------------------------------------------
+        */
+
+        clearSession();
+
+
+        showMessage(
+            "نام کاربری یا رمز عبور اشتباه است."
+        );
+
+
+    }
+
+    catch(error){
+
+
+        console.error(
+            "Login error:",
+            error
+        );
+
+
+        if(
+            error.name ===
+            "AbortError"
+        ){
+
+            showMessage(
+                "زمان اتصال به سرور به پایان رسید."
+            );
+
+        }
+
+        else{
+
+            showMessage(
+                "ارتباط با سرور برقرار نشد."
+            );
+
+        }
+
+    }
+
+    finally{
+
+        setLoading(false);
+
+    }
+
+}
 
 
 
-if(data.success){
+function setLoading(isLoading){
+
+    loginBtn.disabled =
+        isLoading;
 
 
-localStorage.setItem(
+    usernameInput.disabled =
+        isLoading;
 
-"NightCastToken",
 
-data.token
+    passwordInput.disabled =
+        isLoading;
 
+
+    loginBtn.textContent =
+        isLoading
+            ? "در حال ورود..."
+            : "ورود";
+
+}
+
+
+
+function showMessage(text){
+
+    /*
+    |--------------------------------------------------------------------------
+    | textContent به جای innerHTML
+    |--------------------------------------------------------------------------
+    | جلوگیری از XSS در پیام‌های سرور
+    |--------------------------------------------------------------------------
+    */
+
+    message.textContent =
+        text;
+
+}
+
+
+
+function clearSession(){
+
+    localStorage.removeItem(
+        TOKEN_KEY
+    );
+
+
+    localStorage.removeItem(
+        USER_KEY
+    );
+
+}
+
+
+
+window.addEventListener(
+    "pageshow",
+    () => {
+
+        /*
+        |--------------------------------------------------------------------------
+        | اگر صفحه از BFCache برگشت، وضعیت Login را دوباره بررسی می‌کنیم.
+        |--------------------------------------------------------------------------
+        */
+
+        const token =
+            localStorage.getItem(
+                TOKEN_KEY
+            );
+
+
+        if(
+            token &&
+            location.pathname.endsWith(
+                "/login.html"
+            )
+        ){
+
+            verifyExistingSession(
+                token
+            );
+
+        }
+
+    }
 );
 
 
-
-document
-
-.getElementById("message")
-
-.innerHTML =
-
-"ورود موفق";
-
-
-
-setTimeout(()=>{
-
-
-location.href="dashboard.html";
-
-
-},1000);
-
-
-
-}
-
-else{
-
-
-document
-
-.getElementById("message")
-
-.innerHTML =
-
-data.message;
-
-
-
-}
-
-
-
-}
-
-
-catch(error){
-
-
-
-document
-
-.getElementById("message")
-
-.innerHTML =
-
-error.message;
-
-
-
-}
-
-
-
-}
-
-
-);
-
-
-</script>
-
-
-</body>
-
-</html>
+</script></body></html>

@@ -4,35 +4,122 @@ content="width=device-width, initial-scale=1.0"
 
 «»
 
-<title>NightCast Click Test</title><style>
+<meta
+name="robots"
+content="noindex,nofollow,noarchive"
+
+«»
+
+<title>NightCast Admin Connection Test</title><style>
+
+*{
+    box-sizing:border-box;
+}
 
 body{
 
     margin:0;
 
-    padding:30px;
+    min-height:100vh;
 
-    font-family:Tahoma,Arial,sans-serif;
+    background:#0f172a;
 
-    background:#111827;
+    color:#f8fafc;
 
-    color:white;
+    font-family:
+        Tahoma,
+        Arial,
+        sans-serif;
 
-    text-align:center;
+    padding:20px;
 
 }
 
-.box{
+.container{
 
-    max-width:500px;
+    width:100%;
 
-    margin:auto;
+    max-width:600px;
 
-    background:#1f2937;
+    margin:40px auto;
 
-    padding:30px;
+}
 
-    border-radius:16px;
+.card{
+
+    background:#1e293b;
+
+    border:1px solid #334155;
+
+    border-radius:18px;
+
+    padding:25px;
+
+    box-shadow:
+        0 20px 50px
+        rgba(0,0,0,.25);
+
+}
+
+h1{
+
+    margin:0 0 8px;
+
+    text-align:center;
+
+    font-size:23px;
+
+}
+
+.subtitle{
+
+    text-align:center;
+
+    color:#94a3b8;
+
+    font-size:13px;
+
+    margin-bottom:25px;
+
+}
+
+label{
+
+    display:block;
+
+    margin-bottom:7px;
+
+    color:#cbd5e1;
+
+    font-size:14px;
+
+}
+
+input{
+
+    width:100%;
+
+    padding:13px;
+
+    margin-bottom:18px;
+
+    border-radius:10px;
+
+    border:1px solid #475569;
+
+    background:#0f172a;
+
+    color:#fff;
+
+    outline:none;
+
+    font-size:15px;
+
+}
+
+input:focus{
+
+    border-color:#94a3b8;
 
 }
 
@@ -40,60 +127,194 @@ button{
 
     width:100%;
 
-    padding:18px;
-
-    margin-top:20px;
+    padding:14px;
 
     border:0;
 
     border-radius:10px;
 
-    font-size:18px;
+    background:#f8fafc;
+
+    color:#0f172a;
 
     font-weight:bold;
+
+    font-size:15px;
 
     cursor:pointer;
 
 }
 
-#result{
+button:disabled{
 
-    margin-top:20px;
+    opacity:.5;
 
-    padding:20px;
-
-    background:#020617;
-
-    border-radius:10px;
-
-    min-height:30px;
-
-    white-space:pre-wrap;
+    cursor:not-allowed;
 
 }
 
-</style></head><body><div class="box"><h2>
-تست مستقیم کلیک
-</h2><p>
-این تست هیچ ارتباطی با Worker ندارد.
-</p><button
-id="testButton"
-type="button"
+#result{
+
+    margin-top:18px;
+
+    padding:15px;
+
+    border-radius:10px;
+
+    background:#020617;
+
+    min-height:50px;
+
+    line-height:1.9;
+
+}
+
+.success{
+
+    color:#86efac;
+
+}
+
+.error{
+
+    color:#fca5a5;
+
+}
+
+.warning{
+
+    color:#fde68a;
+
+}
+
+.log-title{
+
+    margin-top:25px;
+
+    margin-bottom:8px;
+
+    font-weight:bold;
+
+}
+
+#log{
+
+    direction:ltr;
+
+    text-align:left;
+
+    font-family:
+        monospace;
+
+    font-size:12px;
+
+    white-space:pre-wrap;
+
+    word-break:break-word;
+
+    background:#020617;
+
+    color:#cbd5e1;
+
+    padding:15px;
+
+    border-radius:10px;
+
+    max-height:400px;
+
+    overflow:auto;
+
+}
+
+</style></head><body><div class="container"><div class="card"><h1>
+NightCast Admin
+</h1><div class="subtitle">
+تست واقعی اتصال Login به Dashboard
+</div><form id="loginForm"><label for="username">
+نام کاربری
+</label><input
+id="username"
+name="username"
+type="text"
+value="hamed"
+autocomplete="username"
+required
 
 «»
 
-دکمه تست را بزن
+<label for="password">
+رمز عبور
+</label><input
+id="password"
+name="password"
+type="password"
+autocomplete="current-password"
+required
 
-</button><div id="result">منتظر کلیک...
+«»
 
-</div></div><script>
+<button
+id="loginButton"
+type="submit"
+
+«»
+
+ورود و اتصال به Dashboard
+
+</button></form><div id="result">آماده ورود...
+
+</div><div class="log-title">
+📜 لاگ عملیات
+</div><div id="log">صفحه آماده است.
+
+</div></div></div><script>
 
 "use strict";
 
 
-const button =
+/*
+|--------------------------------------------------------------------------
+| تنظیمات واقعی NightCast
+|--------------------------------------------------------------------------
+*/
+
+
+const API_BASE =
+"https://nightcast-api.tomasgermany2580.workers.dev/api/v1";
+
+
+const DASHBOARD =
+"dashboard.html";
+
+
+/*
+|--------------------------------------------------------------------------
+| عناصر صفحه
+|--------------------------------------------------------------------------
+*/
+
+
+const form =
 document.getElementById(
-    "testButton"
+    "loginForm"
+);
+
+
+const usernameInput =
+document.getElementById(
+    "username"
+);
+
+
+const passwordInput =
+document.getElementById(
+    "password"
+);
+
+
+const loginButton =
+document.getElementById(
+    "loginButton"
 );
 
 
@@ -103,20 +324,583 @@ document.getElementById(
 );
 
 
-result.textContent =
-"JavaScript فعال است.\nمنتظر کلیک...";
+const logBox =
+document.getElementById(
+    "log"
+);
 
 
-button.onclick =
-function(){
+
+/*
+|--------------------------------------------------------------------------
+| Token فقط در حافظه
+|--------------------------------------------------------------------------
+|
+| عمداً LocalStorage استفاده نمی‌کنیم.
+|
+*/
+
+
+let sessionToken = null;
+
+
+
+/*
+|--------------------------------------------------------------------------
+| Logger
+|--------------------------------------------------------------------------
+*/
+
+
+function log(message){
+
+    const time =
+        new Date()
+        .toLocaleTimeString(
+            "fa-IR"
+        );
+
+
+    logBox.textContent +=
+        "\n[" +
+        time +
+        "] " +
+        message;
+
+
+    logBox.scrollTop =
+        logBox.scrollHeight;
+
+}
+
+
+
+/*
+|--------------------------------------------------------------------------
+| Status
+|--------------------------------------------------------------------------
+*/
+
+
+function showResult(
+    message,
+    type=""
+){
+
+    result.className =
+        type;
+
 
     result.textContent =
-        "✅ کلیک با موفقیت دریافت شد.\n\n" +
-        "JavaScript بدون مشکل اجرا می‌شود.\n" +
-        "زمان: " +
-        new Date().toLocaleString("fa-IR");
+        message;
 
-};
+}
 
+
+
+/*
+|--------------------------------------------------------------------------
+| Login
+|--------------------------------------------------------------------------
+*/
+
+
+form.addEventListener(
+    "submit",
+    async function(event){
+
+        event.preventDefault();
+
+
+        const username =
+            usernameInput.value.trim();
+
+
+        const password =
+            passwordInput.value;
+
+
+        if(!username){
+
+            showResult(
+                "نام کاربری را وارد کنید.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if(!password){
+
+            showResult(
+                "رمز عبور را وارد کنید.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        loginButton.disabled =
+            true;
+
+
+        showResult(
+            "⏳ در حال اتصال به Worker..."
+        );
+
+
+        log(
+            "شروع فرآیند Login."
+        );
+
+
+        log(
+            "Endpoint: " +
+            API_BASE +
+            "/auth/login"
+        );
+
+
+        try{
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | مرحله ۱ — Login
+            |--------------------------------------------------------------------------
+            */
+
+
+            log(
+                "ارسال POST /auth/login"
+            );
+
+
+            const loginResponse =
+                await fetch(
+
+                    API_BASE +
+                    "/auth/login",
+
+                    {
+
+                        method:"POST",
+
+                        headers:{
+
+                            "Content-Type":
+                                "application/json",
+
+                            "Accept":
+                                "application/json"
+
+                        },
+
+                        cache:"no-store",
+
+                        body:
+                            JSON.stringify({
+
+                                username:
+                                    username,
+
+                                password:
+                                    password
+
+                            })
+
+                    }
+
+                );
+
+
+            log(
+                "HTTP Login Status: " +
+                loginResponse.status
+            );
+
+
+            const loginData =
+                await loginResponse.json();
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Login Failed
+            |--------------------------------------------------------------------------
+            */
+
+
+            if(
+                !loginResponse.ok ||
+                loginData.success !== true
+            ){
+
+                log(
+                    "❌ Login ناموفق."
+                );
+
+
+                showResult(
+
+                    "❌ ورود ناموفق بود.\n" +
+                    (
+                        loginData.message ||
+                        "نام کاربری یا رمز عبور صحیح نیست."
+                    ),
+
+                    "error"
+
+                );
+
+
+                return;
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Token
+            |--------------------------------------------------------------------------
+            */
+
+
+            if(
+                typeof loginData.token !==
+                "string" ||
+                loginData.token.length < 32
+            ){
+
+                log(
+                    "❌ Login موفق اعلام شد ولی Token معتبر دریافت نشد."
+                );
+
+
+                showResult(
+
+                    "❌ Login موفق اعلام شد اما Session معتبر دریافت نشد.",
+
+                    "error"
+
+                );
+
+
+                return;
+
+            }
+
+
+            sessionToken =
+                loginData.token;
+
+
+            log(
+                "✅ Login موفق."
+            );
+
+
+            log(
+                "✅ Session Token دریافت شد."
+            );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | User information
+            |--------------------------------------------------------------------------
+            */
+
+
+            if(
+                loginData.user
+            ){
+
+                log(
+                    "کاربر: " +
+                    (
+                        loginData.user.username ||
+                        username
+                    )
+                );
+
+
+                log(
+                    "Role: " +
+                    (
+                        loginData.user.role ||
+                        "unknown"
+                    )
+                );
+
+            }
+
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | مرحله ۲ — بررسی Session
+            |--------------------------------------------------------------------------
+            */
+
+
+            showResult(
+                "⏳ Login موفق شد. در حال بررسی Session..."
+            );
+
+
+            log(
+                "شروع بررسی /auth/me"
+            );
+
+
+            const meResponse =
+                await fetch(
+
+                    API_BASE +
+                    "/auth/me",
+
+                    {
+
+                        method:"GET",
+
+                        headers:{
+
+                            "Accept":
+                                "application/json",
+
+                            "Authorization":
+                                "Bearer " +
+                                sessionToken
+
+                        },
+
+                        cache:"no-store"
+
+                    }
+
+                );
+
+
+            log(
+                "HTTP /auth/me Status: " +
+                meResponse.status
+            );
+
+
+            const meData =
+                await meResponse.json();
+
+
+            if(
+                !meResponse.ok ||
+                meData.success !== true
+            ){
+
+                log(
+                    "❌ Session معتبر نیست."
+                );
+
+
+                sessionToken =
+                    null;
+
+
+                showResult(
+
+                    "❌ Login انجام شد ولی Session تأیید نشد.",
+
+                    "error"
+
+                );
+
+
+                return;
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Session Valid
+            |--------------------------------------------------------------------------
+            */
+
+
+            log(
+                "✅ Session توسط Worker تأیید شد."
+            );
+
+
+            if(
+                meData.user
+            ){
+
+                log(
+                    "Admin ID: " +
+                    (
+                        meData.user.id ??
+                        "-"
+                    )
+                );
+
+
+                log(
+                    "Username: " +
+                    (
+                        meData.user.username ??
+                        "-"
+                    )
+                );
+
+
+                log(
+                    "Role: " +
+                    (
+                        meData.user.role ??
+                        "-"
+                    )
+                );
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | موفقیت نهایی
+            |--------------------------------------------------------------------------
+            */
+
+
+            showResult(
+
+                "✅ با موفقیت وارد شدید.\n" +
+                "Session معتبر است.\n" +
+                "در حال اتصال به Dashboard...",
+
+                "success"
+
+            );
+
+
+            log(
+                "✅ اتصال Login → Session → Dashboard موفق بود."
+            );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Token را برای Dashboard موقتاً منتقل می‌کنیم.
+            |--------------------------------------------------------------------------
+            |
+            | Dashboard فعلی NightCast برای Authorization Bearer
+            | به Token نیاز دارد.
+            |
+            | این فقط برای تست فعلی است.
+            |
+            */
+
+
+            sessionStorage.setItem(
+                "NightCastToken",
+                sessionToken
+            );
+
+
+            if(
+                loginData.user
+            ){
+
+                sessionStorage.setItem(
+
+                    "NightCastAdminUser",
+
+                    JSON.stringify({
+
+                        id:
+                            loginData.user.id,
+
+                        username:
+                            loginData.user.username,
+
+                        full_name:
+                            loginData.user.full_name,
+
+                        role:
+                            loginData.user.role
+
+                    })
+
+                );
+
+            }
+
+
+            log(
+                "Token در SessionStorage قرار گرفت."
+            );
+
+
+            log(
+                "انتقال به dashboard.html ..."
+            );
+
+
+            setTimeout(
+
+                function(){
+
+                    window.location.href =
+                        DASHBOARD;
+
+                },
+
+                800
+
+            );
+
+
+        }
+
+        catch(error){
+
+
+            log(
+                "❌ خطا: " +
+                (
+                    error.message ||
+                    String(error)
+                )
+            );
+
+
+            showResult(
+
+                "❌ خطا در ارتباط با API.\n" +
+                (
+                    error.message ||
+                    "خطای نامشخص"
+                ),
+
+                "error"
+
+            );
+
+        }
+
+        finally{
+
+            loginButton.disabled =
+                false;
+
+        }
+
+    }
+
+);
 
 </script></body></html>

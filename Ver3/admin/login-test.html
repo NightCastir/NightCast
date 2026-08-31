@@ -1,96 +1,77 @@
-
-<!DOCTYPE html><html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex,nofollow,noarchive"><title>ورود مدیریت NightCast</title><style>
-
-*{
-    box-sizing:border-box;
-}
+<!DOCTYPE html><html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex,nofollow"><title>NightCast Admin Login Test</title><style>
 
 body{
     margin:0;
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
     padding:20px;
     background:#0f172a;
-    color:#f8fafc;
+    color:#fff;
     font-family:Tahoma,Arial,sans-serif;
 }
 
-.container{
-    width:100%;
-    max-width:520px;
-}
-
-.card{
+.box{
+    max-width:550px;
+    margin:40px auto;
     background:#1e293b;
-    border:1px solid #334155;
-    border-radius:18px;
-    padding:28px;
-    box-shadow:0 20px 60px rgba(0,0,0,.35);
+    padding:25px;
+    border-radius:16px;
 }
 
-.logo{
+h1{
     text-align:center;
-    font-size:28px;
-    font-weight:bold;
-    margin-bottom:5px;
-}
-
-.subtitle{
-    text-align:center;
-    color:#94a3b8;
-    font-size:13px;
-    margin-bottom:28px;
+    font-size:22px;
 }
 
 label{
     display:block;
-    margin-bottom:7px;
-    font-size:14px;
-    color:#cbd5e1;
+    margin:15px 0 7px;
 }
 
 input{
     width:100%;
-    padding:14px;
-    margin-bottom:18px;
+    padding:13px;
     border:1px solid #475569;
-    border-radius:10px;
+    border-radius:8px;
     background:#0f172a;
-    color:#fff;
-    outline:none;
-    font-size:15px;
-}
-
-input:focus{
-    border-color:#94a3b8;
+    color:white;
+    font-size:16px;
+    box-sizing:border-box;
 }
 
 button{
     width:100%;
     padding:14px;
+    margin-top:20px;
     border:0;
-    border-radius:10px;
-    background:#f8fafc;
-    color:#0f172a;
+    border-radius:8px;
+    background:white;
+    color:#111827;
     font-size:16px;
     font-weight:bold;
     cursor:pointer;
 }
 
-button:disabled{
-    opacity:.5;
-    cursor:not-allowed;
-}
-
 #message{
     margin-top:18px;
     padding:14px;
-    border-radius:10px;
     background:#020617;
+    border-radius:8px;
     text-align:center;
     line-height:1.8;
+}
+
+#log{
+    margin-top:10px;
+    padding:15px;
+    background:#020617;
+    border-radius:8px;
+    direction:ltr;
+    text-align:left;
+    white-space:pre-wrap;
+    word-break:break-word;
+    font-family:monospace;
+    font-size:12px;
+    line-height:1.8;
+    min-height:120px;
 }
 
 .success{
@@ -101,47 +82,20 @@ button:disabled{
     color:#fca5a5;
 }
 
-.warning{
-    color:#fde68a;
-}
-
-#logTitle{
-    margin-top:24px;
-    margin-bottom:8px;
-    font-size:14px;
-    font-weight:bold;
-}
-
-#log{
-    direction:ltr;
-    text-align:left;
-    background:#020617;
-    border-radius:10px;
-    padding:14px;
-    min-height:120px;
-    max-height:350px;
-    overflow:auto;
-    white-space:pre-wrap;
-    word-break:break-word;
-    font-family:monospace;
-    font-size:12px;
-    line-height:1.8;
-    color:#cbd5e1;
-}
-
-</style></head><body><div class="container"><div class="card"><div class="logo">
+</style></head><body><div class="box"><h1>
 NightCast
-</div><div class="subtitle">
-ورود به پنل مدیریت
-</div><form id="loginForm"><label for="username">
+</h1><p style="text-align:center;color:#94a3b8;">
+تست واقعی ورود پنل مدیریت
+</p><form
+    id="loginForm"
+    onsubmit="return login(event);"
+><label for="username">
 نام کاربری
 </label><input
 id="username"
-name="username"
 type="text"
 value="hamed"
 autocomplete="username"
-required
 
 «»
 
@@ -149,10 +103,8 @@ required
 رمز عبور
 </label><input
 id="password"
-name="password"
 type="password"
 autocomplete="current-password"
-required
 
 «»
 
@@ -164,70 +116,35 @@ type="submit"
 
 ورود
 
-</button></form><div
-    id="message"
->
+</button></form><div id="message">
 آماده ورود...
-</div><div id="logTitle">
+</div><h3>
 📋 گزارش عملیات
-</div><div id="log">
+</h3><div id="log">
 صفحه Login آماده است.
-</div></div></div><script>
-
-"use strict";
+</div></div><script>
 
 
 /*
 |--------------------------------------------------------------------------
-| NightCast API
+| API
 |--------------------------------------------------------------------------
 */
 
-const API_BASE =
+var API =
 "https://nightcast-api.tomasgermany2580.workers.dev/api/v1";
 
 
-const TOKEN_KEY =
-"NightCastToken";
+var logBox =
+document.getElementById("log");
 
 
-const USER_KEY =
-"NightCastAdminUser";
-
-
-const DASHBOARD =
-"dashboard.html";
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Elements
-|--------------------------------------------------------------------------
-*/
-
-const form =
-document.getElementById("loginForm");
-
-
-const usernameInput =
-document.getElementById("username");
-
-
-const passwordInput =
-document.getElementById("password");
-
-
-const loginButton =
-document.getElementById("loginButton");
-
-
-const message =
+var messageBox =
 document.getElementById("message");
 
 
-const logBox =
-document.getElementById("log");
+var loginButton =
+document.getElementById("loginButton");
 
 
 
@@ -237,19 +154,16 @@ document.getElementById("log");
 |--------------------------------------------------------------------------
 */
 
-function log(text){
+function addLog(text){
 
-    const time =
+    var time =
         new Date().toLocaleTimeString("fa-IR");
 
-    logBox.textContent +=
+    logBox.innerHTML +=
         "\n[" +
         time +
         "] " +
         text;
-
-    logBox.scrollTop =
-        logBox.scrollHeight;
 
 }
 
@@ -261,16 +175,13 @@ function log(text){
 |--------------------------------------------------------------------------
 */
 
-function showMessage(
-    text,
-    type=""
-){
+function message(text, type){
 
-    message.className =
-        type;
-
-    message.textContent =
+    messageBox.textContent =
         text;
+
+    messageBox.className =
+        type || "";
 
 }
 
@@ -278,538 +189,359 @@ function showMessage(
 
 /*
 |--------------------------------------------------------------------------
-| Login
+| REAL LOGIN
 |--------------------------------------------------------------------------
 */
 
-form.addEventListener(
-    "submit",
-    async function(event){
-
-        event.preventDefault();
+async function login(event){
 
 
-        const username =
-            usernameInput.value.trim();
+    /*
+    |--------------------------------------------------------------------------
+    | این خط باید بلافاصله بعد از کلیک اجرا شود.
+    |--------------------------------------------------------------------------
+    */
+
+    event.preventDefault();
 
 
-        const password =
-            passwordInput.value;
+    addLog(
+        "✅ تابع Login اجرا شد."
+    );
 
 
-        if(!username){
+    var username =
+        document
+        .getElementById("username")
+        .value
+        .trim();
 
-            showMessage(
-                "نام کاربری را وارد کنید.",
-                "error"
+
+    var password =
+        document
+        .getElementById("password")
+        .value;
+
+
+    addLog(
+        "Username دریافت شد."
+    );
+
+
+    if(!username){
+
+        addLog(
+            "❌ Username خالی است."
+        );
+
+        message(
+            "نام کاربری را وارد کنید.",
+            "error"
+        );
+
+        return false;
+
+    }
+
+
+    if(!password){
+
+        addLog(
+            "❌ Password خالی است."
+        );
+
+        message(
+            "رمز عبور را وارد کنید.",
+            "error"
+        );
+
+        return false;
+
+    }
+
+
+    loginButton.disabled =
+        true;
+
+
+    loginButton.textContent =
+        "در حال ورود...";
+
+
+    message(
+        "⏳ در حال اتصال به Worker..."
+    );
+
+
+    addLog(
+        "درخواست POST به /auth/login"
+    );
+
+
+    addLog(
+        "API: " +
+        API +
+        "/auth/login"
+    );
+
+
+    try{
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | LOGIN REQUEST
+        |--------------------------------------------------------------------------
+        */
+
+        var response =
+            await fetch(
+
+                API +
+                "/auth/login",
+
+                {
+
+                    method:"POST",
+
+                    mode:"cors",
+
+                    headers:{
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Accept":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            username:
+                                username,
+
+                            password:
+                                password
+
+                        })
+
+                }
+
             );
 
-            usernameInput.focus();
 
-            return;
-
-        }
-
-
-        if(!password){
-
-            showMessage(
-                "رمز عبور را وارد کنید.",
-                "error"
-            );
-
-            passwordInput.focus();
-
-            return;
-
-        }
-
-
-        loginButton.disabled =
-            true;
-
-
-        loginButton.textContent =
-            "در حال ورود...";
-
-
-        logBox.textContent =
-            "";
-
-
-        log(
-            "شروع فرآیند ورود."
+        addLog(
+            "Worker پاسخ داد."
         );
 
 
-        log(
-            "Username دریافت شد."
+        addLog(
+            "HTTP Status: " +
+            response.status
         );
 
 
-        log(
-            "درخواست ارسال می‌شود:"
+        var text =
+            await response.text();
+
+
+        addLog(
+            "Response دریافت شد."
         );
 
 
-        log(
-            API_BASE +
-            "/auth/login"
-        );
+        /*
+        |--------------------------------------------------------------------------
+        | JSON
+        |--------------------------------------------------------------------------
+        */
 
-
-        showMessage(
-            "⏳ در حال بررسی اطلاعات ورود..."
-        );
+        var data;
 
 
         try{
 
+            data =
+                JSON.parse(text);
 
-            /*
-            |--------------------------------------------------------------------------
-            | مرحله 1
-            |--------------------------------------------------------------------------
-            */
+        }
 
-            const loginResponse =
-                await fetch(
+        catch(error){
 
-                    API_BASE +
-                    "/auth/login",
+            addLog(
+                "❌ Response JSON نیست."
+            );
 
-                    {
 
-                        method:"POST",
+            addLog(
+                "Response:"
+            );
 
-                        mode:"cors",
 
-                        headers:{
+            addLog(
+                text
+            );
 
-                            "Content-Type":
-                                "application/json",
 
-                            "Accept":
-                                "application/json"
+            message(
+                "❌ Worker پاسخ JSON نداد.",
+                "error"
+            );
 
-                        },
 
-                        cache:"no-store",
+            return false;
 
-                        body:
-                            JSON.stringify({
+        }
 
-                                username:
-                                    username,
 
-                                password:
-                                    password
+        addLog(
+            "JSON معتبر است."
+        );
 
-                            })
 
-                    }
+        /*
+        |--------------------------------------------------------------------------
+        | LOGIN RESULT
+        |--------------------------------------------------------------------------
+        */
 
+        if(
+            response.ok &&
+            data.success === true
+        ){
+
+            addLog(
+                "✅ Login موفق بود."
+            );
+
+
+            if(data.token){
+
+                addLog(
+                    "✅ Token دریافت شد."
                 );
-
-
-            log(
-                "پاسخ Login دریافت شد."
-            );
-
-
-            log(
-                "HTTP Status: " +
-                loginResponse.status
-            );
-
-
-            let loginData;
-
-
-            try{
-
-                loginData =
-                    await loginResponse.json();
 
             }
+            else{
 
-            catch(error){
-
-                log(
-                    "❌ پاسخ Worker JSON نیست."
+                addLog(
+                    "❌ Token دریافت نشد."
                 );
-
-
-                showMessage(
-                    "❌ پاسخ نامعتبر از Worker دریافت شد.",
-                    "error"
-                );
-
-
-                return;
 
             }
 
 
-            log(
-                "JSON با موفقیت دریافت شد."
-            );
+            if(data.user){
 
-
-            /*
-            |--------------------------------------------------------------------------
-            | Login failure
-            |--------------------------------------------------------------------------
-            */
-
-            if(
-                !loginResponse.ok ||
-                loginData.success !== true
-            ){
-
-                log(
-                    "❌ Login ناموفق."
+                addLog(
+                    "Admin User دریافت شد."
                 );
 
 
-                log(
-                    "Message: " +
-                    (
-                        loginData.message ||
-                        "بدون پیام"
-                    )
-                );
+                if(data.user.username){
+
+                    addLog(
+                        "Username: " +
+                        data.user.username
+                    );
+
+                }
 
 
-                showMessage(
+                if(data.user.role){
 
-                    "❌ ورود ناموفق بود.\n" +
-                    (
-                        loginData.message ||
-                        "نام کاربری یا رمز عبور اشتباه است."
-                    ),
+                    addLog(
+                        "Role: " +
+                        data.user.role
+                    );
 
-                    "error"
-
-                );
-
-
-                return;
+                }
 
             }
 
 
             /*
             |--------------------------------------------------------------------------
-            | Token
+            | Store temporary token
             |--------------------------------------------------------------------------
             */
 
-            if(
-                typeof loginData.token !== "string" ||
-                loginData.token.length < 20
-            ){
-
-                log(
-                    "❌ Login موفق اعلام شد ولی Token وجود ندارد."
-                );
-
-
-                showMessage(
-                    "❌ Session دریافت نشد.",
-                    "error"
-                );
-
-
-                return;
-
-            }
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Token received
-            |--------------------------------------------------------------------------
-            */
-
-            log(
-                "✅ Login موفق."
-            );
-
-
-            log(
-                "✅ Session Token دریافت شد."
-            );
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | User
-            |--------------------------------------------------------------------------
-            */
-
-            if(loginData.user){
-
-                log(
-                    "Admin Username: " +
-                    (
-                        loginData.user.username ||
-                        username
-                    )
-                );
-
-
-                log(
-                    "Admin Role: " +
-                    (
-                        loginData.user.role ||
-                        "نامشخص"
-                    )
-                );
-
-            }
-
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | مرحله 2 — Verify Session
-            |--------------------------------------------------------------------------
-            */
-
-            showMessage(
-                "⏳ Login موفق شد؛ در حال بررسی Session..."
-            );
-
-
-            log(
-                "در حال بررسی Session با /auth/me"
-            );
-
-
-            const meResponse =
-                await fetch(
-
-                    API_BASE +
-                    "/auth/me",
-
-                    {
-
-                        method:"GET",
-
-                        mode:"cors",
-
-                        headers:{
-
-                            "Accept":
-                                "application/json",
-
-                            "Authorization":
-                                "Bearer " +
-                                loginData.token
-
-                        },
-
-                        cache:"no-store"
-
-                    }
-
-                );
-
-
-            log(
-                "/auth/me HTTP Status: " +
-                meResponse.status
-            );
-
-
-            let meData;
-
-
-            try{
-
-                meData =
-                    await meResponse.json();
-
-            }
-
-            catch(error){
-
-                log(
-                    "❌ پاسخ /auth/me JSON نیست."
-                );
-
-
-                showMessage(
-                    "❌ Session قابل بررسی نیست.",
-                    "error"
-                );
-
-
-                return;
-
-            }
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Session failed
-            |--------------------------------------------------------------------------
-            */
-
-            if(
-                !meResponse.ok ||
-                meData.success !== true
-            ){
-
-                log(
-                    "❌ Session توسط Worker تأیید نشد."
-                );
-
-
-                log(
-                    "Session Message: " +
-                    (
-                        meData.message ||
-                        "بدون پیام"
-                    )
-                );
-
-
-                showMessage(
-                    "❌ Login انجام شد ولی Session معتبر نیست.",
-                    "error"
-                );
-
-
-                return;
-
-            }
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | SUCCESS
-            |--------------------------------------------------------------------------
-            */
-
-            log(
-                "✅ Session معتبر است."
-            );
-
-
-            log(
-                "✅ Login با موفقیت تأیید شد."
-            );
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Save temporary session
-            |--------------------------------------------------------------------------
-            |
-            | فقط برای تست Dashboard فعلی.
-            |
-            */
-
-            sessionStorage.setItem(
-                TOKEN_KEY,
-                loginData.token
-            );
-
-
-            if(loginData.user){
+            if(data.token){
 
                 sessionStorage.setItem(
+                    "NightCastToken",
+                    data.token
+                );
 
-                    USER_KEY,
 
-                    JSON.stringify({
-
-                        id:
-                            loginData.user.id ??
-                            null,
-
-                        username:
-                            loginData.user.username ??
-                            null,
-
-                        full_name:
-                            loginData.user.full_name ??
-                            null,
-
-                        role:
-                            loginData.user.role ??
-                            null
-
-                    })
-
+                addLog(
+                    "✅ Token در SessionStorage ذخیره شد."
                 );
 
             }
 
 
-            log(
-                "✅ Session برای Dashboard آماده شد."
-            );
+            /*
+            |--------------------------------------------------------------------------
+            | Dashboard
+            |--------------------------------------------------------------------------
+            */
 
-
-            showMessage(
+            message(
 
                 "✅ با موفقیت وارد شدید.\n" +
-                "Session معتبر است.\n" +
-                "در حال ورود به Dashboard...",
+                "در حال اتصال به Dashboard...",
 
                 "success"
 
             );
 
 
-            log(
+            addLog(
                 "در حال انتقال به dashboard.html ..."
             );
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | Redirect
-            |--------------------------------------------------------------------------
-            */
-
             setTimeout(
+
                 function(){
 
                     window.location.href =
-                        DASHBOARD;
+                        "dashboard.html";
 
                 },
+
                 1000
+
             );
 
 
         }
 
-        catch(error){
+        else{
 
 
-            log(
-                "❌ خطای Fetch:"
+            addLog(
+                "❌ Login ناموفق بود."
             );
 
 
-            log(
-                error.message ||
-                String(error)
-            );
+            if(data.message){
+
+                addLog(
+                    "Server Message: " +
+                    data.message
+                );
+
+            }
 
 
-            showMessage(
+            message(
 
-                "❌ ارتباط با Worker برقرار نشد.\n" +
-                (
-                    error.message ||
-                    "خطای نامشخص"
-                ),
+                data.message ||
+                "نام کاربری یا رمز عبور اشتباه است.",
 
                 "error"
 
@@ -818,19 +550,47 @@ form.addEventListener(
         }
 
 
-        finally{
+    }
 
-            loginButton.disabled =
-                false;
+    catch(error){
 
 
-            loginButton.textContent =
-                "ورود";
+        addLog(
+            "❌ خطای ارتباط:"
+        );
 
-        }
+
+        addLog(
+            error.message ||
+            String(error)
+        );
+
+
+        message(
+
+            "❌ ارتباط با Worker برقرار نشد.",
+
+            "error"
+
+        );
 
     }
 
-);
+
+    finally{
+
+        loginButton.disabled =
+            false;
+
+
+        loginButton.textContent =
+            "ورود";
+
+    }
+
+
+    return false;
+
+}
 
 </script></body></html>

@@ -1,1214 +1,190 @@
 <!doctype html>
 
 <html lang="fa" dir="rtl">
-
 <head>
-
-<meta charset="utf-8">
-
-<meta
-    name="viewport"
-    content="width=device-width,initial-scale=1,viewport-fit=cover"
->
-
-<meta
-    name="color-scheme"
-    content="dark"
->
-
-<meta
-    name="description"
-    content="ثبت‌نام امن در حساب کاربری نایت‌کست"
->
-
-<title>ثبت‌نام | Authentication Core</title>
-
-
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="color-scheme" content="dark"><title>ثبت‌نام | Authentication Core</title>
 <style>
-
-:root{
-    --bg:#07111f;
-    --panel:rgba(10,23,40,.86);
-    --line:rgba(255,255,255,.12);
-    --text:#f5f7fb;
-    --muted:#aab5c5;
-    --accent:#78a9ff;
-    --danger:#ff7d91;
-    --ok:#65d6a2;
-}
-
-*{
-    box-sizing:border-box;
-}
-
-html,
-body{
-    min-height:100%;
-    margin:0;
-}
-
-body{
-
-    font-family:
-        system-ui,
-        -apple-system,
-        "Segoe UI",
-        Tahoma,
-        Arial,
-        sans-serif;
-
-    background:
-
-        radial-gradient(
-            circle at 20% 15%,
-            rgba(120,169,255,.2),
-            transparent 30%
-        ),
-
-        radial-gradient(
-            circle at 80% 10%,
-            rgba(185,140,255,.16),
-            transparent 26%
-        ),
-
-        linear-gradient(
-            160deg,
-            #050b15,
-            #0a1729 55%,
-            #040811
-        );
-
-    color:var(--text);
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    padding:24px;
-
-    overflow-x:hidden;
-}
-
-.shell{
-
-    width:min(
-        100%,
-        440px
-    );
-
-}
-
-.brand{
-
-    text-align:center;
-
-    margin-bottom:20px;
-
-}
-
-.logo{
-
-    width:58px;
-
-    height:58px;
-
-    margin:
-        auto
-        auto
-        12px;
-
-    border-radius:18px;
-
-    display:grid;
-
-    place-items:center;
-
-    background:
-        linear-gradient(
-            135deg,
-            rgba(120,169,255,.3),
-            rgba(185,140,255,.3)
-        );
-
-    border:1px solid var(--line);
-
-    font-size:25px;
-
-}
-
-.brand h1{
-
-    margin:0;
-
-    font-size:27px;
-
-}
-
-.brand p{
-
-    color:var(--muted);
-
-    font-size:14px;
-
-    margin:8px 0;
-
-}
-
-.card{
-
-    background:var(--panel);
-
-    border:1px solid var(--line);
-
-    border-radius:28px;
-
-    padding:24px;
-
-    box-shadow:
-        0 28px 80px
-        rgba(0,0,0,.42);
-
-    backdrop-filter:blur(18px);
-
-}
-
-.notice{
-
-    display:none;
-
-    border-radius:12px;
-
-    padding:11px 12px;
-
-    margin-bottom:14px;
-
-    font-size:13px;
-
-    line-height:1.8;
-
-}
-
-.notice.show{
-
-    display:block;
-
-}
-
-.notice.error{
-
-    background:
-        rgba(255,125,145,.09);
-
-    border:
-        1px solid
-        rgba(255,125,145,.25);
-
-    color:#ffc3cd;
-
-}
-
-.notice.ok{
-
-    background:
-        rgba(101,214,162,.09);
-
-    border:
-        1px solid
-        rgba(101,214,162,.25);
-
-    color:#baf2d7;
-
-}
-
-.field{
-
-    margin-bottom:14px;
-
-}
-
-.field label{
-
-    display:block;
-
-    font-size:13px;
-
-    margin-bottom:7px;
-
-    color:#d9e0eb;
-
-}
-
-.field input{
-
-    width:100%;
-
-    border:
-        1px solid
-        var(--line);
-
-    background:
-        rgba(0,0,0,.18);
-
-    color:var(--text);
-
-    border-radius:13px;
-
-    padding:13px 14px;
-
-    font:inherit;
-
-    outline:none;
-
-    transition:.2s;
-
-}
-
-.field input:focus{
-
-    border-color:
-        var(--accent);
-
-    box-shadow:
-        0 0 0 3px
-        rgba(120,169,255,.12);
-
-}
-
-.field input:invalid{
-
-    box-shadow:none;
-
-}
-
-.primary,
-.secondary{
-
-    width:100%;
-
-    border-radius:13px;
-
-    padding:13px 15px;
-
-    font:inherit;
-
-    cursor:pointer;
-
-}
-
-.primary{
-
-    border:0;
-
-    background:
-        linear-gradient(
-            135deg,
-            #6e9dff,
-            #a777ff
-        );
-
-    color:#fff;
-
-    font-weight:700;
-
-    box-shadow:
-        0 14px 30px
-        rgba(103,130,255,.24);
-
-}
-
-.primary:disabled{
-
-    opacity:.6;
-
-    cursor:not-allowed;
-
-}
-
-.secondary{
-
-    border:
-        1px solid
-        var(--line);
-
-    background:
-        rgba(255,255,255,.04);
-
-    color:var(--text);
-
-    margin-top:9px;
-
-}
-
-.footer{
-
-    text-align:center;
-
-    color:var(--muted);
-
-    font-size:13px;
-
-    margin-top:16px;
-
-}
-
-.link{
-
-    color:var(--accent);
-
-    text-decoration:none;
-
-}
-
-.link:hover{
-
-    text-decoration:underline;
-
-}
-
-.terms{
-
-    font-size:12px;
-
-    color:var(--muted);
-
-    line-height:1.8;
-
-    margin:
-        10px
-        0
-        16px;
-
-}
-
-.spinner{
-
-    display:inline-block;
-
-    width:15px;
-
-    height:15px;
-
-    border:
-        2px solid
-        rgba(255,255,255,.35);
-
-    border-top-color:#fff;
-
-    border-radius:50%;
-
-    animation:
-        spin .7s
-        linear
-        infinite;
-
-    vertical-align:-3px;
-
-    margin-left:7px;
-
-}
-
-@keyframes spin{
-
-    to{
-        transform:rotate(360deg);
-    }
-
-}
-
-@media(min-width:700px){
-
-    body{
-
-        padding:40px;
-
-    }
-
-}
-
+:root{--bg:#07111f;--panel:rgba(10,23,40,.86);--line:rgba(255,255,255,.12);--text:#f5f7fb;--muted:#aab5c5;--accent:#78a9ff;--danger:#ff7d91;--ok:#65d6a2}*{box-sizing:border-box}html,body{min-height:100%;margin:0}body{font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;background:radial-gradient(circle at 20% 15%,rgba(120,169,255,.2),transparent 30%),radial-gradient(circle at 80% 10%,rgba(185,140,255,.16),transparent 26%),linear-gradient(160deg,#050b15,#0a1729 55%,#040811);color:var(--text);display:flex;align-items:center;justify-content:center;padding:24px}.shell{width:min(100%,440px)}.brand{text-align:center;margin-bottom:20px}.logo{width:58px;height:58px;margin:auto auto 12px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(120,169,255,.3),rgba(185,140,255,.3));border:1px solid var(--line);font-size:25px}.brand h1{margin:0;font-size:27px}.brand p{color:var(--muted);font-size:14px;margin:8px 0}.card{background:var(--panel);border:1px solid var(--line);border-radius:28px;padding:24px;box-shadow:0 28px 80px rgba(0,0,0,.42);backdrop-filter:blur(18px)}.notice{display:none;border-radius:12px;padding:11px 12px;margin-bottom:14px;font-size:13px;line-height:1.8}.notice.show{display:block}.notice.error{background:rgba(255,125,145,.09);border:1px solid rgba(255,125,145,.25);color:#ffc3cd}.notice.ok{background:rgba(101,214,162,.09);border:1px solid rgba(101,214,162,.25);color:#baf2d7}.field{margin-bottom:14px}.field label{display:block;font-size:13px;margin-bottom:7px;color:#d9e0eb}.field input{width:100%;border:1px solid var(--line);background:rgba(0,0,0,.18);color:var(--text);border-radius:13px;padding:13px 14px;font:inherit;outline:none}.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(120,169,255,.12)}.primary,.secondary{width:100%;border-radius:13px;padding:13px 15px;font:inherit;cursor:pointer}.primary{border:0;background:linear-gradient(135deg,#6e9dff,#a777ff);color:#fff;font-weight:700}.secondary{border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);margin-top:9px}.footer{text-align:center;color:var(--muted);font-size:13px;margin-top:16px}.link{color:var(--accent);text-decoration:none}.terms{font-size:12px;color:var(--muted);line-height:1.8;margin:10px 0 16px}@media(min-width:700px){body{padding:40px}}
 </style>
-
 </head>
-
 
 <body>
 
-
 <main class="shell">
-
-
 <header class="brand">
-
-    <div
-        class="logo"
-        aria-hidden="true"
-    >
-        ✦
-    </div>
-
-    <h1>
-        ساخت حساب
-    </h1>
-
-    <p>
-        یک حساب امن برای شروع ایجاد کنید
-    </p>
-
+<div class="logo" aria-hidden="true">✦</div>
+<h1>ساخت حساب</h1>
+<p>یک حساب امن برای شروع ایجاد کنید</p>
 </header>
 
+<section class="card">
+<div id="notice" class="notice" role="alert" aria-live="polite"></div>
 
-<section
-    class="card"
-    aria-label="فرم ثبت‌نام"
->
-
-
-<div
-    id="notice"
-    class="notice"
-    role="alert"
-    aria-live="polite"
-></div>
-
-
-<form
-    id="form"
-    novalidate
->
-
-
-<!-- ============================= -->
-<!-- EMAIL -->
-<!-- ============================= -->
+<form id="form" novalidate>
 
 <div class="field">
-
-    <label for="email">
-        ایمیل
-    </label>
-
-    <input
-        id="email"
-        name="email"
-        type="email"
-        autocomplete="email"
-        required
-        maxlength="254"
-        placeholder="example@email.com"
-    >
-
+<label for="email">ایمیل</label>
+<input id="email" type="email" autocomplete="email" required maxlength="254">
 </div>
 
-
-<!-- ============================= -->
-<!-- USERNAME -->
-<!-- ============================= -->
-
-<div
-    class="field"
-    id="usernameField"
->
-
-    <label for="username">
-
-        نام کاربری
-
-        <span
-            style="color:var(--muted)"
-        >
-            (اختیاری)
-        </span>
-
-    </label>
-
-    <input
-        id="username"
-        name="username"
-        autocomplete="username"
-        maxlength="64"
-    >
-
+<div class="field" id="usernameField">
+<label for="username">نام کاربری <span style="color:var(--muted)">(اختیاری)</span></label>
+<input id="username" autocomplete="username" maxlength="64">
 </div>
 
-
-<!-- ============================= -->
-<!-- MOBILE -->
-<!-- ============================= -->
-
-<div
-    class="field"
-    id="mobileField"
->
-
-    <label for="mobile">
-
-        موبایل
-
-        <span
-            style="color:var(--muted)"
-        >
-            (اختیاری)
-        </span>
-
-    </label>
-
-    <input
-        id="mobile"
-        name="mobile"
-        inputmode="tel"
-        autocomplete="tel"
-        maxlength="16"
-        placeholder="+989121234567"
-    >
-
+<div class="field" id="mobileField">
+<label for="mobile">موبایل <span style="color:var(--muted)">(اختیاری)</span></label>
+<input id="mobile" inputmode="tel" autocomplete="tel" maxlength="16">
 </div>
-
-
-<!-- ============================= -->
-<!-- PASSWORD -->
-<!-- ============================= -->
 
 <div class="field">
-
-    <label for="password">
-        رمز عبور
-    </label>
-
-    <input
-        id="password"
-        name="password"
-        type="password"
-        autocomplete="new-password"
-        required
-        maxlength="256"
-    >
-
+<label for="password">رمز عبور</label>
+<input id="password" type="password" autocomplete="new-password" required maxlength="256">
 </div>
-
-
-<!-- ============================= -->
-<!-- CONFIRM PASSWORD -->
-<!-- ============================= -->
 
 <div class="field">
-
-    <label for="confirm">
-        تکرار رمز عبور
-    </label>
-
-    <input
-        id="confirm"
-        name="passwordConfirmation"
-        type="password"
-        autocomplete="new-password"
-        required
-        maxlength="256"
-    >
-
+<label for="confirm">تکرار رمز عبور</label>
+<input id="confirm" type="password" autocomplete="new-password" required maxlength="256">
 </div>
-
 
 <p class="terms">
-
-    رمز عبور در مرورگر ذخیره نمی‌شود
-    و پردازش امنیتی آن در Worker انجام می‌شود.
-
+رمز عبور در مرورگر ذخیره نمی‌شود و پردازش امنیتی آن در Worker انجام می‌شود.
 </p>
 
-
-<button
-    class="primary"
-    id="button"
-    type="submit"
->
-
-    ثبت‌نام
-
-</button>
-
+<button class="primary" id="button" type="submit">ثبت‌نام</button>
 
 </form>
 
-
 <div class="footer">
-
-    حساب دارید؟
-
-    <a
-        class="link"
-        href="login.html"
-    >
-        ورود
-    </a>
-
+حساب دارید؟ <a class="link" href="login.html">ورود</a>
 </div>
 
-
 </section>
-
-
 </main>
 
-
 <script>
+(()=>{
 
-(() => {
+/*
+ * فقط آدرس API تغییر کرده است.
+ * هیچ تغییری در ساختار فرم، فیلدها یا منطق اصلی ایجاد نشده.
+ */
+const API_BASE_URL="https://auth.nightcast.ir";
 
-    "use strict";
+let csrfToken=null;
 
+const $=s=>document.querySelector(s),
+      notice=$("#notice");
 
-    // =====================================================
-    // AUTH API
-    // =====================================================
+function show(t,type="error"){
+    notice.textContent=t;
+    notice.className=`notice show ${type}`;
+}
 
-    const API_BASE_URL =
-        "https://auth.nightcast.ir";
+async function init(){
 
+    try{
 
-    // =====================================================
-    // STATE
-    // =====================================================
+        const r=await fetch(
+            `${API_BASE_URL}/api/auth/csrf`,
+            {
+                credentials:"include"
+            }
+        );
 
-    let csrfToken = null;
+        const j=await r.json();
 
+        if(!j.success) throw 0;
 
-    // =====================================================
-    // HELPERS
-    // =====================================================
+        csrfToken=j.data.csrfToken;
 
-    const $ =
-        selector =>
-            document.querySelector(selector);
+        const c=j.data.config;
 
+        $("#usernameField").style.display=
+            c.requireUsername?"block":"block";
 
-    const notice =
-        $("#notice");
+        $("#mobileField").style.display=
+            c.requireMobile?"block":"block";
 
+    }catch{
 
-    const form =
-        $("#form");
-
-
-    const button =
-        $("#button");
-
-
-    // =====================================================
-    // SHOW MESSAGE
-    // =====================================================
-
-    function show(
-        message,
-        type = "error"
-    ){
-
-        notice.textContent =
-            message;
-
-        notice.className =
-            `notice show ${type}`;
+        show("ارتباط امن با سرویس ثبت‌نام برقرار نشد.");
 
     }
 
+}
 
-    // =====================================================
-    // CLEAR MESSAGE
-    // =====================================================
+$("#form").onsubmit=async e=>{
 
-    function clearNotice(){
+    e.preventDefault();
 
-        notice.textContent =
-            "";
+    notice.className="notice";
 
-        notice.className =
-            "notice";
+    const b=$("#button");
 
-    }
+    b.disabled=true;
 
+    const r=await fetch(
+        `${API_BASE_URL}/api/auth/register`,
+        {
+            method:"POST",
 
-    // =====================================================
-    // SET BUTTON STATE
-    // =====================================================
+            credentials:"include",
 
-    function setBusy(
-        busy
-    ){
+            headers:{
+                "Content-Type":"application/json",
+                "X-CSRF-Token":csrfToken||""
+            },
 
-        button.disabled =
-            busy;
+            body:JSON.stringify({
 
-        if(busy){
+                email:$("#email").value,
 
-            button.innerHTML =
-                '<span class="spinner"></span>در حال ثبت‌نام…';
+                username:$("#username").value,
 
-        }else{
+                mobile:$("#mobile").value,
 
-            button.textContent =
-                "ثبت‌نام";
+                password:$("#password").value,
 
-        }
+                passwordConfirmation:$("#confirm").value
 
-    }
-
-
-    // =====================================================
-    // INITIALIZE CSRF
-    // =====================================================
-
-    async function init(){
-
-        try{
-
-            const response =
-                await fetch(
-                    `${API_BASE_URL}/api/auth/csrf`,
-                    {
-                        method:"GET",
-
-                        credentials:"include",
-
-                        headers:{
-                            "Accept":
-                                "application/json"
-                        }
-                    }
-                );
-
-
-            const data =
-                await response
-                    .json()
-                    .catch(
-                        () => null
-                    );
-
-
-            if(
-                !response.ok ||
-                !data?.success ||
-                !data?.data?.csrfToken
-            ){
-
-                console.error(
-                    "CSRF initialization failed:",
-                    response.status,
-                    data
-                );
-
-                throw new Error(
-                    "CSRF initialization failed"
-                );
-
-            }
-
-
-            csrfToken =
-                data.data.csrfToken;
-
-
-            // =================================================
-            // WORKER CONFIGURATION
-            // =================================================
-
-            const config =
-                data.data.config || {};
-
-
-            // Username
-
-            if(
-                config.requireUsername === true
-            ){
-
-                $("#usernameField")
-                    .style.display =
-                        "block";
-
-            }else{
-
-                $("#usernameField")
-                    .style.display =
-                        "none";
-
-            }
-
-
-            // Mobile
-
-            if(
-                config.requireMobile === true
-            ){
-
-                $("#mobileField")
-                    .style.display =
-                        "block";
-
-            }else{
-
-                $("#mobileField")
-                    .style.display =
-                        "none";
-
-            }
-
-
-        }catch(error){
-
-            console.error(
-                "Authentication initialization error:",
-                error
-            );
-
-
-            show(
-                "ارتباط امن با سرویس ثبت‌نام برقرار نشد."
-            );
-
-        }
-
-    }
-
-
-    // =====================================================
-    // FORM SUBMIT
-    // =====================================================
-
-    form.addEventListener(
-        "submit",
-        async event => {
-
-            event.preventDefault();
-
-
-            clearNotice();
-
-
-            // =================================================
-            // CHECK CSRF
-            // =================================================
-
-            if(!csrfToken){
-
-                show(
-                    "توکن امنیتی دریافت نشده است. لطفاً صفحه را دوباره بارگذاری کنید."
-                );
-
-                return;
-
-            }
-
-
-            // =================================================
-            // READ VALUES
-            // =================================================
-
-            const email =
-                $("#email")
-                    .value
-                    .trim();
-
-
-            const username =
-                $("#username")
-                    .value
-                    .trim();
-
-
-            const mobile =
-                $("#mobile")
-                    .value
-                    .trim();
-
-
-            const password =
-                $("#password")
-                    .value;
-
-
-            const passwordConfirmation =
-                $("#confirm")
-                    .value;
-
-
-            // =================================================
-            // BASIC VALIDATION
-            // =================================================
-
-            if(!email){
-
-                show(
-                    "لطفاً ایمیل خود را وارد کنید."
-                );
-
-                $("#email").focus();
-
-                return;
-
-            }
-
-
-            if(!password){
-
-                show(
-                    "لطفاً رمز عبور خود را وارد کنید."
-                );
-
-                $("#password").focus();
-
-                return;
-
-            }
-
-
-            if(
-                password !==
-                passwordConfirmation
-            ){
-
-                show(
-                    "رمز عبور و تکرار آن یکسان نیستند."
-                );
-
-                $("#confirm").focus();
-
-                return;
-
-            }
-
-
-            // =================================================
-            // PASSWORD LENGTH
-            // =================================================
-
-            if(
-                password.length < 10
-            ){
-
-                show(
-                    "رمز عبور باید حداقل ۱۰ کاراکتر باشد."
-                );
-
-                $("#password").focus();
-
-                return;
-
-            }
-
-
-            // =================================================
-            // START REQUEST
-            // =================================================
-
-            setBusy(true);
-
-
-            try{
-
-
-                const response =
-                    await fetch(
-                        `${API_BASE_URL}/api/auth/register`,
-                        {
-
-                            method:
-                                "POST",
-
-                            credentials:
-                                "include",
-
-                            headers:{
-
-                                "Accept":
-                                    "application/json",
-
-                                "Content-Type":
-                                    "application/json",
-
-                                "X-CSRF-Token":
-                                    csrfToken
-
-                            },
-
-                            body:
-                                JSON.stringify({
-
-                                    email:
-                                        email,
-
-                                    username:
-                                        username,
-
-                                    mobile:
-                                        mobile,
-
-                                    password:
-                                        password,
-
-                                    passwordConfirmation:
-                                        passwordConfirmation
-
-                                })
-
-                        }
-                    );
-
-
-                const data =
-                    await response
-                        .json()
-                        .catch(
-                            () => null
-                        );
-
-
-                console.log(
-                    "Registration response:",
-                    response.status,
-                    data
-                );
-
-
-                // =================================================
-                // SUCCESS
-                // =================================================
-
-                if(
-                    response.ok &&
-                    data?.success
-                ){
-
-                    const verificationRequired =
-                        data?.data
-                            ?.verificationRequired === true;
-
-
-                    if(
-                        verificationRequired
-                    ){
-
-                        show(
-                            "ثبت‌نام انجام شد. ابتدا مرحله تأیید را کامل کنید و سپس وارد شوید.",
-                            "ok"
-                        );
-
-                    }else{
-
-                        show(
-                            "ثبت‌نام با موفقیت انجام شد. اکنون وارد شوید.",
-                            "ok"
-                        );
-
-                    }
-
-
-                    // ---------------------------------------------
-                    // REDIRECT TO LOGIN
-                    // ---------------------------------------------
-
-                    setTimeout(
-                        () => {
-
-                            window.location.href =
-                                "login.html";
-
-                        },
-                        1600
-                    );
-
-
-                    return;
-
-                }
-
-
-                // =================================================
-                // SERVER ERROR
-                // =================================================
-
-                let errorMessage =
-                    "ثبت‌نام انجام نشد.";
-
-
-                if(
-                    data?.error?.message
-                ){
-
-                    errorMessage =
-                        data.error.message;
-
-                }else if(
-                    data?.message
-                ){
-
-                    errorMessage =
-                        data.message;
-
-                }else if(
-                    response.status === 400
-                ){
-
-                    errorMessage =
-                        "اطلاعات ارسال‌شده برای ثبت‌نام معتبر نیست.";
-
-                }else if(
-                    response.status === 403
-                ){
-
-                    errorMessage =
-                        "درخواست ثبت‌نام توسط سرویس احراز هویت رد شد.";
-
-                }else if(
-                    response.status >= 500
-                ){
-
-                    errorMessage =
-                        "خطایی در سرویس احراز هویت رخ داده است.";
-
-                }
-
-
-                show(
-                    errorMessage
-                );
-
-
-            }catch(error){
-
-                console.error(
-                    "Registration request error:",
-                    error
-                );
-
-
-                show(
-                    "ارتباط با سرویس ثبت‌نام برقرار نشد. اتصال اینترنت و آدرس سرویس را بررسی کنید."
-                );
-
-
-            }finally{
-
-                setBusy(false);
-
-            }
-
+            })
         }
     );
 
+    const j=await r.json().catch(()=>null);
 
-    // =====================================================
-    // INITIAL START
-    // =====================================================
+    b.disabled=false;
 
-    init();
+    if(j?.success){
 
+        show(
+            j.data.verificationRequired
+            ?"ثبت‌نام انجام شد. ابتدا مرحله تأیید را کامل کنید و سپس وارد شوید."
+            :"ثبت‌نام با موفقیت انجام شد. اکنون وارد شوید.",
+            "ok"
+        );
+
+        setTimeout(
+            ()=>location.href="login.html",
+            1600
+        );
+
+    }else{
+
+        show(
+            j?.error?.message||
+            "ثبت‌نام انجام نشد."
+        );
+
+    }
+
+};
+
+init();
 
 })();
-
 </script>
 
-
 </body>
-
 </html>

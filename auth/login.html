@@ -67,7 +67,7 @@
 (() => {
   // Public URL only. For production, prefer serving this UI and the Worker API
   // from the same site/custom domain to avoid cross-site cookie restrictions.
-  const API_BASE_URL = "https://nightcastworks.tomasgermany2580.workers.dev";
+  const API_BASE_URL = "https://auth.nightcast.ir";
   let csrfToken = null;
   const $ = s => document.querySelector(s);
   const notice = $("#notice");
@@ -84,9 +84,9 @@
   function busy(btn,on,text){btn.disabled=on;btn.innerHTML=on?'<span class="spinner"></span>در حال پردازش…':text}
   function activate(name){document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",t.id===`${name}Tab`));document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));$(`#${name}View`).classList.add("active");clearNotice()}
   $("#passwordTab").onclick=()=>activate("password");$("#smsTab").onclick=()=>activate("sms");$("#oidcTab").onclick=()=>activate("oidc");
-  $("#passwordForm").onsubmit=async e=>{e.preventDefault();clearNotice();const b=$("#passwordButton");busy(b,true);const j=await api("/api/auth/login/password",{method:"POST",body:JSON.stringify({identifier:$("#identifier").value,password:$("#password").value})});busy(b,false,"ورود");if(j.success){location.href=j.data.redirect||"/dashboard.html"}else show(j.error?.message||"ورود انجام نشد.")};
+  $("#passwordForm").onsubmit=async e=>{e.preventDefault();clearNotice();const b=$("#passwordButton");busy(b,true);const j=await api("/api/auth/login/password",{method:"POST",body:JSON.stringify({identifier:$("#identifier").value,password:$("#password").value})});busy(b,false,"ورود");if(j.success){location.href=j.data.redirect||"/users/index.html"}else show(j.error?.message||"ورود انجام نشد.")};
   $("#smsRequestForm").onsubmit=async e=>{e.preventDefault();clearNotice();const j=await api("/api/auth/login/sms/request",{method:"POST",body:JSON.stringify({mobile:$("#mobile").value})});if(j.success){$("#smsRequestForm").hidden=true;$("#smsVerifyForm").hidden=false;show("اگر شماره قابل استفاده باشد، کد ارسال خواهد شد.","ok")}else show(j.error?.message||"ارسال کد انجام نشد.")};
-  $("#smsVerifyForm").onsubmit=async e=>{e.preventDefault();clearNotice();const j=await api("/api/auth/login/sms/verify",{method:"POST",body:JSON.stringify({mobile:$("#mobile").value,otp:$("#otp").value})});if(j.success)location.href=j.data.redirect||"/dashboard.html";else show(j.error?.message||"کد صحیح نیست.")};
+  $("#smsVerifyForm").onsubmit=async e=>{e.preventDefault();clearNotice();const j=await api("/api/auth/login/sms/verify",{method:"POST",body:JSON.stringify({mobile:$("#mobile").value,otp:$("#otp").value})});if(j.success)location.href=j.data.redirect||"/users/index.html";else show(j.error?.message||"کد صحیح نیست.")};
   $("#smsBack").onclick=()=>{$("#smsRequestForm").hidden=false;$("#smsVerifyForm").hidden=true;$("#otp").value="";clearNotice()};
   $("#oidcButton").onclick=()=>{location.href=`${API_BASE_URL}/api/auth/oidc/start`};
   init();

@@ -4886,14 +4886,23 @@ function showBookSummaryRequestMessage(
 }
 
 
-if (requestBookSummaryBtn) {
+document.addEventListener(
+    "click",
+    event => {
 
-            requestBookSummaryBtn.addEventListener(
-                "click",
-                openBookSummaryRequestModal
+        const button =
+            event.target.closest(
+                "#requestBookSummaryBtn"
             );
 
-}
+        if (!button) {
+            return;
+        }
+
+        openBookSummaryRequestModal();
+
+    }
+);
 
 
 if (bookSummaryRequestClose) {

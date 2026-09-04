@@ -90,11 +90,135 @@ export default {
 
 
 
+            async function createBookSummaryRequest(userId, data) {
+
+                const bookName =
+                    String(data?.book_name || "").trim();
+
+                const authorName =
+                    String(data?.author_name || "").trim();
+
+                const description =
+                    String(data?.description || "").trim();
 
 
+                if (!bookName) {
+
+                    return {
+                        success: false,
+                        status: 400,
+                        message: "نام کتاب الزامی است."
+                    };
+
+                }
 
 
+                if (bookName.length > 200) {
 
+                    return {
+                        success: false,
+                        status: 400,
+                        message: "نام کتاب نمی‌تواند بیشتر از ۲۰۰ کاراکتر باشد."
+                    };
+
+                }
+
+
+                if (authorName.length > 200) {
+
+                    return {
+                        success: false,
+                        status: 400,
+                        message: "نام نویسنده نمی‌تواند بیشتر از ۲۰۰ کاراکتر باشد."
+                    };
+
+                }
+
+
+                if (description.length > 2000) {
+
+                    return {
+                        success: false,
+                        status: 400,
+                        message: "توضیحات نمی‌تواند بیشتر از ۲۰۰۰ کاراکتر باشد."
+                    };
+
+                }
+
+
+                const existing =
+                    await DB
+                        .prepare(`
+                SELECT id, status
+                FROM book_summary_requests
+                WHERE user_id = ?
+                AND LOWER(TRIM(book_name))
+                    = LOWER(TRIM(?))
+                AND status IN ('pending', 'processing')
+                LIMIT 1
+            `)
+                        .bind(
+                            userId,
+                            bookName
+                        )
+                        .first();
+
+
+                if (existing) {
+
+                    return {
+                        success: false,
+                        status: 409,
+                        message: "این کتاب را قبلاً درخواست کرده‌اید."
+                    };
+
+                }
+
+
+                const result =
+                    await DB
+                        .prepare(`
+                INSERT INTO book_summary_requests
+                (
+                    user_id,
+                    book_name,
+                    author_name,
+                    description,
+                    status
+                )
+                VALUES (?, ?, ?, ?, 'pending')
+            `)
+                        .bind(
+                            userId,
+                            bookName,
+                            authorName || null,
+                            description || null
+                        )
+                        .run();
+
+
+                return {
+
+                    success: true,
+
+                    status: 201,
+
+                    message:
+                        "درخواست شما با موفقیت ثبت شد.",
+
+                    request: {
+
+                        id:
+                            result.meta.last_row_id,
+
+                        status:
+                            "pending"
+
+                    }
+
+                };
+
+            }
 
             // ==========================
             // AUTH CHECK
@@ -1612,11 +1736,83 @@ export default {
             }
 
 
+            // ==========================
+            // BOOK SUMMARY REQUEST
+            // ==========================
+
+            if (
+                url.pathname ===
+                "/api/v1/book-summary-requests"
+                &&
+                request.method === "POST"
+            ) {
+
+                const user =
+                    await checkAuth();
 
 
+                if (!user) {
+
+                    return json({
+
+                        success: false,
+
+                        message:
+                            "برای ثبت درخواست ابتدا وارد حساب کاربری خود شوید."
+
+                    }, 401);
+
+                }
 
 
+                let body;
 
+                try {
+
+                    body =
+                        await request.json();
+
+                }
+
+                catch (error) {
+
+                    return json({
+
+                        success: false,
+
+                        message:
+                            "اطلاعات ارسال‌شده معتبر نیست."
+
+                    }, 400);
+
+                }
+
+
+                const result =
+                    await createBookSummaryRequest(
+                        user.id,
+                        body
+                    );
+
+
+                return json({
+
+                    success:
+                        result.success,
+
+                    message:
+                        result.message,
+
+                    ...(result.request
+                        ? {
+                            request:
+                                result.request
+                        }
+                        : {})
+
+                }, result.status);
+
+            }
 
 
             // ==========================

@@ -5793,9 +5793,10 @@ document.addEventListener(
             backdrop-filter: blur(8px)
         }
 
-            .profile-overlay.show {
-                display: flex
-            }
+        .profile-overlay.show,
+        .profile-overlay.active {
+            display: flex;
+        }
 
         .profile-panel {
             position: relative;

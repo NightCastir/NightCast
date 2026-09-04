@@ -4399,473 +4399,509 @@ LOGOUT
             }
 
 
-            /* =========================================================
-               EVENTS
-            ========================================================= */
-
-            function bindEvents() {
-
-
-                /* -----------------------------------------------------
-                   Podcast Grid
-                ----------------------------------------------------- */
-
-                els.grid.addEventListener(
-                    "click",
-                    e => {
-
-                        const el =
-                            e.target.closest(
-                                "[data-action]"
-                            );
-
-
-                        if (!el) {
-                            return;
-                        }
-
-
-                        const id =
-                            el.dataset.id;
-
-
-                        const action =
-                            el.dataset.action;
-
-
-                        if (
-                            action === "play"
-                        ) {
-
-                            playPodcast(
-                                id
-                            );
-
-                        }
-
-                        else if (
-                            action === "favorite"
-                        ) {
-
-                            toggleFavorite(
-                                id
-                            );
-
-                        }
-
-                        else if (
-                            action === "download"
-                        ) {
-
-                            downloadPodcast(
-                                id
-                            );
-
-                        }
-
-                        else if (
-                            action === "reload"
-                        ) {
-
-                            loadPodcasts();
-
-                        }
-
-                        else if (
-                            action === "clear-search"
-                        ) {
-
-                            state.query =
-                                "";
-
-                            els.search.value =
-                                "";
-
-                            els.clear.classList.remove(
-                                "show"
-                            );
-
-                            state.page =
-                                1;
-
-                            applyView();
-
-                        }
-
+        /* =========================================================
+           EVENTS
+        ========================================================= */
+        
+        function bindEvents() {
+        
+        
+            /* -----------------------------------------------------
+               Podcast Grid
+            ----------------------------------------------------- */
+        
+            els.grid.addEventListener(
+                "click",
+                e => {
+        
+                    const el =
+                        e.target.closest(
+                            "[data-action]"
+                        );
+        
+                    if (!el) {
+                        return;
                     }
-                );
-
-
-                /* -----------------------------------------------------
-                   Search
-                ----------------------------------------------------- */
-
-                els.search.addEventListener(
-                    "input",
-                    () => {
-
+        
+                    const id =
+                        el.dataset.id;
+        
+                    const action =
+                        el.dataset.action;
+        
+        
+                    if (
+                        action === "play"
+                    ) {
+        
+                        playPodcast(
+                            id
+                        );
+        
+                    }
+        
+                    else if (
+                        action === "favorite"
+                    ) {
+        
+                        toggleFavorite(
+                            id
+                        );
+        
+                    }
+        
+                    else if (
+                        action === "download"
+                    ) {
+        
+                        downloadPodcast(
+                            id
+                        );
+        
+                    }
+        
+                    else if (
+                        action === "reload"
+                    ) {
+        
+                        loadPodcasts();
+        
+                    }
+        
+                    else if (
+                        action === "clear-search"
+                    ) {
+        
                         state.query =
-                            els.search.value.trim();
-
-
-                        els.clear.classList.toggle(
-                            "show",
-                            !!state.query
-                        );
-
-
-                        clearTimeout(
-                            state.searchTimer
-                        );
-
-
-                        state.searchTimer =
-                            setTimeout(
-                                () => {
-
-                                    state.page =
-                                        1;
-
-                                    applyView();
-
-                                },
-                                180
-                            );
-
-                    }
-                );
-
-
-                els.clear.addEventListener(
-                    "click",
-                    () => {
-
+                            "";
+        
                         els.search.value =
                             "";
-
-                        state.query =
-                            "";
-
+        
                         els.clear.classList.remove(
                             "show"
                         );
-
+        
                         state.page =
                             1;
-
+        
                         applyView();
-
-                        els.search.focus();
-
+        
                     }
-                );
-
-
-                /* -----------------------------------------------------
-                   Player
-                ----------------------------------------------------- */
-
-                els.play.addEventListener(
-                    "click",
-                    togglePlay
-                );
-
-
-                els.prev.addEventListener(
-                    "click",
-                    () =>
-                        nextPodcast(-1)
-                );
-
-
-                els.next.addEventListener(
-                    "click",
-                    () =>
-                        nextPodcast(1)
-                );
-
-
-                els.progress.addEventListener(
-                    "input",
-                    () => {
-
-                        if (
-                            els.audio.duration
-                        ) {
-
-                            els.audio.currentTime =
-                                (
-                                    els.progress.value /
-                                    100
-                                ) *
-                                els.audio.duration;
-
-                        }
-
+        
+                }
+            );
+        
+        
+            /* -----------------------------------------------------
+               Search
+            ----------------------------------------------------- */
+        
+            els.search.addEventListener(
+                "input",
+                () => {
+        
+                    state.query =
+                        els.search.value.trim();
+        
+        
+                    els.clear.classList.toggle(
+                        "show",
+                        !!state.query
+                    );
+        
+        
+                    clearTimeout(
+                        state.searchTimer
+                    );
+        
+        
+                    state.searchTimer =
+                        setTimeout(
+                            () => {
+        
+                                state.page =
+                                    1;
+        
+                                applyView();
+        
+                            },
+                            180
+                        );
+        
+                }
+            );
+        
+        
+            els.clear.addEventListener(
+                "click",
+                () => {
+        
+                    els.search.value =
+                        "";
+        
+                    state.query =
+                        "";
+        
+                    els.clear.classList.remove(
+                        "show"
+                    );
+        
+                    state.page =
+                        1;
+        
+                    applyView();
+        
+                    els.search.focus();
+        
+                }
+            );
+        
+        
+            /* -----------------------------------------------------
+               Player
+            ----------------------------------------------------- */
+        
+            els.play.addEventListener(
+                "click",
+                togglePlay
+            );
+        
+        
+            els.prev.addEventListener(
+                "click",
+                () =>
+                    nextPodcast(-1)
+            );
+        
+        
+            els.next.addEventListener(
+                "click",
+                () =>
+                    nextPodcast(1)
+            );
+        
+        
+            els.progress.addEventListener(
+                "input",
+                () => {
+        
+                    if (
+                        els.audio.duration
+                    ) {
+        
+                        els.audio.currentTime =
+                            (
+                                els.progress.value /
+                                100
+                            ) *
+                            els.audio.duration;
+        
                     }
-                );
-
-
-                els.volume.addEventListener(
-                    "input",
-                    () =>
-                        els.audio.volume =
-                        Number(
-                            els.volume.value
-                        ) / 100
-                );
-
-
-                els.audio.volume =
-                    1;
-
-
-                els.audio.addEventListener(
-                    "play",
-                    () => {
-
-                        els.playIcon.className =
-                            "fa-solid fa-pause";
-
-                        updateCardPlaying();
-
+        
+                }
+            );
+        
+        
+            els.volume.addEventListener(
+                "input",
+                () =>
+                    els.audio.volume =
+                    Number(
+                        els.volume.value
+                    ) / 100
+            );
+        
+        
+            els.audio.volume =
+                1;
+        
+        
+            els.audio.addEventListener(
+                "play",
+                () => {
+        
+                    els.playIcon.className =
+                        "fa-solid fa-pause";
+        
+                    updateCardPlaying();
+        
+                }
+            );
+        
+        
+            els.audio.addEventListener(
+                "pause",
+                () => {
+        
+                    els.playIcon.className =
+                        "fa-solid fa-play";
+        
+                    updateCardPlaying();
+        
+                }
+            );
+        
+        
+            els.audio.addEventListener(
+                "timeupdate",
+                () => {
+        
+                    if (
+                        els.audio.duration
+                    ) {
+        
+                        els.progress.value =
+                            (
+                                els.audio.currentTime /
+                                els.audio.duration
+                            ) *
+                            100;
+        
+        
+                        els.current.textContent =
+                            formatTime(
+                                els.audio.currentTime
+                            );
+        
                     }
-                );
-
-
-                els.audio.addEventListener(
-                    "pause",
-                    () => {
-
-                        els.playIcon.className =
-                            "fa-solid fa-play";
-
-                        updateCardPlaying();
-
-                    }
-                );
-
-
-                els.audio.addEventListener(
-                    "timeupdate",
-                    () => {
-
-                        if (
-                            els.audio.duration
-                        ) {
-
-                            els.progress.value =
-                                (
-                                    els.audio.currentTime /
-                                    els.audio.duration
-                                ) *
-                                100;
-
-
-                            els.current.textContent =
-                                formatTime(
-                                    els.audio.currentTime
-                                );
-
-                        }
-
-                    }
-                );
-
-
-                els.audio.addEventListener(
-                    "loadedmetadata",
-                    () =>
-                        els.duration.textContent =
-                        formatTime(
-                            els.audio.duration
-                        )
-                );
-
-
-                els.audio.addEventListener(
-                    "ended",
-                    () =>
-                        nextPodcast(1)
-                );
-
-
-                els.audio.addEventListener(
-                    "error",
-                    () =>
-                        toast(
-                            "فایل صوتی قابل پخش نیست."
-                        )
-                );
-
-
-                /* -----------------------------------------------------
-                   Social
-                ----------------------------------------------------- */
-
-                els.socialToggle.addEventListener(
-                    "click",
-                    e => {
-
-                        e.stopPropagation();
-
-
-                        els.socialWrap.classList.toggle(
+        
+                }
+            );
+        
+        
+            els.audio.addEventListener(
+                "loadedmetadata",
+                () =>
+                    els.duration.textContent =
+                    formatTime(
+                        els.audio.duration
+                    )
+            );
+        
+        
+            els.audio.addEventListener(
+                "ended",
+                () =>
+                    nextPodcast(1)
+            );
+        
+        
+            els.audio.addEventListener(
+                "error",
+                () =>
+                    toast(
+                        "فایل صوتی قابل پخش نیست."
+                    )
+            );
+        
+        
+            /* -----------------------------------------------------
+               Social
+            ----------------------------------------------------- */
+        
+            els.socialToggle.addEventListener(
+                "click",
+                e => {
+        
+                    e.stopPropagation();
+        
+        
+                    els.socialWrap.classList.toggle(
+                        "open"
+                    );
+        
+        
+                    els.socialToggle.setAttribute(
+                        "aria-expanded",
+                        els.socialWrap.classList.contains(
                             "open"
-                        );
-
-
-                        els.socialToggle.setAttribute(
-                            "aria-expanded",
-                            els.socialWrap.classList.contains(
-                                "open"
-                            )
-                        );
-
-                    }
+                        )
+                    );
+        
+                }
+            );
+        
+        
+            /* -----------------------------------------------------
+               USER BUTTON
+            ----------------------------------------------------- */
+        
+            els.loginBtn.addEventListener(
+                "click",
+                openUserAccount
+            );
+        
+        
+            /* -----------------------------------------------------
+               BOOK SUMMARY REQUEST
+            ----------------------------------------------------- */
+        
+            const requestBookSummaryBtn =
+                document.getElementById(
+                    "requestBookSummaryBtn"
+                );
+        
+        
+            const bookSummaryRequestModal =
+                document.getElementById(
+                    "bookSummaryRequestModal"
+                );
+        
+        
+            const bookSummaryRequestClose =
+                document.getElementById(
+                    "bookSummaryRequestClose"
+                );
+        
+        
+            const bookSummaryRequestCancel =
+                document.getElementById(
+                    "bookSummaryRequestCancel"
+                );
+        
+        
+            const bookSummaryRequestForm =
+                document.getElementById(
+                    "bookSummaryRequestForm"
+                );
+        
+        
+            const bookSummaryBookName =
+                document.getElementById(
+                    "bookSummaryBookName"
+                );
+        
+        
+            const bookSummaryAuthorName =
+                document.getElementById(
+                    "bookSummaryAuthorName"
+                );
+        
+        
+            const bookSummaryDescription =
+                document.getElementById(
+                    "bookSummaryDescription"
+                );
+        
+        
+            const bookSummaryRequestMessage =
+                document.getElementById(
+                    "bookSummaryRequestMessage"
+                );
+        
+        
+            const bookSummaryRequestSubmit =
+                document.getElementById(
+                    "bookSummaryRequestSubmit"
                 );
 
 
-                document.addEventListener(
-                    "click",
-                    e => {
+    /* -----------------------------------------------------
+       OPEN BOOK SUMMARY MODAL
+    ----------------------------------------------------- */
 
-                        if (
-                            !els.socialWrap.contains(
-                                e.target
-                            )
-                        ) {
+    function openBookSummaryRequestModal() {
 
-                            els.socialWrap.classList.remove(
-                                "open"
-                            );
+        if (!isLoggedIn()) {
 
+            window.location.href =
+                CONFIG.LOGIN_PAGE;
 
-                            els.socialToggle.setAttribute(
-                                "aria-expanded",
-                                "false"
-                            );
-
-                        }
-
-                    }
-                );
+            return;
+        }
 
 
-                /* -----------------------------------------------------
-                   USER BUTTON
-                ----------------------------------------------------- */
-
-                els.loginBtn.addEventListener(
-                    "click",
-                    openUserAccount
-                );
-
-/* -----------------------------------------------------
-           BOOK SUMMARY REQUEST
------------------------------------------------------ */
-
-const requestBookSummaryBtn =
-            document.getElementById(
-                "requestBookSummaryBtn"
-            );
-
-const bookSummaryRequestModal =
-            document.getElementById(
-                "bookSummaryRequestModal"
-            );
-
-const bookSummaryRequestClose =
-            document.getElementById(
-                "bookSummaryRequestClose"
-            );
-
-const bookSummaryRequestCancel =
-            document.getElementById(
-                "bookSummaryRequestCancel"
-            );
-
-const bookSummaryRequestForm =
-            document.getElementById(
-                "bookSummaryRequestForm"
-            );
-
-const bookSummaryBookName =
-            document.getElementById(
-                "bookSummaryBookName"
-            );
-
-const bookSummaryAuthorName =
-            document.getElementById(
-                "bookSummaryAuthorName"
-            );
-
-const bookSummaryDescription =
-            document.getElementById(
-                "bookSummaryDescription"
-            );
-
-const bookSummaryRequestMessage =
-            document.getElementById(
-                "bookSummaryRequestMessage"
-            );
-
-const bookSummaryRequestSubmit =
-            document.getElementById(
-                "bookSummaryRequestSubmit"
-            );
+        if (!bookSummaryRequestModal) {
+            return;
+        }
 
 
-function openBookSummaryRequestModal() {
+        if (bookSummaryRequestMessage) {
 
-            if (!isLoggedIn()) {
-                window.location.href =
-                    CONFIG.LOGIN_PAGE;
-                return;
-            }
+            bookSummaryRequestMessage.hidden =
+                true;
 
-            if (!bookSummaryRequestModal) {
-                return;
-            }
+            bookSummaryRequestMessage.textContent =
+                "";
 
-            bookSummaryRequestMessage.hidden = true;
-            bookSummaryRequestMessage.textContent = "";
+        }
+
+
+        if (bookSummaryRequestForm) {
 
             bookSummaryRequestForm.reset();
 
-            bookSummaryRequestModal.hidden = false;
+        }
 
-            requestAnimationFrame(() => {
-                bookSummaryRequestModal.classList.add("active");
-            });
 
-            setTimeout(() => {
+        bookSummaryRequestModal.hidden =
+            false;
+
+
+        requestAnimationFrame(
+            () => {
+
+                bookSummaryRequestModal.classList.add(
+                    "active"
+                );
+
+            }
+        );
+
+
+        setTimeout(
+            () => {
 
                 if (bookSummaryBookName) {
+
                     bookSummaryBookName.focus();
+
                 }
 
-            }, 50);
-}
+            },
+            50
+        );
+
+    }
 
 
-function closeBookSummaryRequestModal() {
+    /* -----------------------------------------------------
+       CLOSE BOOK SUMMARY MODAL
+    ----------------------------------------------------- */
 
-            if (!bookSummaryRequestModal) {
-                return;
-            }
+    function closeBookSummaryRequestModal() {
 
-            bookSummaryRequestModal.classList.remove(
-                "active"
-            );
+        if (!bookSummaryRequestModal) {
+            return;
+        }
 
-            setTimeout(() => {
 
-                bookSummaryRequestModal.hidden = true;
+        bookSummaryRequestModal.classList.remove(
+            "active"
+        );
 
-            }, 200);
-}
 
+        setTimeout(
+            () => {
+
+                if (
+                    bookSummaryRequestModal
+                ) {
+
+                    bookSummaryRequestModal.hidden =
+                        true;
+
+                }
+
+            },
+            200
+        );
+
+    }
+
+
+   
 
 function showBookSummaryRequestMessage(
             message,

@@ -1,8 +1,26 @@
 {
   "success": true,
-  "total": 24,
-  "updated_at": "2026-09-06T00:00:50.455Z",
+  "total": 25,
+  "updated_at": "2026-09-06T11:09:59.550Z",
   "podcasts": [
+    {
+      "id": 33,
+      "title": "خلاصه کتاب مدیریت منابع انسانی",
+      "slug": "modiriat-manabe-ensani",
+      "book_name": "مدیریت منابع انسانی",
+      "author_name": "اسفندیار سعادت",
+      "category_name": "مدیریت و کسب‌وکار",
+      "tags": "مدیریت,منابع انسانی,اسفندیار سعادت,کتاب,خلاصه کتاب,پادکست",
+      "episode_number": 1,
+      "summary": "خلاصه‌ای از مفاهیم مدیریت منابع انسانی؛ از جذب و انتخاب نیرو تا حقوق، پاداش و انضباط سازمانی.",
+      "description": "خلاصه کتاب مدیریت منابع انسانی اثر اسفندیار سعادت؛ ارائه‌ای از رادیو NightCast.",
+      "duration_seconds": 839,
+      "audio_url": "https://raw.githubusercontent.com/NightCastir/NightCast-Media/main/audio/Hr_Management.mp3",
+      "cover_url": "https://raw.githubusercontent.com/NightCastir/NightCast-Media/main/covers/Hr_Management.jpg",
+      "listen_count": 0,
+      "publish_date": "2026-09-06 10:41:52",
+      "created_at": "2026-09-06 10:41:52"
+    },
     {
       "id": 32,
       "title": "مدیریت خشم",

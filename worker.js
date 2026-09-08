@@ -734,35 +734,20 @@ if (
 
     /* ==========================================
        SEND SMS FIRST
-    ========================================== */
-
-    try {
-
-        await sendNightCastSmsOTP(
-            env,
-            mobile,
-            otp
-        );
-
-    }
-    catch (error) {
-
-        console.error(
-            "NightCast Kavenegar Error:",
-            error
-        );
-
-        return json(
-            {
-                success: false,
-                message:
-                    "ارسال پیامک انجام نشد."
-            },
-            502
-        );
-
-    }
-
+    ======================================== */
+try {
+    await sendNightCastSmsOTP(env, mobile, otp);
+} catch (error) {
+    return json(
+        {
+            success: false,
+            message: "ارسال پیامک انجام نشد.",
+            error: error instanceof Error ? error.message : String(error)
+        },
+        502
+    );
+}
+    
 
     /* ==========================================
        SAVE HASHED OTP

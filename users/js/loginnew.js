@@ -286,20 +286,21 @@
                         );
 
 
-              if (!response.ok) {
+if (!response.ok) {
+
     const errorMessage =
         data?.error ||
         data?.message ||
         "ارسال پیامک انجام نشد.";
 
-    showMessage(
-        "❌ خطای ارسال پیامک:<br>" + errorMessage,
-        "error"
+    this.showError(
+        "❌ خطای ارسال پیامک: " +
+        errorMessage
     );
 
     return;
 }
-
+               
                 document
                     .getElementById(
                         "phoneStep"

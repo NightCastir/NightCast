@@ -286,18 +286,19 @@
                         );
 
 
-                if (
-                    !response.ok ||
-                    !data.success
-                ) {
+              if (!response.ok) {
+    const errorMessage =
+        data?.error ||
+        data?.message ||
+        "ارسال پیامک انجام نشد.";
 
-                    throw new Error(
-                        data.message ||
-                        "ارسال کد انجام نشد."
-                    );
+    showMessage(
+        "❌ خطای ارسال پیامک:<br>" + errorMessage,
+        "error"
+    );
 
-                }
-
+    return;
+}
 
                 document
                     .getElementById(

@@ -28,18 +28,15 @@
 <style>
 
 .sms-login {
-
     width:100%;
 }
 
 .sms-title {
-
     text-align:center;
     margin-bottom:8px;
 }
 
 .sms-description {
-
     text-align:center;
     color:#9ca8ba;
     font-size:14px;
@@ -48,178 +45,118 @@
 }
 
 .sms-field {
-
     margin-bottom:16px;
 }
 
 .sms-field label {
-
     display:block;
     margin-bottom:8px;
     font-size:14px;
 }
 
 .sms-field input {
-
     width:100%;
     box-sizing:border-box;
-
     padding:14px 16px;
-
     border-radius:12px;
-
     border:1px solid rgba(255,255,255,.12);
-
     background:rgba(255,255,255,.05);
-
     color:#fff;
-
     font-size:16px;
-
     direction:ltr;
     text-align:center;
-
     outline:none;
 }
 
 .sms-field input:focus {
-
     border-color:#7c9cff;
 }
 
 .sms-button {
-
     width:100%;
-
     border:0;
-
     border-radius:12px;
-
     padding:14px;
-
     background:linear-gradient(
         135deg,
         #6f8cff,
         #9a6cff
     );
-
     color:#fff;
-
     font-size:15px;
-
     font-weight:700;
-
     cursor:pointer;
 }
 
 .sms-button:disabled {
-
     opacity:.55;
-
     cursor:not-allowed;
 }
 
 .sms-secondary {
-
     width:100%;
-
     margin-top:10px;
-
     padding:12px;
-
     border-radius:12px;
-
     border:1px solid rgba(255,255,255,.12);
-
     background:transparent;
-
     color:#fff;
-
     cursor:pointer;
 }
 
 .sms-message {
-
     display:none;
-
     margin-bottom:15px;
-
     padding:11px 13px;
-
     border-radius:10px;
-
     font-size:13px;
-
     line-height:1.8;
-
     text-align:center;
 }
 
 .sms-message.show {
-
     display:block;
 }
 
 .sms-message.error {
-
     background:rgba(255,80,100,.1);
-
     border:1px solid rgba(255,80,100,.2);
-
     color:#ffb7c0;
 }
 
 .sms-message.success {
-
     background:rgba(80,220,160,.1);
-
     border:1px solid rgba(80,220,160,.2);
-
     color:#a9efd2;
 }
 
 .sms-code {
-
     letter-spacing:8px;
-
     font-size:22px !important;
-
     font-weight:700;
 }
 
 .sms-resend {
-
     text-align:center;
-
     margin-top:15px;
-
     color:#9ca8ba;
-
     font-size:13px;
 }
 
 .sms-resend button {
-
     border:0;
-
     background:none;
-
     color:#7f9cff;
-
     cursor:pointer;
-
     font:inherit;
 }
 
 .sms-resend button:disabled {
-
     opacity:.4;
-
     cursor:not-allowed;
 }
 
 .hidden {
-
     display:none !important;
 }
 
@@ -289,12 +226,11 @@
 <div class="sms-login">
 
 
-<div id="smsMessage" class="sms-message"></div>
+<div
+    id="smsMessage"
+    class="sms-message"
+></div>
 
-
-<!-- =========================
-     STEP 1
-========================= -->
 
 <div id="phoneStep">
 
@@ -310,7 +246,7 @@
 
         شماره موبایل خود را وارد کنید.
         <br>
-        یک کد تأیید برای شما پیامک می‌شود.
+        کد تأیید برای شما پیامک می‌شود.
 
     </p>
 
@@ -325,32 +261,21 @@
 
 
         <input
-
             id="mobile"
-
             type="tel"
-
             inputmode="numeric"
-
             autocomplete="tel"
-
-            maxlength="11"
-
+            maxlength="16"
             placeholder="09123456789"
-
         >
 
     </div>
 
 
     <button
-
         id="sendCodeButton"
-
         class="sms-button"
-
         type="button"
-
     >
 
         <i class="fa-solid fa-message"></i>
@@ -362,10 +287,6 @@
 
 </div>
 
-
-<!-- =========================
-     STEP 2
-========================= -->
 
 <div
     id="otpStep"
@@ -385,13 +306,12 @@
         class="sms-description"
     >
 
-        کد ارسال‌شده را وارد کنید.
+        کد تأیید را وارد کنید.
 
     </p>
 
 
     <div class="sms-field">
-
 
         <label for="otp">
 
@@ -401,34 +321,22 @@
 
 
         <input
-
             id="otp"
-
             class="sms-code"
-
             type="text"
-
             inputmode="numeric"
-
             autocomplete="one-time-code"
-
             maxlength="6"
-
             placeholder="••••••"
-
         >
 
     </div>
 
 
     <button
-
         id="verifyCodeButton"
-
         class="sms-button"
-
         type="button"
-
     >
 
         <i class="fa-solid fa-check"></i>
@@ -439,13 +347,9 @@
 
 
     <button
-
         id="changeNumberButton"
-
         class="sms-secondary"
-
         type="button"
-
     >
 
         تغییر شماره موبایل
@@ -455,28 +359,17 @@
 
     <div class="sms-resend">
 
-
         <span id="resendText">
-
-            ارسال مجدد کد
-
+            ارسال مجدد تا ۶۰ ثانیه
         </span>
 
-
         <button
-
             id="resendButton"
-
             type="button"
-
             disabled
-
         >
-
             ارسال مجدد
-
         </button>
-
 
     </div>
 
@@ -508,4 +401,4 @@
 
 </body>
 
-      </html>
+</html>

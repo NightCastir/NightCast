@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<meta
+    name="theme-color"
+    content="#0b1220"
+>
+
+<title>NightCast | ورود</title>
+
+<link rel="stylesheet" href="css/core.css">
+<link rel="stylesheet" href="css/login.css">
+
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+>
+
+<style>
+
+.sms-login {
+
+    width:100%;
+}
+
+.sms-title {
+
+    text-align:center;
+    margin-bottom:8px;
+}
+
+.sms-description {
+
+    text-align:center;
+    color:#9ca8ba;
+    font-size:14px;
+    line-height:1.9;
+    margin-bottom:25px;
+}
+
+.sms-field {
+
+    margin-bottom:16px;
+}
+
+.sms-field label {
+
+    display:block;
+    margin-bottom:8px;
+    font-size:14px;
+}
+
+.sms-field input {
+
+    width:100%;
+    box-sizing:border-box;
+
+    padding:14px 16px;
+
+    border-radius:12px;
+
+    border:1px solid rgba(255,255,255,.12);
+
+    background:rgba(255,255,255,.05);
+
+    color:#fff;
+
+    font-size:16px;
+
+    direction:ltr;
+    text-align:center;
+
+    outline:none;
+}
+
+.sms-field input:focus {
+
+    border-color:#7c9cff;
+}
+
+.sms-button {
+
+    width:100%;
+
+    border:0;
+
+    border-radius:12px;
+
+    padding:14px;
+
+    background:linear-gradient(
+        135deg,
+        #6f8cff,
+        #9a6cff
+    );
+
+    color:#fff;
+
+    font-size:15px;
+
+    font-weight:700;
+
+    cursor:pointer;
+}
+
+.sms-button:disabled {
+
+    opacity:.55;
+
+    cursor:not-allowed;
+}
+
+.sms-secondary {
+
+    width:100%;
+
+    margin-top:10px;
+
+    padding:12px;
+
+    border-radius:12px;
+
+    border:1px solid rgba(255,255,255,.12);
+
+    background:transparent;
+
+    color:#fff;
+
+    cursor:pointer;
+}
+
+.sms-message {
+
+    display:none;
+
+    margin-bottom:15px;
+
+    padding:11px 13px;
+
+    border-radius:10px;
+
+    font-size:13px;
+
+    line-height:1.8;
+
+    text-align:center;
+}
+
+.sms-message.show {
+
+    display:block;
+}
+
+.sms-message.error {
+
+    background:rgba(255,80,100,.1);
+
+    border:1px solid rgba(255,80,100,.2);
+
+    color:#ffb7c0;
+}
+
+.sms-message.success {
+
+    background:rgba(80,220,160,.1);
+
+    border:1px solid rgba(80,220,160,.2);
+
+    color:#a9efd2;
+}
+
+.sms-code {
+
+    letter-spacing:8px;
+
+    font-size:22px !important;
+
+    font-weight:700;
+}
+
+.sms-resend {
+
+    text-align:center;
+
+    margin-top:15px;
+
+    color:#9ca8ba;
+
+    font-size:13px;
+}
+
+.sms-resend button {
+
+    border:0;
+
+    background:none;
+
+    color:#7f9cff;
+
+    cursor:pointer;
+
+    font:inherit;
+}
+
+.sms-resend button:disabled {
+
+    opacity:.4;
+
+    cursor:not-allowed;
+}
+
+.hidden {
+
+    display:none !important;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="background-blur blur1"></div>
+<div class="background-blur blur2"></div>
+
+
+<div
+    id="authLoader"
+    class="auth-loader hidden"
+>
+
+    <div class="loader-box">
+
+        <div class="loader-circle"></div>
+
+        <h3>NightCast</h3>
+
+        <p id="loaderText">
+            در حال پردازش...
+        </p>
+
+    </div>
+
+</div>
+
+
+<main class="login-page">
+
+
+<section class="login-card">
+
+
+<div class="hero">
+
+    <div class="brand-icon">
+
+        <i class="fa-solid fa-radio"></i>
+
+    </div>
+
+
+    <h1>
+
+        Night<span>Cast</span>
+
+    </h1>
+
+
+    <p class="hero-text">
+
+        رادیو NightCast پلی به سوی آیندست
+
+    </p>
+
+</div>
+
+
+<div class="sms-login">
+
+
+<div id="smsMessage" class="sms-message"></div>
+
+
+<!-- =========================
+     STEP 1
+========================= -->
+
+<div id="phoneStep">
+
+
+    <h2 class="sms-title">
+
+        ورود به NightCast
+
+    </h2>
+
+
+    <p class="sms-description">
+
+        شماره موبایل خود را وارد کنید.
+        <br>
+        یک کد تأیید برای شما پیامک می‌شود.
+
+    </p>
+
+
+    <div class="sms-field">
+
+        <label for="mobile">
+
+            شماره موبایل
+
+        </label>
+
+
+        <input
+
+            id="mobile"
+
+            type="tel"
+
+            inputmode="numeric"
+
+            autocomplete="tel"
+
+            maxlength="11"
+
+            placeholder="09123456789"
+
+        >
+
+    </div>
+
+
+    <button
+
+        id="sendCodeButton"
+
+        class="sms-button"
+
+        type="button"
+
+    >
+
+        <i class="fa-solid fa-message"></i>
+
+        دریافت کد تأیید
+
+    </button>
+
+
+</div>
+
+
+<!-- =========================
+     STEP 2
+========================= -->
+
+<div
+    id="otpStep"
+    class="hidden"
+>
+
+
+    <h2 class="sms-title">
+
+        تأیید شماره موبایل
+
+    </h2>
+
+
+    <p
+        id="otpDescription"
+        class="sms-description"
+    >
+
+        کد ارسال‌شده را وارد کنید.
+
+    </p>
+
+
+    <div class="sms-field">
+
+
+        <label for="otp">
+
+            کد تأیید
+
+        </label>
+
+
+        <input
+
+            id="otp"
+
+            class="sms-code"
+
+            type="text"
+
+            inputmode="numeric"
+
+            autocomplete="one-time-code"
+
+            maxlength="6"
+
+            placeholder="••••••"
+
+        >
+
+    </div>
+
+
+    <button
+
+        id="verifyCodeButton"
+
+        class="sms-button"
+
+        type="button"
+
+    >
+
+        <i class="fa-solid fa-check"></i>
+
+        تأیید و ورود
+
+    </button>
+
+
+    <button
+
+        id="changeNumberButton"
+
+        class="sms-secondary"
+
+        type="button"
+
+    >
+
+        تغییر شماره موبایل
+
+    </button>
+
+
+    <div class="sms-resend">
+
+
+        <span id="resendText">
+
+            ارسال مجدد کد
+
+        </span>
+
+
+        <button
+
+            id="resendButton"
+
+            type="button"
+
+            disabled
+
+        >
+
+            ارسال مجدد
+
+        </button>
+
+
+    </div>
+
+
+</div>
+
+
+</div>
+
+
+<footer>
+
+<p>
+
+با ادامه، قوانین استفاده و سیاست حفظ حریم خصوصی NightCast را می‌پذیرید.
+
+</p>
+
+</footer>
+
+
+</section>
+
+
+</main>
+
+
+<script src="js/login.js"></script>
+
+</body>
+
+      </html>

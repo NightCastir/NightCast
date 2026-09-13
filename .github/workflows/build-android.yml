@@ -34,6 +34,17 @@ jobs:
           npm install
           npx cap --version
 
+      - name: Prepare www folder
+        run: |
+          mkdir -p www
+          # کپی فایل‌های اصلی سایت
+          cp -r index.html manifest.json service-worker.js sw.js style.css app.js favicon.ico favicon.png logo.png www/ 2>/dev/null || true
+          cp -r css js assets auth users www/ 2>/dev/null || true
+          cp -r .well-known www/ 2>/dev/null || true
+          # کپی سایر فایل‌های html اگر وجود دارند
+          find . -maxdepth 1 -name "*.html" -exec cp {} www/ \; 2>/dev/null || true
+          ls -la www/
+
       - name: Add Android platform (if not exists)
         run: |
           if [ ! -d "android" ]; then

@@ -1,1 +1,24 @@
 
+# Capacitor / Node
+node_modules/
+package-lock.json
+.npm
+.capacitor
+
+# Android
+android/
+*.apk
+*.aab
+*.jks
+*.keystore
+local.properties
+.gradle/
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# IDE
+.idea/
+.vscode/
+*.iml

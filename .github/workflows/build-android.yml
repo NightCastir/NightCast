@@ -61,8 +61,6 @@ jobs:
             }
           }
           EOF
-          echo "capacitor.config.json created:"
-          cat capacitor.config.json
 
       - name: Prepare www folder
         run: |
@@ -72,7 +70,6 @@ jobs:
           cp -r css js assets auth users www/ 2>/dev/null || true
           cp -r .well-known www/ 2>/dev/null || true
           find . -maxdepth 1 -name "*.html" ! -name "index.html" -exec cp {} www/ \; 2>/dev/null || true
-          echo "Contents of www:"
           ls -la www/
 
       - name: Add Android platform
@@ -97,21 +94,25 @@ jobs:
           if [ -n "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" ]; then
             echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > nightcast-release.keystore
             echo "Keystore decoded successfully"
+            ls -lh nightcast-release.keystore
           else
             echo "No keystore secret found"
           fi
 
       - name: Build Release APK
         run: |
-          cd android
-          if [ -f "../nightcast-release.keystore" ]; then
+          if [ -f "nightcast-release.keystore" ]; then
+            echo "Building signed Release APK..."
+            cd android
             ./gradlew assembleRelease \
-              -Pandroid.injected.signing.store.file=../nightcast-release.keystore \
+              -Pandroid.injected.signing.store.file="$(pwd)/../nightcast-release.keystore" \
               -Pandroid.injected.signing.store.password="${{ secrets.KEYSTORE_PASSWORD }}" \
               -Pandroid.injected.signing.key.alias="${{ secrets.KEY_ALIAS }}" \
               -Pandroid.injected.signing.key.password="${{ secrets.KEY_PASSWORD }}" \
               --stacktrace
           else
+            echo "Building unsigned Release APK..."
+            cd android
             ./gradlew assembleRelease --stacktrace
           fi
 

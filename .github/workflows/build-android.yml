@@ -30,40 +30,67 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Install dependencies
+        run: npm install
+
+      - name: Create clean capacitor.config.json
         run: |
-          npm install
-          npx cap --version
+          cat > capacitor.config.json << 'EOF'
+          {
+            "appId": "ir.nightcast.app",
+            "appName": "NightCast",
+            "webDir": "www",
+            "server": {
+              "androidScheme": "https"
+            },
+            "android": {
+              "allowMixedContent": true,
+              "backgroundColor": "#050a16"
+            },
+            "plugins": {
+              "SplashScreen": {
+                "launchShowDuration": 0,
+                "launchAutoHide": true,
+                "backgroundColor": "#050a16",
+                "splashFullScreen": true,
+                "splashImmersive": true
+              },
+              "StatusBar": {
+                "style": "DARK",
+                "backgroundColor": "#050a16"
+              }
+            }
+          }
+          EOF
+          echo "capacitor.config.json created:"
+          cat capacitor.config.json
 
       - name: Prepare www folder
         run: |
+          rm -rf www
           mkdir -p www
-          # کپی فایل‌های اصلی سایت
-          cp -r index.html manifest.json service-worker.js sw.js style.css app.js favicon.ico favicon.png logo.png www/ 2>/dev/null || true
+          cp index.html manifest.json service-worker.js sw.js style.css app.js favicon.ico favicon.png logo.png www/ 2>/dev/null || true
           cp -r css js assets auth users www/ 2>/dev/null || true
           cp -r .well-known www/ 2>/dev/null || true
-          # کپی سایر فایل‌های html اگر وجود دارند
-          find . -maxdepth 1 -name "*.html" -exec cp {} www/ \; 2>/dev/null || true
+          find . -maxdepth 1 -name "*.html" ! -name "index.html" -exec cp {} www/ \; 2>/dev/null || true
+          echo "Contents of www:"
           ls -la www/
 
-      - name: Add Android platform (if not exists)
+      - name: Add Android platform
         run: |
-          if [ ! -d "android" ]; then
-            npx cap add android
-          fi
+          rm -rf android
+          npx cap add android
 
-      - name: Sync web assets to Android
+      - name: Sync web assets
         run: npx cap sync android
 
       - name: Make gradlew executable
         run: chmod +x android/gradlew
 
-      # ---------- Debug APK ----------
       - name: Build Debug APK
         run: |
           cd android
           ./gradlew assembleDebug --stacktrace
 
-      # ---------- Release APK ----------
       - name: Decode Keystore
         continue-on-error: true
         run: |
@@ -71,14 +98,13 @@ jobs:
             echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > nightcast-release.keystore
             echo "Keystore decoded successfully"
           else
-            echo "No keystore secret found - will build unsigned release"
+            echo "No keystore secret found"
           fi
 
       - name: Build Release APK
         run: |
           cd android
           if [ -f "../nightcast-release.keystore" ]; then
-            echo "Building signed Release APK..."
             ./gradlew assembleRelease \
               -Pandroid.injected.signing.store.file=../nightcast-release.keystore \
               -Pandroid.injected.signing.store.password="${{ secrets.KEYSTORE_PASSWORD }}" \
@@ -86,11 +112,9 @@ jobs:
               -Pandroid.injected.signing.key.password="${{ secrets.KEY_PASSWORD }}" \
               --stacktrace
           else
-            echo "Building unsigned Release APK..."
             ./gradlew assembleRelease --stacktrace
           fi
 
-      # ---------- Upload Artifacts ----------
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:

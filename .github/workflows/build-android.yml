@@ -158,7 +158,106 @@ jobs:
 
           npx cap add android
 
+      # ============================================================
+      # 8.1. Set NightCast Launcher Icon
+      # ============================================================
+      - name: Set NightCast Launcher Icon
+        run: |
+          set -e
 
+          echo "=== Configuring NightCast launcher icon ==="
+
+          ICON_SOURCE="assets/icons/icon-512.png"
+          RES_DIR="android/app/src/main/res"
+
+          if [ ! -f "$ICON_SOURCE" ]; then
+            echo "ERROR: NightCast icon not found:"
+            echo "$ICON_SOURCE"
+            exit 1
+          fi
+
+          mkdir -p "$RES_DIR/drawable-nodpi"
+          mkdir -p "$RES_DIR/mipmap-anydpi-v26"
+          mkdir -p "$RES_DIR/values"
+
+          # ----------------------------------------------------------
+          # Copy official NightCast icon
+          # ----------------------------------------------------------
+          cp "$ICON_SOURCE" \
+             "$RES_DIR/drawable-nodpi/nightcast_icon.png"
+
+          # ----------------------------------------------------------
+          # Adaptive launcher icon
+          # ----------------------------------------------------------
+          cat > "$RES_DIR/mipmap-anydpi-v26/ic_launcher.xml" << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+              <background android:drawable="@color/nightcast_icon_background" />
+              <foreground android:drawable="@drawable/nightcast_icon" />
+          </adaptive-icon>
+          EOF
+
+          cat > "$RES_DIR/mipmap-anydpi-v26/ic_launcher_round.xml" << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+              <background android:drawable="@color/nightcast_icon_background" />
+              <foreground android:drawable="@drawable/nightcast_icon" />
+          </adaptive-icon>
+          EOF
+
+          # ----------------------------------------------------------
+          # NightCast icon background
+          # ----------------------------------------------------------
+          cat > "$RES_DIR/values/nightcast_icon_colors.xml" << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <color name="nightcast_icon_background">#050A16</color>
+          </resources>
+          EOF
+
+          # ----------------------------------------------------------
+          # Replace Android launcher icon references
+          # ----------------------------------------------------------
+          python3 << 'PY'
+          from pathlib import Path
+
+          manifest = Path(
+              "android/app/src/main/AndroidManifest.xml"
+          )
+
+          if not manifest.exists():
+              raise SystemExit(
+                  "AndroidManifest.xml was not generated."
+              )
+
+          text = manifest.read_text(encoding="utf-8")
+
+          text = text.replace(
+              'android:icon="@mipmap/ic_launcher"',
+              'android:icon="@mipmap/ic_launcher"'
+          )
+
+          text = text.replace(
+              'android:roundIcon="@mipmap/ic_launcher_round"',
+              'android:roundIcon="@mipmap/ic_launcher_round"'
+          )
+
+          manifest.write_text(
+              text,
+              encoding="utf-8"
+          )
+
+          print("Android launcher icon references verified.")
+          PY
+
+          echo ""
+          echo "=== NightCast launcher icon ==="
+
+          ls -lh \
+            "$RES_DIR/drawable-nodpi/nightcast_icon.png"
+
+          echo ""
+          echo "NightCast launcher icon configured successfully."
       # ============================================================
       # 9. Add Native Google Sign-In
       # ============================================================

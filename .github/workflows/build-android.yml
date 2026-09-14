@@ -1,4 +1,81 @@
-reen": {
+name: Build NightCast Android APK
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Debug + Release APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+
+      # ============================================================
+      # 1. Checkout
+      # ============================================================
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+
+      # ============================================================
+      # 2. Node.js
+      # ============================================================
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+
+      # ============================================================
+      # 3. Java
+      # ============================================================
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+
+      # ============================================================
+      # 4. Android SDK
+      # ============================================================
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+
+      # ============================================================
+      # 5. Install Node / Capacitor dependencies
+      # ============================================================
+      - name: Install dependencies
+        run: npm install
+
+
+      # ============================================================
+      # 6. Create clean Capacitor configuration
+      # ============================================================
+      - name: Create clean capacitor.config.json
+        shell: bash
+        run: |
+          set -e
+
+          cat > capacitor.config.json << 'EOF'
+          {
+            "appId": "ir.nightcast.app",
+            "appName": "NightCast",
+            "webDir": "www",
+            "server": {
+              "androidScheme": "https"
+            },
+            "android": {
+              "allowMixedContent": true,
+              "backgroundColor": "#050a16"
+            },
+            "plugins": {
+              "SplashScreen": {
                 "launchShowDuration": 0,
                 "launchAutoHide": true,
                 "backgroundColor": "#050a16",
@@ -13,26 +90,119 @@ reen": {
           }
           EOF
 
+          test -f capacitor.config.json
+
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("capacitor.config.json")
+
+          with path.open("r", encoding="utf-8") as f:
+              config = json.load(f)
+
+          assert config["appId"] == "ir.nightcast.app"
+          assert config["appName"] == "NightCast"
+          assert config["webDir"] == "www"
+
+          print("capacitor.config.json validated successfully.")
+          PY
+
+
+      # ============================================================
+      # 7. Prepare www folder BEFORE creating Android project
+      # ============================================================
       - name: Prepare www folder
+        shell: bash
         run: |
+          set -e
+
           rm -rf www
           mkdir -p www
-          cp index.html manifest.json service-worker.js sw.js style.css app.js favicon.ico favicon.png logo.png www/ 2>/dev/null || true
-          cp -r css js assets auth users www/ 2>/dev/null || true
-          cp -r .well-known www/ 2>/dev/null || true
-          find . -maxdepth 1 -name "*.html" ! -name "index.html" -exec cp {} www/ \; 2>/dev/null || true
-          ls -la www/
 
+          cp \
+            index.html \
+            manifest.json \
+            service-worker.js \
+            sw.js \
+            style.css \
+            app.js \
+            favicon.ico \
+            favicon.png \
+            logo.png \
+            www/ \
+            2>/dev/null || true
+
+          cp -r \
+            css \
+            js \
+            assets \
+            auth \
+            users \
+            www/ \
+            2>/dev/null || true
+
+          cp -r \
+            .well-known \
+            www/ \
+            2>/dev/null || true
+
+          find . \
+            -maxdepth 1 \
+            -name "*.html" \
+            ! -name "index.html" \
+            -exec cp {} www/ \; \
+            2>/dev/null || true
+
+          echo "=== www directory ==="
+          find www -maxdepth 3 -type f | sort
+
+          test -f www/index.html
+          test -f www/users/login.html
+          test -f www/users/js/login.js
+
+          echo "www folder prepared successfully."
+
+
+      # ============================================================
+      # 8. Create a completely fresh Android project
+      # ============================================================
       - name: Add Android platform
+        shell: bash
         run: |
+          set -e
+
           rm -rf android
+
           npx cap add android
 
-      - name: Add Native Google Sign-In
-        run: |
-          mkdir -p android/app/src/main/java/ir/nightcast/app
+          test -d android
+          test -f android/gradlew
+          test -f android/app/build.gradle
 
-          cat > android/app/src/main/java/ir/nightcast/app/MainActivity.java <<'EOF'
+          echo "Android platform created successfully."
+
+
+      # ============================================================
+      # 9. Create Native Google Sign-In Plugin
+      #
+      # Everything below is generated automatically because
+      # android/ is deleted and recreated on every build.
+      # ============================================================
+      - name: Add Native Google Sign-In
+        shell: bash
+        run: |
+          set -e
+
+          PACKAGE_DIR="android/app/src/main/java/ir/nightcast/app"
+
+          mkdir -p "${PACKAGE_DIR}"
+
+
+          # --------------------------------------------------------
+          # MainActivity.java
+          # --------------------------------------------------------
+          cat > "${PACKAGE_DIR}/MainActivity.java" << 'EOF'
           package ir.nightcast.app;
 
           import android.os.Bundle;
@@ -51,12 +221,16 @@ reen": {
           }
           EOF
 
-          cat > android/app/src/main/java/ir/nightcast/app/NightCastGoogleAuth.java <<'EOF'
+
+          # --------------------------------------------------------
+          # NightCastGoogleAuth.java
+          # --------------------------------------------------------
+          cat > "${PACKAGE_DIR}/NightCastGoogleAuth.java" << 'EOF'
           package ir.nightcast.app;
 
           import android.app.Activity;
 
-          import androidx.annotation.NonNull;
+          import androidx.core.content.ContextCompat;
           import androidx.credentials.Credential;
           import androidx.credentials.CredentialManager;
           import androidx.credentials.CustomCredential;
@@ -65,13 +239,13 @@ reen": {
           import androidx.credentials.CredentialManagerCallback;
           import androidx.credentials.exceptions.GetCredentialCancellationException;
           import androidx.credentials.exceptions.GetCredentialException;
-          import androidx.credentials.exceptions.GetCredentialCustomException;
           import androidx.credentials.exceptions.NoCredentialException;
 
           import com.getcapacitor.JSObject;
           import com.getcapacitor.Plugin;
           import com.getcapacitor.PluginCall;
           import com.getcapacitor.annotation.CapacitorPlugin;
+          import com.getcapacitor.PluginMethod;
 
           import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption;
           import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
@@ -95,7 +269,7 @@ reen": {
                           CredentialManager.create(getContext());
               }
 
-              @com.getcapacitor.PluginMethod
+              @PluginMethod
               public void signIn(PluginCall call) {
 
                   Activity activity = getActivity();
@@ -145,14 +319,14 @@ reen": {
                           activity,
                           request,
                           null,
-                          activity.getMainExecutor(),
+                          ContextCompat.getMainExecutor(activity),
                           new CredentialManagerCallback<
                                   GetCredentialResponse,
                                   GetCredentialException>() {
 
                               @Override
                               public void onResult(
-                                      @NonNull GetCredentialResponse result
+                                      GetCredentialResponse result
                               ) {
 
                                   signInInProgress = false;
@@ -165,7 +339,7 @@ reen": {
 
                               @Override
                               public void onError(
-                                      @NonNull GetCredentialException error
+                                      GetCredentialException error
                               ) {
 
                                   signInInProgress = false;
@@ -190,18 +364,9 @@ reen": {
                                       return;
                                   }
 
-                                  if (error instanceof
-                                          GetCredentialCustomException) {
-
-                                      call.reject(
-                                              "Google Credential Manager could not complete the sign-in."
-                                      );
-
-                                      return;
-                                  }
-
                                   call.reject(
-                                          "Google sign-in failed."
+                                          "Google sign-in failed: "
+                                                  + error.getMessage()
                                   );
                               }
                           }
@@ -285,18 +450,29 @@ reen": {
               }
           }
           EOF
+
+
+          # --------------------------------------------------------
+          # Add AndroidX Credential Manager + Google Identity
+          # dependencies to the freshly generated Gradle project.
+          # --------------------------------------------------------
           python3 - <<'PY'
           from pathlib import Path
 
           gradle = Path("android/app/build.gradle")
 
-          text = gradle.read_text()
+          if not gradle.exists():
+              raise SystemExit(
+                  "android/app/build.gradle was not found."
+              )
 
-          dependencies = """
-              implementation "androidx.credentials:credentials:1.6.0"
-              implementation "androidx.credentials:credentials-play-services-auth:1.6.0"
-              implementation "com.google.android.libraries.identity.googleid:googleid:1.2.0"
-          """
+          text = gradle.read_text(encoding="utf-8")
+
+          required_dependencies = [
+              'implementation "androidx.credentials:credentials:1.6.0"',
+              'implementation "androidx.credentials:credentials-play-services-auth:1.6.0"',
+              'implementation "com.google.android.libraries.identity.googleid:googleid:1.2.0"',
+          ]
 
           if 'androidx.credentials:credentials:1.6.0' not in text:
               marker = "dependencies {"
@@ -306,75 +482,337 @@ reen": {
                       "Could not find dependencies block in android/app/build.gradle"
                   )
 
+              dependency_block = "\n".join(
+                  f"    {dependency}"
+                  for dependency in required_dependencies
+              )
+
               text = text.replace(
                   marker,
-                  marker + "\n" + dependencies,
+                  marker + "\n" + dependency_block,
                   1
               )
 
-              gradle.write_text(text)
+              gradle.write_text(
+                  text,
+                  encoding="utf-8"
+              )
 
-              print("Google Native Sign-In dependencies added.")
+              print(
+                  "Native Google Sign-In dependencies added."
+              )
+
           else:
-              print("Google Native Sign-In dependencies already exist.")
+              print(
+                  "Native Google Sign-In dependencies already exist."
+              )
           PY
-          
+
+
+          # --------------------------------------------------------
+          # Verify generated Native Android files
+          # --------------------------------------------------------
+          test -f "${PACKAGE_DIR}/MainActivity.java"
+          test -f "${PACKAGE_DIR}/NightCastGoogleAuth.java"
+
+          grep -q \
+            'registerPlugin(NightCastGoogleAuth.class)' \
+            "${PACKAGE_DIR}/MainActivity.java"
+
+          grep -q \
+            'package ir.nightcast.app;' \
+            "${PACKAGE_DIR}/MainActivity.java"
+
+          grep -q \
+            'package ir.nightcast.app;' \
+            "${PACKAGE_DIR}/NightCastGoogleAuth.java"
+
+          grep -q \
+            'androidx.credentials:credentials:1.6.0' \
+            android/app/build.gradle
+
+          grep -q \
+            'androidx.credentials:credentials-play-services-auth:1.6.0' \
+            android/app/build.gradle
+
+          grep -q \
+            'com.google.android.libraries.identity.googleid:googleid:1.2.0' \
+            android/app/build.gradle
+
+          grep -q \
+            '242292157493-km4c11qgkf0lr3e6pv9paspkn95jbf3a.apps.googleusercontent.com' \
+            "${PACKAGE_DIR}/NightCastGoogleAuth.java"
+
+          echo "Native Google Sign-In Android files verified successfully."
+
+
+      # ============================================================
+      # 10. Sync web assets and Capacitor Android project
+      # ============================================================
       - name: Sync web assets
-        run: npx cap sync android
-        
-      - name: Make gradlew executable
-        run: chmod +x android/gradlew
-
-      - name: Build Debug APK
+        shell: bash
         run: |
-          cd android
-          ./gradlew assembleDebug --stacktrace
+          set -e
 
+          npx cap sync android
+
+          test -d android
+          test -f android/gradlew
+          test -f android/app/build.gradle
+
+          echo "Capacitor Android sync completed successfully."
+
+
+      # ============================================================
+      # 11. Verify Android configuration
+      # ============================================================
+      - name: Verify Android configuration
+        shell: bash
+        run: |
+          set -e
+
+          echo "=== Android configuration ==="
+
+          grep -R \
+            'applicationId.*ir.nightcast.app' \
+            android/app \
+            || true
+
+          grep -R \
+            'namespace.*ir.nightcast.app' \
+            android/app \
+            || true
+
+          echo "=== Native Google dependencies ==="
+
+          grep -n \
+            'androidx.credentials\|googleid' \
+            android/app/build.gradle \
+            || true
+
+          echo "=== Native Google Java files ==="
+
+          find \
+            android/app/src/main/java/ir/nightcast/app \
+            -maxdepth 1 \
+            -type f \
+            -name "*.java" \
+            -print \
+            | sort
+
+          test -f \
+            android/app/src/main/java/ir/nightcast/app/MainActivity.java
+
+          test -f \
+            android/app/src/main/java/ir/nightcast/app/NightCastGoogleAuth.java
+
+
+      # ============================================================
+      # 12. Make Gradle executable
+      # ============================================================
+      - name: Make gradlew executable
+        shell: bash
+        run: |
+          set -e
+
+          chmod +x android/gradlew
+
+          test -x android/gradlew
+
+
+      # ============================================================
+      # 13. Gradle dependency resolution / compile check
+      # ============================================================
+      - name: Validate Gradle configuration
+        shell: bash
+        run: |
+          set -e
+
+          cd android
+
+          ./gradlew \
+            :app:dependencies \
+            --stacktrace \
+            --no-daemon
+
+
+      # ============================================================
+      # 14. Build Debug APK
+      # ============================================================
+      - name: Build Debug APK
+        shell: bash
+        run: |
+          set -e
+
+          cd android
+
+          ./gradlew \
+            assembleDebug \
+            --stacktrace \
+            --no-daemon
+
+
+      # ============================================================
+      # 15. Decode Release Keystore
+      # ============================================================
       - name: Decode Keystore
+        shell: bash
         continue-on-error: true
         run: |
+          set -e
+
           if [ -n "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" ]; then
-            echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > nightcast-release.keystore
-            echo "Keystore decoded successfully"
+
+            echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" \
+              | base64 --decode \
+              > nightcast-release.keystore
+
+            echo "Keystore decoded successfully."
+
+            test -s nightcast-release.keystore
+
             ls -lh nightcast-release.keystore
+
           else
-            echo "No keystore secret found"
+
+            echo "No Android keystore secret found."
+
           fi
 
+
+      # ============================================================
+      # 16. Build Release APK
+      # ============================================================
       - name: Build Release APK
+        shell: bash
         run: |
+          set -e
+
           if [ -f "nightcast-release.keystore" ]; then
+
             echo "Building signed Release APK..."
+
             cd android
-            ./gradlew assembleRelease \
+
+            ./gradlew \
+              assembleRelease \
               -Pandroid.injected.signing.store.file="$(pwd)/../nightcast-release.keystore" \
               -Pandroid.injected.signing.store.password="${{ secrets.KEYSTORE_PASSWORD }}" \
               -Pandroid.injected.signing.key.alias="${{ secrets.KEY_ALIAS }}" \
               -Pandroid.injected.signing.key.password="${{ secrets.KEY_PASSWORD }}" \
-              --stacktrace
+              --stacktrace \
+              --no-daemon
+
           else
+
             echo "Building unsigned Release APK..."
+
             cd android
-            ./gradlew assembleRelease --stacktrace
+
+            ./gradlew \
+              assembleRelease \
+              --stacktrace \
+              --no-daemon
+
           fi
 
+
+      # ============================================================
+      # 17. Verify generated APKs
+      # ============================================================
+      - name: Verify built APKs
+        shell: bash
+        run: |
+          set -e
+
+          echo "=== Debug APKs ==="
+
+          find \
+            android/app/build/outputs/apk/debug \
+            -type f \
+            -name "*.apk" \
+            -print
+
+          echo "=== Release APKs ==="
+
+          find \
+            android/app/build/outputs/apk/release \
+            -type f \
+            -name "*.apk" \
+            -print
+
+          test -n "$(
+            find \
+              android/app/build/outputs/apk/debug \
+              -type f \
+              -name "*.apk" \
+              -print -quit
+          )"
+
+          test -n "$(
+            find \
+              android/app/build/outputs/apk/release \
+              -type f \
+              -name "*.apk" \
+              -print -quit
+          )"
+
+          echo "Debug and Release APKs verified successfully."
+
+
+      # ============================================================
+      # 18. Upload Debug APK
+      # ============================================================
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: NightCast-Debug-APK
           path: android/app/build/outputs/apk/debug/*.apk
           retention-days: 30
-          if-no-files-found: warn
+          if-no-files-found: error
 
+
+      # ============================================================
+      # 19. Upload Release APK
+      # ============================================================
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
           name: NightCast-Release-APK
           path: android/app/build/outputs/apk/release/*.apk
           retention-days: 30
-          if-no-files-found: warn
+          if-no-files-found: error
 
+
+      # ============================================================
+      # 20. Final APK report
+      # ============================================================
       - name: List built APKs
+        shell: bash
         run: |
-          echo "=== Built APKs ==="
-          find android/app/build/outputs/apk -name "*.apk" -exec ls -lh {} \; || true
+          echo "========================================"
+          echo "        NightCast APK BUILD RESULT"
+          echo "========================================"
+
+          echo ""
+          echo "=== Debug APK ==="
+
+          find \
+            android/app/build/outputs/apk/debug \
+            -type f \
+            -name "*.apk" \
+            -exec ls -lh {} \;
+
+          echo ""
+          echo "=== Release APK ==="
+
+          find \
+            android/app/build/outputs/apk/release \
+            -type f \
+            -name "*.apk" \
+            -exec ls -lh {} \;
+
+          echo ""
+          echo "========================================"
+          echo "Build completed successfully."
+          echo "========================================"

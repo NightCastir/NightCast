@@ -77,7 +77,7 @@ jobs:
           rm -rf android
           npx cap add android
 
-      - name: Add Native Google Sign-In
+       - name: Add Native Google Sign-In
         run: |
           mkdir -p android/app/src/main/java/ir/nightcast/app
 
@@ -96,6 +96,241 @@ jobs:
                   registerPlugin(NightCastGoogleAuth.class);
 
                   super.onCreate(savedInstanceState);
+              }
+          }
+          EOF
+
+          cat > android/app/src/main/java/ir/nightcast/app/NightCastGoogleAuth.java <<'EOF'
+          package ir.nightcast.app;
+
+          import android.app.Activity;
+
+          import androidx.annotation.NonNull;
+          import androidx.credentials.Credential;
+          import androidx.credentials.CredentialManager;
+          import androidx.credentials.CustomCredential;
+          import androidx.credentials.GetCredentialRequest;
+          import androidx.credentials.GetCredentialResponse;
+          import androidx.credentials.CredentialManagerCallback;
+          import androidx.credentials.exceptions.GetCredentialCancellationException;
+          import androidx.credentials.exceptions.GetCredentialException;
+          import androidx.credentials.exceptions.GetCredentialCustomException;
+          import androidx.credentials.exceptions.NoCredentialException;
+
+          import com.getcapacitor.JSObject;
+          import com.getcapacitor.Plugin;
+          import com.getcapacitor.PluginCall;
+          import com.getcapacitor.annotation.CapacitorPlugin;
+
+          import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption;
+          import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
+          import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException;
+
+          @CapacitorPlugin(name = "NightCastGoogleAuth")
+          public class NightCastGoogleAuth extends Plugin {
+
+              private static final String WEB_CLIENT_ID =
+                      "242292157493-km4c11qgkf0lr3e6pv9paspkn95jbf3a.apps.googleusercontent.com";
+
+              private CredentialManager credentialManager;
+
+              private boolean signInInProgress = false;
+
+              @Override
+              public void load() {
+                  super.load();
+
+                  credentialManager =
+                          CredentialManager.create(getContext());
+              }
+
+              @com.getcapacitor.PluginMethod
+              public void signIn(PluginCall call) {
+
+                  Activity activity = getActivity();
+
+                  if (activity == null) {
+                      call.reject(
+                              "Android Activity is not available."
+                      );
+                      return;
+                  }
+
+                  if (signInInProgress) {
+                      call.reject(
+                              "Google sign-in is already in progress."
+                      );
+                      return;
+                  }
+
+                  signInInProgress = true;
+
+                  final GetSignInWithGoogleOption googleOption;
+
+                  try {
+
+                      googleOption =
+                              new GetSignInWithGoogleOption.Builder(
+                                      WEB_CLIENT_ID
+                              ).build();
+
+                  } catch (Exception e) {
+
+                      signInInProgress = false;
+
+                      call.reject(
+                              "Unable to initialize Google sign-in."
+                      );
+
+                      return;
+                  }
+
+                  final GetCredentialRequest request =
+                          new GetCredentialRequest.Builder()
+                                  .addCredentialOption(googleOption)
+                                  .build();
+
+                  credentialManager.getCredentialAsync(
+                          activity,
+                          request,
+                          null,
+                          activity.getMainExecutor(),
+                          new CredentialManagerCallback<
+                                  GetCredentialResponse,
+                                  GetCredentialException>() {
+
+                              @Override
+                              public void onResult(
+                                      @NonNull GetCredentialResponse result
+                              ) {
+
+                                  signInInProgress = false;
+
+                                  handleCredential(
+                                          call,
+                                          result
+                                  );
+                              }
+
+                              @Override
+                              public void onError(
+                                      @NonNull GetCredentialException error
+                              ) {
+
+                                  signInInProgress = false;
+
+                                  if (error instanceof
+                                          GetCredentialCancellationException) {
+
+                                      call.reject(
+                                              "Google sign-in was cancelled."
+                                      );
+
+                                      return;
+                                  }
+
+                                  if (error instanceof
+                                          NoCredentialException) {
+
+                                      call.reject(
+                                              "No Google credential is available on this device."
+                                      );
+
+                                      return;
+                                  }
+
+                                  if (error instanceof
+                                          GetCredentialCustomException) {
+
+                                      call.reject(
+                                              "Google Credential Manager could not complete the sign-in."
+                                      );
+
+                                      return;
+                                  }
+
+                                  call.reject(
+                                          "Google sign-in failed."
+                                  );
+                              }
+                          }
+                  );
+              }
+
+              private void handleCredential(
+                      PluginCall call,
+                      GetCredentialResponse result
+              ) {
+
+                  try {
+
+                      Credential credential =
+                              result.getCredential();
+
+                      if (!(credential instanceof CustomCredential)) {
+
+                          call.reject(
+                                  "Google did not return a Google ID credential."
+                          );
+
+                          return;
+                      }
+
+                      CustomCredential customCredential =
+                              (CustomCredential) credential;
+
+                      if (!GoogleIdTokenCredential
+                              .TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
+                              .equals(customCredential.getType())) {
+
+                          call.reject(
+                                  "Unsupported Google credential type."
+                          );
+
+                          return;
+                      }
+
+                      GoogleIdTokenCredential googleCredential =
+                              GoogleIdTokenCredential.createFrom(
+                                      customCredential.getData()
+                              );
+
+                      String idToken =
+                              googleCredential.getIdToken();
+
+                      if (idToken == null || idToken.isEmpty()) {
+
+                          call.reject(
+                                  "Google did not return an ID token."
+                          );
+
+                          return;
+                      }
+
+                      JSObject response =
+                              new JSObject();
+
+                      response.put(
+                              "idToken",
+                              idToken
+                      );
+
+                      call.resolve(response);
+
+                  } catch (
+                          GoogleIdTokenParsingException e
+                  ) {
+
+                      call.reject(
+                              "Google ID token could not be parsed."
+                      );
+
+                  } catch (Exception e) {
+
+                      call.reject(
+                              "Google credential processing failed."
+                      );
+                  }
               }
           }
           EOF

@@ -28,7 +28,7 @@ reen": {
           rm -rf android
           npx cap add android
 
-       - name: Add Native Google Sign-In
+      - name: Add Native Google Sign-In
         run: |
           mkdir -p android/app/src/main/java/ir/nightcast/app
 

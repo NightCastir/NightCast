@@ -3,37 +3,93 @@
 
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
 
-<title>NightCast | خوش آمدید</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
 
-<meta name="theme-color" content="#0b1220">
+    <title>NightCast | خوش آمدید</title>
 
-<link rel="stylesheet" href="css/core.css">
-<link rel="stylesheet" href="css/login.css">
+    <meta
+        name="theme-color"
+        content="#0b1220"
+    >
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <meta
+        name="color-scheme"
+        content="dark"
+    >
+
+    <!-- ==========================================
+         NIGHTCAST STYLES
+    =========================================== -->
+
+    <link
+        rel="stylesheet"
+        href="css/core.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/login.css"
+    >
+
+
+    <!-- ==========================================
+         FONT AWESOME
+    =========================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    >
 
 </head>
 
+
 <body>
 
-<!-- Background -->
 
-<div class="background-blur blur1"></div>
-<div class="background-blur blur2"></div>
+<!-- ==========================================
+     BACKGROUND
+=========================================== -->
 
-<!-- Loader -->
+<div
+    class="background-blur blur1"
+    aria-hidden="true">
+</div>
 
-<div id="authLoader" class="auth-loader hidden">
+<div
+    class="background-blur blur2"
+    aria-hidden="true">
+</div>
+
+
+
+<!-- ==========================================
+     AUTH LOADER
+=========================================== -->
+
+<div
+    id="authLoader"
+    class="auth-loader hidden"
+    role="status"
+    aria-live="polite"
+    aria-label="در حال ورود"
+>
 
     <div class="loader-box">
 
-        <div class="loader-circle"></div>
+        <div
+            class="loader-circle"
+            aria-hidden="true">
+        </div>
 
-        <h3>NightCast</h3>
+        <h3>
+            NightCast
+        </h3>
 
         <p id="loaderText">
             در حال اتصال...
@@ -43,122 +99,217 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 
 </div>
 
+
+
+<!-- ==========================================
+     LOGIN PAGE
+=========================================== -->
+
 <main class="login-page">
 
-<section class="login-card">
 
-<!-- Hero -->
+    <section
+        class="login-card"
+        aria-labelledby="loginTitle"
+    >
 
-<div class="hero">
 
-    <div class="brand-icon">
+        <!-- ==================================
+             HERO
+        =================================== -->
 
-        <i class="fa-solid fa-radio"></i>
+        <div class="hero">
 
-    </div>
 
-    <h1>
+            <div
+                class="brand-icon"
+                aria-hidden="true"
+            >
 
-        Night<span>Cast</span>
+                <i class="fa-solid fa-radio"></i>
 
-    </h1>
+            </div>
 
-    <p class="hero-text">
 
-        رادیو NightCast پلی به سوی آیندست 
+            <h1 id="loginTitle">
 
-    </p>
+                Night<span>Cast</span>
 
-</div>
-<!-- Google -->
+            </h1>
 
-<div
-    id="googleLoginButton"
-    class="google-login-container">
-</div>
 
-<!-- Divider -->
+            <p class="hero-text">
 
-<div class="divider">
+                رادیو NightCast پلی به سوی آیندست
 
-<span>
+            </p>
 
-یا
 
-</span>
+        </div>
 
-</div>
 
-<!-- Guest -->
 
-<button
+        <!-- ==================================
+             GOOGLE LOGIN
+             
+             Browser:
+             Google Identity Services
 
-id="guestLogin"
+             Android:
+             Native Credential Manager
+        =================================== -->
 
-class="btn btn-guest"
+        <div
+            id="googleLoginButton"
+            class="google-login-container"
+            aria-label="ورود با Google"
+        >
+        </div>
 
-type="button">
 
-<i class="fa-solid fa-headphones"></i>
 
-<span>
+        <!-- ==================================
+             DIVIDER
+        =================================== -->
 
-ادامه به عنوان مهمان
+        <div
+            class="divider"
+            aria-hidden="true"
+        >
 
-</span>
+            <span>
+                یا
+            </span>
 
-</button>
+        </div>
 
-<!-- Status -->
 
-<div
 
-id="loginMessage"
+        <!-- ==================================
+             GUEST LOGIN
+        =================================== -->
 
-class="login-status">
+        <button
+            id="guestLogin"
+            class="btn btn-guest"
+            type="button"
+        >
 
-</div>
-<!-- Fallback Redirect -->
+            <i
+                class="fa-solid fa-headphones"
+                aria-hidden="true"
+            ></i>
 
-<div
-    id="redirectHelp"
-    class="redirect-help hidden">
+            <span>
+                ادامه به عنوان مهمان
+            </span>
 
-    <p>
-        اگر صفحه اصلی به‌صورت خودکار باز نشد:
-    </p>
+        </button>
 
-    <button
-        type="button"
-        id="goToIndexButton"
-        class="btn btn-redirect">
 
-        <i class="fa-solid fa-house"></i>
 
-        ورود به صفحه اصلی
+        <!-- ==================================
+             LOGIN STATUS
+        =================================== -->
 
-    </button>
+        <div
+            id="loginMessage"
+            class="login-status"
+            role="alert"
+            aria-live="polite"
+        >
+        </div>
 
-</div>
 
-<footer>
 
-<p>
+        <!-- ==================================
+             FALLBACK REDIRECT
+        =================================== -->
 
-با ادامه، قوانین استفاده و سیاست حفظ حریم خصوصی NightCast را می‌پذیرید.
+        <div
+            id="redirectHelp"
+            class="redirect-help hidden"
+        >
 
-</p>
+            <p>
+                اگر صفحه اصلی به‌صورت خودکار باز نشد:
+            </p>
 
-</footer>
 
-</section>
+            <button
+                type="button"
+                id="goToIndexButton"
+                class="btn btn-redirect"
+            >
+
+                <i
+                    class="fa-solid fa-house"
+                    aria-hidden="true"
+                ></i>
+
+                ورود به صفحه اصلی
+
+            </button>
+
+        </div>
+
+
+
+        <!-- ==================================
+             FOOTER
+        =================================== -->
+
+        <footer>
+
+            <p>
+
+                با ادامه، قوانین استفاده و سیاست حفظ حریم خصوصی NightCast را می‌پذیرید.
+
+            </p>
+
+        </footer>
+
+
+    </section>
+
 
 </main>
 
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 
-<script src="js/login.js"></script>
+
+<!-- ==========================================
+     GOOGLE IDENTITY SERVICES
+     
+     IMPORTANT:
+     login.js decides whether Google Web
+     authentication is used.
+
+     Browser:
+     GIS is used.
+
+     Android:
+     login.js uses native Google
+     Credential Manager instead.
+=========================================== -->
+
+<script
+    src="https://accounts.google.com/gsi/client"
+    async
+    defer
+></script>
+
+
+
+<!-- ==========================================
+     NIGHTCAST LOGIN CONTROLLER
+=========================================== -->
+
+<script
+    src="js/login.js"
+></script>
+
 
 </body>
 
 </html>
+

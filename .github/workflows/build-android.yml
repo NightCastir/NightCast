@@ -77,9 +77,32 @@ jobs:
           rm -rf android
           npx cap add android
 
+      - name: Add Native Google Sign-In
+        run: |
+          mkdir -p android/app/src/main/java/ir/nightcast/app
+
+          cat > android/app/src/main/java/ir/nightcast/app/MainActivity.java <<'EOF'
+          package ir.nightcast.app;
+
+          import android.os.Bundle;
+
+          import com.getcapacitor.BridgeActivity;
+
+          public class MainActivity extends BridgeActivity {
+
+              @Override
+              public void onCreate(Bundle savedInstanceState) {
+
+                  registerPlugin(NightCastGoogleAuth.class);
+
+                  super.onCreate(savedInstanceState);
+              }
+          }
+          EOF
+
       - name: Sync web assets
         run: npx cap sync android
-
+        
       - name: Make gradlew executable
         run: chmod +x android/gradlew
 

@@ -44,6 +44,38 @@ jobs:
             npm install
           fi
 
+      # ============================================================
+      # 4. Android SDK
+      # ============================================================
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          cmdline-tools-version: '11076708'
+          accept-android-sdk-licenses: true
+          packages: ''
+
+
+      # ============================================================
+      # 5. Install Android SDK packages
+      # ============================================================
+      - name: Install Android SDK packages
+        run: |
+          set -e
+
+          echo "=== Installing Android SDK packages ==="
+
+          yes | sdkmanager --licenses >/dev/null || true
+
+          sdkmanager \
+            "platform-tools" \
+            "platforms;android-34" \
+            "build-tools;34.0.0" \
+            "ndk;27.0.11718014"
+
+          echo ""
+          echo "=== Installed Android SDK packages ==="
+
+          sdkmanager --list_installed
 
       # ============================================================
       # 3. Java 17
@@ -55,53 +87,8 @@ jobs:
           java-version: '17'
 
 
-      # ============================================================
-      # 4. Android SDK
-      # ============================================================
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v4
-        with:
-          cmdline-tools-version: '11076708'
-          accept-android-sdk-licenses: true
-          packages: |
-            platform-tools
-            platforms;android-34
-            build-tools;34.0.0
-            ndk;27.0.11718014
 
-
-      # ============================================================
-      # 5. Verify Android SDK
-      # ============================================================
-      - name: Verify Android SDK
-        run: |
-          set -e
-
-          echo "=== Android SDK ==="
-          echo "ANDROID_HOME=$ANDROID_HOME"
-          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
-
-          echo ""
-          echo "=== Java ==="
-          java -version
-
-          echo ""
-          echo "=== Node ==="
-          node --version
-
-          echo ""
-          echo "=== npm ==="
-          npm --version
-
-          echo ""
-          echo "=== sdkmanager ==="
-          sdkmanager --version
-
-          echo ""
-          echo "=== Installed SDK packages ==="
-          sdkmanager --list_installed | head -n 120
-
-
+      
       # ============================================================
       # 6. Create clean Capacitor configuration
       # ============================================================

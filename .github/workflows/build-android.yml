@@ -49,11 +49,13 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
-          api-level: 34
-          ndk: 27.0.11718014
-          build-tools: 34.0.0
-          cmdline-tools-version: 11.0
-          cache: true
+          cmdline-tools-version: 12.0
+          accept-android-sdk-licenses: true
+          packages: |
+            platforms;android-34
+            platform-tools
+            build-tools;34.0.0
+            ndk;27.0.11718014
       # ============================================================
       # 5. Install npm dependencies
       # ============================================================

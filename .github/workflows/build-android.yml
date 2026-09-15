@@ -29,10 +29,21 @@ jobs:
       # ============================================================
       - name: Setup Node.js
         uses: actions/setup-node@v4
-        with: node-version: '22'
+        with:
+          node-version: '22'
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install npm dependencies
+        run: |
+          set -e
+
+          if [ -f package-lock.json ]; then
+            echo "package-lock.json found. Using npm ci."
+            npm ci
+          else
+            echo "No package-lock.json found. Using npm install."
+            npm install
+          fi
+
 
       # ============================================================
       # 3. Java 17
@@ -92,21 +103,7 @@ jobs:
 
 
       # ============================================================
-      # 6. Install npm dependencies
-      # ============================================================
-      - name: Install dependencies
-        run: |
-          set -e
-
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
-
-
-      # ============================================================
-      # 7. Create clean Capacitor configuration
+      # 6. Create clean Capacitor configuration
       # ============================================================
       - name: Create clean capacitor.config.json
         run: |
@@ -145,7 +142,7 @@ jobs:
 
 
       # ============================================================
-      # 8. Prepare www
+      # 7. Prepare www
       # ============================================================
       - name: Prepare www folder
         run: |
@@ -157,10 +154,7 @@ jobs:
           echo "=== Preparing NightCast web assets ==="
 
           # ----------------------------------------------------------
-          # IMPORTANT:
-          # users/index.html is the actual NightCast user interface.
-          # It must become www/index.html because Capacitor loads
-          # www/index.html as the application entry point.
+          # NightCast user interface
           # ----------------------------------------------------------
 
           if [ ! -f "users/index.html" ]; then
@@ -243,7 +237,7 @@ jobs:
 
 
       # ============================================================
-      # 9. Create clean Android platform
+      # 8. Create Android platform
       # ============================================================
       - name: Add Android platform
         run: |
@@ -255,7 +249,7 @@ jobs:
 
 
       # ============================================================
-      # 10. Set NightCast Launcher Icon
+      # 9. Set NightCast Launcher Icon
       # ============================================================
       - name: Set NightCast Launcher Icon
         run: |
@@ -326,11 +320,6 @@ jobs:
                   "ic_launcher reference not found in AndroidManifest.xml"
               )
 
-          manifest.write_text(
-              text,
-              encoding="utf-8"
-          )
-
           print("Android launcher icon references verified.")
           PY
 
@@ -343,7 +332,7 @@ jobs:
 
 
       # ============================================================
-      # 11. Add Native Google Sign-In
+      # 10. Add Native Google Sign-In
       # ============================================================
       - name: Add Native Google Sign-In
         run: |
@@ -672,7 +661,7 @@ jobs:
 
 
       # ============================================================
-      # 12. Add Google Credential Manager dependencies
+      # 11. Add Google Credential Manager dependencies
       # ============================================================
       - name: Add Google Credential Manager dependencies
         run: |
@@ -709,7 +698,6 @@ jobs:
           ]
 
           if missing:
-
               insertion = marker + "\n"
 
               for dep in missing:
@@ -741,7 +729,7 @@ jobs:
 
 
       # ============================================================
-      # 13. Verify Native Google Sign-In
+      # 12. Verify Native Google Sign-In
       # ============================================================
       - name: Verify native Google Sign-In configuration
         run: |
@@ -806,7 +794,7 @@ jobs:
 
 
       # ============================================================
-      # 14. Sync Capacitor
+      # 13. Sync Capacitor
       # ============================================================
       - name: Sync Capacitor
         run: |
@@ -816,7 +804,7 @@ jobs:
 
 
       # ============================================================
-      # 15. Verify Android configuration
+      # 14. Verify Android configuration
       # ============================================================
       - name: Verify Android configuration
         run: |
@@ -861,7 +849,7 @@ jobs:
 
 
       # ============================================================
-      # 16. Make Gradle executable
+      # 15. Make Gradle executable
       # ============================================================
       - name: Make gradlew executable
         run: |
@@ -871,7 +859,7 @@ jobs:
 
 
       # ============================================================
-      # 17. Validate Gradle configuration
+      # 16. Validate Gradle configuration
       # ============================================================
       - name: Validate Gradle configuration
         run: |
@@ -886,7 +874,7 @@ jobs:
 
 
       # ============================================================
-      # 18. Build Debug APK
+      # 17. Build Debug APK
       # ============================================================
       - name: Build Debug APK
         run: |
@@ -901,7 +889,7 @@ jobs:
 
 
       # ============================================================
-      # 19. Decode release keystore
+      # 18. Decode release keystore
       # ============================================================
       - name: Decode Keystore
         run: |
@@ -933,7 +921,7 @@ jobs:
 
 
       # ============================================================
-      # 20. Build Release APK
+      # 19. Build Release APK
       # ============================================================
       - name: Build Release APK
         run: |
@@ -969,7 +957,7 @@ jobs:
 
 
       # ============================================================
-      # 21. Verify APK output
+      # 20. Verify APK output
       # ============================================================
       - name: Verify APKs
         run: |
@@ -999,7 +987,7 @@ jobs:
 
 
       # ============================================================
-      # 22. Upload Debug APK
+      # 21. Upload Debug APK
       # ============================================================
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
@@ -1011,7 +999,7 @@ jobs:
 
 
       # ============================================================
-      # 23. Upload Release APK
+      # 22. Upload Release APK
       # ============================================================
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
@@ -1023,7 +1011,7 @@ jobs:
 
 
       # ============================================================
-      # 24. Final result
+      # 23. Final result
       # ============================================================
       - name: List built APKs
         run: |

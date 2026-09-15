@@ -1543,7 +1543,872 @@
                             width: 100%;
                         }
                 }
+    
+                /* =========================================================
+                   NIGHTCAST ABOUT / CONTACT — PREMIUM RADIO EXPERIENCE
+                ========================================================= */
+
+                .nc-about-shell,
+                .nc-contact-shell {
+                    position: relative;
+                    overflow: hidden;
+                }
+
+                .nc-about-hero {
+                    min-height: 520px;
+                    display: grid;
+                    grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr);
+                    align-items: center;
+                    gap: 44px;
+                    padding: clamp(30px, 6vw, 76px);
+                    border: 1px solid rgba(255,255,255,.075);
+                    border-radius: 30px;
+                    background:
+                        radial-gradient(circle at 76% 22%, rgba(5,157,249,.16), transparent 28%),
+                        radial-gradient(circle at 16% 88%, rgba(255,191,70,.08), transparent 26%),
+                        linear-gradient(135deg, rgba(10,24,43,.98), rgba(6,13,25,.98));
+                    box-shadow: 0 28px 90px rgba(0,0,0,.28);
+                }
+
+                .nc-about-hero::before {
+                    content: "";
+                    position: absolute;
+                    inset: 0;
+                    pointer-events: none;
+                    opacity: .22;
+                    background-image:
+                        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+                    background-size: 42px 42px;
+                    mask-image: linear-gradient(to bottom right, #000, transparent 75%);
+                }
+
+                .nc-about-kicker,
+                .nc-section-kicker {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    color: var(--nc-gold);
+                    font-size: .72rem;
+                    font-weight: 800;
+                    letter-spacing: .08em;
+                    text-transform: uppercase;
+                }
+
+                .nc-about-kicker::before,
+                .nc-section-kicker::before {
+                    content: "";
+                    width: 7px;
+                    height: 7px;
+                    border-radius: 50%;
+                    background: var(--nc-gold);
+                    box-shadow: 0 0 14px rgba(255,191,70,.6);
+                }
+
+                .nc-about-title {
+                    margin: 16px 0 14px;
+                    font-size: clamp(2.7rem, 6vw, 5.5rem);
+                    line-height: .98;
+                    letter-spacing: -.035em;
+                    color: #fff;
+                }
+
+                .nc-about-title span {
+                    color: var(--nc-gold);
+                }
+
+                .nc-about-lead {
+                    max-width: 680px;
+                    margin: 0;
+                    color: #cbd7e5;
+                    font-size: clamp(1rem, 1.6vw, 1.18rem);
+                    line-height: 2;
+                }
+
+                .nc-about-actions {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                    margin-top: 28px;
+                }
+
+                .nc-onair {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 9px;
+                    padding: 8px 12px;
+                    border: 1px solid rgba(255,191,70,.22);
+                    border-radius: 999px;
+                    background: rgba(255,191,70,.055);
+                    color: #fff;
+                    font-size: .72rem;
+                    font-weight: 800;
+                }
+
+                .nc-onair-dot {
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: #ff4e65;
+                    box-shadow: 0 0 0 5px rgba(255,78,101,.08), 0 0 18px rgba(255,78,101,.55);
+                    animation: nc-onair-pulse 1.8s ease-in-out infinite;
+                }
+
+                @keyframes nc-onair-pulse {
+                    0%,100% { opacity: .7; transform: scale(.85); }
+                    50% { opacity: 1; transform: scale(1); }
+                }
+
+                .nc-studio-visual {
+                    position: relative;
+                    min-height: 360px;
+                    display: grid;
+                    place-items: center;
+                    border: 1px solid rgba(255,255,255,.075);
+                    border-radius: 26px;
+                    background:
+                        radial-gradient(circle at center, rgba(5,157,249,.13), transparent 45%),
+                        rgba(3,11,22,.62);
+                    overflow: hidden;
+                }
+
+                .nc-studio-grid {
+                    position: absolute;
+                    inset: 0;
+                    background:
+                        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+                    background-size: 28px 28px;
+                    opacity: .42;
+                }
+
+                .nc-studio-center {
+                    position: relative;
+                    z-index: 2;
+                    width: 210px;
+                    height: 210px;
+                    display: grid;
+                    place-items: center;
+                    border-radius: 50%;
+                    border: 1px solid rgba(255,255,255,.1);
+                    background: radial-gradient(circle, rgba(15,38,66,.96), rgba(4,12,23,.96));
+                    box-shadow: 0 0 0 18px rgba(5,157,249,.025), 0 0 70px rgba(5,157,249,.12);
+                }
+
+                .nc-studio-center i {
+                    font-size: 4.2rem;
+                    color: var(--nc-gold);
+                    filter: drop-shadow(0 0 22px rgba(255,191,70,.22));
+                }
+
+                .nc-wave {
+                    position: absolute;
+                    z-index: 3;
+                    width: 78%;
+                    height: 74px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 4px;
+                    direction: ltr;
+                }
+
+                .nc-wave span {
+                    width: 3px;
+                    height: 20%;
+                    border-radius: 99px;
+                    background: linear-gradient(to top, var(--nc-primary-dark), var(--nc-gold));
+                    opacity: .85;
+                    animation: nc-wave 1.15s ease-in-out infinite alternate;
+                }
+
+                .nc-wave span:nth-child(2n) { animation-delay: -.28s; }
+                .nc-wave span:nth-child(3n) { animation-delay: -.56s; }
+                .nc-wave span:nth-child(4n) { animation-delay: -.8s; }
+
+                @keyframes nc-wave {
+                    from { height: 18%; }
+                    to { height: 82%; }
+                }
+
+                .nc-frequency {
+                    position: absolute;
+                    inset-inline-start: 18px;
+                    bottom: 16px;
+                    color: rgba(255,255,255,.42);
+                    font: 600 .65rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+                    letter-spacing: .08em;
+                }
+
+                .nc-brand-story {
+                    display: grid;
+                    grid-template-columns: .8fr 1.2fr;
+                    gap: 42px;
+                    align-items: start;
+                    padding: 80px 10px 20px;
+                }
+
+                .nc-brand-story h2,
+                .nc-editorial h2,
+                .nc-process h2,
+                .nc-behind h2,
+                .nc-future h2,
+                .nc-contact-head h2 {
+                    margin: 10px 0 0;
+                    color: #fff;
+                    font-size: clamp(1.7rem, 3vw, 2.65rem);
+                    line-height: 1.25;
+                    letter-spacing: -.02em;
+                }
+
+                .nc-brand-story p,
+                .nc-editorial p,
+                .nc-future p {
+                    margin: 0;
+                    color: var(--nc-text-muted);
+                    line-height: 2.05;
+                    font-size: 1rem;
+                }
+
+                .nc-brand-quote {
+                    position: relative;
+                    padding: 24px 26px;
+                    border-inline-start: 2px solid var(--nc-gold);
+                    background: linear-gradient(90deg, rgba(255,191,70,.045), transparent);
+                    border-radius: 0 18px 18px 0;
+                }
+
+                .nc-mission {
+                    padding: 70px 0 20px;
+                }
+
+                .nc-section-head {
+                    max-width: 720px;
+                    margin-bottom: 28px;
+                }
+
+                .nc-section-head p {
+                    margin: 12px 0 0;
+                    color: var(--nc-text-muted);
+                    line-height: 1.9;
+                }
+
+                .nc-mission-grid {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 14px;
+                }
+
+                .nc-mission-card,
+                .nc-contact-card,
+                .nc-social-card {
+                    border: 1px solid rgba(255,255,255,.07);
+                    border-radius: 20px;
+                    background: rgba(255,255,255,.025);
+                    transition: transform .25s ease, border-color .25s ease, background .25s ease;
+                }
+
+                .nc-mission-card {
+                    padding: 26px;
+                    min-height: 190px;
+                }
+
+                .nc-mission-card:hover,
+                .nc-contact-card:hover,
+                .nc-social-card:hover {
+                    transform: translateY(-4px);
+                    border-color: rgba(5,157,249,.28);
+                    background: rgba(5,157,249,.045);
+                }
+
+                .nc-mission-icon {
+                    width: 46px;
+                    height: 46px;
+                    display: grid;
+                    place-items: center;
+                    border-radius: 14px;
+                    color: var(--nc-gold);
+                    background: rgba(255,191,70,.07);
+                    border: 1px solid rgba(255,191,70,.12);
+                    font-size: 1.05rem;
+                }
+
+                .nc-mission-card h3 {
+                    margin: 20px 0 7px;
+                    color: #fff;
+                    font-size: 1.05rem;
+                }
+
+                .nc-mission-card p {
+                    margin: 0;
+                    color: var(--nc-text-muted);
+                    line-height: 1.9;
+                    font-size: .88rem;
+                }
+
+                .nc-editorial {
+                    margin-top: 70px;
+                    padding: clamp(30px, 6vw, 68px);
+                    border-radius: 26px;
+                    background: linear-gradient(120deg, rgba(5,157,249,.07), rgba(255,191,70,.025));
+                    border: 1px solid rgba(255,255,255,.065);
+                }
+
+                .nc-editorial-layout {
+                    display: grid;
+                    grid-template-columns: .65fr 1.35fr;
+                    gap: 50px;
+                    align-items: center;
+                }
+
+                .nc-editorial-big {
+                    color: #fff;
+                    font-size: clamp(2rem, 5vw, 4.4rem);
+                    font-weight: 900;
+                    line-height: 1;
+                    letter-spacing: -.04em;
+                }
+
+                .nc-editorial-big span {
+                    display: block;
+                    margin-top: 8px;
+                    color: var(--nc-gold);
+                }
+
+                .nc-process {
+                    padding: 78px 0 10px;
+                }
+
+                .nc-timeline {
+                    display: grid;
+                    grid-template-columns: repeat(6, 1fr);
+                    gap: 0;
+                    margin-top: 36px;
+                    position: relative;
+                }
+
+                .nc-timeline::before {
+                    content: "";
+                    position: absolute;
+                    top: 31px;
+                    inset-inline: 5%;
+                    height: 1px;
+                    background: linear-gradient(90deg, transparent, rgba(5,157,249,.45), rgba(255,191,70,.45), transparent);
+                }
+
+                .nc-step {
+                    position: relative;
+                    z-index: 1;
+                    text-align: center;
+                    padding: 0 8px;
+                }
+
+                .nc-step-no {
+                    width: 62px;
+                    height: 62px;
+                    margin: 0 auto 17px;
+                    display: grid;
+                    place-items: center;
+                    border-radius: 50%;
+                    background: #081727;
+                    border: 1px solid rgba(5,157,249,.28);
+                    color: var(--nc-gold);
+                    font: 800 .78rem/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+                    box-shadow: 0 0 0 8px var(--nc-bg-dark);
+                }
+
+                .nc-step strong {
+                    display: block;
+                    color: #fff;
+                    font-size: .9rem;
+                }
+
+                .nc-step span {
+                    display: block;
+                    margin-top: 7px;
+                    color: var(--nc-text-muted);
+                    font-size: .74rem;
+                    line-height: 1.7;
+                }
+
+                .nc-behind {
+                    margin-top: 76px;
+                    min-height: 300px;
+                    padding: clamp(30px, 6vw, 64px);
+                    display: flex;
+                    align-items: center;
+                    border-radius: 28px;
+                    border: 1px solid rgba(255,255,255,.07);
+                    background:
+                        radial-gradient(circle at 78% 50%, rgba(5,157,249,.13), transparent 30%),
+                        radial-gradient(circle at 20% 30%, rgba(255,191,70,.08), transparent 24%),
+                        #071322;
+                }
+
+                .nc-behind-copy {
+                    max-width: 650px;
+                }
+
+                .nc-behind-copy p {
+                    margin: 13px 0 0;
+                    color: var(--nc-text-muted);
+                    line-height: 2;
+                }
+
+                .nc-stats {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 12px;
+                    margin-top: 30px;
+                }
+
+                .nc-stat {
+                    padding: 18px;
+                    border: 1px solid rgba(255,255,255,.065);
+                    border-radius: 16px;
+                    background: rgba(0,0,0,.13);
+                }
+
+                .nc-stat b {
+                    display: block;
+                    color: #fff;
+                    font-size: 1.5rem;
+                }
+
+                .nc-stat span {
+                    display: block;
+                    margin-top: 5px;
+                    color: var(--nc-text-muted);
+                    font-size: .75rem;
+                }
+
+                .nc-future {
+                    margin-top: 76px;
+                    padding: 78px 10px 20px;
+                    text-align: center;
+                }
+
+                .nc-future p {
+                    max-width: 800px;
+                    margin: 16px auto 0;
+                    font-size: 1.02rem;
+                }
+
+                .nc-onair-panel {
+                    margin-top: 36px;
+                    padding: 28px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 20px;
+                    border: 1px solid rgba(255,191,70,.14);
+                    border-radius: 22px;
+                    background: linear-gradient(90deg, rgba(255,191,70,.055), rgba(5,157,249,.055));
+                }
+
+                .nc-onair-copy strong {
+                    display: block;
+                    color: #fff;
+                    font-size: 1.05rem;
+                }
+
+                .nc-onair-copy span {
+                    display: block;
+                    margin-top: 5px;
+                    color: var(--nc-text-muted);
+                    font-size: .8rem;
+                }
+
+                .nc-social-section {
+                    margin-top: 58px;
+                    padding: 30px 0 10px;
+                }
+
+                .nc-social-grid {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 12px;
+                    margin-top: 22px;
+                }
+
+                .nc-social-card {
+                    display: flex;
+                    align-items: center;
+                    gap: 13px;
+                    padding: 16px;
+                    color: inherit;
+                }
+
+                .nc-social-icon {
+                    flex: 0 0 44px;
+                    width: 44px;
+                    height: 44px;
+                    display: grid;
+                    place-items: center;
+                    border-radius: 13px;
+                    background: rgba(5,157,249,.08);
+                    color: var(--nc-primary);
+                }
+
+                .nc-social-card strong {
+                    display: block;
+                    color: #fff;
+                    font-size: .9rem;
+                }
+
+                .nc-social-card span {
+                    display: block;
+                    margin-top: 3px;
+                    color: var(--nc-text-muted);
+                    font-size: .7rem;
+                }
+
+                .nc-social-arrow {
+                    margin-inline-start: auto;
+                    color: rgba(255,255,255,.32);
+                }
+
+                .nc-contact-section {
+                    padding-top: 34px;
+                }
+
+                .nc-contact-head {
+                    margin-bottom: 28px;
+                }
+
+                .nc-contact-head p {
+                    margin: 12px 0 0;
+                    color: var(--nc-text-muted);
+                }
+
+                .nc-contact-layout {
+                    display: grid;
+                    grid-template-columns: .78fr 1.22fr;
+                    gap: 18px;
+                    align-items: stretch;
+                }
+
+                .nc-contact-cards {
+                    display: grid;
+                    gap: 12px;
+                    align-content: start;
+                }
+
+                .nc-contact-card {
+                    display: flex;
+                    align-items: center;
+                    gap: 14px;
+                    padding: 18px;
+                }
+
+                .nc-contact-card-icon {
+                    flex: 0 0 46px;
+                    width: 46px;
+                    height: 46px;
+                    display: grid;
+                    place-items: center;
+                    border-radius: 14px;
+                    color: var(--nc-gold);
+                    background: rgba(255,191,70,.07);
+                    border: 1px solid rgba(255,191,70,.12);
+                }
+
+                .nc-contact-card small {
+                    display: block;
+                    color: var(--nc-text-muted);
+                    font-size: .7rem;
+                }
+
+                .nc-contact-card strong,
+                .nc-contact-card a {
+                    display: block;
+                    margin-top: 5px;
+                    color: #fff;
+                    font-size: .9rem;
+                    line-height: 1.8;
+                }
+
+                .nc-contact-card a:hover {
+                    color: var(--nc-gold);
+                }
+
+                .nc-map-wrap {
+                    position: relative;
+                    min-height: 480px;
+                    overflow: hidden;
+                    border-radius: 24px;
+                    border: 1px solid rgba(255,255,255,.08);
+                    background: #081321;
+                    box-shadow: 0 25px 70px rgba(0,0,0,.22);
+                }
+
+                #ncNightcastMap {
+                    width: 100%;
+                    height: 100%;
+                    min-height: 480px;
+                    direction: ltr;
+                }
+
+                .nc-map-overlay {
+                    position: absolute;
+                    z-index: 500;
+                    inset-inline-start: 14px;
+                    bottom: 14px;
+                }
+
+                .nc-map-btn {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 11px 15px;
+                    border: 1px solid rgba(255,255,255,.12);
+                    border-radius: 12px;
+                    background: rgba(6,15,27,.92);
+                    color: #fff;
+                    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+                    backdrop-filter: blur(10px);
+                    transition: .2s;
+                }
+
+                .nc-map-btn:hover {
+                    color: var(--nc-gold);
+                    border-color: rgba(255,191,70,.3);
+                    transform: translateY(-2px);
+                }
+
+                .nc-map-marker {
+                    width: 42px;
+                    height: 42px;
+                    display: grid;
+                    place-items: center;
+                    border-radius: 50% 50% 50% 8px;
+                    transform: rotate(-45deg);
+                    background: var(--nc-gold);
+                    border: 3px solid #071322;
+                    box-shadow: 0 7px 22px rgba(0,0,0,.38), 0 0 24px rgba(255,191,70,.22);
+                }
+
+                .nc-map-marker i {
+                    transform: rotate(45deg);
+                    color: #071322;
+                    font-size: 1rem;
+                }
+
+                .leaflet-container {
+                    font-family: inherit;
+                    background: #071322;
+                }
+
+                .leaflet-control-zoom a {
+                    background: #081727 !important;
+                    color: #fff !important;
+                    border-color: rgba(255,255,255,.09) !important;
+                }
+
+                .nc-map-popup {
+                    direction: rtl;
+                    text-align: right;
+                    min-width: 220px;
+                    color: #102033;
+                }
+
+                .nc-map-popup strong {
+                    display: block;
+                    margin-bottom: 5px;
+                }
+
+                .nc-map-popup span {
+                    font-size: .78rem;
+                    line-height: 1.7;
+                }
+
+                .nc-map-popup a {
+                    display: inline-block;
+                    margin-top: 9px;
+                    color: #096fb0;
+                    font-weight: 800;
+                }
+
+                @media (prefers-reduced-motion: reduce) {
+                    animation-duration: .01ms !important;
+                    animation-iteration-count: 1 !important;
+                    scroll-behavior: auto !important;
+                    transition-duration: .01ms !important;
+                }
+
+                @media(max-width:800px) {
+                    .nc-about-hero {
+                        min-height: auto;
+                        grid-template-columns: 1fr;
+                        padding: 30px 22px;
+                        border-radius: 22px;
+                    }
+
+                    .nc-studio-visual {
+                        min-height: 260px;
+                    }
+
+                    .nc-studio-center {
+                        width: 155px;
+                        height: 155px;
+                    }
+
+                    .nc-studio-center i {
+                        font-size: 3.2rem;
+                    }
+
+                    .nc-brand-story,
+                    .nc-editorial-layout,
+                    .nc-contact-layout {
+                        grid-template-columns: 1fr;
+                    }
+
+                    .nc-brand-story {
+                        padding-top: 58px;
+                        gap: 22px;
+                    }
+
+                    .nc-mission-grid,
+                    .nc-social-grid,
+                    .nc-stats {
+                        grid-template-columns: 1fr;
+                    }
+
+                    .nc-timeline {
+                        grid-template-columns: 1fr;
+                        gap: 15px;
+                    }
+
+                    .nc-timeline::before {
+                        top: 0;
+                        bottom: 0;
+                        inset-inline-start: 31px;
+                        inset-inline-end: auto;
+                        width: 1px;
+                        height: auto;
+                        background: linear-gradient(180deg, transparent, rgba(5,157,249,.45), rgba(255,191,70,.45), transparent);
+                    }
+
+                    .nc-step {
+                        display: grid;
+                        grid-template-columns: 62px 1fr;
+                        gap: 14px;
+                        align-items: center;
+                        text-align: start;
+                    }
+
+                    .nc-step-no {
+                        margin: 0;
+                        box-shadow: 0 0 0 7px var(--nc-bg-dark);
+                    }
+
+                    .nc-step span {
+                        margin-top: 4px;
+                    }
+
+                    .nc-onair-panel {
+                        align-items: stretch;
+                        flex-direction: column;
+                    }
+
+                    .nc-map-wrap,
+                    #ncNightcastMap {
+                        min-height: 390px;
+                    }
+
+                    .nc-map-overlay {
+                        inset-inline: 12px;
+                    }
+
+                    .nc-map-btn {
+                        width: 100%;
+                        justify-content: center;
+                    }
+                }
+
+                @media(max-width:480px) {
+                    .nc-about-title {
+                        font-size: 2.7rem;
+                    }
+
+                    .nc-about-lead {
+                        font-size: .92rem;
+                    }
+
+                    .nc-editorial {
+                        padding: 28px 20px;
+                    }
+
+                    .nc-future {
+                        padding-top: 58px;
+                    }
+                }
+
+                @media (prefers-reduced-motion: reduce) {
+                    .nc-about-hero *,
+                    .nc-studio-visual *,
+                    .nc-mission-card,
+                    .nc-contact-card,
+                    .nc-social-card {
+                        animation: none !important;
+                        transition: none !important;
+                    }
+                }
+
+    
+                @media(max-width:800px) {
+                    body.player-open .nc-contact-section {
+                        padding-bottom: 110px;
+                    }
+                }
+
     </style>
+
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          crossorigin="">
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            crossorigin=""></script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "NightCast",
+      "alternateName": "رادیو NightCast",
+      "url": "https://nightcast.ir/users/index.html",
+      "telephone": "05136624919",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "مشهد",
+        "streetAddress": "بلوار شاهد، شاهد ۲۵، پلاک ۲۱",
+        "addressCountry": "IR"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "05136624919",
+        "contactType": "customer service",
+        "availableLanguage": ["fa"]
+      },
+      "location": {
+        "@type": "Place",
+        "name": "رادیو NightCast",
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 36.350303,
+          "longitude": 59.503020
+        },
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "مشهد",
+          "streetAddress": "بلوار شاهد، شاهد ۲۵، پلاک ۲۱",
+          "addressCountry": "IR"
+        }
+      }
+    }
+    </script>
+
 </head>
 
 
@@ -1584,6 +2449,11 @@
                 <a class="nav-link"
                    href="#about">
                     درباره NightCast
+                </a>
+
+                <a class="nav-link"
+                   href="#contact">
+                    تماس با ما
                 </a>
 
             </div>
@@ -1854,31 +2724,313 @@
 
         </section>
 
-
         <!-- =========================================================
-             ABOUT
+             ABOUT NIGHTCAST
         ========================================================= -->
 
-        <section class="section"
-                 id="about">
+        <section class="section nc-about-shell"
+                 id="about"
+                 aria-labelledby="ncAboutTitle">
 
-            <div class="empty">
+            <div class="nc-about-hero">
 
-                <i class="fa-solid fa-radio"></i>
+                <div>
+                    <span class="nc-about-kicker">NIGHTCAST DIGITAL RADIO</span>
 
-                <h3>
-                    NightCast؛ پلی به سوی آینده
-                </h3>
+                    <div style="margin-top:14px;">
+                        <span class="nc-onair">
+                            <span class="nc-onair-dot" aria-hidden="true"></span>
+                            ON AIR
+                        </span>
+                    </div>
 
+                    <h1 class="nc-about-title" id="ncAboutTitle">
+                        Night<span>Cast</span>
+                    </h1>
+
+                    <p class="nc-about-lead">
+                        رادیویی برای شنیدن، فکر کردن و کشف کردن؛ جایی که کتاب، دانش،
+                        روایت و صدا به تجربه‌ای شنیدنی، روشن و ماندگار تبدیل می‌شوند.
+                    </p>
+
+                    <div class="nc-about-actions">
+                        <button type="button"
+                                class="btn btn-primary"
+                                id="ncAboutLatestBtn">
+                            <i class="fa-solid fa-play"></i>
+                            شنیدن آخرین اپیزود
+                        </button>
+
+                        <a class="btn btn-secondary" href="#contact">
+                            <i class="fa-solid fa-satellite-dish"></i>
+                            ارتباط با NightCast
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nc-studio-visual"
+                     aria-label="نمایش بصری استودیوی صوتی NightCast">
+                    <div class="nc-studio-grid" aria-hidden="true"></div>
+
+                    <div class="nc-studio-center" aria-hidden="true">
+                        <i class="fa-solid fa-microphone-lines"></i>
+                    </div>
+
+                    <div class="nc-wave"
+                         aria-hidden="true">
+                        <span></span><span></span><span></span><span></span><span></span>
+                        <span></span><span></span><span></span><span></span><span></span>
+                        <span></span><span></span><span></span><span></span><span></span>
+                        <span></span><span></span><span></span><span></span><span></span>
+                        <span></span><span></span><span></span><span></span><span></span>
+                        <span></span><span></span><span></span><span></span><span></span>
+                    </div>
+
+                    <span class="nc-frequency">NIGHTCAST / AUDIO SIGNAL / LIVE</span>
+                </div>
+
+            </div>
+
+            <div class="nc-brand-story">
+                <div>
+                    <span class="nc-section-kicker">هویت NightCast</span>
+                    <h2>یک خانه صوتی برای ایده‌هایی که ارزش شنیده شدن دارند.</h2>
+                </div>
+
+                <div class="nc-brand-quote">
+                    <p>
+                        NightCast یک رادیوی صوتی دیجیتال است؛ رسانه‌ای برای نزدیک‌تر کردن
+                        ایده‌های ارزشمند کتاب‌ها به زندگی روزمره. ما تلاش می‌کنیم میان
+                        عمق یک اثر و محدودیت زمان، مسیری شنیدنی بسازیم؛ مسیری که از
+                        مطالعه و پژوهش آغاز می‌شود و در قالب روایت، صدا و تجربه به شنونده می‌رسد.
+                    </p>
+                </div>
+            </div>
+
+            <div class="nc-mission">
+                <div class="nc-section-head">
+                    <span class="nc-section-kicker">مأموریت ما</span>
+                    <h2>ایده‌های ارزشمند را شنیدنی، قابل فهم و ماندگار کنیم.</h2>
+                    <p>
+                        NightCast به‌جای شلوغی و مصرف سریع محتوا، روی کیفیت ایده،
+                        روایت روشن و تجربه‌ای تمرکز می‌کند که بعد از تمام شدن اپیزود
+                        همچنان در ذهن شنونده باقی بماند.
+                    </p>
+                </div>
+
+                <div class="nc-mission-grid">
+                    <article class="nc-mission-card">
+                        <div class="nc-mission-icon"><i class="fa-solid fa-headphones"></i></div>
+                        <h3>Listen — شنیدن</h3>
+                        <p>زمانی برای مکث، گوش دادن و ورود به جهان یک ایده؛ بدون نیاز به صفحه و حواس‌پرتی.</p>
+                    </article>
+
+                    <article class="nc-mission-card">
+                        <div class="nc-mission-icon"><i class="fa-solid fa-brain"></i></div>
+                        <h3>Learn — یادگیری</h3>
+                        <p>نکته‌ها و مفاهیم کلیدی را در قالب روایتی منسجم و کاربردی به تجربه‌ای قابل دریافت تبدیل می‌کنیم.</p>
+                    </article>
+
+                    <article class="nc-mission-card">
+                        <div class="nc-mission-icon"><i class="fa-solid fa-sparkles"></i></div>
+                        <h3>Think — اندیشیدن</h3>
+                        <p>هدف نهایی فقط دانستن نیست؛ ساختن فرصتی برای پرسیدن، مقایسه کردن و دیدن جهان از زاویه‌ای تازه است.</p>
+                    </article>
+                </div>
+            </div>
+
+            <div class="nc-editorial">
+                <div class="nc-editorial-layout">
+                    <div class="nc-editorial-big">
+                        زمان محدود.
+                        <span>ایده‌های بسیار.</span>
+                    </div>
+
+                    <div>
+                        <span class="nc-section-kicker">چرا NightCast؟</span>
+                        <h2>فاصله میان کتاب‌های خوب و ساعت‌های شلوغ زندگی را کمتر می‌کنیم.</h2>
+                        <p style="margin-top:14px;">
+                            کتاب‌های زیادی وجود دارند و زمان انسان محدود است. NightCast
+                            تلاش می‌کند آن فاصله را با انتخاب دقیق، پژوهش، خلاصه‌سازی و
+                            روایت صوتی کمتر کند؛ تا یک ایده ارزشمند بتواند در مسیر رفت‌وآمد،
+                            کار یا یک شب آرام، همراه شنونده باشد.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nc-process">
+                <div class="nc-section-head">
+                    <span class="nc-section-kicker">از ایده تا پخش</span>
+                    <h2>هر اپیزود از کجا شروع می‌شود؟</h2>
+                </div>
+
+                <div class="nc-timeline" aria-label="مراحل تولید اپیزود NightCast">
+                    <div class="nc-step"><div class="nc-step-no">01</div><div><strong>انتخاب کتاب</strong><span>پیدا کردن اثری که حرفی ارزشمند برای شنیدن دارد.</span></div></div>
+                    <div class="nc-step"><div class="nc-step-no">02</div><div><strong>مطالعه و پژوهش</strong><span>بررسی عمیق محتوا، زمینه و ایده‌های اصلی.</span></div></div>
+                    <div class="nc-step"><div class="nc-step-no">03</div><div><strong>استخراج ایده‌ها</strong><span>تفکیک نکته‌های کلیدی از جزئیات کم‌اثر.</span></div></div>
+                    <div class="nc-step"><div class="nc-step-no">04</div><div><strong>نگارش و روایت</strong><span>ساختن روایتی روشن، طبیعی و شنیدنی.</span></div></div>
+                    <div class="nc-step"><div class="nc-step-no">05</div><div><strong>تولید صوت</strong><span>تبدیل متن و روایت به تجربه‌ای صوتی.</span></div></div>
+                    <div class="nc-step"><div class="nc-step-no">06</div><div><strong>انتشار</strong><span>قرار گرفتن اپیزود در شبکه صوتی NightCast.</span></div></div>
+                </div>
+            </div>
+
+            <div class="nc-behind">
+                <div class="nc-behind-copy">
+                    <span class="nc-section-kicker">پشت صحنه NightCast</span>
+                    <h2>هر صدا، نتیجه یک زنجیره از انتخاب‌هاست.</h2>
+                    <p>
+                        از انتخاب موضوع تا میکروفون، از سکوت‌های کوتاه تا ریتم روایت؛
+                        پشت هر اپیزود مجموعه‌ای از تصمیم‌های کوچک وجود دارد که تجربه
+                        نهایی شنونده را می‌سازد.
+                    </p>
+
+                    <div class="nc-stats" aria-label="آمار واقعی محتوای NightCast">
+                        <div class="nc-stat">
+                            <b id="ncAboutPodcastCount">۰</b>
+                            <span>اپیزود موجود</span>
+                        </div>
+                        <div class="nc-stat">
+                            <b id="ncAboutBookCount">۰</b>
+                            <span>کتاب موجود</span>
+                        </div>
+                        <div class="nc-stat">
+                            <b id="ncAboutAudioMinutes">۰</b>
+                            <span>دقیقه محتوای صوتی</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nc-future">
+                <span class="nc-section-kicker">چشم‌انداز</span>
+                <h2>آینده NightCast</h2>
                 <p>
-                    یک تجربه صوتی ساده و سریع برای کشف ایده‌های ارزشمند کتاب‌ها.
+                    NightCast قرار نیست فقط مجموعه‌ای از فایل‌های صوتی باشد.
+                    هدف، ساختن یک خانه صوتی برای ایده‌ها، کتاب‌ها، گفتگوها و روایت‌هایی
+                    است که ارزش شنیده شدن دارند؛ یک شبکه رسانه‌ای که صدا را به بستری
+                    برای یادگیری، کشف و اندیشیدن تبدیل می‌کند.
                 </p>
+
+                <div class="nc-onair-panel">
+                    <div class="nc-onair-copy">
+                        <strong>● ON AIR — NIGHTCAST RADIO</strong>
+                        <span>همین حالا چیزی برای شنیدن وجود دارد.</span>
+                    </div>
+                    <button type="button"
+                            class="btn btn-primary"
+                            id="ncAboutOnAirBtn">
+                        <i class="fa-solid fa-play"></i>
+                        شنیدن آخرین اپیزود
+                    </button>
+                </div>
+            </div>
+
+            <div class="nc-social-section">
+                <div class="nc-section-head">
+                    <span class="nc-section-kicker">شبکه NightCast</span>
+                    <h2>NightCast را دنبال کنید</h2>
+                    <p>لینک‌های زیر مستقیماً از تنظیمات اجتماعی فعلی پروژه استفاده می‌کنند.</p>
+                </div>
+
+                <div class="nc-social-grid"
+                     id="ncAboutSocialGrid"
+                     aria-live="polite">
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- =========================================================
+             CONTACT NIGHTCAST
+        ========================================================= -->
+
+        <section class="section nc-contact-section nc-contact-shell"
+                 id="contact"
+                 aria-labelledby="ncContactTitle">
+
+            <div class="nc-contact-head">
+                <span class="nc-section-kicker">NIGHTCAST CONTACT CENTER</span>
+                <h2 id="ncContactTitle">با NightCast در ارتباط باشید</h2>
+                <p>صدای شما بخشی از مسیر NightCast است.</p>
+            </div>
+
+            <div class="nc-contact-layout">
+
+                <div class="nc-contact-cards">
+
+                    <article class="nc-contact-card">
+                        <div class="nc-contact-card-icon">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                        <div>
+                            <small>Location</small>
+                            <strong>مشهد، بلوار شاهد، شاهد ۲۵، پلاک ۲۱</strong>
+                        </div>
+                    </article>
+
+                    <article class="nc-contact-card">
+                        <div class="nc-contact-card-icon">
+                            <i class="fa-solid fa-phone"></i>
+                        </div>
+                        <div>
+                            <small>Phone</small>
+                            <a href="tel:05136624919"
+                               dir="ltr"
+                               aria-label="تماس با NightCast">
+                                05136624919
+                            </a>
+                        </div>
+                    </article>
+
+                    <article class="nc-contact-card">
+                        <div class="nc-contact-card-icon">
+                            <i class="fa-solid fa-globe"></i>
+                        </div>
+                        <div>
+                            <small>Website</small>
+                            <a href="https://nightcast.ir/"
+                               target="_blank"
+                               rel="noopener noreferrer">
+                                nightcast.ir
+                            </a>
+                        </div>
+                    </article>
+
+                    <div class="nc-about-actions">
+                        <a class="btn btn-primary"
+                           href="tel:05136624919">
+                            <i class="fa-solid fa-phone"></i>
+                            تماس با NightCast
+                        </a>
+                    </div>
+                </div>
+
+                <div class="nc-map-wrap">
+                    <div id="ncNightcastMap"
+                         role="application"
+                         aria-label="نقشه موقعیت رادیو NightCast">
+                    </div>
+
+                    <div class="nc-map-overlay">
+                        <a class="nc-map-btn"
+                           href="https://www.google.com/maps/dir/?api=1&destination=36.350303,59.503020"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           aria-label="مسیریابی تا NightCast">
+                            <i class="fa-solid fa-route"></i>
+                            مسیریابی تا NightCast
+                        </a>
+                    </div>
+                </div>
 
             </div>
 
         </section>
 
     </main>
+
 
 
     <!-- =============================================================
@@ -1912,6 +3064,10 @@
 
                 <a href="#about">
                     درباره ما
+                </a>
+
+                <a href="#contact">
+                    تماس با ما
                 </a>
 
                 <span>
@@ -2068,6 +3224,16 @@
 
             <span>
                 درباره
+            </span>
+
+        </a>
+
+        <a href="#contact">
+
+            <i class="fa-solid fa-phone"></i>
+
+            <span>
+                تماس
             </span>
 
         </a>
@@ -3181,6 +4347,8 @@ LOGOUT
 
                 els.favCount.textContent =
                     totalFavoriteCount.toLocaleString("fa-IR");
+
+                updateAboutStats();
 
             }
 
@@ -4701,6 +5869,203 @@ LOGOUT
             );
         
         
+
+            /* =========================================================
+               ABOUT / CONTACT EXPERIENCE
+               Uses existing podcast state and social configuration.
+            ========================================================= */
+
+            let ncNightcastMap = null;
+
+            function updateAboutStats() {
+
+                const podcastCount =
+                    document.getElementById("ncAboutPodcastCount");
+
+                const bookCount =
+                    document.getElementById("ncAboutBookCount");
+
+                const audioMinutes =
+                    document.getElementById("ncAboutAudioMinutes");
+
+                if (podcastCount) {
+                    podcastCount.textContent =
+                        state.all.length.toLocaleString("fa-IR");
+                }
+
+                if (bookCount) {
+                    bookCount.textContent =
+                        new Set(
+                            state.all
+                                .map(x => x.book_name)
+                                .filter(Boolean)
+                        ).size.toLocaleString("fa-IR");
+                }
+
+                if (audioMinutes) {
+
+                    const seconds =
+                        state.all.reduce(
+                            (sum, item) =>
+                                sum +
+                                Number(item.duration_seconds || 0),
+                            0
+                        );
+
+                    audioMinutes.textContent =
+                        Math.round(seconds / 60).toLocaleString("fa-IR");
+                }
+            }
+
+            function renderAboutSocials() {
+
+                const root =
+                    document.getElementById("ncAboutSocialGrid");
+
+                if (!root) {
+                    return;
+                }
+
+                root.innerHTML =
+                    CONFIG.SOCIALS.map(s => `
+                        <a class="nc-social-card"
+                           href="${escapeHtml(s.url)}"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           aria-label="NightCast در ${escapeHtml(s.label)}">
+                            <span class="nc-social-icon">
+                                <i class="${escapeHtml(s.icon)}"></i>
+                            </span>
+                            <span>
+                                <strong>${escapeHtml(s.label)}</strong>
+                                <span>دنبال کردن NightCast</span>
+                            </span>
+                            <i class="fa-solid fa-arrow-up-right-from-square nc-social-arrow"
+                               aria-hidden="true"></i>
+                        </a>
+                    `).join("");
+            }
+
+            function initNightcastMap() {
+
+                const mapElement =
+                    document.getElementById("ncNightcastMap");
+
+                if (!mapElement || typeof L === "undefined") {
+                    return;
+                }
+
+                if (ncNightcastMap) {
+                    ncNightcastMap.invalidateSize();
+                    return;
+                }
+
+                const latitude = 36.350303;
+                const longitude = 59.503020;
+
+                ncNightcastMap =
+                    L.map(mapElement, {
+                        zoomControl: true,
+                        scrollWheelZoom: true,
+                        attributionControl: true
+                    }).setView(
+                        [latitude, longitude],
+                        16
+                    );
+
+                L.tileLayer(
+                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    {
+                        maxZoom: 19,
+                        attribution: '&copy; OpenStreetMap contributors'
+                    }
+                ).addTo(ncNightcastMap);
+
+                const markerIcon =
+                    L.divIcon({
+                        className: "",
+                        html: `
+                            <span class="nc-map-marker"
+                                  aria-hidden="true">
+                                <i class="fa-solid fa-radio"></i>
+                            </span>
+                        `,
+                        iconSize: [42, 42],
+                        iconAnchor: [21, 38],
+                        popupAnchor: [0, -35]
+                    });
+
+                const marker =
+                    L.marker(
+                        [latitude, longitude],
+                        { icon: markerIcon }
+                    ).addTo(ncNightcastMap);
+
+                marker.bindPopup(`
+                    <div class="nc-map-popup">
+                        <strong>رادیو NightCast</strong>
+                        <span>
+                            مشهد، بلوار شاهد، شاهد ۲۵، پلاک ۲۱
+                        </span>
+                        <a href="https://www.google.com/maps/dir/?api=1&destination=36.350303,59.503020"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            مسیریابی تا NightCast
+                        </a>
+                    </div>
+                `);
+
+                marker.openPopup();
+
+                window.setTimeout(
+                    () => ncNightcastMap && ncNightcastMap.invalidateSize(),
+                    120
+                );
+            }
+
+            function bindAboutActions() {
+
+                const latestButtons =
+                    [
+                        document.getElementById("ncAboutLatestBtn"),
+                        document.getElementById("ncAboutOnAirBtn")
+                    ].filter(Boolean);
+
+                latestButtons.forEach(button => {
+                    button.addEventListener(
+                        "click",
+                        () => {
+                            const latest =
+                                state.all[0];
+
+                            if (latest && latest.audio_url) {
+                                playPodcast(latest.id);
+                            } else {
+                                toast("هنوز اپیزود قابل پخشی در دسترس نیست.");
+                            }
+                        }
+                    );
+                });
+
+                const contactLink =
+                    document.querySelector(
+                        '.nav-link[href="#contact"]'
+                    );
+
+                if (contactLink) {
+                    contactLink.addEventListener(
+                        "click",
+                        () => {
+                            window.setTimeout(
+                                initNightcastMap,
+                                80
+                            );
+                        }
+                    );
+                }
+            }
+
+
             /* -----------------------------------------------------
                Social
             ----------------------------------------------------- */

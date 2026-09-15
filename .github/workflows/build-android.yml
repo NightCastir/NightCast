@@ -47,15 +47,16 @@ jobs:
       # 4. Android SDK
       # ============================================================
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
         with:
-          cmdline-tools-version: 12.0
+          cmdline-tools-version: '11076708'
           accept-android-sdk-licenses: true
           packages: |
-            platforms;android-34
             platform-tools
+            platforms;android-34
             build-tools;34.0.0
             ndk;27.0.11718014
+      
       # ============================================================
       # 5. Install npm dependencies
       # ============================================================

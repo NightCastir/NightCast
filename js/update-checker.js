@@ -1,8 +1,9 @@
 (function () {
     "use strict";
 
-    const CURRENT_VERSION = "4.1.0";
-
+const CURRENT_VERSION =
+    window.NIGHTCAST_APP_VERSION || "0.0.0";
+    
     const VERSION_URL =
         "https://www.NightCast.ir/version.json";
 

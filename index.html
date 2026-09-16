@@ -119,7 +119,19 @@
 <script src="js/auth.js"></script>
 
 <script src="js/router.js"></script>
-<script src="js/update-checker.js"></script>    
+<script src="js/update-checker.js"></script> 
+<script>
+window.addEventListener("load", function () {
+
+    if (
+        window.NightCastUpdateChecker &&
+        typeof window.NightCastUpdateChecker.check === "function"
+    ) {
+        window.NightCastUpdateChecker.check();
+    }
+
+});
+</script>    
 <script>
 if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {

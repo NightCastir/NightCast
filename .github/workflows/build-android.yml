@@ -178,6 +178,7 @@ jobs:
 
           cp -r css www/ 2>/dev/null || true
           cp -r js www/ 2>/dev/null || true
+          cp js/update-checker.js www/js/update-checker.js
           cp -r assets www/ 2>/dev/null || true
           cp -r auth www/ 2>/dev/null || true
           cp -r .well-known www/ 2>/dev/null || true

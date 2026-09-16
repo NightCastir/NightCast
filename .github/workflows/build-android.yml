@@ -238,7 +238,227 @@ jobs:
 
           npx cap add android
 
+      # ============================================================
+      # 8.1. Set NightCast App Version
+      # ============================================================
+      - name: Set NightCast App Version
+        run: |
+          set -e
 
+          python3 << 'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          # ----------------------------------------------------------
+          # Read version.json
+          # ----------------------------------------------------------
+
+          version_file = Path("version.json")
+
+          if not version_file.exists():
+              raise SystemExit("ERROR: version.json not found.")
+
+          data = json.loads(
+              version_file.read_text(encoding="utf-8")
+          )
+
+          version = str(
+              data.get("version", "")
+          ).strip()
+
+          if not re.fullmatch(
+              r"\d+\.\d+\.\d+",
+              version
+          ):
+              raise SystemExit(
+                  f"ERROR: Invalid version in version.json: {version}"
+              )
+
+          major, minor, patch = map(
+              int,
+              version.split(".")
+          )
+
+          # ----------------------------------------------------------
+          # Generate Android versionCode
+          #
+          # 4.1.0 -> 40100
+          # 4.2.0 -> 40200
+          # 4.3.0 -> 40300
+          # ----------------------------------------------------------
+
+          version_code = (
+              major * 10000
+              + minor * 100
+              + patch
+          )
+
+          # ----------------------------------------------------------
+          # Update android/app/build.gradle
+          # ----------------------------------------------------------
+
+          gradle_file = Path(
+              "android/app/build.gradle"
+          )
+
+          if not gradle_file.exists():
+              raise SystemExit(
+                  "ERROR: android/app/build.gradle not found."
+              )
+
+          gradle = gradle_file.read_text(
+              encoding="utf-8"
+          )
+
+          default_config = re.search(
+              r"(defaultConfig\s*\{)(.*?)(^\s*\})",
+              gradle,
+              re.DOTALL | re.MULTILINE
+          )
+
+          if not default_config:
+              raise SystemExit(
+                  "ERROR: defaultConfig block not found."
+              )
+
+          block = default_config.group(2)
+
+          # Remove existing versionCode/versionName if present.
+          block = re.sub(
+              r"(?m)^\s*versionCode\s+.*\n?",
+              "",
+              block
+          )
+
+          block = re.sub(
+              r"(?m)^\s*versionName\s+.*\n?",
+              "",
+              block
+          )
+
+          version_lines = (
+              f"\n"
+              f"        versionCode {version_code}\n"
+              f"        versionName \"{version}\"\n"
+          )
+
+          block = version_lines + block
+
+          gradle = (
+              gradle[:default_config.start(2)]
+              + block
+              + gradle[default_config.end(2):]
+          )
+
+          gradle_file.write_text(
+              gradle,
+              encoding="utf-8"
+          )
+
+          # ----------------------------------------------------------
+          # Create local app-version.js
+          # ----------------------------------------------------------
+
+          app_version_file = Path(
+              "www/app-version.js"
+          )
+
+          app_version_file.write_text(
+              f'''(function () {{
+          "use strict";
+
+          window.NIGHTCAST_APP_VERSION = "{version}";
+
+          function updateVersionLabel() {{
+              const element =
+                  document.querySelector(".version");
+
+              if (element) {{
+                  element.textContent =
+                      "Version " +
+                      window.NIGHTCAST_APP_VERSION;
+              }}
+          }}
+
+          if (document.readyState === "loading") {{
+              document.addEventListener(
+                  "DOMContentLoaded",
+                  updateVersionLabel
+              );
+          }} else {{
+              updateVersionLabel();
+          }}
+          }})();
+          ''',
+              encoding="utf-8"
+          )
+
+          # ----------------------------------------------------------
+          # Load app-version.js before update-checker.js
+          # ----------------------------------------------------------
+
+          index_file = Path(
+              "www/index.html"
+          )
+
+          index = index_file.read_text(
+              encoding="utf-8"
+          )
+
+          checker_tag = (
+              '<script src="js/update-checker.js"></script>'
+          )
+
+          version_tag = (
+              '<script src="app-version.js"></script>'
+          )
+
+          if checker_tag not in index:
+              raise SystemExit(
+                  "ERROR: update-checker.js script tag "
+                  "was not found in www/index.html."
+              )
+
+          if version_tag not in index:
+              index = index.replace(
+                  checker_tag,
+                  version_tag
+                  + "\n"
+                  + checker_tag,
+                  1
+              )
+
+          index_file.write_text(
+              index,
+              encoding="utf-8"
+          )
+
+          print("")
+          print("========================================")
+          print(" NightCast Version Configuration")
+          print("========================================")
+          print(f" versionName : {version}")
+          print(f" versionCode : {version_code}")
+          print("========================================")
+          print("")
+
+          print("=== Android version ===")
+          for line in gradle.splitlines():
+              if (
+                  "versionCode" in line
+                  or "versionName" in line
+              ):
+                  print(line)
+
+          print("")
+          print("=== www/app-version.js ===")
+          print(
+              app_version_file.read_text(
+                  encoding="utf-8"
+              )
+          )
+          PY
       # ============================================================
       # 9. Set NightCast Launcher Icon
       # ============================================================

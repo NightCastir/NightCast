@@ -148,15 +148,14 @@ jobs:
           # NightCast user interface
           # ----------------------------------------------------------
 
-          if [ ! -f "users/index.html" ]; then
-            echo "ERROR: users/index.html not found."
+          if [ ! -f "index.html" ]; then
+            echo "ERROR: root index.html not found."
             exit 1
           fi
 
-          cp users/index.html www/index.html
+          cp index.html www/index.html
 
-          echo "NightCast users/index.html copied to www/index.html."
-
+          echo "Root index.html copied to www/index.html."
 
           # ----------------------------------------------------------
           # Root web files

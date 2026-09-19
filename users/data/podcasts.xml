@@ -20,7 +20,7 @@
 
     <copyright>NightCast</copyright>
 
-    <lastBuildDate>Sat, 19 Sep 2026 00:00:57 GMT</lastBuildDate>
+    <lastBuildDate>Sat, 19 Sep 2026 09:38:26 GMT</lastBuildDate>
 
     <generator>NightCast RSS Generator</generator>
 
@@ -53,6 +53,97 @@
     <itunes:category
         text="Education"
     />
+
+
+
+    <item>
+
+        <title>
+            پنجمین فرمان
+        </title>
+
+        <description>
+            بررسی کتاب پنجمین فرمان اثر پیتر سنگه؛ کتابی درباره سازمان‌های یادگیرنده، تفکر سیستمی و پیدا کردن ساختارهایی که رفتار و نتایج سازمان را شکل می‌دهند.
+        </description>
+
+        <content:encoded><![CDATA[
+            
+            <p>
+                بررسی کتاب پنجمین فرمان اثر پیتر سنگه؛ کتابی درباره سازمان‌های یادگیرنده، تفکر سیستمی و پیدا کردن ساختارهایی که رفتار و نتایج سازمان را شکل می‌دهند.
+            </p>
+
+            <p>
+                <strong>کتاب:</strong>
+                پنجمین فرمان
+            </p>
+
+            <p>
+                <strong>نویسنده:</strong>
+                Peter Senge
+            </p>
+
+            <p>
+                <strong>دسته‌بندی:</strong>
+                رشد فردی و سازمانی
+            </p>
+
+            <p>
+                <strong>برچسب‌ها:</strong>
+                تفکر سیستمی,سازمان یادگیرنده,مدیریت,رهبری,یادگیری,مدل‌های ذهنی,یادگیری تیمی
+            </p>
+        
+        ]]></content:encoded>
+
+        <itunes:summary>
+            پنجمین فرمان اثر پیتر سنگه درباره سازمان‌های یادگیرنده و تغییر شیوه نگاه ما به مسائل پیچیده است. این کتاب پنج فرمان شامل قابلیت‌های شخصی، مدل‌های ذهنی، آرمان مشترک، یادگیری تیمی و تفکر سیستمی را معرفی می‌کند و نشان می‌دهد چگونه به جای تمرکز صرف بر اتفاقات و مقصران، الگوها و ساختارهایی را ببینیم که این اتفاقات را ایجاد می‌کنند.
+        </itunes:summary>
+
+        <itunes:author>
+            Peter Senge
+        </itunes:author>
+
+        <itunes:episode>
+            1
+        </itunes:episode>
+
+        <itunes:episodeType>
+            full
+        </itunes:episodeType>
+
+        <itunes:duration>
+            16:03
+        </itunes:duration>
+
+        <itunes:explicit>
+            no
+        </itunes:explicit>
+
+        
+        <itunes:image
+            href="https://raw.githubusercontent.com/NightCastir/NightCast-Media/main/audio/5command.jpg"
+        />
+        
+
+        <pubDate>
+            Sat, 19 Sep 2026 08:31:36 GMT
+        </pubDate>
+
+        <guid isPermaLink="false">
+            nightcast-episode-34
+        </guid>
+
+        <link>
+            https://nightcast.ir/podcast/the-fifth-discipline
+        </link>
+
+        <enclosure
+            url="https://raw.githubusercontent.com/NightCastir/NightCast-Media/main/audio/5command.mp3"
+            length="0"
+            type="audio/mpeg"
+        />
+
+    </item>
+
 
 
 

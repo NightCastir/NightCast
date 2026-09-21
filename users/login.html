@@ -206,7 +206,318 @@
 
         </button>
 
+        <!-- ==================================
+             APP DOWNLOADS
+             NightCast Android App
+        =================================== -->
 
+        <div class="nightcast-downloads" aria-label="دانلود اپلیکیشن NightCast">
+
+            <div class="nightcast-downloads-title">
+                <span>اپلیکیشن NightCast</span>
+                <small>نسخه اندروید را دریافت کنید</small>
+            </div>
+
+            <div class="nightcast-download-grid">
+
+                <!-- دانلود مستقیم APK -->
+                <a
+                    class="nightcast-download-card nightcast-direct-download"
+                    href="https://www.NightCast.ir/downloadrelease/NightCast.apk"
+                    download
+                    aria-label="دانلود مستقیم اپلیکیشن NightCast"
+                >
+
+                    <span class="nightcast-download-icon" aria-hidden="true">
+                        <i class="fa-solid fa-download"></i>
+                    </span>
+
+                    <span class="nightcast-download-content">
+                        <strong>دانلود مستقیم</strong>
+                        <small>فایل APK</small>
+                    </span>
+
+                    <i
+                        class="fa-solid fa-chevron-left nightcast-download-arrow"
+                        aria-hidden="true"
+                    ></i>
+
+                </a>
+
+
+                <!-- دانلود از کافه بازار -->
+                <a
+                    class="nightcast-download-card nightcast-bazaar-download"
+                    href="bazaar://details?id=ir.nightcast.app"
+                    aria-label="دریافت NightCast از کافه بازار"
+                    onclick="return openNightCastBazaar(event);"
+                >
+
+                    <span class="nightcast-download-icon" aria-hidden="true">
+                        <i class="fa-solid fa-store"></i>
+                    </span>
+
+                    <span class="nightcast-download-content">
+                        <strong>کافه بازار</strong>
+                        <small>دریافت از بازار</small>
+                    </span>
+
+                    <i
+                        class="fa-solid fa-chevron-left nightcast-download-arrow"
+                        aria-hidden="true"
+                    ></i>
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================
+             APP DOWNLOADS STYLE
+        =================================== -->
+
+        <style>
+
+            .nightcast-downloads {
+                margin: 20px 0 4px;
+                padding: 16px;
+                border: 1px solid rgba(217, 164, 65, 0.18);
+                border-radius: 20px;
+                background: linear-gradient(
+                    145deg,
+                    rgba(217, 164, 65, 0.055),
+                    rgba(11, 18, 32, 0.42)
+                );
+                box-shadow: 0 12px 35px rgba(0, 0, 0, 0.16);
+            }
+
+
+            .nightcast-downloads-title {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                margin-bottom: 12px;
+                color: #f7f1e3;
+                font-size: 14px;
+                font-weight: 700;
+            }
+
+
+            .nightcast-downloads-title small {
+                color: rgba(247, 241, 227, 0.55);
+                font-size: 11px;
+                font-weight: 500;
+            }
+
+
+            .nightcast-download-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+            }
+
+
+            .nightcast-download-card {
+                position: relative;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                min-width: 0;
+                padding: 12px 11px;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 15px;
+                color: #f7f1e3;
+                text-decoration: none;
+                overflow: hidden;
+
+                transition:
+                    transform 180ms ease,
+                    border-color 180ms ease,
+                    background 180ms ease,
+                    box-shadow 180ms ease;
+            }
+
+
+            .nightcast-download-card::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+
+                background: linear-gradient(
+                    120deg,
+                    rgba(255, 255, 255, 0.055),
+                    transparent 55%
+                );
+
+                pointer-events: none;
+            }
+
+
+            .nightcast-download-card:hover {
+                transform: translateY(-2px);
+                border-color: rgba(217, 164, 65, 0.45);
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            }
+
+
+            .nightcast-download-card:active {
+                transform: translateY(0) scale(0.985);
+            }
+
+
+            .nightcast-direct-download {
+                background: rgba(217, 164, 65, 0.075);
+            }
+
+
+            .nightcast-bazaar-download {
+                background: rgba(255, 255, 255, 0.035);
+            }
+
+
+            .nightcast-download-icon {
+                flex: 0 0 40px;
+
+                width: 40px;
+                height: 40px;
+
+                display: grid;
+                place-items: center;
+
+                border-radius: 12px;
+
+                color: #0b1220;
+                background: #d9a441;
+
+                font-size: 16px;
+
+                box-shadow:
+                    0 5px 16px rgba(217, 164, 65, 0.22);
+            }
+
+
+            .nightcast-bazaar-download .nightcast-download-icon {
+                background: #e7c27a;
+            }
+
+
+            .nightcast-download-content {
+                display: flex;
+                flex: 1;
+                min-width: 0;
+
+                flex-direction: column;
+                align-items: flex-start;
+
+                gap: 3px;
+            }
+
+
+            .nightcast-download-content strong {
+                font-size: 12px;
+                line-height: 1.4;
+                white-space: nowrap;
+            }
+
+
+            .nightcast-download-content small {
+                color: rgba(247, 241, 227, 0.55);
+                font-size: 10px;
+                line-height: 1.4;
+                white-space: nowrap;
+            }
+
+
+            .nightcast-download-arrow {
+                flex: 0 0 auto;
+
+                color: rgba(247, 241, 227, 0.38);
+
+                font-size: 10px;
+
+                transition:
+                    transform 180ms ease,
+                    color 180ms ease;
+            }
+
+
+            .nightcast-download-card:hover
+            .nightcast-download-arrow {
+                transform: translateX(-3px);
+                color: #d9a441;
+            }
+
+
+            /* موبایل */
+            @media (max-width: 420px) {
+
+                .nightcast-downloads {
+                    padding: 13px;
+                    border-radius: 17px;
+                }
+
+
+                .nightcast-downloads-title {
+                    align-items: flex-start;
+                    flex-direction: column;
+                    gap: 3px;
+                }
+
+
+                .nightcast-download-grid {
+                    grid-template-columns: 1fr;
+                }
+
+            }
+
+        </style>
+
+
+        <!-- ==================================
+             CAFE BAZAAR HANDLER
+        =================================== -->
+
+        <script>
+
+            function openNightCastBazaar(event) {
+
+                event.preventDefault();
+
+                const bazaarAppUrl =
+                    "bazaar://details?id=ir.nightcast.app";
+
+                const bazaarWebUrl =
+                    "https://cafebazaar.ir/app/ir.nightcast.app";
+
+
+                /*
+                 * ابتدا تلاش می‌کنیم اپلیکیشن کافه بازار
+                 * مستقیماً باز شود.
+                 */
+
+                window.location.href = bazaarAppUrl;
+
+
+                /*
+                 * اگر بازار روی دستگاه نصب نباشد،
+                 * نسخه وب صفحه برنامه باز می‌شود.
+                 */
+
+                window.setTimeout(function () {
+
+                    window.location.href = bazaarWebUrl;
+
+                }, 1200);
+
+
+                return false;
+
+            }
+
+        </script>
 
         <!-- ==================================
              LOGIN STATUS

@@ -1149,6 +1149,38 @@
 
 
                 /* =========================================================
+                   FULL-SCREEN NOW PLAYING / PODCAST DETAILS
+                ========================================================= */
+                .nc-now-playing{position:fixed;inset:0;z-index:3000;background:radial-gradient(ellipse at 50% 0%,rgba(5,157,249,.18),transparent 48%),#080e18;color:#f5f7fb;display:grid;grid-template-rows:auto 1fr;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(18px);transition:opacity .25s ease,transform .25s ease,visibility .25s}
+                .nc-now-playing.open{opacity:1;visibility:visible;pointer-events:auto;transform:none}
+                .nc-now-top{display:flex;align-items:center;justify-content:space-between;padding:calc(14px + env(safe-area-inset-top)) 20px 12px;border-bottom:1px solid rgba(255,255,255,.07)}
+                .nc-now-brand{font-size:.78rem;letter-spacing:.12em;color:#9ba9bd;font-weight:700}
+                .nc-now-close{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.08);color:#fff;font-size:1.1rem}
+                .nc-now-scroll{overflow:auto;overscroll-behavior:contain;padding:clamp(20px,4vh,42px) 22px calc(30px + env(safe-area-inset-bottom));}
+                .nc-now-content{width:min(100%,760px);margin:0 auto}
+                .nc-now-hero{display:grid;grid-template-columns:minmax(180px,300px) minmax(0,1fr);gap:clamp(22px,4vw,44px);align-items:center}
+                .nc-now-art{width:100%;aspect-ratio:1;object-fit:cover;border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.45);background:#122238}
+                .nc-now-kicker{color:#e9be70;font-size:.76rem;font-weight:700;letter-spacing:.08em}
+                .nc-now-title{font-size:clamp(1.5rem,3.4vw,2.4rem);line-height:1.35;margin:12px 0 8px;color:#fff;overflow-wrap:anywhere}
+                .nc-now-author{color:#a8b4c5;font-size:.94rem}
+                .nc-now-book{display:inline-flex;margin-top:12px;padding:6px 11px;border:1px solid rgba(233,190,112,.25);border-radius:999px;color:#e9be70;font-size:.82rem}
+                .nc-now-controls{display:flex;align-items:center;justify-content:center;gap:22px;margin:28px 0 16px}
+                .nc-now-control{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.08);color:#fff;font-size:1rem}
+                .nc-now-control.primary{width:64px;height:64px;background:#059df9;font-size:1.3rem;box-shadow:0 8px 28px rgba(5,157,249,.25)}
+                .nc-now-timeline{direction:ltr;display:grid;grid-template-columns:48px 1fr 48px;gap:10px;align-items:center;color:#9ba9bd;font-size:.75rem}
+                .nc-now-timeline input{width:100%;accent-color:#059df9;cursor:pointer}
+                .nc-now-section{margin-top:34px;padding-top:24px;border-top:1px solid rgba(255,255,255,.08)}
+                .nc-now-section h3{font-size:1.05rem;color:#fff;margin:0 0 12px}
+                .nc-now-description{color:#b7c2d1;line-height:2;white-space:pre-line;overflow-wrap:anywhere}
+                .nc-now-meta{display:flex;flex-wrap:wrap;gap:9px;margin-top:18px}
+                .nc-now-meta span{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.07);padding:7px 11px;border-radius:10px;color:#aebbd0;font-size:.78rem}
+                body.nc-now-open{overflow:hidden}
+                #playerCover{cursor:pointer;transition:transform .2s,box-shadow .2s}
+                #playerCover:hover{transform:scale(1.04);box-shadow:0 0 0 2px rgba(5,157,249,.65)}
+                @media(max-width:650px){.nc-now-top{padding-inline:14px}.nc-now-scroll{padding:20px 18px calc(26px + env(safe-area-inset-bottom))}.nc-now-hero{grid-template-columns:1fr;text-align:center;gap:20px}.nc-now-art{width:min(72vw,290px);margin:0 auto;border-radius:20px}.nc-now-book{margin-inline:auto}.nc-now-controls{margin:24px 0 14px}.nc-now-section{text-align:right;margin-top:28px}.nc-now-title{font-size:1.5rem}.nc-now-author{font-size:.88rem}}
+                @media(prefers-reduced-motion:reduce){.nc-now-playing{transition:none}}
+
+                /* =========================================================
                    RESPONSIVE
                 ========================================================= */
 
@@ -4158,6 +4190,41 @@
     </div>
 
 
+    <section class="nc-now-playing" id="ncNowPlaying" role="dialog" aria-modal="true" aria-label="جزئیات و پخش پادکست" aria-hidden="true">
+        <div class="nc-now-top">
+            <span class="nc-now-brand">NIGHTCAST · NOW PLAYING</span>
+            <button type="button" class="nc-now-close" id="ncNowClose" aria-label="بستن جزئیات"><i class="fa-solid fa-chevron-down"></i></button>
+        </div>
+        <div class="nc-now-scroll">
+            <div class="nc-now-content">
+                <div class="nc-now-hero">
+                    <img class="nc-now-art" id="ncNowCover" src="./logo.png" alt="">
+                    <div class="nc-now-copy">
+                        <span class="nc-now-kicker">در حال شنیدن</span>
+                        <h2 class="nc-now-title" id="ncNowTitle">پادکستی انتخاب نشده</h2>
+                        <div class="nc-now-author" id="ncNowAuthor">NightCast Radio</div>
+                        <div class="nc-now-book" id="ncNowBook" hidden></div>
+                    </div>
+                </div>
+                <div class="nc-now-controls">
+                    <button type="button" class="nc-now-control" id="ncNowPrev" aria-label="پادکست قبلی"><i class="fa-solid fa-backward-step"></i></button>
+                    <button type="button" class="nc-now-control primary" id="ncNowToggle" aria-label="پخش یا توقف"><i class="fa-solid fa-play"></i></button>
+                    <button type="button" class="nc-now-control" id="ncNowNext" aria-label="پادکست بعدی"><i class="fa-solid fa-forward-step"></i></button>
+                </div>
+                <div class="nc-now-timeline">
+                    <span id="ncNowCurrent">00:00</span>
+                    <input type="range" id="ncNowProgress" min="0" max="100" step=".1" value="0" aria-label="موقعیت پخش">
+                    <span id="ncNowDuration">00:00</span>
+                </div>
+                <section class="nc-now-section">
+                    <h3>درباره این پادکست</h3>
+                    <div class="nc-now-description" id="ncNowDescription">توضیحی برای این پادکست ثبت نشده است.</div>
+                    <div class="nc-now-meta" id="ncNowMeta"></div>
+                </section>
+            </div>
+        </div>
+    </section>
+
     <audio id="audioPlayer"
            preload="metadata">
     </audio>
@@ -6220,7 +6287,8 @@ LOGOUT
                     p.title ||
                     "NightCast";
 
-
+                syncNowPlayingDetails();
+                
                 els.audio.pause();
 
 
@@ -6248,6 +6316,72 @@ LOGOUT
 
             }
 
+
+            function syncNowPlayingDetails() {
+                const p = state.current;
+                if (!p) return;
+                const setText = (id, value) => {
+                    const el = document.getElementById(id);
+                    if (el) el.textContent = value || "";
+                };
+                const cover = document.getElementById("ncNowCover");
+                if (cover) {
+                    cover.src = p.cover_url || placeholder;
+                    cover.alt = p.title || "NightCast";
+                }
+                setText("ncNowTitle", p.title || "بدون عنوان");
+                setText("ncNowAuthor", p.author_name || "NightCast Radio");
+                setText("ncNowDescription", p.description || p.summary || "توضیحی برای این پادکست ثبت نشده است.");
+                const book = document.getElementById("ncNowBook");
+                if (book) {
+                    book.textContent = p.book_name || "";
+                    book.hidden = !p.book_name;
+                }
+                const meta = document.getElementById("ncNowMeta");
+                if (meta) {
+                    const chips = [];
+                    if (p.category) chips.push(p.category);
+                    if (p.duration) chips.push("مدت: " + p.duration);
+                    if (p.published_at) chips.push("انتشار: " + p.published_at);
+                    meta.innerHTML = chips.map(x => "<span>" + escapeHtml(String(x)) + "</span>").join("");
+                }
+                updateNowPlayingControls();
+            }
+
+            function updateNowPlayingControls() {
+                const button = document.getElementById("ncNowToggle");
+                const icon = button?.querySelector("i");
+                const playing = !!state.current && !els.audio.paused && !els.audio.ended;
+                if (icon) icon.className = playing ? "fa-solid fa-pause" : "fa-solid fa-play";
+                if (button) button.setAttribute("aria-label", playing ? "توقف موقت" : "ادامه پخش");
+                const progress = document.getElementById("ncNowProgress");
+                if (progress && els.audio.duration) progress.value = (els.audio.currentTime / els.audio.duration) * 100;
+                const current = document.getElementById("ncNowCurrent");
+                const duration = document.getElementById("ncNowDuration");
+                if (current) current.textContent = formatTime(els.audio.currentTime);
+                if (duration) duration.textContent = formatTime(els.audio.duration);
+            }
+
+            function openNowPlaying() {
+                if (!state.current) {
+                    toast("ابتدا یک پادکست انتخاب کنید.");
+                    return;
+                }
+                syncNowPlayingDetails();
+                const panel = document.getElementById("ncNowPlaying");
+                panel?.classList.add("open");
+                panel?.setAttribute("aria-hidden", "false");
+                document.body.classList.add("nc-now-open");
+                document.getElementById("ncNowClose")?.focus({ preventScroll: true });
+            }
+
+            function closeNowPlaying() {
+                const panel = document.getElementById("ncNowPlaying");
+                panel?.classList.remove("open");
+                panel?.setAttribute("aria-hidden", "true");
+                document.body.classList.remove("nc-now-open");
+                els.playerCover?.focus?.({ preventScroll: true });
+            }
 
             function togglePlay() {
 
@@ -6655,6 +6789,28 @@ LOGOUT
                 "click",
                 togglePlay
             );
+
+            // Tapping the mini-player artwork opens a full-screen podcast view.
+            els.playerCover.setAttribute("role", "button");
+            els.playerCover.setAttribute("tabindex", "0");
+            els.playerCover.setAttribute("aria-label", "نمایش جزئیات پادکست");
+            els.playerCover.addEventListener("click", openNowPlaying);
+            els.playerCover.addEventListener("keydown", e => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    openNowPlaying();
+                }
+            });
+            document.getElementById("ncNowClose")?.addEventListener("click", closeNowPlaying);
+            document.getElementById("ncNowToggle")?.addEventListener("click", togglePlay);
+            document.getElementById("ncNowPrev")?.addEventListener("click", () => nextPodcast(-1));
+            document.getElementById("ncNowNext")?.addEventListener("click", () => nextPodcast(1));
+            document.getElementById("ncNowProgress")?.addEventListener("input", e => {
+                if (els.audio.duration) els.audio.currentTime = (Number(e.target.value) / 100) * els.audio.duration;
+            });
+            document.addEventListener("keydown", e => {
+                if (e.key === "Escape" && document.getElementById("ncNowPlaying")?.classList.contains("open")) closeNowPlaying();
+            });
         
         
             els.prev.addEventListener(
@@ -6719,6 +6875,7 @@ LOGOUT
                 () => {
                     els.playIcon.className = "fa-solid fa-play";
                     updateCardPlaying();
+                    updateNowPlayingControls();
                 }
             );
 
@@ -6745,6 +6902,7 @@ LOGOUT
                             formatTime(
                                 els.audio.currentTime
                             );
+                        updateNowPlayingControls();
         
                     }
         

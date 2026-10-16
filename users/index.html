@@ -8073,6 +8073,8 @@ document.addEventListener(
                     scrollWheelZoom: true,
                     attributionControl: true
                 });
+                // Keep a reference so the map can be resized after its hidden panel becomes visible.
+                window.ncMapInstance = map;
 
                 L.tileLayer(
                     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",

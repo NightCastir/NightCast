@@ -3058,7 +3058,23 @@
         }
 
     </style>
-</head>
+<style>
+.favorite,.nc-like-button{position:relative;display:inline-grid;place-items:center;flex:0 0 auto;width:42px;height:42px;padding:0;border-radius:14px;color:#aab7ca;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09);transition:color .18s,background .18s,border-color .18s,transform .18s,box-shadow .18s;touch-action:manipulation}
+.favorite i,.nc-like-button i{font-size:1.02rem;transition:transform .18s cubic-bezier(.2,.8,.2,1)}
+.favorite:hover,.nc-like-button:hover{color:#ff7ba8;border-color:rgba(255,105,153,.42);background:rgba(255,105,153,.09)}
+.favorite:active,.nc-like-button:active{transform:scale(.88)}
+.favorite.active,.nc-like-button.active{color:#ff668f;border-color:rgba(255,102,143,.32);background:linear-gradient(145deg,rgba(255,76,126,.17),rgba(255,76,126,.07));box-shadow:0 5px 20px rgba(255,65,115,.08)}
+.favorite.active i,.nc-like-button.active i{animation:nc-heart-pop .28s cubic-bezier(.2,.8,.2,1)}
+.nc-like-button.active i{filter:drop-shadow(0 0 7px rgba(255,85,132,.35))}
+.favorite:focus-visible,.nc-like-button:focus-visible{outline:2px solid #ff7ba8;outline-offset:3px}
+.nc-now-actions{display:flex;justify-content:center;margin:22px 0 0}
+.nc-now-like{width:auto;min-width:142px;height:44px;padding:0 16px;display:flex;gap:9px;border-radius:999px;font-size:.82rem}
+.nc-now-like span{font-weight:600}
+.nc-player-like{width:36px;height:36px;border-radius:50%;margin-inline-start:8px}
+@keyframes nc-heart-pop{0%{transform:scale(.72)}55%{transform:scale(1.28)}100%{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.favorite,.nc-like-button,.favorite i,.nc-like-button i{transition:none;animation:none!important}}
+</style>
+$1
 
 
 <body>
@@ -4058,10 +4074,8 @@
 
             <div class="track">
 
-                <img class="track-cover"
-                     id="playerCover"
-                     src="./logo.png"
-                     alt="">
+                $1
+                <button type="button" class="nc-like-button nc-player-like" id="ncPlayerLike" data-like-surface="player" aria-label="افزودن به علاقه‌مندی‌ها" aria-pressed="false" hidden><i class="fa-regular fa-heart" aria-hidden="true"></i></button>
 
                 <div class="track-text">
 
@@ -4226,7 +4240,8 @@
                         <div class="nc-now-book" id="ncNowBook" hidden></div>
                     </div>
                 </div>
-                <div class="nc-now-controls">
+                <div class="nc-now-actions"><button type="button" class="nc-like-button nc-now-like" id="ncNowLike" data-like-surface="now-playing" aria-label="افزودن به علاقه‌مندی‌ها" aria-pressed="false" hidden><i class="fa-regular fa-heart" aria-hidden="true"></i><span>علاقه‌مندی</span></button></div>
+                $1
                     <button type="button" class="nc-now-control" id="ncNowPrev" aria-label="پادکست قبلی"><i class="fa-solid fa-backward-step"></i></button>
                     <button type="button" class="nc-now-control primary" id="ncNowToggle" aria-label="پخش یا توقف"><i class="fa-solid fa-play"></i></button>
                     <button type="button" class="nc-now-control" id="ncNowNext" aria-label="پادکست بعدی"><i class="fa-solid fa-forward-step"></i></button>
@@ -5247,12 +5262,8 @@ LOGOUT
                     }
 
                     updateStats();
-
-                    if (token) {
-
-                        applyView();
-
-                    }
+                    syncAllFavoriteButtons();
+                    if (token) { applyView(); }
 
                 }
                 catch (err) {
@@ -5396,179 +5407,83 @@ LOGOUT
             }
 
 
-            async function toggleFavorite(id) {
+            // Optimistic favorites: update immediately, then quietly sync the final intent.
+            const favoriteWriteQueue = new Map();
+            const favoriteWriteTimers = new Map();
+            const favoriteInFlight = new Set();
 
-                const token =
-                    getToken();
-
-
-                if (!isLoggedIn()) {
-
-                    toast(
-                        "برای ذخیره علاقه‌مندی ابتدا وارد حساب کاربری شوید."
-                    );
-
-
-                    setTimeout(
-                        () => {
-
-                            window.location.href =
-                                CONFIG.LOGIN_PAGE;
-
-                        },
-                        350
-                    );
-
-
-                    return;
-
-                }
-
-
-                const podcastId =
-                    Number(id);
-
-
-                if (!Number.isFinite(podcastId)) {
-
-                    toast(
-                        "شناسه پادکست نامعتبر است."
-                    );
-
-                    return;
-
-                }
-
-
-                const alreadyFavorite =
-                    favoriteIds.has(podcastId);
-
-
-                try {
-
-                    const res =
-                        await fetch(
-                            `${CONFIG.API_BASE}/public/favorites/${podcastId}`,
-                            {
-                                method:
-                                    alreadyFavorite
-                                        ? "DELETE"
-                                        : "POST",
-
-                                headers: {
-                                    "Authorization":
-                                        `Bearer ${token}`,
-
-                                    "Content-Type":
-                                        "application/json",
-
-                                    "Accept":
-                                        "application/json"
-                                }
-                            }
-                        );
-
-
-                    const data =
-                        await res
-                            .json()
-                            .catch(
-                                () => ({})
-                            );
-
-
-                    if (res.status === 401) {
-
-                        favoriteIds.delete(
-                            podcastId
-                        );
-
-                        toast(
-                            "نشست شما منقضی شده است. دوباره وارد شوید."
-                        );
-
-
-                        setTimeout(
-                            () => {
-
-                                window.location.href =
-                                    CONFIG.LOGIN_PAGE;
-
-                            },
-                            500
-                        );
-
-
-                        return;
-
-                    }
-
-
-                    if (
-                        !res.ok ||
-                        data.success === false
-                    ) {
-
-                        throw new Error(
-                            data.message ||
-                            "ذخیره علاقه‌مندی انجام نشد."
-                        );
-
-                    }
-
-
-                    if (alreadyFavorite) {
-
-                        favoriteIds.delete(
-                            podcastId
-                        );
-
-                        totalFavoriteCount =
-                            Math.max(
-                                0,
-                                totalFavoriteCount - 1
-                            );
-
-                        toast(
-                            "از علاقه‌مندی‌ها حذف شد."
-                        );
-
-                    } else {
-
-                        favoriteIds.add(
-                            podcastId
-                        );
-
-                        totalFavoriteCount += 1;
-
-                        toast(
-                            "به علاقه‌مندی‌ها اضافه شد."
-                        );
-
-                    }
-
-
-                    updateStats();
-
-                    applyView();
-
-                } catch (err) {
-
-                    console.error(
-                        "Favorite Error:",
-                        err
-                    );
-
-
-                    toast(
-                        err.message ||
-                        "خطا در ذخیره علاقه‌مندی."
-                    );
-
-                }
-
+            function syncFavoriteButtons(id) {
+                const podcastId = Number(id), active = favoriteIds.has(podcastId);
+                document.querySelectorAll(`[data-action="favorite"][data-id="${podcastId}"],[data-like-id="${podcastId}"]`).forEach(button => {
+                    button.classList.toggle("active", active);
+                    button.setAttribute("aria-pressed", active ? "true" : "false");
+                    button.setAttribute("aria-label", active ? "حذف از علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها");
+                    const icon = button.querySelector("i");
+                    if (icon) icon.className = active ? "fa-solid fa-heart" : "fa-regular fa-heart";
+                });
             }
-
+            function syncAllFavoriteButtons() {
+                document.querySelectorAll('[data-action="favorite"][data-id]').forEach(button => syncFavoriteButtons(button.dataset.id));
+                if (state.current) syncFavoriteButtons(state.current.id);
+            }
+            function scheduleFavoriteWrite(id, desiredFavorite) {
+                const podcastId = Number(id);
+                favoriteWriteQueue.set(podcastId, { desiredFavorite, token: getToken() });
+                clearTimeout(favoriteWriteTimers.get(podcastId));
+                favoriteWriteTimers.set(podcastId, setTimeout(() => flushFavoriteWrite(podcastId), 180));
+            }
+            async function flushFavoriteWrite(podcastId) {
+                if (favoriteInFlight.has(podcastId)) {
+                    clearTimeout(favoriteWriteTimers.get(podcastId));
+                    favoriteWriteTimers.set(podcastId, setTimeout(() => flushFavoriteWrite(podcastId), 220));
+                    return;
+                }
+                const job = favoriteWriteQueue.get(podcastId);
+                if (!job) return;
+                favoriteWriteQueue.delete(podcastId);
+                favoriteWriteTimers.delete(podcastId);
+                favoriteInFlight.add(podcastId);
+                try {
+                    const res = await fetch(`${CONFIG.API_BASE}/public/favorites/${podcastId}`, {
+                        method: job.desiredFavorite ? "POST" : "DELETE",
+                        headers: { "Authorization": `Bearer ${job.token}`, "Content-Type": "application/json", "Accept": "application/json" },
+                        keepalive: true
+                    });
+                    const data = await res.json().catch(() => ({}));
+                    if (res.status === 401) {
+                        localStorage.removeItem(CONFIG.TOKEN_KEY); localStorage.removeItem(CONFIG.USER_KEY);
+                        toast("برای همگام‌سازی علاقه‌مندی، دوباره وارد حساب شوید."); return;
+                    }
+                    if (!res.ok || data.success === false) throw new Error(data.message || "همگام‌سازی علاقه‌مندی ناموفق بود.");
+                } catch (err) {
+                    console.error("Favorite sync error:", err);
+                    favoriteWriteQueue.set(podcastId, job);
+                    clearTimeout(favoriteWriteTimers.get(podcastId));
+                    favoriteWriteTimers.set(podcastId, setTimeout(() => flushFavoriteWrite(podcastId), 2500));
+                } finally {
+                    favoriteInFlight.delete(podcastId);
+                    if (favoriteWriteQueue.has(podcastId) && !favoriteWriteTimers.has(podcastId)) favoriteWriteTimers.set(podcastId, setTimeout(() => flushFavoriteWrite(podcastId), 0));
+                }
+            }
+            function toggleFavorite(id) {
+                if (!isLoggedIn()) {
+                    toast("برای لایک کردن، ابتدا وارد حساب کاربری شوید.");
+                    setTimeout(() => {
+                        const loginUrl = new URL(CONFIG.LOGIN_PAGE, window.location.href);
+                        loginUrl.searchParams.set("next", window.location.pathname + window.location.search + window.location.hash);
+                        window.location.href = loginUrl.href;
+                    }, 280);
+                    return;
+                }
+                const podcastId = Number(id);
+                if (!Number.isFinite(podcastId)) return;
+                const wasFavorite = favoriteIds.has(podcastId);
+                if (wasFavorite) { favoriteIds.delete(podcastId); totalFavoriteCount = Math.max(0, totalFavoriteCount - 1); }
+                else { favoriteIds.add(podcastId); totalFavoriteCount += 1; }
+                syncFavoriteButtons(podcastId);
+                updateStats();
+                scheduleFavoriteWrite(podcastId, !wasFavorite);
+            }
 
             /* =========================================================
                PODCAST RENDER
@@ -5773,7 +5688,8 @@ LOGOUT
                                                                                                                         class="favorite ${fav ? "active" : ""}"
                                                                                                                         data-action="favorite"
                                                                                                                         data-id="${id}"
-                                                                                                                        aria-label="علاقه‌مندی">
+                                                                                                                        aria-label="${fav ? "حذف از علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها"}"
+                                                                                                                        aria-pressed="${fav ? "true" : "false"}>
 
                                                                                                                         <i class="${fav ? "fa-solid" : "fa-regular"} fa-heart"></i>
 
@@ -6395,6 +6311,8 @@ LOGOUT
                     cover.src = p.cover_url || placeholder;
                     cover.alt = p.title || "NightCast";
                 }
+                [document.getElementById("ncPlayerLike"), document.getElementById("ncNowLike")].filter(Boolean).forEach(button => { button.dataset.likeId = String(p.id); button.hidden = false; });
+                syncFavoriteButtons(p.id);
                 setText("ncNowTitle", p.title || "بدون عنوان");
                 setText("ncNowAuthor", p.author_name || "NightCast Radio");
                 setText("ncNowDescription", p.description || p.summary || "توضیحی برای این پادکست ثبت نشده است.");
@@ -6883,6 +6801,8 @@ LOGOUT
             document.getElementById("ncNowToggle")?.addEventListener("click", togglePlay);
             document.getElementById("ncNowPrev")?.addEventListener("click", () => nextPodcast(-1));
             document.getElementById("ncNowNext")?.addEventListener("click", () => nextPodcast(1));
+            document.getElementById("ncPlayerLike")?.addEventListener("click", () => { if (state.current) toggleFavorite(state.current.id); });
+            document.getElementById("ncNowLike")?.addEventListener("click", () => { if (state.current) toggleFavorite(state.current.id); });
             document.getElementById("ncNowProgress")?.addEventListener("input", e => {
                 if (els.audio.duration) els.audio.currentTime = (Number(e.target.value) / 100) * els.audio.duration;
             });

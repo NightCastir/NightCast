@@ -1180,6 +1180,26 @@
                 @media(max-width:650px){.nc-now-top{padding-inline:14px}.nc-now-scroll{padding:20px 18px calc(26px + env(safe-area-inset-bottom))}.nc-now-hero{grid-template-columns:1fr;text-align:center;gap:20px}.nc-now-art{width:min(72vw,290px);margin:0 auto;border-radius:20px}.nc-now-book{margin-inline:auto}.nc-now-controls{margin:24px 0 14px}.nc-now-section{text-align:right;margin-top:28px}.nc-now-title{font-size:1.5rem}.nc-now-author{font-size:.88rem}}
                 @media(prefers-reduced-motion:reduce){.nc-now-playing{transition:none}}
 
+                /* Members-only download login dialog */
+                .nc-download-auth{position:fixed;inset:0;z-index:4000;display:grid;place-items:center;padding:20px;background:rgba(2,7,15,.72);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s ease,visibility .22s ease}
+                .nc-download-auth.open{opacity:1;visibility:visible;pointer-events:auto}
+                .nc-download-auth-card{position:relative;width:min(100%,440px);padding:32px 26px 24px;border:1px solid rgba(255,255,255,.1);border-radius:25px;background:radial-gradient(circle at 50% 0,rgba(5,157,249,.18),transparent 45%),#101a29;box-shadow:0 25px 90px rgba(0,0,0,.48);text-align:center;transform:translateY(14px) scale(.98);transition:transform .22s ease;color:#f5f7fb}
+                .nc-download-auth.open .nc-download-auth-card{transform:none}
+                .nc-download-auth-icon{width:66px;height:66px;margin:0 auto 18px;border-radius:21px;display:grid;place-items:center;background:rgba(5,157,249,.13);border:1px solid rgba(5,157,249,.3);color:#38b7ff;font-size:1.55rem}
+                .nc-download-auth-close{position:absolute;top:13px;inset-inline-end:13px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.06);color:#c7d1df;font-size:1rem}
+                .nc-download-auth-kicker{color:#e9be70;font-size:.77rem;font-weight:800;letter-spacing:.04em}
+                .nc-download-auth-card h2{font-size:1.35rem;line-height:1.6;margin:10px 0 8px;color:#fff}
+                .nc-download-auth-card p{font-size:.92rem;line-height:1.95;color:#b7c3d3;margin:0 auto 22px;max-width:350px}
+                .nc-download-auth-actions{display:grid;gap:10px}
+                .nc-download-auth-actions button{min-height:47px;border-radius:13px;font:inherit;font-weight:700;cursor:pointer}
+                .nc-download-auth-primary{background:#059df9;color:#fff;box-shadow:0 8px 22px rgba(5,157,249,.18)}
+                .nc-download-auth-primary:hover{background:#20aaff}
+                .nc-download-auth-secondary{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);color:#d4deea}
+                .nc-download-auth-card small{display:block;margin-top:18px;color:#8291a6;font-size:.72rem;line-height:1.8}
+                .nc-download-auth-card small i{color:#65d6ac;margin-inline-end:4px}
+                @media(max-width:480px){.nc-download-auth-card{padding:29px 20px 22px;border-radius:22px}.nc-download-auth-card h2{font-size:1.2rem}}
+                @media(prefers-reduced-motion:reduce){.nc-download-auth,.nc-download-auth-card{transition:none}}
+
                 /* =========================================================
                    RESPONSIVE
                 ========================================================= */
@@ -4508,6 +4528,52 @@
             }
 
 
+            function showDownloadLoginPrompt(onContinue) {
+                // Use a polished in-page dialog instead of an abrupt redirect.
+                let dialog = document.getElementById("ncDownloadLoginDialog");
+                if (!dialog) {
+                    dialog = document.createElement("div");
+                    dialog.id = "ncDownloadLoginDialog";
+                    dialog.className = "nc-download-auth";
+                    dialog.setAttribute("role", "dialog");
+                    dialog.setAttribute("aria-modal", "true");
+                    dialog.setAttribute("aria-labelledby", "ncDownloadAuthTitle");
+                    dialog.innerHTML = `
+                        <div class="nc-download-auth-card">
+                            <div class="nc-download-auth-icon"><i class="fa-solid fa-headphones"></i></div>
+                            <button type="button" class="nc-download-auth-close" aria-label="بستن پیام"><i class="fa-solid fa-xmark"></i></button>
+                            <span class="nc-download-auth-kicker">عضویت در NightCast</span>
+                            <h2 id="ncDownloadAuthTitle">این پادکست منتظر شماست!</h2>
+                            <p>برای ذخیره و دانلود پادکست‌ها، لطفاً وارد حساب کاربری‌تان شوید یا به خانوادهٔ NightCast بپیوندید.</p>
+                            <div class="nc-download-auth-actions">
+                                <button type="button" class="nc-download-auth-primary" data-auth-continue><i class="fa-solid fa-arrow-right-to-bracket"></i> ورود به حساب کاربری</button>
+                                <button type="button" class="nc-download-auth-secondary" data-auth-cancel>فعلاً نه</button>
+                            </div>
+                            <small><i class="fa-solid fa-shield-heart"></i> سریع، ساده و محترمانه؛ بعد از ورود می‌توانید دانلود را انجام دهید.</small>
+                        </div>`;
+                    document.body.appendChild(dialog);
+                    dialog.querySelector(".nc-download-auth-close").addEventListener("click", () => dialog.classList.remove("open"));
+                    dialog.querySelector("[data-auth-cancel]").addEventListener("click", () => dialog.classList.remove("open"));
+                    dialog.addEventListener("click", e => {
+                        if (e.target === dialog) dialog.classList.remove("open");
+                    });
+                    dialog.querySelector("[data-auth-continue]").addEventListener("click", () => {
+                        const action = dialog._onContinue;
+                        dialog.classList.remove("open");
+                        if (typeof action === "function") action();
+                    });
+                    dialog._escapeHandler = e => {
+                        if (e.key === "Escape" && dialog.classList.contains("open")) dialog.classList.remove("open");
+                    };
+                    document.addEventListener("keydown", dialog._escapeHandler);
+                }
+                dialog._onContinue = onContinue;
+                requestAnimationFrame(() => {
+                    dialog.classList.add("open");
+                    dialog.querySelector("[data-auth-continue]")?.focus({ preventScroll: true });
+                });
+            }
+
             function toast(msg) {
 
                 els.toast.textContent =
@@ -6547,6 +6613,18 @@ LOGOUT
             ========================================================= */
 
             function downloadPodcast(id) {
+
+                // Downloading podcast audio is a members-only feature.
+                // Keep the destination URL so the login page can return users here.
+                if (!isLoggedIn()) {
+                    const next = window.location.pathname + window.location.search + window.location.hash;
+                    const loginUrl = new URL(CONFIG.LOGIN_PAGE, window.location.href);
+                    loginUrl.searchParams.set("next", next);
+                    showDownloadLoginPrompt(() => {
+                        window.location.href = loginUrl.href;
+                    });
+                    return;
+                }
 
                 const p =
                     state.all.find(

@@ -5721,41 +5721,46 @@ LOGOUT
 
 
             function updateCardPlaying() {
+                const currentId = state.current ? Number(state.current.id) : null;
+                const isPlaying = !!currentId && !els.audio.paused && !els.audio.ended;
 
-                $$(".podcast-card")
-                    .forEach(card => {
+                $$(".podcast-card").forEach(card => {
+                    const cardId = Number(card.dataset.id);
+                    const isCurrent = currentId !== null && cardId === currentId;
+                    const playing = isCurrent && isPlaying;
 
-                        const id =
-                            Number(
-                                card.dataset.id
-                            );
+                    // Keep every play control for this podcast in sync,
+                    // including the cover overlay and the card's lower action button.
+                    card.querySelectorAll('[data-action="play"]').forEach(button => {
+                        const icon = button.querySelector("i");
+                        if (icon) icon.className = playing
+                            ? "fa-solid fa-pause"
+                            : "fa-solid fa-play";
 
+                        button.setAttribute("aria-label", playing
+                            ? "توقف موقت پادکست " + (state.current?.title || "")
+                            : "پخش " + (card.querySelector(".podcast-title")?.textContent?.trim() || ""));
 
-                        const playing =
-                            state.current &&
-                            Number(
-                                state.current.id
-                            ) === id &&
-                            !els.audio.paused;
-
-
-                        const b =
-                            card.querySelector(
-                                '[data-action="play"] i'
-                            );
-
-
-                        if (b) {
-
-                            b.className =
-                                playing
-                                    ? "fa-solid fa-pause"
-                                    : "fa-solid fa-play";
-
-                        }
-
+                        button.setAttribute("aria-pressed", playing ? "true" : "false");
+                        button.classList.toggle("is-playing", playing);
                     });
 
+                    card.classList.toggle("is-playing", playing);
+                });
+
+                // Keep the featured/hero play button synchronized too.
+                if (els.latestPlay) {
+                    const latest = state.all.find(p => Number(p.id) === currentId);
+                    const icon = els.latestPlay.querySelector("i");
+                    const isLatestPlaying = !!latest && isPlaying;
+                    if (icon) icon.className = isLatestPlaying
+                        ? "fa-solid fa-pause"
+                        : "fa-solid fa-play";
+                    els.latestPlay.setAttribute("aria-label", isLatestPlaying
+                        ? "توقف موقت پادکست " + (latest.title || "")
+                        : "پخش آخرین پادکست");
+                    els.latestPlay.setAttribute("aria-pressed", isLatestPlaying ? "true" : "false");
+                }
             }
 
 
@@ -6228,17 +6233,17 @@ LOGOUT
 
                 els.audio
                     .play()
-                    .then(
-                        updateMediaSession
-                    )
-                    .catch(
-                        () =>
-                            toast(
-                                "امکان پخش فایل صوتی وجود ندارد."
-                            )
-                    );
+                    .then(() => {
+                        updateMediaSession();
+                        updateCardPlaying();
+                    })
+                    .catch(() => {
+                        updateCardPlaying();
+                        toast("امکان پخش فایل صوتی وجود ندارد.");
+                    });
 
-
+                // Reflect the selected podcast immediately; the audio events
+                // below will confirm the final playing/paused state.
                 updateCardPlaying();
 
             }
@@ -6516,10 +6521,11 @@ LOGOUT
                     if (
                         action === "play"
                     ) {
-        
-                        playPodcast(
-                            id
-                        );
+                        if (state.current && Number(state.current.id) === Number(id)) {
+                            togglePlay();
+                        } else {
+                            playPodcast(id);
+                        }
         
                     }
         
@@ -6703,27 +6709,20 @@ LOGOUT
             els.audio.addEventListener(
                 "play",
                 () => {
-        
-                    els.playIcon.className =
-                        "fa-solid fa-pause";
-        
+                    els.playIcon.className = "fa-solid fa-pause";
                     updateCardPlaying();
-        
                 }
             );
-        
-        
+
             els.audio.addEventListener(
                 "pause",
                 () => {
-        
-                    els.playIcon.className =
-                        "fa-solid fa-play";
-        
+                    els.playIcon.className = "fa-solid fa-play";
                     updateCardPlaying();
-        
                 }
             );
+
+            els.audio.addEventListener("ended", updateCardPlaying);
         
         
             els.audio.addEventListener(

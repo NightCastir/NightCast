@@ -202,3 +202,63 @@ Endpointها:
 ## وضعیت تکمیل مستندات
 
 بخش GitHub Actions و ساخت APK بر اساس Workflow ارائه‌شده مستند شده است. تحلیل کامل Cloudflare و Workerها به دسترسی به کد Workerها و تنظیمات واقعی حساب Cloudflare نیاز دارد. برای تکمیل آن، فهرست Workerها، کد آن‌ها، Routeها، Bindingها و رکوردهای DNS مرتبط باید بررسی شوند. مقادیر محرمانه نباید ارسال شوند.
+
+
+🔐 Android APK Signing (GitHub Actions)
+
+NightCast uses GitHub Actions to build Android APK files. The release build can use a custom Android Keystore to sign the APK.
+
+To enable release signing, configure the following repository secrets in GitHub.
+
+Navigation: Repository → Settings → Secrets and variables → Actions → Repository secrets
+
+Secret Name| Description
+"ANDROID_KEYSTORE_BASE64"| The Android Keystore file encoded as a Base64 string.
+"KEYSTORE_PASSWORD"| The password used to access the Keystore.
+"KEY_ALIAS"| The alias identifying the signing key inside the Keystore.
+"KEY_PASSWORD"| The password associated with the signing key.
+
+How It Works
+
+1. GitHub Actions reads the configured signing secrets.
+2. The Base64-encoded Keystore is decoded into a temporary Keystore file.
+3. Gradle uses the Keystore, alias, and passwords to sign the release APK.
+4. The workflow separately builds the debug APK using Android's default debug-signing configuration.
+
+Custom release signing requires a valid Keystore and matching credentials. Defining the secrets alone does not guarantee a successful build.
+
+Generating the Base64 Keystore Value
+
+If you already have a valid Android Keystore file, encode it as Base64 before adding it to GitHub Secrets.
+
+For example, on Linux or macOS:
+
+base64 -w 0 release-key.jks
+
+On macOS, if the "-w" option is unavailable, use:
+
+base64 < release-key.jks | tr -d '\n'
+
+Copy the resulting Base64 string into the "ANDROID_KEYSTORE_BASE64" repository secret.
+
+Security Requirements
+
+- Never commit the Keystore file, its passwords, or the actual secret values to the repository.
+- Never include secret values in this README or in GitHub Actions logs.
+- Store a secure backup of the original Keystore and its credentials.
+- Keep the same signing key for future updates to an app distributed using that key, unless the applicable Android signing or key-upgrade process allows a change.
+- Restrict access to repository secrets and workflows that can use them.
+- If a signing credential is compromised, assess the exposure and follow the appropriate key-rotation or app-signing recovery procedure.
+
+Troubleshooting
+
+If release signing fails, verify that:
+
+- All four required secrets are configured correctly.
+- "ANDROID_KEYSTORE_BASE64" decodes into a valid Keystore file.
+- "KEYSTORE_PASSWORD" is correct.
+- "KEY_ALIAS" matches an alias in the Keystore.
+- "KEY_PASSWORD" is correct for that alias.
+- The GitHub Actions logs do not report a Keystore or signing-configuration error.
+
+Important: The presence of these secrets in GitHub does not prove that release signing is working. Confirm that the release build succeeds and verify the resulting APK's signing certificate.

@@ -1578,6 +1578,10 @@
         /* =========================================================
            NIGHTCAST SLIDING SINGLE-PAGE NAVIGATION
         ========================================================= */
+        main#home {
+            position: relative;
+        }
+
         main#home > .nc-page[hidden] {
             display: none !important;
         }
@@ -8193,7 +8197,7 @@ document.addEventListener(
                         animating = false;
                         setActiveLinks(id);
                         if (options.updateHash !== false && location.hash !== "#" + id) {
-                            history.replaceState(null, "", "#" + id);
+                            history.pushState({ nightcastPage: id }, "", "#" + id);
                         }
                         if (id === "contact" && window.L && window.ncMapInstance) {
                             window.setTimeout(() => window.ncMapInstance.invalidateSize(), 180);

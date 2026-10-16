@@ -1576,6 +1576,62 @@
                 }
     
         /* =========================================================
+           NIGHTCAST SLIDING SINGLE-PAGE NAVIGATION
+        ========================================================= */
+        main#home > .nc-page[hidden] {
+            display: none !important;
+        }
+
+        main#home > .nc-page {
+            position: relative;
+            will-change: transform, opacity;
+        }
+
+        main#home > .nc-page.nc-page-leave {
+            position: absolute;
+            inset-inline: 18px;
+            top: 0;
+            width: calc(100% - 36px);
+            pointer-events: none;
+            opacity: 0;
+            transform: translateX(-28px);
+            transition: opacity .32s ease, transform .32s ease;
+        }
+
+        main#home > .nc-page.nc-page-from-right {
+            opacity: 0;
+            transform: translateX(34px);
+        }
+
+        main#home > .nc-page.nc-page-from-left {
+            opacity: 0;
+            transform: translateX(-34px);
+        }
+
+        main#home > .nc-page.nc-page-enter {
+            opacity: 1;
+            transform: translateX(0);
+            transition: opacity .32s ease, transform .32s cubic-bezier(.22,.7,.2,1);
+        }
+
+        @media (max-width: 800px) {
+            main#home > .nc-page.nc-page-leave {
+                inset-inline: 12px;
+                width: calc(100% - 24px);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            main#home > .nc-page,
+            main#home > .nc-page.nc-page-leave,
+            main#home > .nc-page.nc-page-enter {
+                transition: none !important;
+                transform: none !important;
+                opacity: 1 !important;
+            }
+        }
+
+        /* =========================================================
            NIGHTCAST 2026 — ABOUT / CONTACT EXPERIENCE
            Scoped additions only; existing component styles remain intact.
         ========================================================= */
@@ -8074,45 +8130,122 @@ document.addEventListener(
             }
 
             function bindSectionNavigation() {
-                const links = [
+                const navLinks = [
                     ...document.querySelectorAll(".nc-nav .nav-link"),
                     ...document.querySelectorAll(".mobile-nav a")
                 ];
+                const home = document.querySelector("main#home > .hero");
+                const pages = [
+                    home && { id: "home", element: home },
+                    ...["podcasts", "about", "contact"].map(id => {
+                        const element = document.getElementById(id);
+                        return element ? { id, element } : null;
+                    })
+                ].filter(Boolean);
 
-                const sections = ["home", "podcasts", "about", "contact"]
-                    .map(id => document.getElementById(id))
-                    .filter(Boolean);
+                if (!pages.length) return;
 
-                if (!links.length || !sections.length) return;
+                let activeId = "home";
+                let animating = false;
+                const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-                const setActive = id => {
-                    links.forEach(link => {
-                        const active = link.getAttribute("href") === `#${id}`;
+                function setActiveLinks(id) {
+                    navLinks.forEach(link => {
+                        const active = link.getAttribute("href") === "#" + id;
                         link.classList.toggle("active", active);
+                        if (active) link.setAttribute("aria-current", "page");
+                        else link.removeAttribute("aria-current");
                     });
-                };
+                }
 
-                const observer = new IntersectionObserver(entries => {
-                    const visible = entries
-                        .filter(entry => entry.isIntersecting)
-                        .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+                function showPage(id, options = {}) {
+                    const target = pages.find(page => page.id === id);
+                    if (!target || (id === activeId && !options.force) || animating) return;
 
-                    if (visible[0]) {
-                        setActive(visible[0].target.id);
+                    const previous = pages.find(page => page.id === activeId);
+                    const direction = pages.findIndex(page => page.id === id) >=
+                        pages.findIndex(page => page.id === activeId) ? 1 : -1;
+
+                    animating = true;
+                    pages.forEach(page => {
+                        page.element.classList.remove("nc-page-enter", "nc-page-leave", "nc-page-from-left", "nc-page-from-right");
+                        page.element.setAttribute("aria-hidden", page.id === id ? "false" : "true");
+                        if ("inert" in page.element) page.element.inert = page.id !== id;
+                    });
+
+                    if (previous && previous !== target) {
+                        previous.element.classList.add("nc-page-leave");
                     }
-                }, {
-                    rootMargin: "-20% 0px -55% 0px",
-                    threshold: [0.08, 0.25, 0.5]
+                    target.element.hidden = false;
+                    target.element.classList.add(direction > 0 ? "nc-page-from-right" : "nc-page-from-left");
+
+                    // Force the initial transform to be applied before transitioning in.
+                    void target.element.offsetWidth;
+                    target.element.classList.add("nc-page-enter");
+
+                    window.setTimeout(() => {
+                        pages.forEach(page => {
+                            const isCurrent = page.id === id;
+                            page.element.hidden = !isCurrent;
+                            page.element.classList.remove("nc-page-enter", "nc-page-leave", "nc-page-from-left", "nc-page-from-right");
+                        });
+                        activeId = id;
+                        animating = false;
+                        setActiveLinks(id);
+                        if (options.updateHash !== false && location.hash !== "#" + id) {
+                            history.replaceState(null, "", "#" + id);
+                        }
+                        if (id === "contact" && window.L && window.ncMapInstance) {
+                            window.setTimeout(() => window.ncMapInstance.invalidateSize(), 180);
+                        }
+                        if (options.scroll !== false) {
+                            window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" });
+                        }
+                    }, reducedMotion ? 0 : 360);
+                }
+
+                pages.forEach(page => {
+                    const isHome = page.id === "home";
+                    page.element.hidden = !isHome;
+                    page.element.classList.add("nc-page");
+                    page.element.setAttribute("aria-hidden", isHome ? "false" : "true");
+                    if ("inert" in page.element) page.element.inert = !isHome;
                 });
 
-                sections.forEach(section => observer.observe(section));
+                function handlePageLink(event) {
+                    const link = event.target.closest('a[href^="#"]');
+                    if (!link) return;
+                    const id = link.getAttribute("href").slice(1);
+                    if (!pages.some(page => page.id === id)) return;
+                    event.preventDefault();
+                    showPage(id);
+                }
 
-                links.forEach(link => {
-                    link.addEventListener("click", () => {
-                        const id = link.getAttribute("href")?.slice(1);
-                        if (id) setActive(id);
-                    });
+                document.addEventListener("click", handlePageLink);
+                navLinks.forEach(link => {
+                    const id = link.getAttribute("href")?.slice(1);
+                    if (pages.some(page => page.id === id)) {
+                        link.addEventListener("click", event => {
+                            event.preventDefault();
+                            showPage(id);
+                        });
+                    }
                 });
+
+                const initialId = location.hash.slice(1);
+                if (pages.some(page => page.id === initialId)) {
+                    activeId = "home";
+                    showPage(initialId, { updateHash: false, scroll: false, force: initialId !== "home" });
+                } else {
+                    setActiveLinks("home");
+                }
+
+                window.addEventListener("popstate", () => {
+                    const id = location.hash.slice(1) || "home";
+                    if (pages.some(page => page.id === id)) showPage(id, { updateHash: false });
+                });
+
+                window.NightCastNavigate = showPage;
             }
 
             function bindReveal() {

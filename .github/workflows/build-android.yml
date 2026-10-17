@@ -101,8 +101,25 @@ jobs:
           for (const ref of ['js/auth.js', 'js/cosmic-experience.js', 'js/router.js', 'css/splash.css']) {
             if (!root.includes(ref)) throw new Error('Root page is missing reference: ' + ref);
           }
-          for (const ref of ['../css/nightcast-cosmos.css', '../js/nightcast-cosmos.js']) {
-            if (!archive.includes(ref)) throw new Error('Archive page is missing reference: ' + ref);
+          // Validate asset paths independently from cache-busting versions (?v=1, ?v=2, ?v=3, ...).
+          // A CSS release can advance before its paired JavaScript release; CI must not require a stale query string.
+          const hasVersionedAsset = (html, attribute, expectedPath) => {
+            const expected = new URL(expectedPath, 'https://nightcast.invalid/users/');
+            const attrs = [...html.matchAll(new RegExp('\\\\b' + attribute + '\\\\s*=\\\\s*["\\\\x27]([^"\\\\x27]+)["\\\\x27]', 'gi'))];
+            return attrs.some(match => {
+              try {
+                const url = new URL(match[1], 'https://nightcast.invalid/users/');
+                return url.pathname === expected.pathname && /^\\\\d+$/.test(url.searchParams.get('v') || '');
+              } catch {
+                return false;
+              }
+            });
+          };
+          if (!hasVersionedAsset(archive, 'href', '../css/nightcast-cosmos.css')) {
+            throw new Error('Archive page is missing a versioned NightCast Cosmos CSS reference');
+          }
+          if (!hasVersionedAsset(archive, 'src', '../js/nightcast-cosmos.js')) {
+            throw new Error('Archive page is missing a versioned NightCast Cosmos JavaScript reference');
           }
           console.log('TRUE | Critical JS/CSS assets and page references');
           NODE

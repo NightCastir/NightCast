@@ -235,3 +235,8 @@ footer{background:linear-gradient(180deg,transparent,rgba(2,5,13,.96))!important
 @media(max-width:900px){.nc-planet-list{grid-template-columns:repeat(3,minmax(0,1fr))}.nc-constellation-stage{min-height:350px}.nc-constellation-orbit.nc-orbit-three{width:100%;height:300px}}
 @media(max-width:600px){.nc-constellation{padding:18px 12px;border-radius:22px}.nc-constellation-heading{align-items:flex-start;flex-direction:column;gap:10px}.nc-constellation-stage{min-height:360px}.nc-planet-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.nc-planet{min-height:128px;max-width:145px;background:rgba(4,10,25,.62)}.nc-planet-body{--planet-size:68px}.nc-constellation-sun{width:72px;opacity:.7}.nc-constellation-orbit.nc-orbit-one{width:245px;height:245px}.nc-constellation-orbit.nc-orbit-two{width:320px;height:190px}.nc-constellation-orbit.nc-orbit-three{height:260px}.nc-constellation-count{align-self:flex-start}}
 @media(prefers-reduced-motion:reduce){.nc-planet,.nc-planet-body{transition:none!important}}
+
+/* Prevent decorative orbital bleed from creating horizontal scrolling. */
+html,body{max-width:100%;overflow-x:clip!important}
+.hero:before{inset:3% 0 0 15%!important}
+#podcasts:before,#about:before,#contact:before{inset-inline:0!important}

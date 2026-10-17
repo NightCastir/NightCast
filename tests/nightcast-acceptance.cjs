@@ -192,6 +192,7 @@ function silentWavDataUri() {
       const search = page.locator('#searchInput');
       await search.fill('سیاره آزمایشی اول');
       await page.waitForFunction(() => document.querySelectorAll('#podcastGrid .podcast-card').length === 1);
+      console.log('PASS | Search filters the podcast catalogue');
       assert(await page.locator('#podcastGrid .podcast-card').first().getAttribute('data-id') === '91001', 'Search returned the wrong record');
       await search.fill('');
       await page.waitForFunction(() => document.querySelectorAll('#podcastGrid .podcast-card').length === 2);
@@ -206,11 +207,14 @@ function silentWavDataUri() {
       }, undefined, { timeout: 5000 });
       const audioState = await page.locator('audio').evaluate(el => ({ paused: el.paused, readyState: el.readyState }));
       assert(audioState.readyState >= 2 && audioState.paused === false, 'Audio did not enter playing state');
+      console.log('PASS | Audio entered playing state');
       await page.locator('#playButton').click();
       await page.waitForFunction(() => document.querySelector('audio')?.paused === true, undefined, { timeout: 5000 });
+      console.log('PASS | Audio pause control works');
 
       await page.locator('.podcast-card[data-id="91001"] [data-action="favorite"]').click();
       await page.waitForFunction(() => document.querySelector('.podcast-card[data-id="91001"] [data-action="favorite"]')?.getAttribute('aria-pressed') === 'true', undefined, { timeout: 3000 });
+      console.log('PASS | Favorite state toggled');
 
       await page.locator('.podcast-card[data-id="91001"] [data-action="comments"]').click();
       await page.waitForFunction(() => {
@@ -218,6 +222,7 @@ function silentWavDataUri() {
         return modal && modal.classList.contains('open') && modal.getAttribute('aria-hidden') === 'false';
       }, undefined, { timeout: 3000 });
       assert((await page.locator('#ncCommentsPodcastTitle').innerText()).includes('سیاره آزمایشی اول'), 'Comments opened for the wrong podcast');
+      console.log('PASS | Comments dialog opens for selected podcast');
       report('4. Search, play/pause, favorites and comments work', true, 'Search, audio readiness/pause, favorite state and comments dialog verified');
     } catch (error) {
       report('4. Search, player, favorites and comments controls work', false, String(error.message || error));
@@ -242,7 +247,18 @@ function silentWavDataUri() {
             return { tag: el.tagName, id: el.id, className: typeof el.className === 'string' ? el.className.slice(0, 70) : '', left: Math.round(rect.left), right: Math.round(rect.right), width: Math.round(rect.width), position: getComputedStyle(el).position };
           }).filter(el => el.width > 0 && (el.right > viewport + 3 || el.left < -viewport * 0.5) && el.position !== 'fixed')
             .sort((a,b) => b.right - a.right).slice(0, 5);
-          return { viewport, content: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth), offenders };
+          return {
+            viewport,
+            content: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth),
+            rootScroll: document.documentElement.scrollWidth,
+            bodyScroll: document.body.scrollWidth,
+            bodyMargin: getComputedStyle(document.body).margin,
+            bodyPadding: getComputedStyle(document.body).padding,
+            rootOverflowX: getComputedStyle(document.documentElement).overflowX,
+            bodyOverflowX: getComputedStyle(document.body).overflowX,
+            bodyRect: (() => { const r = document.body.getBoundingClientRect(); return { left:r.left, right:r.right, width:r.width }; })(),
+            offenders
+          };
         });
         if (dims.content > dims.viewport + 3) failures.push(size.name + ': ' + dims.content + 'px > ' + dims.viewport + 'px; elements=' + JSON.stringify(dims.offenders));
       }

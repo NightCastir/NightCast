@@ -1,0 +1,109 @@
+/* NightCast responsive + UI hardening layer
+   Loaded after the page's original styles. Keep all content inside the viewport. */
+:root { color-scheme: dark; }
+html {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+  scroll-padding-top: 88px;
+}
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+*, *::before, *::after { box-sizing: border-box; }
+img, picture, video, iframe, canvas, svg { max-width: 100%; }
+button, input, textarea, select { max-width: 100%; }
+button, a { -webkit-tap-highlight-color: transparent; }
+:where(.nc-header, .nc-nav, .hero, .hero-actions, .podcast-grid, .podcast-card,
+  .podcast-info, .card-footer, .nc-about, .nc-about-shell, .nc-about-hero,
+  .nc-mission-grid, .nc-stat-grid, .nc-social-grid, .nc-contact,
+  .nc-contact-shell, .nc-contact-grid, .nc-footer, .nc-detail-dialog,
+  .nc-comments-card, .nc-now-playing) { min-width: 0; max-width: 100%; }
+:where(.hero, .nc-about, .nc-contact, .nc-footer, #podcasts) { scroll-margin-top: 90px; }
+.podcast-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)) !important;
+  min-width: 0;
+}
+.podcast-card {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.podcast-card img, .podcast-cover img { display: block; max-width: 100%; }
+.podcast-info, .podcast-title, .podcast-desc { min-width: 0; overflow-wrap: anywhere; }
+.card-footer { display: flex; flex-wrap: wrap; align-items: center; }
+.card-footer > *, .hero-actions > * { min-width: 0; max-width: 100%; }
+.nc-nav { min-width: 0; max-width: 100%; }
+.nav-links { min-width: 0; }
+.icon-btn, .nc-menu-toggle, .nc-drawer-close, .nc-detail-close,
+.nc-comments-close { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; }
+.nc-detail-dialog, .nc-comments-card {
+  width: min(100%, 920px);
+  max-width: calc(100vw - 24px);
+  max-height: calc(100dvh - 24px);
+  overflow: hidden;
+}
+.nc-detail-scroll, .nc-comments-list { min-width: 0; overflow: auto; overscroll-behavior: contain; }
+.nc-comments-compose textarea { width: 100%; min-width: 0; }
+.nc-map { width: 100%; max-width: 100%; }
+@media (min-width: 1200px) {
+  .podcast-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+}
+@media (min-width: 1600px) {
+  .podcast-grid { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+}
+@media (max-width: 900px) {
+  .hero { grid-template-columns: minmax(0, 1fr); }
+  .nc-nav { gap: 10px; }
+  .nav-link { min-width: 0; }
+  .nc-about-shell, .nc-contact-shell { padding-inline: clamp(14px, 3vw, 28px); }
+  .nc-contact-grid, .nc-mission-grid, .nc-social-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 650px) {
+  main { min-width: 0; }
+  .nc-header { height: auto; min-height: var(--nc-header, 64px); }
+  .nc-nav { height: auto; min-height: var(--nc-header, 64px); flex-wrap: wrap; padding-block: 8px; }
+  .nav-links {
+    order: 3;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+  }
+  .nav-link { flex: 0 0 auto; white-space: nowrap; }
+  .header-actions { margin-inline-start: auto; }
+  .hero { padding-inline: 14px; }
+  .hero h1 { font-size: clamp(1.8rem, 8vw, 2.7rem); line-height: 1.35; overflow-wrap: anywhere; }
+  .hero-actions { flex-wrap: wrap; }
+  .podcast-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  .podcast-card { grid-template-columns: minmax(84px, 30%) minmax(0, 1fr); }
+  .podcast-info { padding-inline: clamp(10px, 3vw, 18px); }
+  .card-footer { gap: 8px; }
+  .card-footer > button, .card-footer > a { flex: 1 1 auto; }
+  .nc-contact-grid, .nc-mission-grid, .nc-social-grid, .nc-stat-grid { grid-template-columns: minmax(0, 1fr); }
+  .nc-detail-dialog, .nc-comments-card { max-width: calc(100vw - 16px); max-height: calc(100dvh - 16px); }
+  .nc-detail-scroll { padding-inline: 14px; }
+  .nc-now-playing { max-width: 100vw; }
+}
+@media (max-width: 380px) {
+  .nc-nav { padding-inline: 10px; }
+  .hero { padding-inline: 10px; }
+  .hero h1 { font-size: clamp(1.6rem, 8vw, 2rem); }
+  .podcast-card { grid-template-columns: 76px minmax(0, 1fr); }
+  .podcast-info { padding-inline: 9px; }
+  .nc-about-shell, .nc-contact-shell { padding-inline: 10px; }
+  .hero-actions { flex-direction: column; align-items: stretch; }
+  .hero-actions > * { width: 100%; }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .nc-detail-dialog, .nc-comments-card { max-height: calc(100dvh - 12px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}

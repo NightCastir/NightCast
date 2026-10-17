@@ -2,7 +2,8 @@
     "use strict";
 
     const CURRENT_VERSION = window.NIGHTCAST_APP_VERSION || "0.0.0";
-    const VERSION_URL = "https://www.nightcast.ir/version.json";
+    // Keep version checks same-origin for web and Capacitor builds; avoid CORS failures.
+    const VERSION_URL = new URL("/version.json", window.location.href).href;
 
     function compareVersions(a, b) {
         const left = String(a).split(".").map(Number);

@@ -1,0 +1,51 @@
+name: NightCast Acceptance Checks
+
+on:
+  push:
+    branches:
+      - feat/cinematic-cosmos-redesign
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-acceptance:
+    name: Browser and API acceptance checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install browser and static-analysis dependencies
+        run: npm install --no-save playwright lightningcss yaml
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Validate GitHub Actions workflow semantics
+        run: go run github.com/rhysd/actionlint/cmd/actionlint@latest -color
+
+      - name: Run browser and API acceptance checks
+        run: node tests/nightcast-acceptance.cjs
+
+      - name: Publish acceptance results
+        if: always()
+        run: |
+          {
+            echo "## NightCast acceptance results"
+            echo ""
+            echo "- Static and browser gates cover HTML, JavaScript syntax/runtime, CSS parsing, YAML parsing, local asset/anchor integrity, sticky header and CDN icons, live API, splash navigation, constellation details, player controls, responsive overflow, and mobile navigation."
+            echo "- Android APK build status is reported separately by the Build NightCast Android APK workflow; this job does not claim that an APK was built."
+            echo ""
+            echo "The browser/API tests use mock podcast records for UI interaction tests; the live API check independently queries the real public API."
+          } >> "$GITHUB_STEP_SUMMARY"

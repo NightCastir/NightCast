@@ -550,14 +550,30 @@ function silentWavDataUri() {
               if (!title || !hero) return { missing: true };
               const titleRect = title.getBoundingClientRect();
               const heroRect = hero.getBoundingClientRect();
+              const heroStyle = getComputedStyle(hero);
+              const paddingLeft = parseFloat(heroStyle.paddingLeft) || 0;
+              const paddingRight = parseFloat(heroStyle.paddingRight) || 0;
+              const safeGutter = window.innerWidth >= 1100
+                ? Math.min(60, Math.max(24, window.innerWidth * 0.05))
+                : window.innerWidth >= 761
+                  ? Math.min(40, Math.max(20, window.innerWidth * 0.04))
+                  : 14;
+              const titleVisible = titleRect.width > 0 && titleRect.height > 0;
               return {
+                visible: titleVisible,
                 clientWidth: title.clientWidth,
                 scrollWidth: title.scrollWidth,
                 left: Math.round(titleRect.left),
                 right: Math.round(titleRect.right),
                 heroLeft: Math.round(heroRect.left),
                 heroRight: Math.round(heroRect.right),
-                overflow: title.scrollWidth > title.clientWidth + 2 || titleRect.left < heroRect.left - 2 || titleRect.right > heroRect.right + 2
+                paddingLeft,
+                paddingRight,
+                safeGutter,
+                overflow: title.scrollWidth > title.clientWidth + 2 ||
+                  paddingLeft < safeGutter - 1 ||
+                  paddingRight < safeGutter - 1 ||
+                  (titleVisible && (titleRect.left < heroRect.left + safeGutter || titleRect.right > heroRect.right - safeGutter))
               };
             })()
           };

@@ -310,17 +310,22 @@ html,body{max-width:100%;overflow-x:clip!important}
 }
 
 
-/* Live visual audit v5: keep the large Persian hero title inside the desktop grid. */
+/* Live visual audit v7: constrain the hero title and preserve safe gutters at every layout size. */
+main#home .hero > div:first-child{min-width:0;max-width:100%}
+main#home .hero h1{max-width:100%;overflow-wrap:normal;word-break:normal}
 @media (min-width:1100px){
-  main#home .hero > div:first-child{min-width:0;max-width:100%}
+  main#home .hero{padding-inline:clamp(24px,5vw,84px)!important}
   main#home .hero h1{
-    max-width:100%;
     font-size:clamp(2.6rem,4.7vw,5.4rem)!important;
     line-height:1.28!important;
-    overflow-wrap:normal;
-    word-break:normal;
   }
-  main#home .hero h1 span{max-width:100%;}
+  main#home .hero h1 span{max-width:100%}
+}
+@media (min-width:761px) and (max-width:1099px){
+  main#home .hero{padding-inline:clamp(22px,4vw,40px)!important}
+}
+@media (max-width:760px){
+  main#home .hero{padding-inline:18px!important}
 }
 
 

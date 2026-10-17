@@ -165,11 +165,21 @@ function silentWavDataUri() {
         const el = document.querySelector('audio');
         return !!el && !!el.src && el.readyState >= 2;
       }, { timeout: 5000 });
-      await page.locator('#playButton').click().catch(() => {});
+      const audioState = await page.locator('audio').evaluate(el => ({ paused: el.paused, readyState: el.readyState }));
+      assert(audioState.readyState >= 2, 'Audio source did not become ready');
+      await page.locator('#playButton').click();
+      await page.waitForFunction(() => document.querySelector('audio')?.paused === true, { timeout: 5000 });
+
       await page.locator('.podcast-card[data-id="91001"] [data-action="favorite"]').click();
-      await page.waitForTimeout(150);
-      assert(await page.locator('.podcast-card[data-id="91001"] [data-action="favorite"]').count() === 1, 'Favorite control disappeared');
-      report('4. Search, player, favorites and comments controls work', true, 'Search and player verified; favorite/comment controls are wired');
+      await page.waitForFunction(() => document.querySelector('.podcast-card[data-id="91001"] [data-action="favorite"]')?.getAttribute('aria-pressed') === 'true', { timeout: 3000 });
+
+      await page.locator('.podcast-card[data-id="91001"] [data-action="comments"]').click();
+      await page.waitForFunction(() => {
+        const modal = document.querySelector('#ncCommentsModal');
+        return modal && modal.classList.contains('open') && modal.getAttribute('aria-hidden') === 'false';
+      }, { timeout: 3000 });
+      assert((await page.locator('#ncCommentsPodcastTitle').innerText()).includes('سیاره آزمایشی اول'), 'Comments opened for the wrong podcast');
+      report('4. Search, play/pause, favorites and comments work', true, 'Search, audio readiness/pause, favorite state and comments dialog verified');
     } catch (error) {
       report('4. Search, player, favorites and comments controls work', false, String(error.message || error));
     }

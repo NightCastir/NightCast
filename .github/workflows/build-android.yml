@@ -36,6 +36,22 @@ jobs:
         with:
           node-version: '22'
 
+      # ============================================================
+      # 3. Java 17
+      # ============================================================
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Verify Java
+        run: |
+          set -e
+          java -version
+          javac -version
+          echo "JAVA_HOME=$JAVA_HOME"
+
       - name: Check JavaScript syntax
         run: |
           set -euo pipefail
@@ -136,21 +152,6 @@ jobs:
 
           sdkmanager --list_installed
 
-      # ============================================================
-      # 3. Java 17
-      # ============================================================
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: '21'
-
-      - name: Verify Java
-        run: |
-          set -e
-          java -version
-          javac -version
-          echo "JAVA_HOME=$JAVA_HOME"
 
       # ============================================================
       # 6. Create clean Capacitor configuration
@@ -1147,6 +1148,7 @@ jobs:
       # 17. Build Debug APK
       # ============================================================
       - name: Build Debug APK
+        id: build_debug
         run: |
           set -e
 
@@ -1194,6 +1196,7 @@ jobs:
       # 19. Build Release APK
       # ============================================================
       - name: Build Release APK
+        id: build_release
         run: |
           set -e
 
@@ -1230,6 +1233,7 @@ jobs:
       # 20. Verify APK output
       # ============================================================
       - name: Verify APKs
+        id: verify_apks
         run: |
           set -e
 
@@ -1312,3 +1316,19 @@ jobs:
           echo "========================================"
           echo "              BUILD DONE"
           echo "========================================"
+
+      - name: Report Android APK build TRUE/FALSE
+        if: always()
+        env:
+          DEBUG_OUTCOME: ${{ steps.build_debug.outcome }}
+          RELEASE_OUTCOME: ${{ steps.build_release.outcome }}
+          APK_VERIFY_OUTCOME: ${{ steps.verify_apks.outcome }}
+        run: |
+          if [ "$DEBUG_OUTCOME" = "success" ] && [ "$RELEASE_OUTCOME" = "success" ] && [ "$APK_VERIFY_OUTCOME" = "success" ]; then
+            echo "TRUE | 6. Android Debug and Release APK build"
+            echo "TRUE | 6. Android Debug and Release APK build" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "FALSE | 6. Android Debug and Release APK build (debug=$DEBUG_OUTCOME, release=$RELEASE_OUTCOME, verify=$APK_VERIFY_OUTCOME)"
+            echo "FALSE | 6. Android Debug and Release APK build (debug=$DEBUG_OUTCOME, release=$RELEASE_OUTCOME, verify=$APK_VERIFY_OUTCOME)" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi

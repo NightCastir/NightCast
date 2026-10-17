@@ -32,6 +32,14 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Check JavaScript syntax
+        run: |
+          set -euo pipefail
+          echo "Checking JavaScript syntax in repository files..."
+          find . -path './.git' -prune -o -path './node_modules' -prune -o -type f -name '*.js' -print0 \
+            | xargs -0 -r -n1 node --check
+          echo "JavaScript syntax checks passed."
+
       - name: Install npm dependencies
         run: |
           set -e

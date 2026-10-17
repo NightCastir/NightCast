@@ -71,6 +71,9 @@ function silentWavDataUri() {
     await context.addInitScript(() => {
       localStorage.setItem('NightCastToken', 'ci-test-token');
       localStorage.setItem('NightCastUser', JSON.stringify({ id: 1, name: 'CI Test' }));
+      if (navigator.serviceWorker) {
+        navigator.serviceWorker.register = async () => ({ scope: location.origin + '/' });
+      }
     });
     const page = await context.newPage();
     const browserErrors = [];
@@ -115,6 +118,9 @@ function silentWavDataUri() {
       }
       return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true, data: [] }) });
     });
+    const feedFixture = { total: podcasts.length, podcasts };
+    await page.route('https://nightcast.ir/users/data/podcasts.json**', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(feedFixture) }));
+    await page.route('https://www.nightcast.ir/users/data/podcasts.json**', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(feedFixture) }));
     await page.route('https://www.nightcast.ir/version.json**', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ version: '4.1.0' }) }));
     await page.route(/https:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|cdnjs\.cloudflare\.com|unpkg\.com)\//, route => route.abort());
 

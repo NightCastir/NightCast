@@ -1,0 +1,26 @@
+/* NightCast Cosmic Experience — responsive visual system */
+:root{--nc-space:#030611;--nc-nebula:#18245b;--nc-star:#c7eaff;--nc-lilac:#c8b5ff;--nc-line:rgba(174,201,255,.16)}
+html{background:var(--nc-space)}body{background:transparent!important;color:#edf2ff}
+body::before{content:"";position:fixed;inset:0;z-index:-3;pointer-events:none;background:radial-gradient(ellipse at 16% 18%,rgba(47,83,178,.24),transparent 34%),radial-gradient(ellipse at 82% 35%,rgba(108,44,164,.18),transparent 32%),radial-gradient(ellipse at 48% 100%,rgba(17,94,145,.2),transparent 42%),#030611}
+#nc-cosmos{position:fixed;inset:0;width:100%;height:100%;z-index:-2;pointer-events:none;opacity:.75}
+.nc-header{background:rgba(3,7,18,.78)!important;border-bottom:1px solid var(--nc-line)!important;backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
+.nc-nav{max-width:1540px;gap:clamp(8px,1.5vw,24px)}.brand-mark{border-radius:50%!important;background:radial-gradient(circle at 30% 25%,#c5efff,#588bff 45%,#30236d 100%)!important;box-shadow:0 0 25px rgba(100,164,255,.3)}
+.nav-link{border-radius:999px;transition:color .25s,background .25s,transform .25s}.nav-link:hover,.nav-link.active{color:#fff!important;background:rgba(122,161,255,.12)!important}
+.nc-page h1,.nc-page h2,.nc-page h3{letter-spacing:-.025em}
+.nc-page .hero,.nc-page .archive-hero,.nc-page .page-hero,.nc-about-hero,.nc-contact-hero{background:radial-gradient(ellipse at 50% 0,rgba(100,115,255,.19),transparent 60%),linear-gradient(145deg,rgba(8,16,39,.94),rgba(5,10,25,.86))!important;border:1px solid var(--nc-line)!important;border-radius:clamp(18px,2vw,30px);box-shadow:0 24px 90px rgba(0,0,0,.22)}
+.btn,.icon-btn,.play-card,.latest-play{transition:transform .24s ease,box-shadow .24s ease,border-color .24s ease}.btn{border-radius:999px}.btn:hover,.icon-btn:hover{transform:translateY(-2px)}
+.btn-primary,.primary-btn{background:linear-gradient(120deg,#8be4ff,#8b9eff 60%,#c5a9ff)!important;color:#071023!important;box-shadow:0 8px 28px rgba(106,151,255,.19)}
+.stats .stat,.nc-mission-card,.nc-contact-card,.nc-social-card{background:linear-gradient(145deg,rgba(13,25,55,.82),rgba(5,11,28,.8))!important;border-color:var(--nc-line)!important;border-radius:18px;backdrop-filter:blur(14px)}
+.podcast-grid{gap:clamp(12px,1.6vw,24px)}.podcast-card{position:relative;background:linear-gradient(155deg,rgba(15,27,57,.9),rgba(4,9,24,.95))!important;border:1px solid var(--nc-line)!important;border-radius:22px!important;box-shadow:0 15px 45px rgba(0,0,0,.2);transition:transform .38s cubic-bezier(.2,.7,.2,1),border-color .3s,box-shadow .3s;overflow:hidden}
+.podcast-card:hover{transform:translateY(-5px);border-color:rgba(151,193,255,.45)!important;box-shadow:0 24px 65px rgba(0,0,0,.35),0 0 32px rgba(94,134,255,.1)}.podcast-cover{background:#080f25}.podcast-cover img{transition:transform .65s cubic-bezier(.2,.7,.2,1);filter:saturate(.9)}.podcast-card:hover .podcast-cover img{transform:scale(1.045)}
+.podcast-title{color:#f4f6ff!important}.podcast-desc{color:#a6b4d2!important}.meta{color:#9aa9ca}
+input,textarea,select{background:rgba(5,12,31,.88)!important;color:#eef2ff!important;border-color:var(--nc-line)!important;border-radius:14px!important}
+input:focus,textarea:focus,select:focus{outline:none;border-color:rgba(143,190,255,.6)!important;box-shadow:0 0 0 3px rgba(100,145,255,.12)!important}
+.social-menu,.modal,.modal-content,.dropdown-menu,.nc-mobile-drawer,.nc-now-playing{background:rgba(5,11,28,.97)!important;border-color:var(--nc-line)!important;box-shadow:0 25px 80px rgba(0,0,0,.5)!important;backdrop-filter:blur(22px)}
+.nc-mobile-drawer{background:radial-gradient(circle at 100% 0,rgba(98,87,255,.18),transparent 34%),linear-gradient(155deg,#0c1530,#080b19 76%)!important}.nc-drawer-links a{border-color:rgba(177,202,255,.1)!important;background:rgba(255,255,255,.025)!important}.nc-drawer-icon{color:#9be7ff!important;background:rgba(105,145,255,.13)!important}
+.nc-nav .nav-link::after{background:linear-gradient(90deg,#8bdcff,#c5a9ff)!important}footer,.footer{border-color:var(--nc-line)!important}
+#podcasts .pagination{border-color:var(--nc-line)!important;background:rgba(9,17,38,.72)!important}#podcasts .page-btn.active{border-color:rgba(139,220,255,.6)!important;background:rgba(105,145,255,.2)!important}
+.nc-cosmic-enter{animation:ncCosmicEnter .55s cubic-bezier(.2,.7,.2,1) both}@keyframes ncCosmicEnter{from{opacity:.55;filter:blur(3px);transform:translateY(7px)}to{opacity:1;filter:none;transform:none}}
+@media(max-width:800px){.nc-page .hero,.nc-page .archive-hero,.nc-page .page-hero,.nc-about-hero,.nc-contact-hero{border-radius:20px}.podcast-card:hover{transform:none}}
+@media(max-width:480px){.nc-page .hero,.nc-page .archive-hero,.nc-page .page-hero{padding-inline:16px}.btn{min-height:42px}.nc-header{backdrop-filter:blur(16px)}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}

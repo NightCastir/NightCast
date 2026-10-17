@@ -196,7 +196,7 @@ function silentWavDataUri() {
       await search.fill('');
       await page.waitForFunction(() => document.querySelectorAll('#podcastGrid .podcast-card').length === 2);
 
-      await page.locator('.podcast-card[data-id="91001"] [data-action="play"]').click();
+      await page.locator('.podcast-card[data-id="91001"] [data-action="play"]').first().click();
       await page.waitForSelector('#playerBar.show', { timeout: 5000 });
       assert((await page.locator('#playerTitle').innerText()).includes('سیاره آزمایشی اول'), 'Player title does not match selected podcast');
       const audio = page.locator('audio').first();

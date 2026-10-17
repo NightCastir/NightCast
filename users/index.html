@@ -5720,6 +5720,12 @@ LOGOUT
                 lastPodcastDetailsTrigger?.focus?.({ preventScroll: true });
             }
 
+            document.addEventListener("keydown", event => {
+                if (event.key === "Escape" && document.getElementById("ncPodcastDetail")?.classList.contains("open")) {
+                    closePodcastDetails();
+                }
+            });
+
             function renderCard(p) {
                 const id = Number(p.id);
                 const title = String(p.title || p.book_name || "بدون عنوان");
@@ -6402,11 +6408,22 @@ LOGOUT
                     cover.src = p.cover_url || placeholder;
                     cover.alt = p.title || "NightCast";
                 }
-                [document.getElementById("ncPlayerLike"), document.getElementById("ncNowLike")].filter(Boolean).forEach(button => { button.dataset.likeId = String(p.id); button.hidden = false; });
+                [document.getElementById("ncPlayerLike"), document.getElementById("ncNowLike")].filter(Boolean).forEach(button => {
+                    button.dataset.likeId = String(p.id);
+                    button.hidden = false;
+                });
                 syncFavoriteButtons(p.id);
                 setText("ncNowTitle", p.title || "بدون عنوان");
                 setText("ncNowAuthor", p.author_name || "NightCast Radio");
-                setText("ncNowDescription", p.description || p.summary || "توضیحی برای این پادکست ثبت نشده است.");
+
+                const shortDescription = String(p.description || p.short_description || "").trim();
+                const summary = String(p.summary || "").trim();
+                const descriptionParts = [];
+                if (shortDescription) descriptionParts.push(shortDescription);
+                if (summary && summary !== shortDescription) descriptionParts.push("خلاصه اپیزود:\\n" + summary);
+                if (p.transcript || p.long_description) descriptionParts.push("متن کامل اپیزود در پنجره «جزئیات» کارت پادکست در دسترس است.");
+                setText("ncNowDescription", descriptionParts.join("\\n\\n") || "توضیحی برای این پادکست ثبت نشده است.");
+
                 const book = document.getElementById("ncNowBook");
                 if (book) {
                     book.textContent = p.book_name || "";
@@ -6415,9 +6432,14 @@ LOGOUT
                 const meta = document.getElementById("ncNowMeta");
                 if (meta) {
                     const chips = [];
-                    if (p.category) chips.push(p.category);
-                    if (p.duration) chips.push("مدت: " + p.duration);
-                    if (p.published_at) chips.push("انتشار: " + p.published_at);
+                    const category = p.category_name || p.category;
+                    const duration = formatTime(p.duration_seconds || p.duration || 0);
+                    const published = formatPodcastDate(p.publish_date || p.published_at || p.created_at);
+                    if (category) chips.push(category);
+                    if (duration !== "00:00") chips.push("مدت: " + duration);
+                    if (p.episode_number) chips.push("قسمت: " + p.episode_number);
+                    if (published) chips.push("انتشار: " + published);
+                    if (Number(p.listen_count || 0) > 0) chips.push("پخش: " + Number(p.listen_count).toLocaleString("fa-IR"));
                     meta.innerHTML = chips.map(x => "<span>" + escapeHtml(String(x)) + "</span>").join("");
                 }
                 updateNowPlayingControls();

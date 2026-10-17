@@ -550,6 +550,13 @@ function silentWavDataUri() {
               if (!title || !hero) return { missing: true };
               const titleRect = title.getBoundingClientRect();
               const heroRect = hero.getBoundingClientRect();
+              const safeGutter = window.innerWidth >= 1100
+                ? Math.min(60, Math.max(24, window.innerWidth * 0.05))
+                : window.innerWidth >= 761
+                  ? Math.min(40, Math.max(20, window.innerWidth * 0.04))
+                  : 14;
+              const leftInset = Math.round(titleRect.left - heroRect.left);
+              const rightInset = Math.round(heroRect.right - titleRect.right);
               return {
                 clientWidth: title.clientWidth,
                 scrollWidth: title.scrollWidth,
@@ -557,7 +564,12 @@ function silentWavDataUri() {
                 right: Math.round(titleRect.right),
                 heroLeft: Math.round(heroRect.left),
                 heroRight: Math.round(heroRect.right),
-                overflow: title.scrollWidth > title.clientWidth + 2 || titleRect.left < heroRect.left - 2 || titleRect.right > heroRect.right + 2
+                safeGutter,
+                leftInset,
+                rightInset,
+                overflow: title.scrollWidth > title.clientWidth + 2 ||
+                  titleRect.left < heroRect.left + safeGutter ||
+                  titleRect.right > heroRect.right - safeGutter
               };
             })()
           };

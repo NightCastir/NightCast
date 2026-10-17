@@ -5690,12 +5690,11 @@ LOGOUT
                                                                                                                         aria-label="${fav ? "حذف از علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها"}"
                                                                                                                         aria-pressed="${fav ? "true" : "false"}">
 
-                                                                                                                        <i class="${fav ? "fa-solid" : "fa-regular"} fa-heart"></i>
-
+                                                                                                                        <i class="${fav ? "fa-solid" : "fa-regular"} fa-heart" aria-hidden="true"></i><span class="nc-card-stat-count" data-like-count="${id}" aria-label="تعداد علاقه‌مندی‌ها">۰</span>
                                                                                                                     </button>
 
                                                                                                                     <button type="button" class="nc-comment-action" data-action="comments" data-id="${id}" aria-label="مشاهده و ثبت دیدگاه برای ${title}">
-                                                                                                                        <i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>دیدگاه‌ها</span>
+                                                                                                                        <i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>دیدگاه‌ها</span><b class="nc-card-stat-count" data-comment-count="${id}" aria-label="تعداد دیدگاه‌ها">۰</b>
                                                                                                                     </button>
 
                                                                                                                 </div>
@@ -5768,6 +5767,7 @@ LOGOUT
 
 
                 updateCardPlaying();
+                loadPodcastCardStats();
 
             }
 
@@ -8275,6 +8275,14 @@ document.addEventListener(
             }
         }
     
+/* Podcast card social counts */
+.favorite{width:auto;min-width:42px;padding:0 9px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.nc-card-stat-count{display:inline-flex;align-items:center;justify-content:center;min-width:12px;font-size:11px;font-weight:800;line-height:1.2;color:#c6d5e8;font-variant-numeric:tabular-nums}
+.nc-comment-action{display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.nc-comment-action .nc-card-stat-count{padding:2px 5px;border-radius:7px;background:rgba(80,190,255,.12);color:#7dd3fc}
+.favorite.active .nc-card-stat-count{color:#ff8eae}
+@media(max-width:480px){.nc-card-stat-count{font-size:10px}.favorite{padding-inline:7px;gap:5px}}
+
 /* NightCast podcast comments */
 .nc-comments-modal{position:fixed;inset:0;z-index:10080;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(2,7,17,.78);backdrop-filter:blur(14px);opacity:0;visibility:hidden;transition:opacity .22s,visibility .22s}
 .nc-comments-modal.open{opacity:1;visibility:visible}
@@ -8736,6 +8744,25 @@ body.nc-comments-open{overflow:hidden}
                 notice.className = "nc-comments-notice" + (message ? " show " + type : "");
             }
 
+            let podcastCardStatsRequest = 0;
+            async function loadPodcastCardStats() {
+                const request = ++podcastCardStatsRequest;
+                try {
+                    const response = await fetch(CONFIG.API_BASE + "/public/podcasts/stats", {headers:{"Accept":"application/json"}, cache:"no-store"});
+                    const data = await response.json().catch(() => ({}));
+                    if (request !== podcastCardStatsRequest || !response.ok || !data.success) return;
+                    const stats = data.stats || {};
+                    document.querySelectorAll("[data-comment-count]").forEach(el => {
+                        const item = stats[String(el.dataset.commentCount)] || {};
+                        el.textContent = Number(item.comments || 0).toLocaleString("fa-IR");
+                    });
+                    document.querySelectorAll("[data-like-count]").forEach(el => {
+                        const item = stats[String(el.dataset.likeCount)] || {};
+                        el.textContent = Number(item.likes || 0).toLocaleString("fa-IR");
+                    });
+                } catch (error) { console.warn("Podcast card stats unavailable:", error); }
+            }
+
             function openPodcastComments(id) {
                 const podcast = state.all.find(item => Number(item.id) === Number(id));
                 if (!podcast) {
@@ -8802,6 +8829,7 @@ body.nc-comments-open{overflow:hidden}
                     if (requestId !== commentsRequestSequence || Number(activeCommentsPodcastId) !== Number(id)) return;
                     if (!response.ok || !data.success) throw new Error(data.message || "دریافت دیدگاه‌ها ممکن نشد.");
                     renderPodcastComments(data.comments || []);
+                    loadPodcastCardStats();
                 } catch (error) {
                     if (requestId !== commentsRequestSequence) return;
                     if (list) list.innerHTML = '<div class="nc-comments-empty"><i class="fa-solid fa-cloud-arrow-down" aria-hidden="true"></i>' + escapeHtml(error.message || "دریافت دیدگاه‌ها ممکن نشد.") + '<br>اتصال را بررسی کنید و دوباره پنجره را باز کنید.</div>';

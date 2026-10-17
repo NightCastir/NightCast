@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
 
-    <meta name="viewport"
-          content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <title>NightCast | آرشیو پادکست‌های صوتی، خلاصه و تحلیل کتاب</title>
 
     <meta name="theme-color" content="#090F19">
     <meta name="color-scheme" content="dark">
@@ -16,8 +16,7 @@
 
     <meta name="application-name" content="NightCast">
 
-    <meta name="description"
-          content="رادیو NightCast؛ پادکست خلاصه و تحلیل کتاب‌های ارزشمند، برای یادگیری سریع‌تر و عمیق‌تر.">
+    <meta name="description" content="آرشیو پادکست‌های NightCast؛ خلاصه و تحلیل کتاب، روان‌شناسی، رشد فردی، مدیریت و دانش کاربردی با توضیحات کامل و پخش آنلاین.">
 
     <meta name="keywords"
           content="NightCast, رادیو NightCast, پادکست, خلاصه کتاب, تحلیل کتاب, کتاب صوتی">
@@ -25,20 +24,19 @@
     <meta name="robots"
           content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
 
-    <link rel="canonical" href="https://nightcast.ir/">
+    <link rel="canonical" href="https://nightcast.ir/users/">
 
     <meta property="og:type" content="website">
     <meta property="og:locale" content="fa_IR">
-    <meta property="og:title" content="NightCast | رادیو پادکست خلاصه و تحلیل کتاب">
-    <meta property="og:description"
-          content="پادکست‌های خلاصه و تحلیل کتاب‌های ارزشمند در رادیو NightCast.">
-    <meta property="og:url" content="https://nightcast.ir/">
+    <meta property="og:title" content="NightCast | آرشیو پادکست‌های صوتی">
+    <meta property="og:description" content="کشف، جست‌وجو و شنیدن پادکست‌های NightCast با خلاصه، توضیحات کامل، دسته‌بندی و اطلاعات هر اپیزود.">
+    <meta property="og:url" content="https://nightcast.ir/users/">
     <meta property="og:site_name" content="NightCast">
     <meta property="og:image" content="https://nightcast.ir/logo.png">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="NightCast | رادیو پادکست خلاصه و تحلیل کتاب">
-    <meta name="twitter:description" content="رادیو NightCast؛ پلی به سوی آینده">
+    <meta name="twitter:title" content="NightCast | آرشیو پادکست‌های صوتی">
+    <meta name="twitter:description" content="آرشیو پادکست‌های NightCast با خلاصه، توضیحات کامل، دسته‌بندی و پخش آنلاین.">
     <meta name="twitter:image" content="https://nightcast.ir/logo.png">
 
     <link rel="icon" href="./favicon.ico">
@@ -109,7 +107,20 @@
         }
     </script>
 
-    <style>
+
+    <script type="application/ld+json" id="podcastCollectionSchema">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": "آرشیو پادکست‌های NightCast",
+      "url": "https://nightcast.ir/users/",
+      "description": "آرشیو پادکست‌های صوتی NightCast با خلاصه و تحلیل کتاب، روان‌شناسی، رشد فردی و مدیریت.",
+      "inLanguage": "fa-IR",
+      "isPartOf": { "@type": "WebSite", "name": "NightCast", "url": "https://nightcast.ir/" }
+    }
+    </script>
+
+    <style
 
                 :root {
                     --nc-bg: #0E1C2F;
@@ -4570,10 +4581,10 @@
 
                 pageSize: (() => {
                     try {
-                        const saved = localStorage.getItem("NightCastPodcastPageSize");
-                        return ["4", "8", "12", "16", "all"].includes(saved) ? saved : "8";
+                        const saved = localStorage.getItem("NightCastPodcastPageSizeV2");
+                        return ["4", "8", "12", "16", "all"].includes(saved) ? saved : "12";
                     } catch {
-                        return "8";
+                        return "12";
                     }
                 })(),
 
@@ -5625,197 +5636,137 @@ LOGOUT
             }
 
 
-            function renderCard(p) {
-
-                const id =
-                    Number(p.id);
-
-
-                const title =
-                    escapeHtml(
-                        p.title ||
-                        "بدون عنوان"
-                    );
-
-
-                const author =
-                    escapeHtml(
-                        p.author_name ||
-                        "NightCast"
-                    );
-
-
-                const book =
-                    escapeHtml(
-                        p.book_name ||
-                        ""
-                    );
-
-
-                const desc =
-                    escapeHtml(
-                        p.description ||
-                        p.summary ||
-                        "توضیحی برای این پادکست ثبت نشده است."
-                    );
-
-
-                const cover =
-                    escapeHtml(
-                        p.cover_url ||
-                        placeholder
-                    );
-
-
-                const audio =
-                    escapeHtml(
-                        p.audio_url ||
-                        ""
-                    );
-
-
-                const duration =
-                    formatTime(
-                        p.duration_seconds ||
-                        0
-                    );
-
-
-                const fav =
-                    isFavorite(id);
-
-
-                return `
-
-                                                                                                        <article
-                                                                                                            class="podcast-card"
-                                                                                                            data-id="${id}">
-
-                                                                                                            <div class="podcast-cover">
-
-                                                                                                                <img
-                                                                                                                    src="${cover}"
-                                                                                                                    alt="${title}"
-                                                                                                                    loading="lazy"
-                                                                                                                    decoding="async"
-                                                                                                                    onerror="this.onerror=null;this.src='${placeholder}'">
-
-                                                                                                                <div class="cover-shade"></div>
-
-
-                                                                                                                <button
-                                                                                                                    class="play-card"
-                                                                                                                    data-action="play"
-                                                                                                                    data-id="${id}"
-                                                                                                                    aria-label="پخش ${title}"
-                                                                                                                    ${audio ? "" : "disabled"}>
-
-                                                                                                                    <i class="fa-solid fa-play"></i>
-
-                                                                                                                </button>
-
-                                                                                                            </div>
-
-
-                                                                                                            <div class="podcast-info">
-
-                                                                                                                <h3 class="podcast-title">
-                                                                                                                    ${title}
-                                                                                                                </h3>
-
-
-                                                                                                                <div class="meta">
-
-                                                                                                                    ${author
-                        ? `
-                                                                                                                                <span>
-                                                                                                                                    <i class="fa-solid fa-user"></i>
-                                                                                                                                    ${author}
-                                                                                                                                </span>
-                                                                                                                              `
-                        : ""
-                    }
-
-
-                                                                                                                    ${book
-                        ? `
-                                                                                                                                <span>
-                                                                                                                                    <i class="fa-solid fa-book"></i>
-                                                                                                                                    ${book}
-                                                                                                                                </span>
-                                                                                                                              `
-                        : ""
-                    }
-
-
-                                                                                                                    ${duration !== "00:00"
-                        ? `
-                                                                                                                                <span>
-                                                                                                                                    <i class="fa-regular fa-clock"></i>
-                                                                                                                                    ${duration}
-                                                                                                                                </span>
-                                                                                                                              `
-                        : ""
-                    }
-
-                                                                                                                </div>
-
-
-                                                                                                                <p class="podcast-desc">
-                                                                                                                    ${desc}
-                                                                                                                </p>
-
-
-                                                                                                                <div class="card-footer">
-
-                                                                                                                    <button
-                                                                                                                        class="btn btn-primary"
-                                                                                                                        data-action="play"
-                                                                                                                        data-id="${id}"
-                                                                                                                        ${audio ? "" : "disabled"}>
-
-                                                                                                                        <i class="fa-solid fa-play"></i>
-
-                                                                                                                        پخش
-
-                                                                                                                    </button>
-
-
-                                                                                                                    <button
-                                                                                                                        class="btn btn-secondary"
-                                                                                                                        data-action="download"
-                                                                                                                        data-id="${id}"
-                                                                                                                        ${audio ? "" : "disabled"}>
-
-                                                                                                                        <i class="fa-solid fa-download"></i>
-
-                                                                                                                    </button>
-
-
-                                                                                                                    <button
-                                                                                                                        class="favorite ${fav ? "active" : ""}"
-                                                                                                                        data-action="favorite"
-                                                                                                                        data-id="${id}"
-                                                                                                                        aria-label="${fav ? "حذف از علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها"}"
-                                                                                                                        aria-pressed="${fav ? "true" : "false"}">
-
-                                                                                                                        <i class="${fav ? "fa-solid" : "fa-regular"} fa-heart" aria-hidden="true"></i><span class="nc-card-stat-count" data-like-count="${id}" aria-label="تعداد علاقه‌مندی‌ها">۰</span>
-                                                                                                                    </button>
-
-                                                                                                                    <button type="button" class="nc-comment-action" data-action="comments" data-id="${id}" aria-label="مشاهده و ثبت دیدگاه برای ${title}">
-                                                                                                                        <i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>دیدگاه‌ها</span><b class="nc-card-stat-count" data-comment-count="${id}" aria-label="تعداد دیدگاه‌ها">۰</b>
-                                                                                                                    </button>
-
-                                                                                                                </div>
-
-                                                                                                            </div>
-
-                                                                                                        </article>
-
-                                                                                                    `;
-
+            function formatPodcastDate(value) {
+                if (!value) return "";
+                const raw = String(value).trim();
+                if (!/^\d{4}-\d{2}-\d{2}/.test(raw)) return "";
+                const date = new Date(raw.replace(" ", "T"));
+                if (Number.isNaN(date.getTime())) return "";
+                try { return new Intl.DateTimeFormat("fa-IR", { dateStyle: "medium" }).format(date); }
+                catch { return ""; }
             }
 
+            let lastPodcastDetailsTrigger = null;
+
+            function openPodcastDetails(id) {
+                const podcast = state.all.find(item => Number(item.id) === Number(id));
+                const modal = document.getElementById("ncPodcastDetail");
+                const body = document.getElementById("ncPodcastDetailBody");
+                if (!podcast || !modal || !body) {
+                    toast("جزئیات این پادکست در دسترس نیست.");
+                    return;
+                }
+
+                const title = String(podcast.title || podcast.book_name || "پادکست NightCast");
+                const author = String(podcast.author_name || "NightCast");
+                const book = String(podcast.book_name || "");
+                const category = String(podcast.category_name || podcast.category || "");
+                const shortDescription = String(podcast.description || podcast.short_description || "").trim();
+                const summary = String(podcast.summary || "").trim();
+                const transcript = String(podcast.transcript || podcast.long_description || "").trim();
+                const tags = (Array.isArray(podcast.tags) ? podcast.tags : String(podcast.tags || "").split(/[,،]/))
+                    .map(tag => String(tag).trim()).filter(Boolean);
+                const date = formatPodcastDate(podcast.publish_date || podcast.created_at);
+                const duration = formatTime(podcast.duration_seconds || 0);
+                const cover = String(podcast.cover_url || placeholder);
+                const sections = [];
+
+                if (shortDescription) sections.push({ title: "معرفی کوتاه", text: shortDescription });
+                if (summary && summary !== shortDescription) sections.push({ title: "خلاصه اپیزود", text: summary });
+                if (!shortDescription && !summary && !transcript) sections.push({ title: "درباره این پادکست", text: "توضیحی برای این پادکست ثبت نشده است." });
+
+                const sectionMarkup = sections.map(section =>
+                    '<section class="nc-detail-section"><h3>' + escapeHtml(section.title) +
+                    '</h3><p>' + escapeHtml(section.text) + '</p></section>'
+                ).join("");
+
+                const transcriptMarkup = transcript
+                    ? '<details class="nc-detail-transcript"><summary><i class="fa-solid fa-file-lines" aria-hidden="true"></i> مشاهده متن کامل اپیزود</summary><div class="nc-detail-transcript-body">' + escapeHtml(transcript) + '</div></details>'
+                    : '<p class="nc-detail-no-transcript">متن کامل این اپیزود در پایگاه داده ثبت نشده است.</p>';
+
+                body.innerHTML =
+                    '<div class="nc-detail-hero">' +
+                        '<img class="nc-detail-cover" src="' + escapeHtml(cover) + '" alt="' + escapeHtml(title) + '" onerror="this.onerror=null;this.src=\'' + placeholder + '\'">' +
+                        '<div class="nc-detail-heading">' +
+                            '<span class="nc-detail-kicker">' + escapeHtml(category || "پادکست NightCast") + '</span>' +
+                            '<h2 id="ncPodcastDetailTitle">' + escapeHtml(title) + '</h2>' +
+                            '<p class="nc-detail-author">' + escapeHtml(author) + (book ? ' <span aria-hidden="true">·</span> ' + escapeHtml(book) : '') + '</p>' +
+                            '<div class="nc-detail-meta">' +
+                                (duration !== "00:00" ? '<span><i class="fa-regular fa-clock" aria-hidden="true"></i> ' + escapeHtml(duration) + '</span>' : '') +
+                                (podcast.episode_number ? '<span><i class="fa-solid fa-headphones" aria-hidden="true"></i> قسمت ' + escapeHtml(String(podcast.episode_number)) + '</span>' : '') +
+                                (date ? '<span><i class="fa-regular fa-calendar" aria-hidden="true"></i> ' + escapeHtml(date) + '</span>' : '') +
+                                '<span><i class="fa-solid fa-play" aria-hidden="true"></i> ' + Number(podcast.listen_count || 0).toLocaleString("fa-IR") + ' پخش</span>' +
+                            '</div>' +
+                            '<button type="button" class="btn btn-primary nc-detail-play" data-action="play" data-id="' + Number(podcast.id) + '"' + (podcast.audio_url ? '' : ' disabled') + '><i class="fa-solid fa-play" aria-hidden="true"></i> پخش اپیزود</button>' +
+                        '</div>' +
+                    '</div>' +
+                    sectionMarkup +
+                    (tags.length ? '<section class="nc-detail-section"><h3>موضوعات و برچسب‌ها</h3><div class="nc-detail-tags">' + tags.map(tag => '<span>' + escapeHtml(tag) + '</span>').join("") + '</div></section>' : '') +
+                    '<section class="nc-detail-section"><h3>متن کامل اپیزود</h3>' + transcriptMarkup + '</section>';
+
+                lastPodcastDetailsTrigger = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+                modal.classList.add("open");
+                modal.setAttribute("aria-hidden", "false");
+                document.body.classList.add("nc-detail-open");
+                modal.querySelector("[data-action='close-details']")?.focus({ preventScroll: true });
+            }
+
+            function closePodcastDetails() {
+                const modal = document.getElementById("ncPodcastDetail");
+                if (!modal) return;
+                modal.classList.remove("open");
+                modal.setAttribute("aria-hidden", "true");
+                document.body.classList.remove("nc-detail-open");
+                lastPodcastDetailsTrigger?.focus?.({ preventScroll: true });
+            }
+
+            function renderCard(p) {
+                const id = Number(p.id);
+                const title = String(p.title || p.book_name || "بدون عنوان");
+                const author = String(p.author_name || "NightCast");
+                const book = String(p.book_name || "");
+                const category = String(p.category_name || p.category || "پادکست");
+                const desc = String(p.description || p.short_description || p.summary || "توضیحی برای این پادکست ثبت نشده است.");
+                const cover = String(p.cover_url || placeholder);
+                const audio = String(p.audio_url || "");
+                const duration = formatTime(p.duration_seconds || 0);
+                const date = formatPodcastDate(p.publish_date || p.created_at);
+                const fav = isFavorite(id);
+                const tags = (Array.isArray(p.tags) ? p.tags : String(p.tags || "").split(/[,،]/))
+                    .map(tag => String(tag).trim()).filter(Boolean).slice(0, 3);
+                const episode = p.episode_number ? "قسمت " + String(p.episode_number) : "";
+                const tagMarkup = tags.map(tag => '<span class="podcast-tag">' + escapeHtml(tag) + '</span>').join("");
+
+                return '<article class="podcast-card" data-id="' + id + '">' +
+                    '<div class="podcast-cover">' +
+                        '<img src="' + escapeHtml(cover) + '" alt="جلد پادکست ' + escapeHtml(title) + '" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=\'' + placeholder + '\'">' +
+                        '<div class="cover-shade"></div>' +
+                        '<span class="podcast-cover-label"><i class="fa-solid fa-wave-square" aria-hidden="true"></i> NIGHTCAST</span>' +
+                        '<button type="button" class="play-card" data-action="play" data-id="' + id + '" aria-label="پخش ' + escapeHtml(title) + '"' + (audio ? "" : " disabled") + '><i class="fa-solid fa-play" aria-hidden="true"></i></button>' +
+                    '</div>' +
+                    '<div class="podcast-info">' +
+                        '<div class="podcast-card-overline"><span class="podcast-category">' + escapeHtml(category) + '</span>' +
+                            (episode ? '<span class="podcast-episode">' + escapeHtml(episode) + '</span>' : '') +
+                        '</div>' +
+                        '<h3 class="podcast-title">' + escapeHtml(title) + '</h3>' +
+                        '<div class="meta">' +
+                            '<span><i class="fa-solid fa-user" aria-hidden="true"></i>' + escapeHtml(author) + '</span>' +
+                            (book ? '<span><i class="fa-solid fa-book" aria-hidden="true"></i>' + escapeHtml(book) + '</span>' : '') +
+                            (duration !== "00:00" ? '<span><i class="fa-regular fa-clock" aria-hidden="true"></i>' + escapeHtml(duration) + '</span>' : '') +
+                            (date ? '<span><i class="fa-regular fa-calendar" aria-hidden="true"></i>' + escapeHtml(date) + '</span>' : '') +
+                        '</div>' +
+                        '<p class="podcast-desc">' + escapeHtml(desc) + '</p>' +
+                        (tagMarkup ? '<div class="podcast-card-tags" aria-label="موضوعات">' + tagMarkup + '</div>' : '') +
+                        '<div class="card-footer">' +
+                            '<button type="button" class="btn btn-primary" data-action="play" data-id="' + id + '"' + (audio ? "" : " disabled") + '><i class="fa-solid fa-play" aria-hidden="true"></i> پخش</button>' +
+                            '<button type="button" class="btn btn-secondary nc-card-details" data-action="details" data-id="' + id + '" aria-label="جزئیات ' + escapeHtml(title) + '"><i class="fa-regular fa-file-lines" aria-hidden="true"></i><span>جزئیات</span></button>' +
+                            '<button type="button" class="btn btn-secondary nc-card-download" data-action="download" data-id="' + id + '" aria-label="دریافت ' + escapeHtml(title) + '"' + (audio ? "" : " disabled") + '><i class="fa-solid fa-download" aria-hidden="true"></i></button>' +
+                            '<button type="button" class="favorite ' + (fav ? "active" : "") + '" data-action="favorite" data-id="' + id + '" aria-label="' + (fav ? "حذف از علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها") + '" aria-pressed="' + (fav ? "true" : "false") + '"><i class="' + (fav ? "fa-solid" : "fa-regular") + ' fa-heart" aria-hidden="true"></i></button>' +
+                            '<button type="button" class="nc-comment-action" data-action="comments" data-id="' + id + '" aria-label="مشاهده و ثبت دیدگاه برای ' + escapeHtml(title) + '"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>دیدگاه‌ها</span><b class="nc-card-stat-count" data-comment-count="' + id + '" aria-label="تعداد دیدگاه‌ها">۰</b></button>' +
+                        '</div>' +
+                    '</div>' +
+                '</article>';
+            }
 
             function render(items) {
 
@@ -6006,8 +5957,11 @@ LOGOUT
                                     p.title,
                                     p.book_name,
                                     p.author_name,
+                                    p.category_name,
+                                    p.tags,
                                     p.description,
-                                    p.summary
+                                    p.summary,
+                                    p.transcript
                                 ]
                                     .filter(Boolean)
                                     .join(" ")
@@ -6066,10 +6020,10 @@ LOGOUT
                 els.pageSize.value = state.pageSize;
                 els.pageSize.addEventListener("change", () => {
                     const selected = els.pageSize.value;
-                    state.pageSize = ["4", "8", "12", "16", "all"].includes(selected) ? selected : "8";
+                    state.pageSize = ["4", "8", "12", "16", "all"].includes(selected) ? selected : "12";
                     state.page = 1;
                     try {
-                        localStorage.setItem("NightCastPodcastPageSize", state.pageSize);
+                        localStorage.setItem("NightCastPodcastPageSizeV2", state.pageSize);
                     } catch (error) {
                         console.warn("NightCast page-size preference could not be saved.", error);
                     }
@@ -6222,6 +6176,7 @@ LOGOUT
                     }
 
                     updateLatest(freshItems);
+                    updatePodcastCollectionSchema(freshItems);
                     state.page = 1;
                     applyView();
 
@@ -6232,6 +6187,7 @@ LOGOUT
                         // Keep cached podcasts visible if both network sources fail.
                         state.all = cached;
                         updateLatest(cached);
+                        updatePodcastCollectionSchema(cached);
                         applyView();
                         return;
                     }
@@ -6256,7 +6212,38 @@ LOGOUT
                LATEST
             ========================================================= */
 
-            function updateLatest(items) {
+
+            function updatePodcastCollectionSchema(items) {
+                const node = document.getElementById("podcastCollectionSchema");
+                if (!node || !Array.isArray(items)) return;
+                const schema = {
+                    "@context": "https://schema.org",
+                    "@type": "CollectionPage",
+                    "name": "آرشیو پادکست‌های NightCast",
+                    "url": "https://nightcast.ir/users/",
+                    "description": "آرشیو پادکست‌های صوتی NightCast با خلاصه و تحلیل کتاب، روان‌شناسی، رشد فردی و مدیریت.",
+                    "inLanguage": "fa-IR",
+                    "isPartOf": { "@type": "WebSite", "name": "NightCast", "url": "https://nightcast.ir/" },
+                    "mainEntity": {
+                        "@type": "ItemList",
+                        "numberOfItems": items.length,
+                        "itemListElement": items.map((p, index) => ({
+                            "@type": "ListItem",
+                            "position": index + 1,
+                            "item": {
+                                "@type": "PodcastEpisode",
+                                "name": String(p.title || p.book_name || "پادکست NightCast"),
+                                "description": String(p.description || p.summary || ""),
+                                "inLanguage": "fa-IR",
+                                "author": { "@type": "Person", "name": String(p.author_name || "NightCast") }
+                            }
+                        }))
+                    }
+                };
+                node.textContent = JSON.stringify(schema).replace(/</g, "\\u003c");
+            }
+
+                        function updateLatest(items) {
 
                 const latest =
                     items[0];
@@ -6763,6 +6750,14 @@ LOGOUT
         
                     }
         
+                    else if (action === "details") {
+                        openPodcastDetails(id);
+                    }
+
+                    else if (action === "close-details") {
+                        closePodcastDetails();
+                    }
+
                     else if (
                         action === "favorite"
                     ) {
@@ -8430,6 +8425,123 @@ body.nc-comments-open{overflow:hidden}
 @media(max-width:560px){.nc-comments-modal{padding:0;align-items:flex-end}.nc-comments-card{width:100%;max-height:92dvh;border-radius:22px 22px 0 0;border-bottom:0;padding-bottom:env(safe-area-inset-bottom,0)}.nc-comments-head{padding:18px 17px 14px}.nc-comments-list{padding:16px 17px}.nc-comments-compose{padding:14px 17px 18px}.nc-comments-compose textarea{min-height:88px}.nc-comment-meta{align-items:flex-start;flex-direction:column;gap:3px}}
 @media(prefers-reduced-motion:reduce){.nc-comments-modal,.nc-comment-action,.nc-comments-compose textarea{transition:none}}
 
+
+                /* =========================================================
+                   PODCAST CATALOGUE — PREMIUM RESPONSIVE REDESIGN
+                ========================================================= */
+                .podcast-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: stretch; gap: 22px; }
+                .podcast-card {
+                    min-width: 0; display: flex; flex-direction: column;
+                    border: 1px solid rgba(255,255,255,.075); border-radius: 22px;
+                    background: linear-gradient(155deg, rgba(20,39,62,.98), rgba(10,24,41,.98));
+                    box-shadow: 0 14px 38px rgba(0,0,0,.20); content-visibility: auto;
+                    contain-intrinsic-size: 520px;
+                    transition: transform .24s ease, border-color .24s ease, box-shadow .24s ease;
+                }
+                .podcast-card:hover { transform: translateY(-5px); border-color: rgba(5,157,249,.32); box-shadow: 0 20px 48px rgba(0,0,0,.28), 0 0 0 1px rgba(5,157,249,.045); }
+                .podcast-cover { position: relative; aspect-ratio: 1 / .88; overflow: hidden; background: #0a1422; isolation: isolate; }
+                .podcast-cover img { width: 100%; height: 100%; object-fit: cover; transition: transform .55s cubic-bezier(.2,.7,.2,1); }
+                .podcast-card:hover .podcast-cover img { transform: scale(1.045); }
+                .cover-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5,12,22,.05) 20%, rgba(5,12,22,.7) 100%); pointer-events: none; }
+                .podcast-cover-label { position: absolute; top: 12px; inset-inline-start: 12px; display: inline-flex; align-items: center; gap: 6px; padding: 6px 9px; border: 1px solid rgba(255,255,255,.13); border-radius: 999px; background: rgba(5,12,22,.62); color: #f4d9a1; font-size: .61rem; font-weight: 800; letter-spacing: .08em; backdrop-filter: blur(8px); }
+                .play-card { bottom: 13px; left: 13px; width: 47px; height: 47px; background: linear-gradient(145deg, #13aaff, #057fc8); box-shadow: 0 8px 24px rgba(5,157,249,.32); }
+                .podcast-info { display: flex; flex: 1; flex-direction: column; min-width: 0; padding: 17px 17px 15px; }
+                .podcast-card-overline { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; min-width: 0; }
+                .podcast-category { display: inline-block; max-width: 76%; overflow: hidden; color: #e9be70; font-size: .7rem; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+                .podcast-episode { flex: 0 0 auto; color: #8c9eb4; font-size: .68rem; }
+                .podcast-title { margin: 0 0 8px; color: #fff; font-size: 1.02rem; font-weight: 800; line-height: 1.7; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 3.4em; }
+                .podcast-card .meta { display: flex; flex-wrap: wrap; gap: 6px 10px; margin: 0 0 10px; color: #91a1b5; font-size: .69rem; }
+                .podcast-card .meta span { min-width: 0; max-width: 100%; display: inline-flex; align-items: center; gap: 5px; overflow-wrap: anywhere; }
+                .podcast-card .meta i { color: #36b5ff; }
+                .podcast-desc { margin: 0 0 12px; color: #bac5d4; font-size: .79rem; line-height: 1.95; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; min-height: 0; }
+                .podcast-card-tags, .nc-detail-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 13px; }
+                .podcast-tag, .nc-detail-tags span { max-width: 100%; padding: 4px 8px; border: 1px solid rgba(255,255,255,.07); border-radius: 8px; background: rgba(255,255,255,.035); color: #8fa3ba; font-size: .65rem; line-height: 1.6; overflow-wrap: anywhere; }
+                .card-footer { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: auto; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.055); }
+                .card-footer .btn { min-height: 38px; padding: 7px 11px; border-radius: 11px; font-size: .75rem; }
+                .card-footer .btn-primary { flex: 1 1 auto; }
+                .nc-card-details { flex: 0 0 auto; }
+                .nc-card-download, .card-footer .favorite { width: 38px; min-width: 38px; height: 38px; padding: 0 !important; display: inline-flex; align-items: center; justify-content: center; }
+                .card-footer .favorite { border-radius: 11px; background: rgba(255,255,255,.035); color: #9aabc0; border: 1px solid rgba(255,255,255,.08); }
+                .card-footer .favorite.active { color: #ff719d; border-color: rgba(255,113,157,.28); background: rgba(255,113,157,.07); }
+                .nc-comment-action { min-height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 6px 9px; border: 1px solid rgba(255,255,255,.075); border-radius: 11px; background: rgba(255,255,255,.035); color: #a9b7c8; font: inherit; font-size: .7rem; }
+                .nc-comment-action i { color: #45baff; }
+                .nc-card-stat-count { color: #e9be70; font-size: .69rem; }
+                .pagination { scroll-margin-bottom: 100px; }
+                #podcasts { scroll-margin-top: calc(var(--nc-header) + 18px); }
+
+                .nc-podcast-detail { position: fixed; inset: 0; z-index: 3500; display: grid; place-items: center; padding: 20px; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .22s ease, visibility .22s ease; }
+                .nc-podcast-detail.open { opacity: 1; visibility: visible; pointer-events: auto; }
+                .nc-detail-backdrop { position: absolute; inset: 0; width: 100%; height: 100%; background: rgba(2,7,15,.78); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+                .nc-detail-dialog { position: relative; z-index: 1; width: min(100%, 820px); max-height: min(92dvh, 900px); display: flex; flex-direction: column; overflow: hidden; border: 1px solid rgba(255,255,255,.1); border-radius: 26px; background: radial-gradient(circle at 85% 0, rgba(5,157,249,.11), transparent 32%), #0d1929; box-shadow: 0 30px 100px rgba(0,0,0,.55); color: #f4f7fb; transform: translateY(12px) scale(.99); transition: transform .22s ease; }
+                .nc-podcast-detail.open .nc-detail-dialog { transform: none; }
+                .nc-detail-topbar { flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,.07); color: #e9be70; font-size: .69rem; font-weight: 800; letter-spacing: .07em; }
+                .nc-detail-topbar span { display: inline-flex; align-items: center; gap: 8px; }
+                .nc-detail-close { width: 38px; height: 38px; flex: 0 0 auto; border-radius: 12px; background: rgba(255,255,255,.06); color: #d8e3f0; font-size: 1rem; }
+                .nc-detail-close:hover { background: rgba(5,157,249,.15); color: #fff; }
+                .nc-detail-scroll { overflow-y: auto; overscroll-behavior: contain; padding: clamp(18px, 4vw, 30px); }
+                .nc-detail-hero { display: grid; grid-template-columns: 190px minmax(0,1fr); gap: 24px; align-items: start; margin-bottom: 26px; }
+                .nc-detail-cover { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 19px; border: 1px solid rgba(255,255,255,.1); box-shadow: 0 14px 35px rgba(0,0,0,.28); background: #132238; }
+                .nc-detail-kicker { display: inline-block; margin-bottom: 8px; color: #e9be70; font-size: .77rem; font-weight: 700; }
+                .nc-detail-heading h2 { margin: 0 0 8px; color: #fff; font-size: clamp(1.35rem, 3vw, 2rem); line-height: 1.55; overflow-wrap: anywhere; }
+                .nc-detail-author { margin: 0 0 14px; color: #a9b8ca; font-size: .87rem; }
+                .nc-detail-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+                .nc-detail-meta span { display: inline-flex; align-items: center; gap: 6px; padding: 6px 9px; border: 1px solid rgba(255,255,255,.07); border-radius: 9px; background: rgba(255,255,255,.04); color: #aebbd0; font-size: .71rem; }
+                .nc-detail-meta i { color: #38b8ff; }
+                .nc-detail-play { min-height: 43px; }
+                .nc-detail-section { margin-top: 20px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,.07); }
+                .nc-detail-section h3 { margin: 0 0 10px; color: #fff; font-size: .98rem; }
+                .nc-detail-section p { margin: 0; color: #bcc8d8; font-size: .88rem; line-height: 2.1; white-space: pre-line; overflow-wrap: anywhere; }
+                .nc-detail-transcript { overflow: hidden; border: 1px solid rgba(5,157,249,.16); border-radius: 14px; background: rgba(5,157,249,.035); }
+                .nc-detail-transcript summary { padding: 13px 15px; color: #8dd6ff; font-size: .84rem; font-weight: 700; cursor: pointer; }
+                .nc-detail-transcript summary i { margin-inline-end: 7px; }
+                .nc-detail-transcript-body { padding: 0 15px 16px; color: #b8c5d5; font-size: .86rem; line-height: 2.1; white-space: pre-wrap; overflow-wrap: anywhere; }
+                .nc-detail-no-transcript { color: #8291a5 !important; font-size: .78rem !important; }
+                body.nc-detail-open { overflow: hidden; }
+
+                @media (max-width: 1200px) { .podcast-grid { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+                @media (max-width: 900px) { .podcast-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; } }
+                @media (max-width: 650px) {
+                    .podcast-grid { grid-template-columns: minmax(0,1fr); gap: 12px; }
+                    .podcast-card { display: grid; grid-template-columns: 112px minmax(0,1fr); align-items: stretch; border-radius: 18px; }
+                    .podcast-cover { min-height: 100%; height: 100%; aspect-ratio: auto; }
+                    .podcast-cover img { position: absolute; inset: 0; }
+                    .podcast-cover-label { top: 7px; inset-inline-start: 7px; padding: 4px 6px; font-size: .5rem; }
+                    .play-card { width: 38px; height: 38px; left: 8px; bottom: 8px; }
+                    .podcast-info { padding: 11px 12px; }
+                    .podcast-card-overline { gap: 5px; margin-bottom: 4px; }
+                    .podcast-category { font-size: .64rem; max-width: 72%; }
+                    .podcast-episode { font-size: .61rem; }
+                    .podcast-title { font-size: .87rem; line-height: 1.65; min-height: 0; margin-bottom: 5px; -webkit-line-clamp: 2; }
+                    .podcast-card .meta { gap: 4px 8px; margin-bottom: 6px; font-size: .62rem; }
+                    .podcast-card .meta span:nth-child(2) { display: none; }
+                    .podcast-desc { font-size: .72rem; line-height: 1.8; -webkit-line-clamp: 2; margin-bottom: 7px; }
+                    .podcast-card-tags { display: none; }
+                    .card-footer { gap: 5px; padding-top: 7px; }
+                    .card-footer .btn { min-height: 33px; padding: 5px 8px; font-size: .68rem; border-radius: 9px; }
+                    .card-footer .btn-primary { flex: 1 1 60px; }
+                    .nc-card-details { flex: 1 1 66px; }
+                    .nc-card-download, .card-footer .favorite { width: 33px; min-width: 33px; height: 33px; min-height: 33px; }
+                    .nc-comment-action { min-height: 33px; width: 34px; padding: 4px; gap: 2px; border-radius: 9px; }
+                    .nc-comment-action span { display: none; }
+                    .nc-comment-action b { font-size: .6rem; }
+                    .nc-detail-hero { grid-template-columns: 1fr; gap: 18px; text-align: center; }
+                    .nc-detail-cover { width: min(58vw, 230px); margin: 0 auto; }
+                    .nc-detail-meta { justify-content: center; }
+                    .nc-detail-play { width: 100%; }
+                    .nc-podcast-detail { padding: 10px; }
+                    .nc-detail-dialog { max-height: 94dvh; border-radius: 20px; }
+                    .nc-detail-topbar { padding: 11px 13px; }
+                    .nc-detail-scroll { padding: 18px 16px calc(20px + env(safe-area-inset-bottom)); }
+                }
+                @media (max-width: 380px) {
+                    .podcast-card { grid-template-columns: 94px minmax(0,1fr); }
+                    .podcast-info { padding: 9px 10px; }
+                    .podcast-card .meta span:nth-child(1) { max-width: 100%; }
+                    .nc-card-details span { display: none; }
+                    .nc-card-details { flex: 0 0 33px; min-width: 33px; padding: 0 !important; }
+                }
+                @media (prefers-reduced-motion: reduce) { .podcast-card, .podcast-cover img, .nc-podcast-detail, .nc-detail-dialog { transition: none !important; } }
+
 </style>
 
 
@@ -9115,6 +9227,18 @@ body.nc-comments-open{overflow:hidden}
     }, true);
 })();
 </script>
+
+
+    <div class="nc-podcast-detail" id="ncPodcastDetail" aria-hidden="true">
+        <button type="button" class="nc-detail-backdrop" data-action="close-details" aria-label="بستن جزئیات پادکست"></button>
+        <section class="nc-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="ncPodcastDetailTitle">
+            <div class="nc-detail-topbar">
+                <span><i class="fa-solid fa-wave-square" aria-hidden="true"></i> NIGHTCAST · PODCAST DETAILS</span>
+                <button type="button" class="nc-detail-close" data-action="close-details" aria-label="بستن پنجره"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+            </div>
+            <div class="nc-detail-scroll" id="ncPodcastDetailBody"></div>
+        </section>
+    </div>
 
 </body>
 </html>

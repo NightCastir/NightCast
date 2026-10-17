@@ -98,7 +98,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 :root{--nc-space-black:#030611;--nc-space-blue:#07142c;--nc-nebula-blue:#233d78;--nc-glow:#88eaff;--nc-orbit:rgba(164,202,255,.24)}
 body{background:radial-gradient(ellipse at 50% -12%,rgba(47,74,147,.34),transparent 48%),radial-gradient(ellipse at 92% 45%,rgba(49,92,168,.09),transparent 30%),linear-gradient(180deg,#030611,#060d20 48%,#030611)!important}
 .nc-cosmos-canvas{z-index:0!important;opacity:.76}
-body>*:not(.nc-cosmos-canvas){position:relative}
+/* Keep fixed drawers, dialogs, and the audio player out of the generic page-layer rule. */
 .nc-header{background:rgba(3,7,18,.72)!important;border-bottom:1px solid rgba(161,202,255,.14)!important;box-shadow:0 10px 50px rgba(0,0,0,.14);backdrop-filter:blur(24px)!important}
 .nc-nav{max-width:1600px!important;gap:clamp(10px,1.7vw,26px)!important}
 .brand-mark{background:radial-gradient(circle at 30% 25%,#d8f7ff,#3b76c9 35%,#141f50 76%)!important;box-shadow:0 0 0 7px #8ce8ff0b,0 0 36px #73bfff29!important;border:1px solid #b7eaff55!important}

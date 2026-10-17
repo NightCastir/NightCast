@@ -183,7 +183,9 @@ function silentWavDataUri() {
         return modal && modal.classList.contains('open') && modal.getAttribute('aria-hidden') === 'false';
       }, undefined, { timeout: 5000 });
       assert((await page.locator('#ncPodcastDetail').innerText()).includes('سیاره آزمایشی اول'), 'Details title does not match the selected planet');
-      report('3. Selecting a planet opens the matching podcast details', true);
+      const detailPosition = await page.locator('#ncPodcastDetail').evaluate(el => getComputedStyle(el).position);
+      assert(detailPosition === 'fixed', 'Podcast details dialog must be viewport-fixed; computed position=' + detailPosition);
+      report('3. Selecting a planet opens the matching podcast details', true, 'Matching podcast opened; dialog position=' + detailPosition);
     } catch (error) {
       report('3. Selecting a planet opens the matching podcast details', false, String(error.message || error));
     }
@@ -249,7 +251,9 @@ function silentWavDataUri() {
         throw new Error('Comments button click did not open the modal: ' + JSON.stringify(commentsState) + '; wait=' + String(error.message || error));
       }
       assert((await page.locator('#ncCommentsPodcastTitle').innerText()).includes('سیاره آزمایشی اول'), 'Comments opened for the wrong podcast');
-      console.log('PASS | Comments dialog opens for selected podcast');
+      const commentsPosition = await page.locator('#ncCommentsModal').evaluate(el => getComputedStyle(el).position);
+      assert(commentsPosition === 'fixed', 'Comments dialog must be viewport-fixed; computed position=' + commentsPosition);
+      console.log('PASS | Comments dialog opens for selected podcast; position=' + commentsPosition);
       await page.locator('#ncCommentsClose').click();
       await page.waitForFunction(() => !document.querySelector('#ncCommentsModal')?.classList.contains('open'), undefined, { timeout: 3000 });
       report('4. Search, play/pause, favorites and comments work', true, 'Search, audio readiness/pause, favorite state and comments dialog verified');

@@ -136,7 +136,7 @@ function silentWavDataUri() {
     const iconCdnFailures = [];
     for (const file of htmlFilesToValidate) {
       const html = fs.readFileSync(file, 'utf8');
-      const hasIcons = /\\bfa-(?:solid|regular|brands)\\b/.test(html) ||
+      const hasIcons = /\bfa-(?:solid|regular|brands)\b/.test(html) ||
         (file === 'index.html' && /fa-solid/.test(fs.readFileSync('js/cosmic-experience.js', 'utf8')));
       if (hasIcons && !html.includes('fontawesome-free@6.7.2')) {
         iconCdnFailures.push(file + ' is missing the secondary Font Awesome CDN stylesheet');
@@ -424,11 +424,19 @@ function silentWavDataUri() {
     try {
       const sizes = [
         { name: 'mobile', width: 390, height: 844 },
+        { name: 'small-phone', width: 320, height: 740 },
+        { name: 'phone-360', width: 360, height: 780 },
+        { name: 'compact-tablet', width: 768, height: 1024 },
+        { name: 'tablet-breakpoint', width: 801, height: 1100 },
         { name: 'tablet', width: 820, height: 1180 },
+        { name: 'small-laptop', width: 900, height: 900 },
+        { name: 'laptop-breakpoint', width: 1000, height: 900 },
+        { name: 'laptop', width: 1024, height: 900 },
         { name: 'desktop', width: 1440, height: 1000 },
         { name: 'TV', width: 1920, height: 1080 }
       ];
       const failures = [];
+      const headerFailures = [];
       let mobileNavigationPassed = false;
       let mobileNavigationDetail = 'mobile navigation check was not executed';
       for (const size of sizes) {
@@ -523,8 +531,48 @@ function silentWavDataUri() {
           };
         });
         if (dims.content > dims.viewport + 3) failures.push(size.name + ': ' + dims.content + 'px > ' + dims.viewport + 'px; elements=' + JSON.stringify(dims.offenders));
+
+        const headerState = await page.evaluate(() => {
+          const header = document.querySelector('.nc-header');
+          const nav = header?.querySelector('.nc-nav');
+          const links = header?.querySelector('.nav-links');
+          const brand = header?.querySelector('.brand');
+          const actions = header?.querySelector('.header-actions');
+          const toggle = header?.querySelector('.nc-menu-toggle');
+          const rect = el => {
+            const r = el?.getBoundingClientRect();
+            return r ? { left: Math.round(r.left), right: Math.round(r.right), width: Math.round(r.width) } : null;
+          };
+          return {
+            position: header ? getComputedStyle(header).position : 'missing',
+            header: rect(header),
+            nav: rect(nav),
+            navScrollWidth: nav?.scrollWidth ?? -1,
+            linksDisplay: links ? getComputedStyle(links).display : 'missing',
+            brand: rect(brand),
+            actions: rect(actions),
+            toggleDisplay: toggle ? getComputedStyle(toggle).display : 'missing',
+            viewport: document.documentElement.clientWidth
+          };
+        });
+        const drawerExpected = size.width <= 800;
+        const headerOk = headerState.position === 'sticky' &&
+          !!headerState.header && headerState.header.left >= -1 &&
+          headerState.header.right <= headerState.viewport + 1 &&
+          !!headerState.nav && headerState.nav.left >= -1 &&
+          headerState.nav.right <= headerState.viewport + 1 &&
+          headerState.navScrollWidth <= headerState.nav.width + 2 &&
+          !!headerState.brand && headerState.brand.left >= -1 &&
+          headerState.brand.right <= headerState.viewport + 1 &&
+          !!headerState.actions && headerState.actions.left >= -1 &&
+          headerState.actions.right <= headerState.viewport + 1 &&
+          (drawerExpected
+            ? headerState.linksDisplay === 'none' && headerState.toggleDisplay !== 'none'
+            : headerState.linksDisplay !== 'none' && headerState.toggleDisplay === 'none');
+        if (!headerOk) headerFailures.push(size.name + ' (' + size.width + 'px): ' + JSON.stringify(headerState));
       }
-      report('5. Mobile, tablet, desktop and TV layouts avoid horizontal overflow', failures.length === 0, failures.join('; ') || '390, 820, 1440, 1920 px');
+      report('5. Mobile, tablet, desktop and TV layouts avoid horizontal overflow', failures.length === 0, failures.join('; ') || 'Tested 320, 360, 390, 768, 801, 820, 900, 1000, 1024, 1440, 1920 px');
+      report('5.1. Header, navigation and controls fit across breakpoints', headerFailures.length === 0, headerFailures.join('; ') || 'Header geometry and navigation mode passed at 11 viewport widths');
       report('6. Mobile navigation drawer remains fixed and usable', mobileNavigationPassed, mobileNavigationDetail);
     } catch (error) {
       report('5. Mobile, tablet, desktop and TV layouts avoid horizontal overflow', false, String(error.message || error));

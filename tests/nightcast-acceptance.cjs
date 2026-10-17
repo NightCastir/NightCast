@@ -446,15 +446,16 @@ function silentWavDataUri() {
         await page.setViewportSize({ width: size.width, height: size.height });
         await page.waitForTimeout(120);
         if (['mobile', 'tablet', 'desktop', 'TV'].includes(size.name)) {
-          await page.evaluate(() => window.scrollTo(0, 0));
-          await page.waitForTimeout(80);
+          await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+          await page.waitForTimeout(180);
           await page.screenshot({ path: path.join(visualArtifactDir, size.name + '-hero.png'), fullPage: false, animations: 'disabled' });
           const cosmosPanel = page.locator('#ncConstellation');
           if (await cosmosPanel.count()) {
             await cosmosPanel.scrollIntoViewIfNeeded();
-            await page.waitForTimeout(80);
+            await page.waitForTimeout(180);
             await page.screenshot({ path: path.join(visualArtifactDir, size.name + '-cosmos.png'), fullPage: false, animations: 'disabled' });
-            await page.evaluate(() => window.scrollTo(0, 0));
+            await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+            await page.waitForTimeout(350);
           }
         }
         if (size.name === 'mobile') {

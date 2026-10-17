@@ -6203,7 +6203,8 @@ LOGOUT
                         // Use the reported total as the source of truth; don't stop after page 1
                         // merely because hasMore is absent or incorrectly set in an API response.
                         if (collected.length >= total) break;
-                        if (payload.podcasts.length < 5) break;
+                        // Continue paging while the reported total has not been collected;
+                        // a short intermediate page must not silently truncate the catalogue.
                         page += 1;
                     }
 

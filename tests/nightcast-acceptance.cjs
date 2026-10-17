@@ -437,11 +437,26 @@ function silentWavDataUri() {
       ];
       const failures = [];
       const headerFailures = [];
+      const heroTitleFailures = [];
+      const visualArtifactDir = path.join(process.cwd(), 'artifacts', 'visual');
+      fs.mkdirSync(visualArtifactDir, { recursive: true });
       let mobileNavigationPassed = false;
       let mobileNavigationDetail = 'mobile navigation check was not executed';
       for (const size of sizes) {
         await page.setViewportSize({ width: size.width, height: size.height });
         await page.waitForTimeout(120);
+        if (['mobile', 'tablet', 'desktop', 'TV'].includes(size.name)) {
+          await page.evaluate(() => window.scrollTo(0, 0));
+          await page.waitForTimeout(80);
+          await page.screenshot({ path: path.join(visualArtifactDir, size.name + '-hero.png'), fullPage: false, animations: 'disabled' });
+          const cosmosPanel = page.locator('#ncConstellation');
+          if (await cosmosPanel.count()) {
+            await cosmosPanel.scrollIntoViewIfNeeded();
+            await page.waitForTimeout(80);
+            await page.screenshot({ path: path.join(visualArtifactDir, size.name + '-cosmos.png'), fullPage: false, animations: 'disabled' });
+            await page.evaluate(() => window.scrollTo(0, 0));
+          }
+        }
         if (size.name === 'mobile') {
           try {
             await page.locator('#ncMenuToggle').click({ timeout: 5000 });
@@ -527,10 +542,27 @@ function silentWavDataUri() {
             rootOverflowX: getComputedStyle(document.documentElement).overflowX,
             bodyOverflowX: getComputedStyle(document.body).overflowX,
             bodyRect: (() => { const r = document.body.getBoundingClientRect(); return { left:r.left, right:r.right, width:r.width }; })(),
-            offenders
+            offenders,
+            heroTitle: (() => {
+              const title = document.querySelector('#heroTitle');
+              const hero = document.querySelector('main#home .hero');
+              if (!title || !hero) return { missing: true };
+              const titleRect = title.getBoundingClientRect();
+              const heroRect = hero.getBoundingClientRect();
+              return {
+                clientWidth: title.clientWidth,
+                scrollWidth: title.scrollWidth,
+                left: Math.round(titleRect.left),
+                right: Math.round(titleRect.right),
+                heroLeft: Math.round(heroRect.left),
+                heroRight: Math.round(heroRect.right),
+                overflow: title.scrollWidth > title.clientWidth + 2 || titleRect.left < heroRect.left - 2 || titleRect.right > heroRect.right + 2
+              };
+            })()
           };
         });
         if (dims.content > dims.viewport + 3) failures.push(size.name + ': ' + dims.content + 'px > ' + dims.viewport + 'px; elements=' + JSON.stringify(dims.offenders));
+        if (dims.heroTitle.missing || dims.heroTitle.overflow) heroTitleFailures.push(size.name + ': ' + JSON.stringify(dims.heroTitle));
 
         const headerState = await page.evaluate(() => {
           const header = document.querySelector('.nc-header');
@@ -573,7 +605,36 @@ function silentWavDataUri() {
       }
       report('5. Mobile, tablet, desktop and TV layouts avoid horizontal overflow', failures.length === 0, failures.join('; ') || 'Tested 320, 360, 390, 768, 801, 820, 900, 1000, 1024, 1440, 1920 px');
       report('5.1. Header, navigation and controls fit across breakpoints', headerFailures.length === 0, headerFailures.join('; ') || 'Header geometry and navigation mode passed at 11 viewport widths');
+      report('5.2. Hero heading stays within its container across breakpoints', heroTitleFailures.length === 0, heroTitleFailures.join('; ') || 'Hero title geometry passed at 11 viewport widths');
       report('6. Mobile navigation drawer remains fixed and usable', mobileNavigationPassed, mobileNavigationDetail);
+
+      try {
+        await page.emulateMedia({ reducedMotion: 'no-preference' });
+        const motion = await page.evaluate(() => {
+          const style = (selector, pseudo) => {
+            const element = document.querySelector(selector);
+            return element ? getComputedStyle(element, pseudo || null).animationName : 'missing';
+          };
+          return {
+            shootingStar: style('.nc-constellation-stage', '::before'),
+            orbit: style('.nc-constellation-orbit.nc-orbit-one'),
+            planet: style('.nc-planet'),
+            world: style('.nc-planet-body'),
+            ring: style('.nc-planet-body', '::before'),
+            glow: style('.nc-planet-glow')
+          };
+        });
+        const motionOk = motion.shootingStar === 'ncShootingStar' && motion.orbit === 'ncOrbitSlowOne' && motion.planet === 'ncPlanetBob' && motion.world === 'ncWorldHover' && motion.ring === 'ncRingPrecession' && motion.glow === 'ncGlowPulse';
+        report('7. Galaxy motion layers are active when motion is allowed', motionOk, JSON.stringify(motion));
+        await page.emulateMedia({ reducedMotion: 'reduce' });
+        const reduced = await page.evaluate(() => ({
+          orbit: getComputedStyle(document.querySelector('.nc-constellation-orbit.nc-orbit-one')).animationName,
+          planet: getComputedStyle(document.querySelector('.nc-planet')).animationName
+        }));
+        report('7.1 Reduced-motion preference disables decorative orbital motion', reduced.orbit === 'none' && reduced.planet === 'none', JSON.stringify(reduced));
+      } catch (motionError) {
+        report('7. Galaxy motion layers are active when motion is allowed', false, String(motionError.message || motionError));
+      }
     } catch (error) {
       report('5. Mobile, tablet, desktop and TV layouts avoid horizontal overflow', false, String(error.message || error));
     }

@@ -108,6 +108,20 @@ function ensureConstellation(){
   const currentTitle=card.querySelector(".podcast-title")?.textContent?.trim()||"پادکست NightCast";
   const titleNode=button.querySelector(".nc-planet-name");
   if(titleNode&&titleNode.textContent!==currentTitle)titleNode.textContent=currentTitle;
+  button.setAttribute("aria-label","باز کردن پادکست: "+currentTitle);
+  button.title=currentTitle;
+  const currentCover=card.querySelector(".podcast-cover img")?.getAttribute("src")||"";
+  const planetBody=button.querySelector(".nc-planet-body");
+  if(planetBody){
+   if(currentCover){
+    const safeCover=currentCover.replace(/["\\\\]/g,"");
+    planetBody.style.setProperty("--nc-planet-cover",'url("'+safeCover+'")');
+    planetBody.classList.add("has-cover");
+   }else{
+    planetBody.style.removeProperty("--nc-planet-cover");
+    planetBody.classList.remove("has-cover");
+   }
+  }
   button.style.setProperty("--nc-planet-index",String(index%9));
  });
 }

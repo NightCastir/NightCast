@@ -144,7 +144,14 @@ function silentWavDataUri() {
       await firstCard.scrollIntoViewIfNeeded();
       await firstCard.waitFor({ state: 'visible', timeout: 5000 });
     } catch (error) {
-      report('3. Selecting a planet opens the matching podcast details', false, 'Podcast cards did not render: ' + String(error.message || error) + ' | API mock hits=' + apiMockHits + ' | browser errors: ' + browserErrors.join(' || '));
+      const diagnostic = await page.evaluate(() => {
+        const card = document.querySelector('.podcast-card[data-id="91001"]');
+        const grid = document.querySelector('#podcastGrid');
+        const section = document.querySelector('#podcasts');
+        const info = el => el ? { tag: el.tagName, className: el.className, display: getComputedStyle(el).display, visibility: getComputedStyle(el).visibility, opacity: getComputedStyle(el).opacity, rect: (() => { const r = el.getBoundingClientRect(); return { x:r.x, y:r.y, width:r.width, height:r.height }; })() } : null;
+        return { card: info(card), grid: info(grid), section: info(section), body: info(document.body) };
+      });
+      report('3. Selecting a planet opens the matching podcast details', false, 'Podcast cards did not render: ' + String(error.message || error) + ' | diagnostic=' + JSON.stringify(diagnostic) + ' | API mock hits=' + apiMockHits + ' | browser errors: ' + browserErrors.join(' || '));
       report('4. Search, player, favorites and comments controls work', false, 'Prerequisite podcast cards did not render | API mock hits=' + apiMockHits + ' | browser errors: ' + browserErrors.join(' || '));
       report('5. Mobile, tablet, desktop and TV layouts avoid horizontal overflow', false, 'Page could not reach the rendered catalogue | API mock hits=' + apiMockHits + ' | browser errors: ' + browserErrors.join(' || '));
       throw new Error('Catalogue rendering prerequisite failed');

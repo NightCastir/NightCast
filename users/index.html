@@ -4688,6 +4688,20 @@
 
             };
 
+            // Explicit bridge for later independent inline scripts (comments/map UI).
+            // These scripts do not share this IIFE's lexical scope.
+            window.NightCastPodcastBridge = Object.freeze({
+                getPodcasts: () => state.all,
+                getCurrentPodcast: () => state.current,
+                apiBase: CONFIG.API_BASE,
+                loginPage: CONFIG.LOGIN_PAGE,
+                getToken: () => getToken(),
+                isLoggedIn: () => isLoggedIn(),
+                toast: message => toast(message),
+                escapeHtml: value => escapeHtml(value),
+                showDownloadLoginPrompt: callback => showDownloadLoginPrompt(callback)
+            });
+
 
             document.body.classList.remove("player-open");
 
@@ -8705,6 +8719,19 @@ body.nc-comments-open{overflow:hidden}
     <script>
         (() => {
             "use strict";
+
+            const bridge = window.NightCastPodcastBridge;
+            if (!bridge) console.error("NightCast podcast bridge is unavailable.");
+            const CONFIG = { API_BASE: bridge?.apiBase || "", LOGIN_PAGE: bridge?.loginPage || "login.html" };
+            const state = {
+                get all() { return bridge?.getPodcasts?.() || []; },
+                get current() { return bridge?.getCurrentPodcast?.() || null; }
+            };
+            const toast = message => bridge?.toast?.(message);
+            const escapeHtml = value => bridge?.escapeHtml?.(value) ?? String(value ?? "");
+            const getToken = () => bridge?.getToken?.() || "";
+            const isLoggedIn = () => !!bridge?.isLoggedIn?.();
+            const showDownloadLoginPrompt = callback => bridge?.showDownloadLoginPrompt?.(callback);
 
             const NC_MAP_LAT = 36.350303;
             const NC_MAP_LNG = 59.503020;

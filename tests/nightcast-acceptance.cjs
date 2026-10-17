@@ -47,6 +47,7 @@ function silentWavDataUri() {
 (async () => {
   let server;
   let browser;
+  const runtimeErrors = [];
   try {
     // Static quality gates: HTML/style-tag balance, JavaScript syntax, CSS parsing, and YAML syntax.
     const htmlFilesToValidate = ['index.html', 'users/index.html', 'users/auth.html', 'users/login.html', 'users/loginnew.html', '404.html'];
@@ -137,7 +138,6 @@ function silentWavDataUri() {
     });
     const page = await context.newPage();
     const browserErrors = [];
-    const runtimeErrors = [];
     page.on('pageerror', error => {
       const detail = 'pageerror: ' + error.message;
       browserErrors.push(detail);

@@ -331,11 +331,12 @@ function silentWavDataUri() {
           const offenders = [...document.querySelectorAll('body *')].map(el => {
             const rect = el.getBoundingClientRect();
             return { tag: el.tagName, id: el.id, className: typeof el.className === 'string' ? el.className.slice(0, 70) : '', left: Math.round(rect.left), right: Math.round(rect.right), width: Math.round(rect.width), position: getComputedStyle(el).position };
-          }).filter(el => el.width > 0 && (el.right > viewport + 3 || el.left < -viewport * 0.5) && el.position !== 'fixed')
+          }).filter(el => el.width > 0 && (el.right > viewport + 3 || el.left < -viewport * 0.5) && el.position !== 'fixed' && !el.closest('#ncMobileDrawer') && !el.closest('#ncDrawerBackdrop'))
             .sort((a,b) => b.right - a.right).slice(0, 5);
           return {
             viewport,
-            content: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth),
+            // The document viewport width is authoritative; body.scrollWidth can include a closed fixed drawer translated off-canvas.
+            content: document.documentElement.scrollWidth,
             rootScroll: document.documentElement.scrollWidth,
             bodyScroll: document.body.scrollWidth,
             bodyMargin: getComputedStyle(document.body).margin,

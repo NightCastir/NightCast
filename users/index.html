@@ -9162,7 +9162,18 @@ body.nc-comments-open{overflow:hidden}
             loadPodcastCardStats();
 
             function openPodcastComments(id) {
-                const podcast = state.all.find(item => Number(item.id) === Number(id));
+                // Do not assume the legacy catalogue state is in this script's lexical scope.
+                // The bridge is the preferred source; the rendered card is a safe UI fallback.
+                const podcasts = (typeof state !== "undefined" && Array.isArray(state.all))
+                    ? state.all
+                    : (window.NightCastPodcastBridge?.getPodcasts?.() || []);
+                const podcastId = Number(id);
+                const card = [...document.querySelectorAll(".podcast-card[data-id]")]
+                    .find(item => Number(item.dataset.id) === podcastId);
+                const podcast = podcasts.find(item => Number(item.id) === podcastId) || (card ? {
+                    id: podcastId,
+                    title: card.querySelector(".podcast-title")?.textContent?.trim() || "پادکست NightCast"
+                } : null);
                 if (!podcast) {
                     toast("پادکست مورد نظر پیدا نشد.");
                     return;
@@ -9306,7 +9317,10 @@ body.nc-comments-open{overflow:hidden}
                 modal?.addEventListener("click", event => { if (event.target === modal) closePodcastComments(); });
                 form?.addEventListener("submit", submitPodcastComment);
                 nowComments?.addEventListener("click", () => {
-                    if (state.current) openPodcastComments(state.current.id);
+                    const currentPodcast = typeof state !== "undefined"
+                        ? state.current
+                        : window.NightCastPodcastBridge?.getCurrentPodcast?.();
+                    if (currentPodcast) openPodcastComments(currentPodcast.id);
                     else toast("ابتدا یک پادکست انتخاب کنید.");
                 });
                 input?.addEventListener("input", () => {

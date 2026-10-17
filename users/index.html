@@ -610,6 +610,34 @@
                    SEARCH
                 ========================================================= */
 
+                .page-size-control {
+                    display: flex;
+                    align-items: center;
+                    gap: 9px;
+                    margin-top: 10px;
+                    color: var(--nc-text-muted);
+                    font-size: .82rem;
+                    flex-wrap: wrap;
+                }
+
+                .page-size-control select {
+                    min-height: 42px;
+                    max-width: 100%;
+                    padding: 0 12px;
+                    border: 1px solid var(--nc-border);
+                    border-radius: 11px;
+                    background: var(--nc-surface);
+                    color: #fff;
+                    font: inherit;
+                    cursor: pointer;
+                    outline: none;
+                }
+
+                .page-size-control select:focus-visible {
+                    border-color: var(--nc-gold);
+                    box-shadow: 0 0 0 3px rgba(233, 190, 112, .16);
+                }
+
                 .search-box {
                     position: relative;
                     max-width: 440px;
@@ -3361,6 +3389,17 @@
 
                 </div>
 
+                <div class="page-size-control">
+                    <label for="pageSizeSelect">تعداد نمایش در هر صفحه</label>
+                    <select id="pageSizeSelect" aria-label="انتخاب تعداد پادکست در هر صفحه">
+                        <option value="4">۴ پادکست</option>
+                        <option value="8" selected>۸ پادکست</option>
+                        <option value="12">۱۲ پادکست</option>
+                        <option value="16">۱۶ پادکست</option>
+                        <option value="all">نمایش همه</option>
+                    </select>
+                </div>
+
             </div>
 
 
@@ -4283,9 +4322,6 @@
                 API_BASE:
                     "https://nightcast-api.tomasgermany2580.workers.dev/api/v1",
 
-                PAGE_SIZE:
-                    8,
-
                 CACHE_KEY:
                     "NightCastPodcastCache",
 
@@ -4374,6 +4410,9 @@
 
                 search:
                     $("#searchInput"),
+
+                pageSize:
+                    $("#pageSizeSelect"),
 
                 clear:
                     $("#searchClear"),
@@ -4467,6 +4506,15 @@
                 visible: [],
 
                 page: 1,
+
+                pageSize: (() => {
+                    try {
+                        const saved = localStorage.getItem("NightCastPodcastPageSize");
+                        return ["4", "8", "12", "16", "all"].includes(saved) ? saved : "8";
+                    } catch {
+                        return "8";
+                    }
+                })(),
 
                 totalPages: 1,
 
@@ -5928,7 +5976,7 @@ LOGOUT
                         1,
                         Math.ceil(
                             state.visible.length /
-                            CONFIG.PAGE_SIZE
+                            (state.pageSize === "all" ? Math.max(state.visible.length, 1) : Number(state.pageSize))
                         )
                     );
 
@@ -5943,15 +5991,15 @@ LOGOUT
                 }
 
 
-                const start =
-                    (state.page - 1) *
-                    CONFIG.PAGE_SIZE;
-
+                const pageSize = state.pageSize === "all"
+                    ? Math.max(state.visible.length, 1)
+                    : Number(state.pageSize);
+                const start = (state.page - 1) * pageSize;
 
                 render(
                     state.visible.slice(
                         start,
-                        start + CONFIG.PAGE_SIZE
+                        start + pageSize
                     )
                 );
 
@@ -5960,6 +6008,26 @@ LOGOUT
 
                 updateStats();
 
+            }
+
+
+            /* =========================================================
+               PAGE SIZE PREFERENCE
+            ========================================================= */
+
+            if (els.pageSize) {
+                els.pageSize.value = state.pageSize;
+                els.pageSize.addEventListener("change", () => {
+                    const selected = els.pageSize.value;
+                    state.pageSize = ["4", "8", "12", "16", "all"].includes(selected) ? selected : "8";
+                    state.page = 1;
+                    try {
+                        localStorage.setItem("NightCastPodcastPageSize", state.pageSize);
+                    } catch (error) {
+                        console.warn("NightCast page-size preference could not be saved.", error);
+                    }
+                    applyView();
+                });
             }
 
 

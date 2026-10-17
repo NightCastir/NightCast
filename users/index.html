@@ -6293,7 +6293,8 @@ LOGOUT
 
                     updateLatest(freshItems);
                     updatePodcastCollectionSchema(freshItems);
-                    state.page = 1;
+                    // Keep the listener's current page when the background refresh completes.
+                    // applyView() will clamp it only if the refreshed result has fewer pages.
                     applyView();
 
                 } catch (err) {

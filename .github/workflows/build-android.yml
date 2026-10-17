@@ -101,7 +101,7 @@ jobs:
           for (const ref of ['js/auth.js', 'js/cosmic-experience.js', 'js/router.js', 'css/splash.css']) {
             if (!root.includes(ref)) throw new Error('Root page is missing reference: ' + ref);
           }
-          for (const ref of ['../css/nightcast-cosmos.css?v=2', '../js/nightcast-cosmos.js?v=2']) {
+          for (const ref of ['../css/nightcast-cosmos.css', '../js/nightcast-cosmos.js']) {
             if (!archive.includes(ref)) throw new Error('Archive page is missing reference: ' + ref);
           }
           console.log('TRUE | Critical JS/CSS assets and page references');

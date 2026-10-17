@@ -322,3 +322,12 @@ html,body{max-width:100%;overflow-x:clip!important}
   }
   main#home .hero h1 span{max-width:100%;}
 }
+
+
+/* Mobile drawer must stack above the sticky header and its action buttons. */
+@media(max-width:800px){
+  body.nc-drawer-open .nc-header{z-index:1000!important}
+  #ncDrawerBackdrop{z-index:12000!important}
+  #ncMobileDrawer{z-index:12010!important;pointer-events:auto}
+  #ncMobileDrawer.is-open{pointer-events:auto}
+}

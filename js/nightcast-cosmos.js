@@ -44,6 +44,59 @@ function watchPodcastUpdates(){
 }
 
 document.addEventListener("click",e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const id=a.getAttribute("href");if(!id||id==="#")return;const target=document.querySelector(id);if(target){target.classList.add("nc-navigation-arrival");setTimeout(()=>target.classList.remove("nc-navigation-arrival"),850);}});
-function initCosmosExperience(){enhanceNavigation();watchPodcastUpdates();}
+function initCosmosExperience(){enhanceNavigation();watchPodcastUpdates();ensureConstellation();enableCosmicCardMotion();const grid=document.querySelector("#podcastGrid");if(grid)new MutationObserver(()=>requestAnimationFrame(()=>{ensureConstellation();enableCosmicCardMotion()})).observe(grid,{childList:true});}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",initCosmosExperience,{once:true});else initCosmosExperience();
+
+/* Interactive constellation navigator: each orb opens the site's existing podcast detail dialog. */
+function ensureConstellation(){
+ const grid=document.querySelector("#podcastGrid");
+ if(!grid)return;
+ let panel=document.getElementById("ncConstellation");
+ if(!panel){
+  panel=document.createElement("section");panel.id="ncConstellation";panel.className="nc-constellation";panel.setAttribute("aria-labelledby","ncConstellationTitle");
+  panel.innerHTML='<div class="nc-constellation-heading"><div><span class="nc-constellation-kicker"><i class="fa-solid fa-orbit" aria-hidden="true"></i> COSMIC DISCOVERY</span><h3 id="ncConstellationTitle">نقشه‌ی <span>جهان شنیداری</span></h3><p>یک سیاره را انتخاب کن و روایت آن را کشف کن.</p></div><span class="nc-constellation-count" aria-live="polite"></span></div><div class="nc-constellation-stage"><div class="nc-constellation-orbit nc-orbit-one"></div><div class="nc-constellation-orbit nc-orbit-two"></div><div class="nc-constellation-orbit nc-orbit-three"></div><div class="nc-constellation-sun" aria-hidden="true"><i class="fa-solid fa-satellite-dish"></i><span>NIGHTCAST</span></div><div class="nc-planet-list"></div></div><p class="nc-constellation-hint"><i class="fa-solid fa-hand-pointer" aria-hidden="true"></i> برای دیدن جزئیات، یکی از سیاره‌ها را لمس کن</p>';
+  grid.parentNode.insertBefore(panel,grid);
+ }
+ const list=panel.querySelector(".nc-planet-list");
+ const cards=[...grid.querySelectorAll(".podcast-card")];
+ const count=panel.querySelector(".nc-constellation-count");
+ if(count)count.textContent=cards.length.toLocaleString("fa-IR")+" سیاره در این صفحه";
+ if(!list)return;
+ const existing=new Map([...list.querySelectorAll("[data-planet-id]")].map(el=>[el.dataset.planetId,el]));
+ const liveIds=new Set(cards.map(c=>String(c.dataset.id)));
+ for(const [id,el] of existing){if(!liveIds.has(id))el.remove()}
+ cards.forEach((card,index)=>{
+  const id=String(card.dataset.id||"");if(!id)return;
+  let button=existing.get(id);
+  if(!button){
+   button=document.createElement("button");button.type="button";button.className="nc-planet";button.dataset.planetId=id;
+   const title=card.querySelector(".podcast-title")?.textContent?.trim()||"پادکست NightCast";
+   const cover=card.querySelector(".podcast-cover img")?.getAttribute("src")||"";
+   button.innerHTML='<span class="nc-planet-body"><span class="nc-planet-glow"></span><span class="nc-planet-ring"></span></span><span class="nc-planet-name"></span><span class="nc-planet-caption">مشاهده روایت <i class="fa-solid fa-arrow-up-left-from-circle" aria-hidden="true"></i></span>';
+   button.querySelector(".nc-planet-name").textContent=title;
+   if(cover){button.querySelector(".nc-planet-body").style.setProperty("--nc-planet-cover",'url("'+cover.replace(/["\\]/g,"")+'")');button.querySelector(".nc-planet-body").classList.add("has-cover")}
+   button.style.setProperty("--nc-planet-index",String(index%9));
+   button.addEventListener("click",()=>{
+    const detail=card.querySelector('[data-action="details"]');
+    if(detail){detail.click();return}
+    const play=card.querySelector('[data-action="play"]');if(play)play.click();
+   });
+   list.appendChild(button);
+  }
+  button.style.setProperty("--nc-planet-index",String(index%9));
+ });
+}
+function enableCosmicCardMotion(){
+ if(reduced||!window.matchMedia("(pointer:fine)").matches)return;
+ document.querySelectorAll(".podcast-card,.nc-featured-podcast").forEach(card=>{
+  if(card.dataset.ncTiltBound)return;card.dataset.ncTiltBound="1";
+  card.addEventListener("pointermove",event=>{
+   if(event.pointerType!=="mouse")return;
+   const rect=card.getBoundingClientRect();const x=(event.clientX-rect.left)/rect.width;const y=(event.clientY-rect.top)/rect.height;
+   card.style.setProperty("--nc-pointer-x",(x*100).toFixed(1)+"%");card.style.setProperty("--nc-pointer-y",(y*100).toFixed(1)+"%");
+  },{passive:true});
+  card.addEventListener("pointerleave",()=>{card.style.removeProperty("--nc-pointer-x");card.style.removeProperty("--nc-pointer-y")},{passive:true});
+ });
+}
+
 })();

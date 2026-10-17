@@ -308,3 +308,26 @@ html,body{max-width:100%;overflow-x:clip!important}
  .nc-constellation-stage:before,.nc-constellation-stage:after,.nc-constellation-orbit,.nc-constellation-sun,
  .nc-planet,.nc-planet-body,.nc-planet-body:before,.nc-planet-glow{animation:none!important;translate:none!important}
 }
+
+
+/* Live visual audit v5: keep the large Persian hero title inside the desktop grid. */
+@media (min-width:1100px){
+  main#home .hero > div:first-child{min-width:0;max-width:100%}
+  main#home .hero h1{
+    max-width:100%;
+    font-size:clamp(2.6rem,4.7vw,5.4rem)!important;
+    line-height:1.28!important;
+    overflow-wrap:normal;
+    word-break:normal;
+  }
+  main#home .hero h1 span{max-width:100%;}
+}
+
+
+/* Mobile drawer must stack above the sticky header and its action buttons. */
+@media(max-width:800px){
+  body.nc-drawer-open .nc-header{z-index:1000!important}
+  #ncDrawerBackdrop{z-index:12000!important}
+  #ncMobileDrawer{z-index:12010!important;pointer-events:auto}
+  #ncMobileDrawer.is-open{pointer-events:auto}
+}

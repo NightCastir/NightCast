@@ -140,7 +140,7 @@ function silentWavDataUri() {
       await page.waitForFunction(() => {
         const modal = document.querySelector('#ncPodcastDetail');
         return modal && modal.classList.contains('open') && modal.getAttribute('aria-hidden') === 'false';
-      }, { timeout: 5000 });
+      }, undefined, { timeout: 5000 });
       assert((await page.locator('#ncPodcastDetail').innerText()).includes('سیاره آزمایشی اول'), 'Details title does not match the selected planet');
       report('3. Selecting a planet opens the matching podcast details', true);
     } catch (error) {
@@ -177,7 +177,7 @@ function silentWavDataUri() {
       await page.waitForFunction(() => {
         const modal = document.querySelector('#ncCommentsModal');
         return modal && modal.classList.contains('open') && modal.getAttribute('aria-hidden') === 'false';
-      }, { timeout: 3000 });
+      }, undefined, { timeout: 3000 });
       assert((await page.locator('#ncCommentsPodcastTitle').innerText()).includes('سیاره آزمایشی اول'), 'Comments opened for the wrong podcast');
       report('4. Search, play/pause, favorites and comments work', true, 'Search, audio readiness/pause, favorite state and comments dialog verified');
     } catch (error) {

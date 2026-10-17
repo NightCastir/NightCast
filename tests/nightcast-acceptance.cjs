@@ -137,6 +137,20 @@ function silentWavDataUri() {
       report('1. Splash transitions to the home/archive page', false, String(error.message || error));
     }
 
+    // The archive uses cinematic page navigation: open the Podcasts page before testing its cards.
+    try {
+      await page.locator('.nc-nav .nav-link[href="#podcasts"]').click();
+      await page.waitForFunction(() => {
+        const section = document.querySelector('#podcasts');
+        return !!section && !section.hidden && getComputedStyle(section).display !== 'none';
+      }, undefined, { timeout: 5000 });
+    } catch (error) {
+      report('3. Selecting a planet opens the matching podcast details', false, 'Podcast page navigation failed: ' + String(error.message || error));
+      report('4. Search, player, favorites and comments controls work', false, 'Podcast page navigation failed');
+      report('5. Mobile, tablet, desktop and TV layouts avoid horizontal overflow', false, 'Podcast page navigation failed');
+      throw new Error('Podcast page navigation prerequisite failed');
+    }
+
     // Wait for the mocked catalogue so UI interactions are deterministic.
     try {
       const firstCard = page.locator('.podcast-card[data-id="91001"]');

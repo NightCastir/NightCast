@@ -4240,7 +4240,7 @@ $1
                         <div class="nc-now-book" id="ncNowBook" hidden></div>
                     </div>
                 </div>
-                <div class="nc-now-actions"><button type="button" class="nc-like-button nc-now-like" id="ncNowLike" data-like-surface="now-playing" aria-label="افزودن به علاقه‌مندی‌ها" aria-pressed="false" hidden><i class="fa-regular fa-heart" aria-hidden="true"></i><span>علاقه‌مندی</span></button></div>
+                <div class="nc-now-actions"><button type="button" class="nc-like-button nc-now-like" id="ncNowLike" data-like-surface="now-playing" aria-label="افزودن به علاقه‌مندی‌ها" aria-pressed="false" hidden><i class="fa-regular fa-heart" aria-hidden="true"></i><span>علاقه‌مندی</span></button><button type="button" class="nc-like-button nc-now-comments" id="ncNowComments" aria-label="دیدگاه‌های این پادکست"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>دیدگاه‌ها</span></button></div>
                 $1
                     <button type="button" class="nc-now-control" id="ncNowPrev" aria-label="پادکست قبلی"><i class="fa-solid fa-backward-step"></i></button>
                     <button type="button" class="nc-now-control primary" id="ncNowToggle" aria-label="پخش یا توقف"><i class="fa-solid fa-play"></i></button>
@@ -5695,6 +5695,10 @@ LOGOUT
 
                                                                                                                     </button>
 
+                                                                                                                    <button type="button" class="nc-comment-action" data-action="comments" data-id="${id}" aria-label="مشاهده و ثبت دیدگاه برای ${title}">
+                                                                                                                        <i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>دیدگاه‌ها</span>
+                                                                                                                    </button>
+
                                                                                                                 </div>
 
                                                                                                             </div>
@@ -6669,6 +6673,10 @@ LOGOUT
         
                     }
         
+                    else if (action === "comments") {
+                        openPodcastComments(id);
+                    }
+
                     else if (
                         action === "download"
                     ) {
@@ -8267,7 +8275,49 @@ document.addEventListener(
                 flex-basis: 68px
             }
         }
-    </style>
+    
+/* NightCast podcast comments */
+.nc-comments-modal{position:fixed;inset:0;z-index:10080;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(2,7,17,.78);backdrop-filter:blur(14px);opacity:0;visibility:hidden;transition:opacity .22s,visibility .22s}
+.nc-comments-modal.open{opacity:1;visibility:visible}
+.nc-comments-card{width:min(680px,100%);max-height:min(84dvh,820px);display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(148,163,184,.22);border-radius:24px;background:linear-gradient(160deg,#111c2e,#08111f 72%);box-shadow:0 28px 100px rgba(0,0,0,.55);color:#edf5ff}
+.nc-comments-head{display:flex;align-items:flex-start;gap:14px;padding:22px 22px 16px;border-bottom:1px solid rgba(148,163,184,.15)}
+.nc-comments-head-main{flex:1;min-width:0}
+.nc-comments-kicker{display:block;margin-bottom:6px;color:#5dc7ff;font-size:11px;font-weight:800;letter-spacing:.12em}
+.nc-comments-head h2{margin:0;font-size:clamp(19px,4vw,25px);line-height:1.45}
+.nc-comments-subtitle{margin:5px 0 0;color:#9aabc2;font-size:13px}
+.nc-comments-close{width:38px;height:38px;flex:0 0 38px;border:1px solid rgba(148,163,184,.22);border-radius:12px;background:rgba(255,255,255,.04);color:#eaf4ff;cursor:pointer}
+.nc-comments-list{flex:1;overflow:auto;overscroll-behavior:contain;padding:18px 22px;min-height:120px}
+.nc-comment-item{padding:15px 0;border-bottom:1px solid rgba(148,163,184,.13)}
+.nc-comment-item:first-child{padding-top:0}
+.nc-comment-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.nc-comment-author{font-size:13px;font-weight:800;color:#e9f4ff}
+.nc-comment-date{font-size:11px;color:#8193ad;white-space:nowrap}
+.nc-comment-body{margin:0;color:#c5d2e4;font-size:14px;line-height:1.95;overflow-wrap:anywhere;white-space:pre-wrap}
+.nc-comments-empty,.nc-comments-loading{padding:32px 12px;text-align:center;color:#91a3bb;font-size:13px;line-height:1.9}
+.nc-comments-empty i{display:block;margin:0 auto 12px;font-size:28px;color:#4bbef8}
+.nc-comments-compose{padding:16px 22px 20px;border-top:1px solid rgba(148,163,184,.15);background:rgba(2,8,18,.36)}
+.nc-comments-compose label{display:block;margin-bottom:9px;color:#e0ebfa;font-size:13px;font-weight:800}
+.nc-comments-compose textarea{display:block;width:100%;min-height:100px;max-height:180px;resize:vertical;padding:13px 14px;border:1px solid rgba(148,163,184,.25);border-radius:15px;outline:none;background:#07101e;color:#f1f7ff;font:inherit;font-size:14px;line-height:1.9;transition:border-color .2s,box-shadow .2s}
+.nc-comments-compose textarea:focus{border-color:#27b7f6;box-shadow:0 0 0 3px rgba(39,183,246,.12)}
+.nc-comments-compose textarea:disabled{opacity:.6}
+.nc-comments-compose textarea::placeholder{color:#71829a}
+.nc-comments-compose-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}
+.nc-comments-count{font-size:11px;color:#8294ad;direction:ltr}
+.nc-comments-submit{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:0 18px;border:0;border-radius:13px;background:linear-gradient(135deg,#22b9f5,#1677d2);color:white;font-weight:800;cursor:pointer;box-shadow:0 8px 22px rgba(14,145,225,.2)}
+.nc-comments-submit:disabled{opacity:.42;cursor:not-allowed;box-shadow:none}
+.nc-comments-notice{display:none;margin-top:10px;padding:10px 12px;border-radius:12px;font-size:12px;line-height:1.8}
+.nc-comments-notice.show{display:block}
+.nc-comments-notice.error{color:#ffc8c8;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2)}
+.nc-comments-notice.success{color:#b8f7d7;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2)}
+.nc-comment-action{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:0 11px;border:1px solid var(--nc-border,rgba(148,163,184,.2));border-radius:11px;background:rgba(76,185,240,.07);color:var(--nc-text,#d9e8fa);font:inherit;font-size:12px;cursor:pointer;transition:background .2s,border-color .2s}
+.nc-comment-action:hover{background:rgba(76,185,240,.14);border-color:rgba(76,185,240,.45)}
+.nc-comment-action .nc-comment-badge{display:inline-grid;place-items:center;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:rgba(76,185,240,.18);font-size:10px}
+.nc-now-comments{margin-inline-start:4px}
+body.nc-comments-open{overflow:hidden}
+@media(max-width:560px){.nc-comments-modal{padding:0;align-items:flex-end}.nc-comments-card{width:100%;max-height:92dvh;border-radius:22px 22px 0 0;border-bottom:0;padding-bottom:env(safe-area-inset-bottom,0)}.nc-comments-head{padding:18px 17px 14px}.nc-comments-list{padding:16px 17px}.nc-comments-compose{padding:14px 17px 18px}.nc-comments-compose textarea{min-height:88px}.nc-comment-meta{align-items:flex-start;flex-direction:column;gap:3px}}
+@media(prefers-reduced-motion:reduce){.nc-comments-modal,.nc-comment-action,.nc-comments-compose textarea{transition:none}}
+
+</style>
 
 
 
@@ -8659,9 +8709,199 @@ document.addEventListener(
                 items.forEach(item => observer.observe(item));
             }
 
+
+            /* =========================================================
+               PODCAST COMMENTS
+            ========================================================= */
+            let activeCommentsPodcastId = null;
+            let commentsRequestSequence = 0;
+
+            function normalizeCommentForModeration(value) {
+                return String(value || "").normalize("NFKC")
+                    .replace(/[يى]/g, "ی").replace(/ك/g, "ک")
+                    .replace(/[\u064B-\u065F\u0670]/g, "")
+                    .replace(/[\u200c\u200d\uFEFF]/g, "").toLowerCase();
+            }
+
+            function hasInappropriateCommentLanguage(value) {
+                const normalized = normalizeCommentForModeration(value);
+                const words = normalized.match(/[\p{L}\p{N}]+/gu) || [];
+                const blocked = new Set(["احمق","بی‌شعور","بیشعور","عوضی","حرومزاده","حرامزاده","کثافت","آشغال","اشغال","گوه","گوهی","کسکش","کصکش","کیر","کون","جنده","فاحشه","لاشی","بی‌ناموس","بیناموس","پفیوز","خفه‌شو","خفهشو","لعنتی","shit","fuck","bitch","asshole","motherfucker"]);
+                return words.some(word => blocked.has(word)) || ["بی ادب","بی‌ادب","بی احترامی","بی‌احترامی","fuck you","son of a bitch"].some(phrase => normalized.includes(phrase));
+            }
+
+            function setCommentsNotice(message, type = "error") {
+                const notice = document.getElementById("ncCommentsNotice");
+                if (!notice) return;
+                notice.textContent = message || "";
+                notice.className = "nc-comments-notice" + (message ? " show " + type : "");
+            }
+
+            function openPodcastComments(id) {
+                const podcast = state.all.find(item => Number(item.id) === Number(id));
+                if (!podcast) {
+                    toast("پادکست مورد نظر پیدا نشد.");
+                    return;
+                }
+                activeCommentsPodcastId = Number(podcast.id);
+                const modal = document.getElementById("ncCommentsModal");
+                const title = document.getElementById("ncCommentsPodcastTitle");
+                const input = document.getElementById("ncCommentsInput");
+                const list = document.getElementById("ncCommentsList");
+                if (!modal || !list) return;
+                if (title) title.textContent = podcast.title || "پادکست NightCast";
+                if (input) {
+                    input.value = "";
+                    input.disabled = false;
+                }
+                const count = document.getElementById("ncCommentsCharCount");
+                if (count) count.textContent = "0 / 1000";
+                setCommentsNotice("");
+                const submit = document.getElementById("ncCommentsSubmit");
+                if (submit) submit.disabled = false;
+                list.innerHTML = '<div class="nc-comments-loading">در حال دریافت دیدگاه‌ها…</div>';
+                modal.classList.add("open");
+                modal.setAttribute("aria-hidden", "false");
+                document.body.classList.add("nc-comments-open");
+                loadPodcastComments(activeCommentsPodcastId);
+                if (input) setTimeout(() => input.focus({preventScroll:true}), 120);
+            }
+
+            function closePodcastComments() {
+                const modal = document.getElementById("ncCommentsModal");
+                if (!modal) return;
+                modal.classList.remove("open");
+                modal.setAttribute("aria-hidden", "true");
+                document.body.classList.remove("nc-comments-open");
+                activeCommentsPodcastId = null;
+            }
+
+            function formatCommentDate(value) {
+                if (!value) return "";
+                const date = new Date(String(value).replace(" ", "T") + (String(value).endsWith("Z") ? "" : "Z"));
+                if (Number.isNaN(date.getTime())) return "";
+                try { return new Intl.DateTimeFormat("fa-IR", {dateStyle:"medium", timeStyle:"short"}).format(date); }
+                catch { return date.toLocaleString(); }
+            }
+
+            function renderPodcastComments(comments) {
+                const list = document.getElementById("ncCommentsList");
+                if (!list) return;
+                if (!Array.isArray(comments) || !comments.length) {
+                    list.innerHTML = '<div class="nc-comments-empty"><i class="fa-regular fa-comments" aria-hidden="true"></i>هنوز دیدگاهی ثبت نشده است.<br>اولین نفری باشید که نظرش را با دیگران به اشتراک می‌گذارد.</div>';
+                    return;
+                }
+                list.innerHTML = comments.map(comment => '<article class="nc-comment-item"><div class="nc-comment-meta"><span class="nc-comment-author">' + escapeHtml(comment.author_name || "شنونده NightCast") + '</span><time class="nc-comment-date">' + escapeHtml(formatCommentDate(comment.created_at)) + '</time></div><p class="nc-comment-body">' + escapeHtml(comment.body || "") + '</p></article>').join("");
+            }
+
+            async function loadPodcastComments(id) {
+                const requestId = ++commentsRequestSequence;
+                const list = document.getElementById("ncCommentsList");
+                try {
+                    const response = await fetch(CONFIG.API_BASE + "/public/podcasts/" + encodeURIComponent(id) + "/comments", {headers:{"Accept":"application/json"}});
+                    const data = await response.json().catch(() => ({}));
+                    if (requestId !== commentsRequestSequence || Number(activeCommentsPodcastId) !== Number(id)) return;
+                    if (!response.ok || !data.success) throw new Error(data.message || "دریافت دیدگاه‌ها ممکن نشد.");
+                    renderPodcastComments(data.comments || []);
+                } catch (error) {
+                    if (requestId !== commentsRequestSequence) return;
+                    if (list) list.innerHTML = '<div class="nc-comments-empty"><i class="fa-solid fa-cloud-arrow-down" aria-hidden="true"></i>' + escapeHtml(error.message || "دریافت دیدگاه‌ها ممکن نشد.") + '<br>اتصال را بررسی کنید و دوباره پنجره را باز کنید.</div>';
+                }
+            }
+
+            async function submitPodcastComment(event) {
+                event.preventDefault();
+                const id = activeCommentsPodcastId;
+                const input = document.getElementById("ncCommentsInput");
+                const submit = document.getElementById("ncCommentsSubmit");
+                const body = String(input?.value || "").trim();
+                if (!id) return;
+                if (!isLoggedIn()) {
+                    setCommentsNotice("برای ثبت دیدگاه باید وارد حساب کاربری خود شوید. دیدگاه‌های دیگران را همچنان می‌توانید بخوانید.", "error");
+                    showDownloadLoginPrompt(() => {
+                        const next = location.pathname + location.search + location.hash;
+                        location.href = CONFIG.LOGIN_PAGE + "?next=" + encodeURIComponent(next);
+                    });
+                    return;
+                }
+                if (!body) {
+                    setCommentsNotice("لطفاً ابتدا متن دیدگاه خود را بنویسید.", "error");
+                    input?.focus();
+                    return;
+                }
+                if (hasInappropriateCommentLanguage(body)) {
+                    setCommentsNotice("لطفاً محترمانه صحبت کنید. واژه‌های توهین‌آمیز را اصلاح کنید و دوباره بفرستید.", "error");
+                    input?.focus();
+                    return;
+                }
+                if (submit) {
+                    submit.disabled = true;
+                    submit.querySelector("span").textContent = "در حال ثبت…";
+                }
+                setCommentsNotice("");
+                try {
+                    const response = await fetch(CONFIG.API_BASE + "/public/podcasts/" + encodeURIComponent(id) + "/comments", {
+                        method:"POST",
+                        headers:{"Accept":"application/json","Content-Type":"application/json","Authorization":"Bearer " + getToken()},
+                        body:JSON.stringify({body})
+                    });
+                    const data = await response.json().catch(() => ({}));
+                    if (response.status === 401 || data.code === "LOGIN_REQUIRED") {
+                        setCommentsNotice("نشست کاربری شما معتبر نیست. لطفاً دوباره وارد شوید.", "error");
+                        return;
+                    }
+                    if (!response.ok || !data.success) throw new Error(data.message || "ثبت دیدگاه انجام نشد.");
+                    input.value = "";
+                    const count = document.getElementById("ncCommentsCharCount");
+                    if (count) count.textContent = "0 / 1000";
+                    setCommentsNotice("دیدگاه شما با موفقیت ثبت شد.", "success");
+                    await loadPodcastComments(id);
+                } catch (error) {
+                    setCommentsNotice(error.message || "ثبت دیدگاه انجام نشد. دوباره تلاش کنید.", "error");
+                } finally {
+                    if (submit) {
+                        submit.disabled = false;
+                        submit.querySelector("span").textContent = "ثبت دیدگاه";
+                    }
+                }
+            }
+
+            function bindCommentsUI() {
+                const modal = document.getElementById("ncCommentsModal");
+                const close = document.getElementById("ncCommentsClose");
+                const form = document.getElementById("ncCommentsForm");
+                const input = document.getElementById("ncCommentsInput");
+                const count = document.getElementById("ncCommentsCharCount");
+                const submit = document.getElementById("ncCommentsSubmit");
+                const nowComments = document.getElementById("ncNowComments");
+                close?.addEventListener("click", closePodcastComments);
+                modal?.addEventListener("click", event => { if (event.target === modal) closePodcastComments(); });
+                form?.addEventListener("submit", submitPodcastComment);
+                nowComments?.addEventListener("click", () => {
+                    if (state.current) openPodcastComments(state.current.id);
+                    else toast("ابتدا یک پادکست انتخاب کنید.");
+                });
+                input?.addEventListener("input", () => {
+                    const value = input.value;
+                    if (count) count.textContent = value.length + " / 1000";
+                    if (hasInappropriateCommentLanguage(value)) {
+                        setCommentsNotice("لطفاً محترمانه صحبت کنید؛ این متن شامل واژه نامناسب است و تا اصلاح آن ثبت نمی‌شود.", "error");
+                        if (submit) submit.disabled = true;
+                    } else {
+                        setCommentsNotice("");
+                        if (submit) submit.disabled = false;
+                    }
+                });
+                document.addEventListener("keydown", event => {
+                    if (event.key === "Escape" && modal?.classList.contains("open")) closePodcastComments();
+                });
+            }
+
+
             function initNightCastEnhancement() {
                 bindAboutStats();
                 bindLatestEpisodeActions();
+                bindCommentsUI();
                 bindSectionNavigation();
                 bindReveal();
                 initMap();
@@ -8678,6 +8918,30 @@ document.addEventListener(
             }
         })();
     </script>
+
+
+<div class="nc-comments-modal" id="ncCommentsModal" aria-hidden="true">
+    <section class="nc-comments-card" role="dialog" aria-modal="true" aria-labelledby="ncCommentsTitle">
+        <header class="nc-comments-head">
+            <div class="nc-comments-head-main">
+                <span class="nc-comments-kicker">NIGHTCAST COMMUNITY</span>
+                <h2 id="ncCommentsTitle">گفت‌وگو درباره پادکست</h2>
+                <p class="nc-comments-subtitle" id="ncCommentsPodcastTitle">دیدگاه شنوندگان</p>
+            </div>
+            <button type="button" class="nc-comments-close" id="ncCommentsClose" aria-label="بستن پنجره دیدگاه‌ها"><i class="fa-solid fa-xmark"></i></button>
+        </header>
+        <div class="nc-comments-list" id="ncCommentsList" aria-live="polite"><div class="nc-comments-loading">در حال دریافت دیدگاه‌ها…</div></div>
+        <form class="nc-comments-compose" id="ncCommentsForm">
+            <label for="ncCommentsInput">دیدگاه شما</label>
+            <textarea id="ncCommentsInput" maxlength="1000" placeholder="نظر خود را محترمانه با دیگر شنوندگان به اشتراک بگذارید…" aria-describedby="ncCommentsNotice ncCommentsCharCount"></textarea>
+            <div class="nc-comments-compose-foot">
+                <span class="nc-comments-count" id="ncCommentsCharCount">0 / 1000</span>
+                <button class="nc-comments-submit" id="ncCommentsSubmit" type="submit"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i><span>ثبت دیدگاه</span></button>
+            </div>
+            <div class="nc-comments-notice" id="ncCommentsNotice" role="status" aria-live="polite"></div>
+        </form>
+    </section>
+</div>
 
 </body>
 </html>

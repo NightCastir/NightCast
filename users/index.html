@@ -8565,6 +8565,18 @@ body.nc-comments-open{overflow:hidden}
                     .nc-card-details span { display: none; }
                     .nc-card-details { flex: 0 0 33px; min-width: 33px; padding: 0 !important; }
                 }
+
+                @media (min-width: 651px) {
+                    .podcast-card .meta span:nth-child(2),
+                    .podcast-card .meta span:nth-child(4) { display: none; }
+                    .podcast-title { min-height: 0; margin-bottom: 6px; }
+                    .podcast-desc { -webkit-line-clamp: 2; margin-bottom: 9px; }
+                    .card-footer { gap: 6px; }
+                    .card-footer .btn { padding: 6px 9px; }
+                    .nc-comment-action { min-width: 38px; padding: 6px; }
+                    .nc-comment-action span { display: none; }
+                }
+
                 @media (prefers-reduced-motion: reduce) { .podcast-card, .podcast-cover img, .nc-podcast-detail, .nc-detail-dialog { transition: none !important; } }
 
 </style>

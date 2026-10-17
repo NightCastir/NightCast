@@ -1,5 +1,6 @@
 const { chromium } = require('playwright');
 const { spawn } = require('node:child_process');
+const fs = require('node:fs');
 
 const results = [];
 function report(name, passed, detail = '') {
@@ -238,6 +239,10 @@ function silentWavDataUri() {
   console.log('INFO | 6. Android APK build | reported separately by Build NightCast Android APK workflow');
   const failed = results.filter(item => !item.passed);
   console.log('SUMMARY | ' + results.filter(item => item.passed).length + '/' + results.length + ' browser/API checks TRUE');
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    const rows = results.map(item => '| ' + item.name.replace(/\\|/g, '/') + ' | **' + (item.passed ? 'TRUE' : 'FALSE') + '** | ' + String(item.detail || '').replace(/[\\r\\n|]/g, ' ').slice(0, 220) + ' |').join('\\n');
+    fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, '## Browser and API acceptance results\\n\\n| Activity | Result | Details |\\n|---|---|---|\\n' + rows + '\\n\\n');
+  }
   if (failed.length) process.exitCode = 1;
 })().catch(error => {
   console.error(error);

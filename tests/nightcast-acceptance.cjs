@@ -188,7 +188,11 @@ function silentWavDataUri() {
 
     // Activity 4: verify search, player state, favorite mutation and comments entry.
     try {
-      await page.locator('[data-action="close-details"]').first().click().catch(() => {});
+      const detailIsOpen = await page.locator('#ncPodcastDetail').evaluate(el => el.classList.contains('open'));
+      if (detailIsOpen) {
+        await page.locator('#ncPodcastDetail .nc-detail-close').click();
+        await page.waitForFunction(() => !document.querySelector('#ncPodcastDetail')?.classList.contains('open'), undefined, { timeout: 3000 });
+      }
       const search = page.locator('#searchInput');
       await search.fill('سیاره آزمایشی اول');
       await page.waitForFunction(() => document.querySelectorAll('#podcastGrid .podcast-card').length === 1);

@@ -8803,6 +8803,21 @@ body.nc-comments-open{overflow:hidden}
 
             window.NightCastOpenPodcastComments = openPodcastComments;
 
+            // Capture-phase fallback: make the comments button work independently
+            // of the main podcast-grid event delegation.
+            document.addEventListener("click", function(event) {
+                const button = event.target.closest('[data-action="comments"]');
+                if (!button) return;
+                event.preventDefault();
+                event.stopPropagation();
+                if (typeof window.NightCastOpenPodcastComments === "function") {
+                    window.NightCastOpenPodcastComments(button.dataset.id);
+                } else {
+                    console.error("NightCast comments module is not ready.");
+                    window.alert("پنجره دیدگاه‌ها هنوز بارگذاری نشده است. صفحه را تازه‌سازی کنید.");
+                }
+            }, true);
+
             function closePodcastComments() {
                 const modal = document.getElementById("ncCommentsModal");
                 if (!modal) return;

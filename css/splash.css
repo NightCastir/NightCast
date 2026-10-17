@@ -36,9 +36,7 @@ body{
 
     background:var(--bg);
 
-    font-family:
-    Tahoma,
-    sans-serif;
+    font-family: "Vazirmatn", system-ui, sans-serif;
 
 }
 
@@ -389,3 +387,40 @@ body{
 }
 
       }
+
+
+/* Brand polish and responsive type for the entry splash */
+.splash {
+    padding: max(24px, env(safe-area-inset-top)) 22px max(24px, env(safe-area-inset-bottom));
+    background:
+        radial-gradient(ellipse at 50% 12%, rgba(38, 155, 221, .16), transparent 38%),
+        radial-gradient(ellipse at 80% 90%, rgba(225, 178, 101, .07), transparent 34%),
+        #07111f;
+}
+.logo-wrapper h1 {
+    letter-spacing: -.035em;
+    font-weight: 800;
+}
+.logo-wrapper p {
+    max-width: 34ch;
+    line-height: 1.9;
+    text-wrap: balance;
+}
+.logo-circle {
+    box-shadow: 0 0 0 10px rgba(0, 212, 255, .045), 0 0 44px rgba(0, 212, 255, .12);
+}
+@media (max-width: 380px) {
+    .logo-wrapper h1 { font-size: clamp(1.8rem, 9vw, 2.4rem); }
+    .logo-wrapper p { font-size: .88rem; }
+}
+@media (min-width: 1600px) {
+    .logo-wrapper h1 { font-size: 3.6rem; }
+    .logo-wrapper p { font-size: 1.2rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+    }
+}

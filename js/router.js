@@ -45,14 +45,29 @@
 
         let destination = "/users/index.html";
         try {
+            const fontReady = document.fonts && document.fonts.ready
+                ? bounded(document.fonts.ready, 1800, null)
+                : Promise.resolve(null);
+            const stylesheetReady = Promise.allSettled(
+                Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(link => {
+                    if (link.sheet) return Promise.resolve();
+                    return bounded(new Promise(resolve => {
+                        link.addEventListener("load", resolve, { once: true });
+                        link.addEventListener("error", resolve, { once: true });
+                    }), 1800, null);
+                })
+            );
+            await Promise.all([fontReady, stylesheetReady]);
+            setProgress(52, "ظاهر و نوشتار در حال آماده‌شدن است");
+
             if (window.NightCastAuth && typeof window.NightCastAuth.isLoggedIn === "function" &&
                 window.NightCastAuth.isLoggedIn() &&
                 typeof window.NightCastAuth.validate === "function") {
-                const valid = await bounded(window.NightCastAuth.validate(), MAX_AUTH_WAIT_MS, false);
-                destination = valid ? "/users/index.html" : "/users/index.html";
+                setProgress(70, "در حال بررسی نشست کاربری…");
+                await bounded(window.NightCastAuth.validate(), MAX_AUTH_WAIT_MS, false);
             }
         } catch (error) {
-            console.warn("NightCast startup validation did not complete:", error);
+            console.warn("NightCast startup checks did not complete:", error);
         }
 
         await sleep(Math.max(0, MIN_SPLASH_MS - (performance.now() - started)));

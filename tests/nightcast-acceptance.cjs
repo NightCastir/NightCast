@@ -218,26 +218,14 @@ function silentWavDataUri() {
 
       await page.locator('.podcast-card[data-id="91001"] [data-action="comments"]').click();
       await page.waitForTimeout(250);
-      let commentsState = await page.evaluate(() => ({
+      const commentsState = await page.evaluate(() => ({
         modalExists: !!document.querySelector('#ncCommentsModal'),
         className: document.querySelector('#ncCommentsModal')?.className || '',
         ariaHidden: document.querySelector('#ncCommentsModal')?.getAttribute('aria-hidden') || '',
         openerType: typeof window.NightCastOpenPodcastComments,
         bodyClass: document.body.className
       }));
-      if (!commentsState.className.includes('open') && typeof window.NightCastOpenPodcastComments === 'function') {
-        // Verify whether the failure is in the button delegation or in the modal itself.
-        window.NightCastOpenPodcastComments(91001);
-        await page.waitForTimeout(100);
-        commentsState = await page.evaluate(() => ({
-          modalExists: !!document.querySelector('#ncCommentsModal'),
-          className: document.querySelector('#ncCommentsModal')?.className || '',
-          ariaHidden: document.querySelector('#ncCommentsModal')?.getAttribute('aria-hidden') || '',
-          openerType: typeof window.NightCastOpenPodcastComments,
-          bodyClass: document.body.className
-        }));
-      }
-      assert(commentsState.modalExists && commentsState.className.includes('open') && commentsState.ariaHidden === 'false', 'Comments dialog did not open: ' + JSON.stringify(commentsState));
+      assert(commentsState.modalExists && commentsState.className.includes('open') && commentsState.ariaHidden === 'false', 'Comments button click did not open the modal: ' + JSON.stringify(commentsState));
       assert((await page.locator('#ncCommentsPodcastTitle').innerText()).includes('سیاره آزمایشی اول'), 'Comments opened for the wrong podcast');
       console.log('PASS | Comments dialog opens for selected podcast');
       report('4. Search, play/pause, favorites and comments work', true, 'Search, audio readiness/pause, favorite state and comments dialog verified');

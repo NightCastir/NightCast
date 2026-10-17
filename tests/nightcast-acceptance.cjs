@@ -1,6 +1,7 @@
 const { chromium } = require('playwright');
 const { spawn } = require('node:child_process');
 const fs = require('node:fs');
+const path = require('node:path');
 const vm = require('node:vm');
 const YAML = require('yaml');
 const { transform } = require('lightningcss');
@@ -95,6 +96,39 @@ function silentWavDataUri() {
     }
     report('0.3. YAML configuration files parse cleanly', yamlFailures.length === 0,
       yamlFailures.slice(0, 8).join(' || ') || 'Parsed ' + yamlFiles.length + ' YAML files');
+
+    const linkFailures = [];
+    const assetFailures = [];
+    for (const file of htmlFilesToValidate) {
+      const html = fs.readFileSync(file, 'utf8');
+      const ids = new Set([...html.matchAll(/\\bid\\s*=\\s*["']([^"']+)["']/gi)].map(match => match[1]));
+      for (const match of html.matchAll(/<a\\b[^>]*\\bhref\\s*=\\s*["']#([^"']*)["'][^>]*>/gi)) {
+        const target = match[1].trim();
+        if (target && target !== '!' && !ids.has(target)) {
+          linkFailures.push(file + ':' + html.slice(0, match.index).split('\\n').length + ' -> #' + target);
+        }
+      }
+      for (const match of html.matchAll(/<(script|link|img|source|audio|video)\\b([^>]*?)>/gi)) {
+        const tag = match[1].toLowerCase();
+        const attrs = match[2];
+        const attr = name => attrs.match(new RegExp('\\\\b' + name + '\\\\s*=\\\\s*(["\\\'])(.*?)\\\\1', 'i'))?.[2] || '';
+        let url = '';
+        if (tag === 'script' || tag === 'img' || tag === 'source' || tag === 'audio' || tag === 'video') url = attr('src');
+        if (tag === 'link' && /stylesheet|icon|manifest|apple-touch-icon/i.test(attr('rel'))) url = attr('href');
+        if (!url || /^(?:https?:|\\\\/\\\\/|data:|blob:|javascript:|#)/i.test(url) || /escapeHtml|\\$\\{|\\s\\+\\s/.test(url)) continue;
+        url = url.split('#')[0].split('?')[0];
+        if (!url) continue;
+        const resolved = path.normalize(url.startsWith('/') ? '.' + url : path.join(path.dirname(file), url));
+        const candidate = path.resolve(resolved);
+        const directoryIndex = path.join(candidate, 'index.html');
+        if (!fs.existsSync(candidate) && !fs.existsSync(directoryIndex)) {
+          assetFailures.push(file + ':' + html.slice(0, match.index).split('\\n').length + ' -> ' + url);
+        }
+      }
+    }
+    const missingLocalReferences = [...linkFailures, ...assetFailures];
+    report('0.4. Local in-page links and static assets exist', missingLocalReferences.length === 0,
+      missingLocalReferences.slice(0, 10).join(' || ') || 'No broken local anchors or static asset paths in the six HTML entry pages');
 
     // Activity 2: validate the actual public API, independently of browser mocks.
     try {
@@ -379,6 +413,9 @@ function silentWavDataUri() {
               const backdrop = document.querySelector('#ncDrawerBackdrop');
               const d = drawer?.getBoundingClientRect();
               const b = backdrop?.getBoundingClientRect();
+              const header = document.querySelector('.nc-header');
+              const menuToggle = document.querySelector('#ncMenuToggle');
+              const toggleRect = menuToggle?.getBoundingClientRect();
               return {
                 drawerPosition: drawer ? getComputedStyle(drawer).position : 'missing',
                 drawerWidth: Math.round(d?.width || 0),
@@ -386,11 +423,17 @@ function silentWavDataUri() {
                 drawerRight: Math.round(d?.right || 0),
                 backdropPosition: backdrop ? getComputedStyle(backdrop).position : 'missing',
                 backdropWidth: Math.round(b?.width || 0),
+                headerPosition: header ? getComputedStyle(header).position : 'missing',
+                menuToggleDisplay: menuToggle ? getComputedStyle(menuToggle).display : 'missing',
+                menuToggleWidth: Math.round(toggleRect?.width || 0),
                 viewportWidth: document.documentElement.clientWidth
               };
             });
             mobileNavigationPassed = drawerState.drawerPosition === 'fixed' &&
               drawerState.backdropPosition === 'fixed' &&
+              drawerState.headerPosition === 'sticky' &&
+              drawerState.menuToggleDisplay !== 'none' &&
+              drawerState.menuToggleWidth > 0 &&
               drawerState.drawerWidth > 0 &&
               drawerState.drawerHeight > 0 &&
               drawerState.backdropWidth >= drawerState.viewportWidth - 3;

@@ -44,7 +44,7 @@ jobs:
           {
             echo "## NightCast acceptance results"
             echo ""
-            echo "- Static and browser gates cover HTML, JavaScript syntax/runtime, CSS parsing, YAML parsing, sticky header and CDN icons, live API, splash navigation, constellation details, player controls, responsive overflow, and mobile navigation."
+            echo "- Static and browser gates cover HTML, JavaScript syntax/runtime, CSS parsing, YAML parsing, local asset/anchor integrity, sticky header and CDN icons, live API, splash navigation, constellation details, player controls, responsive overflow, and mobile navigation."
             echo "- Android APK build status is reported separately by the Build NightCast Android APK workflow; this job does not claim that an APK was built."
             echo ""
             echo "The browser/API tests use mock podcast records for UI interaction tests; the live API check independently queries the real public API."

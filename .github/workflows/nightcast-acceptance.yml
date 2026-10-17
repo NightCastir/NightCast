@@ -3,6 +3,7 @@ name: NightCast Acceptance Checks
 on:
   push:
     branches:
+      - main
       - feat/cinematic-cosmos-redesign
   pull_request:
     branches:
@@ -37,6 +38,15 @@ jobs:
 
       - name: Run browser and API acceptance checks
         run: node tests/nightcast-acceptance.cjs
+
+      - name: Upload responsive visual audit screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightcast-visual-audit-${{ github.run_number }}
+          path: artifacts/visual/*.png
+          if-no-files-found: warn
+          retention-days: 14
 
       - name: Publish acceptance results
         if: always()

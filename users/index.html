@@ -5840,7 +5840,7 @@ LOGOUT
                 const episode = p.episode_number ? "قسمت " + String(p.episode_number) : "";
                 const tagMarkup = tags.map(tag => '<span class="podcast-tag">' + escapeHtml(tag) + '</span>').join("");
 
-                return '<article class="podcast-card" data-id="' + id + '">' +
+                return '<article id="podcast-' + escapeHtml(String(p.slug || id)) + '" class="podcast-card" data-id="' + id + '">' +
                     '<div class="podcast-cover">' +
                         '<img src="' + escapeHtml(cover) + '" alt="جلد پادکست ' + escapeHtml(title) + '" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=\'' + placeholder + '\'">' +
                         '<div class="cover-shade"></div>' +
@@ -6348,8 +6348,13 @@ LOGOUT
                             "item": {
                                 "@type": "PodcastEpisode",
                                 "name": String(p.title || p.book_name || "پادکست NightCast"),
-                                "description": String(p.description || p.summary || ""),
+                                "description": String(p.short_description || p.description || p.summary || ""),
+                                "url": "https://nightcast.ir/users/#podcast-" + encodeURIComponent(String(p.slug || p.id || "")),
+                                "image": String(p.cover_url || "https://nightcast.ir/logo.png"),
                                 "inLanguage": "fa-IR",
+                                "datePublished": p.publish_date || p.created_at || undefined,
+                                "duration": Number(p.duration_seconds) > 0 ? "PT" + Math.floor(Number(p.duration_seconds) / 60) + "M" + (Number(p.duration_seconds) % 60) + "S" : undefined,
+                                "associatedMedia": p.audio_url ? { "@type": "AudioObject", "contentUrl": String(p.audio_url), "encodingFormat": "audio/mpeg" } : undefined,
                                 "author": { "@type": "Person", "name": String(p.author_name || "NightCast") }
                             }
                         }))

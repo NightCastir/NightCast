@@ -72,6 +72,9 @@ function silentWavDataUri() {
       localStorage.setItem('NightCastUser', JSON.stringify({ id: 1, name: 'CI Test' }));
     });
     const page = await context.newPage();
+    const browserErrors = [];
+    page.on('pageerror', error => browserErrors.push('pageerror: ' + error.message));
+    page.on('console', message => { if (message.type() === 'error') browserErrors.push('console: ' + message.text()); });
     const fixtureAudio = silentWavDataUri();
     const podcasts = [
       {
@@ -115,7 +118,7 @@ function silentWavDataUri() {
     try {
       await page.goto('http://127.0.0.1:4173/index.html', { waitUntil: 'domcontentloaded', timeout: 10000 });
       await page.waitForURL('**/users/index.html', { timeout: 10000 });
-      await page.waitForSelector('#podcastGrid', { timeout: 10000 });
+      await page.waitForSelector('#podcastGrid', { state: 'attached', timeout: 5000 });
       splashOk = true;
       report('1. Splash transitions to the home/archive page', true, new URL(page.url()).pathname);
     } catch (error) {
@@ -126,9 +129,9 @@ function silentWavDataUri() {
     try {
       await page.waitForSelector('.podcast-card[data-id="91001"]', { timeout: 10000 });
     } catch (error) {
-      report('3. Selecting a planet opens the matching podcast details', false, 'Podcast cards did not render: ' + String(error.message || error));
-      report('4. Search, player, favorites and comments controls work', false, 'Prerequisite podcast cards did not render');
-      report('5. Mobile, tablet, desktop and TV layouts avoid horizontal overflow', false, 'Page could not reach the rendered catalogue');
+      report('3. Selecting a planet opens the matching podcast details', false, 'Podcast cards did not render: ' + String(error.message || error) + ' | browser errors: ' + browserErrors.slice(-8).join(' || '));
+      report('4. Search, player, favorites and comments controls work', false, 'Prerequisite podcast cards did not render | browser errors: ' + browserErrors.slice(-8).join(' || '));
+      report('5. Mobile, tablet, desktop and TV layouts avoid horizontal overflow', false, 'Page could not reach the rendered catalogue | browser errors: ' + browserErrors.slice(-8).join(' || '));
       throw new Error('Catalogue rendering prerequisite failed');
     }
 

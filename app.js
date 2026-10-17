@@ -1,238 +1,166 @@
+(() => {
+    "use strict";
 
-const API = "https://ncstgetrssfromaparat.tomasgermany2580.workers.dev";
+    const API = "https://ncstgetrssfromaparat.tomasgermany2580.workers.dev";
+    const episodes = document.getElementById("episodes");
+    const loader = document.getElementById("loader");
+    const sheet = document.getElementById("playerSheet");
+    const overlay = document.getElementById("overlay");
+    const title = document.getElementById("sheetTitle");
+    const video = document.getElementById("videoContainer");
+    const desc = document.getElementById("episodeDescription");
+    const search = document.getElementById("search");
+    const closeButton = document.getElementById("closeSheet");
+    const listenButton = document.getElementById("listenButton");
+    let allEpisodes = [];
 
-const episodes = document.getElementById("episodes");
-const loader = document.getElementById("loader");
+    const asText = value => typeof value === "string" ? value : "";
 
-const sheet = document.getElementById("playerSheet");
-const overlay = document.getElementById("overlay");
+    async function loadEpisodes() {
+        if (loader) loader.style.display = "flex";
 
-const title = document.getElementById("sheetTitle");
-const video = document.getElementById("videoContainer");
-const desc = document.getElementById("episodeDescription");
+        try {
+            const response = await fetch(API, { headers: { Accept: "application/json" } });
+            if (!response.ok) throw new Error("دریافت اپیزودها ناموفق بود. کد: " + response.status);
 
-const search = document.getElementById("search");
-
-let allEpisodes = [];
-
-async function loadEpisodes() {
-
-    loader.style.display = "flex";
-
-    try {
-
-        console.log("1- شروع");
-
-        const res = await fetch(API);
-
-        console.log("2- Fetch Status:", res.status);
-
-        const data = await res.json();
-
-        console.log("3- JSON:", data);
-
-        allEpisodes = data.episodes || [];
-
-        console.log("4- تعداد اپیزود:", allEpisodes.length);
-
-        showEpisodes(allEpisodes);
-
-        console.log("5- کارت‌ها ساخته شدند");
-
-    } catch (err) {
-
-        console.error("ERROR:", err);
-
-        alert(err.message);
-
-    } finally {
-
-        console.log("6- Loader مخفی شد");
-
-        loader.style.display = "none";
-
+            const data = await response.json();
+            allEpisodes = Array.isArray(data.episodes) ? data.episodes : [];
+            showEpisodes(allEpisodes);
+        } catch (error) {
+            console.error("NightCast episodes load failed:", error);
+            if (episodes) {
+                episodes.replaceChildren();
+                const message = document.createElement("p");
+                message.textContent = "بارگذاری اپیزودها انجام نشد. لطفاً دوباره تلاش کنید.";
+                episodes.appendChild(message);
+            }
+        } finally {
+            if (loader) loader.style.display = "none";
+        }
     }
 
-}
+    function showEpisodes(list) {
+        if (!episodes) return;
+        episodes.replaceChildren();
 
-function showEpisodes(list) {
+        if (!list.length) {
+            const empty = document.createElement("p");
+            empty.textContent = "موردی یافت نشد.";
+            episodes.appendChild(empty);
+            return;
+        }
 
-    episodes.innerHTML = "";
+        const fragment = document.createDocumentFragment();
+        list.forEach(item => {
+            const card = document.createElement("div");
+            card.className = "card";
 
-    if (list.length === 0) {
+            const body = document.createElement("div");
+            body.className = "cardBody";
 
-        episodes.innerHTML = "<p>موردی یافت نشد.</p>";
+            const heading = document.createElement("h3");
+            heading.textContent = asText(item.title) || "اپیزود بدون عنوان";
 
-        return;
+            const description = document.createElement("p");
+            description.textContent = shortText(asText(item.description));
 
-    }
+            const meta = document.createElement("div");
+            meta.className = "meta";
 
-    list.forEach(item => {
+            const published = document.createElement("span");
+            published.textContent = "📅 " + date(asText(item.published));
 
-        const card = document.createElement("div");
+            const source = document.createElement("span");
+            source.textContent = "▶ آپارات";
+            meta.append(published, source);
 
-        card.className = "card";
+            const button = document.createElement("button");
+            button.className = "listen";
+            button.type = "button";
+            button.textContent = "🎧 همین الان گوش بده";
+            button.addEventListener("click", event => {
+                event.stopPropagation();
+                openEpisode(item);
+            });
 
-        card.innerHTML = `
-
-            <div class="cardBody">
-
-                <h3>${item.title}</h3>
-
-                <p>${shortText(item.description)}</p>
-
-                <div class="meta">
-
-                    <span>📅 ${date(item.published)}</span>
-
-                    <span>▶ آپارات</span>
-
-                </div>
-
-                <button class="listen">
-
-                    🎧 همین الان گوش بده
-
-                </button>
-
-            </div>
-
-        `;
-
-        card.onclick = () => openEpisode(item);
-
-        episodes.appendChild(card);
-
-    });
-
-}
-
-function openEpisode(item) {
-
-    title.textContent = item.title;
-
-    desc.textContent = item.description;
-
-    video.innerHTML = `
-
-        <iframe
-            src="${item.embed}"
-            loading="lazy"
-            allowfullscreen>
-        </iframe>
-
-    `;
-
-    sheet.classList.add("show");
-
-    overlay.classList.add("show");
-
-}
-
-function closePlayer() {
-
-    sheet.classList.remove("show");
-
-    overlay.classList.remove("show");
-
-    video.innerHTML = "";
-
-}
-
-document.getElementById("closeSheet").onclick = closePlayer;
-
-overlay.onclick = closePlayer;
-
-document.getElementById("listenButton").onclick = function () {
-
-    sheet.scrollTo({
-
-        top: 0,
-
-        behavior: "smooth"
-
-    });
-
-};
-
-if (search) {
-
-    search.addEventListener("input", function () {
-
-        const text = this.value.trim().toLowerCase();
-
-        const filtered = allEpisodes.filter(item => {
-
-            return (
-
-                item.title.toLowerCase().includes(text) ||
-
-                item.description.toLowerCase().includes(text)
-
-            );
-
+            body.append(heading, description, meta, button);
+            card.appendChild(body);
+            card.addEventListener("click", () => openEpisode(item));
+            fragment.appendChild(card);
         });
+        episodes.appendChild(fragment);
+    }
 
-        showEpisodes(filtered);
+    function openEpisode(item) {
+        if (!sheet || !video || !title || !desc || !overlay) return;
 
-    });
+        title.textContent = asText(item.title) || "اپیزود NightCast";
+        desc.textContent = asText(item.description);
+        video.replaceChildren();
 
-}
+        let embedUrl;
+        try {
+            embedUrl = new URL(asText(item.embed));
+        } catch {
+            const message = document.createElement("p");
+            message.textContent = "نشانی پخش این اپیزود معتبر نیست.";
+            video.appendChild(message);
+            sheet.classList.add("show");
+            overlay.classList.add("show");
+            return;
+        }
 
-function shortText(text) {
+        if (embedUrl.protocol !== "https:" ||
+            !(embedUrl.hostname === "aparat.com" || embedUrl.hostname.endsWith(".aparat.com"))) {
+            const message = document.createElement("p");
+            message.textContent = "نشانی پخش این اپیزود معتبر نیست.";
+            video.appendChild(message);
+        } else {
+            const iframe = document.createElement("iframe");
+            iframe.src = embedUrl.href;
+            iframe.loading = "lazy";
+            iframe.title = title.textContent;
+            iframe.allowFullscreen = true;
+            iframe.referrerPolicy = "strict-origin-when-cross-origin";
+            video.appendChild(iframe);
+        }
 
-    if (!text) return "";
+        sheet.classList.add("show");
+        overlay.classList.add("show");
+    }
 
-    return text.length > 170
+    function closePlayer() {
+        if (sheet) sheet.classList.remove("show");
+        if (overlay) overlay.classList.remove("show");
+        if (video) video.replaceChildren();
+    }
 
-        ? text.substring(0, 170) + "..."
+    if (closeButton) closeButton.addEventListener("click", closePlayer);
+    if (overlay) overlay.addEventListener("click", closePlayer);
+    if (listenButton && sheet) {
+        listenButton.addEventListener("click", () => sheet.scrollTo({ top: 0, behavior: "smooth" }));
+    }
 
-        : text;
+    if (search) {
+        search.addEventListener("input", function () {
+            const query = this.value.trim().toLocaleLowerCase();
+            showEpisodes(allEpisodes.filter(item =>
+                asText(item.title).toLocaleLowerCase().includes(query) ||
+                asText(item.description).toLocaleLowerCase().includes(query)
+            ));
+        });
+    }
 
-}
+    function shortText(value) {
+        return value.length > 170 ? value.substring(0, 170) + "…" : value;
+    }
 
-function date(text) {
+    function date(value) {
+        return value
+            .replace(/^(Mon|Tue|Wed|Thu|Fri|Sat|Sun),\s*/, "")
+            .replace("+0330", "")
+            .trim();
+    }
 
-    if (!text) return "";
-
-    return text
-
-        .replace("Mon,", "")
-
-        .replace("Tue,", "")
-
-        .replace("Wed,", "")
-
-        .replace("Thu,", "")
-
-        .replace("Fri,", "")
-
-        .replace("Sat,", "")
-
-        .replace("Sun,", "")
-
-        .replace("+0330", "")
-
-        .trim();
-
-}
-
-function toast(message) {
-
-    const t = document.getElementById("toast");
-
-    if (!t) return;
-
-    t.textContent = message;
-
-    t.style.display = "block";
-
-    setTimeout(() => {
-
-        t.style.display = "none";
-
-    }, 2500);
-
-}
-
-loadEpisodes();
+    loadEpisodes();
+})();

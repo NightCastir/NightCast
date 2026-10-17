@@ -3449,9 +3449,9 @@
                     <button class="btn btn-secondary"
                             id="latestCta">
 
-                        <i class="fa-solid fa-play"></i>
+                        <i class="fa-solid fa-shuffle" aria-hidden="true"></i>
 
-                        آخرین پادکست
+                        پادکست ویژه
 
                     </button>
                     <button type="button"
@@ -3465,14 +3465,15 @@
             </div>
 
 
-            <div class="hero-card"
-                 aria-live="polite">
+            <article class="hero-card nc-featured-podcast"
+                     aria-live="polite"
+                     aria-labelledby="latestPodcastTitle">
 
                 <span class="latest-label">
 
-                    <i class="fa-solid fa-bolt"></i>
+                    <i class="fa-solid fa-sparkles" aria-hidden="true"></i>
 
-                    جدیدترین پادکست
+                    پیشنهاد تصادفی NightCast
 
                 </span>
 
@@ -3480,20 +3481,21 @@
                 <div class="latest-title"
                      id="latestPodcastTitle">
 
-                    در حال آماده‌سازی...
+                    در حال انتخاب پادکست ویژه...
 
                 </div>
 
 
                 <button class="latest-play"
                         id="latestPodcastPlay"
-                        aria-label="پخش آخرین پادکست">
+                        type="button"
+                        aria-label="پخش پادکست ویژه">
 
-                    <i class="fa-solid fa-play"></i>
+                    <i class="fa-solid fa-play" aria-hidden="true"></i>
 
                 </button>
 
-            </div>
+            </article>
 
         </section>
 
@@ -6366,51 +6368,33 @@ LOGOUT
                 node.textContent = JSON.stringify(schema).replace(/</g, "\\u003c");
             }
 
-                        function updateLatest(items) {
+            // Keep one random featured podcast per page load. If cached and fresh
+            // API data both arrive, retain the same selection when that record exists.
+            let featuredPodcastId = null;
 
-                const latest =
-                    items[0];
-
-
-                if (!latest) {
-
-                    els.latestTitle.textContent =
-                        "هنوز پادکستی ثبت نشده است.";
-
-
-                    els.latestPlay.disabled =
-                        true;
-
-
+            function updateLatest(items) {
+                const eligible = Array.isArray(items) ? items.filter(item => item && item.id != null) : [];
+                if (!eligible.length) {
+                    els.latestTitle.textContent = "هنوز پادکستی برای پیشنهاد وجود ندارد.";
+                    els.latestPlay.disabled = true;
+                    els.latestCta.disabled = true;
                     return;
-
                 }
 
+                let featured = eligible.find(item => String(item.id) === String(featuredPodcastId));
+                if (!featured) {
+                    featured = eligible[Math.floor(Math.random() * eligible.length)];
+                    featuredPodcastId = featured.id;
+                }
 
-                els.latestTitle.textContent =
-                    latest.title ||
-                    "بدون عنوان";
-
-
-                els.latestPlay.disabled =
-                    !latest.audio_url;
-
-
-                els.latestPlay.onclick =
-                    () =>
-                        latest.audio_url &&
-                        playPodcast(
-                            latest.id
-                        );
-
-
-                els.latestCta.onclick =
-                    () =>
-                        latest.audio_url &&
-                        playPodcast(
-                            latest.id
-                        );
-
+                const title = featured.title || "بدون عنوان";
+                els.latestTitle.textContent = title;
+                els.latestPlay.disabled = !featured.audio_url;
+                els.latestCta.disabled = !featured.audio_url;
+                els.latestPlay.setAttribute("aria-label", "پخش پادکست ویژه: " + title);
+                els.latestPlay.onclick = () => featured.audio_url && playPodcast(featured.id);
+                els.latestCta.setAttribute("aria-label", "پخش پادکست ویژه: " + title);
+                els.latestCta.onclick = () => featured.audio_url && playPodcast(featured.id);
             }
 
 

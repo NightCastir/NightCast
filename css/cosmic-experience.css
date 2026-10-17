@@ -6,6 +6,7 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;bac
 #nc-cosmos-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.72}
 /* Keep the splash and other fixed overlays fixed; only the page layers need a foreground stacking level. */
 #appSplash.splash{z-index:1}
+.auth-page,.login-page{position:relative;z-index:1}
 a,button,input,textarea,select{transition:color .25s ease,border-color .25s ease,background .25s ease,box-shadow .25s ease,transform .25s ease}
 a{color:#b8eaff}a:hover{color:#fff}
 button{font:inherit}

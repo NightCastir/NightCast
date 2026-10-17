@@ -65,7 +65,8 @@ function silentWavDataUri() {
     browser = await chromium.launch({ headless: true });
     const context = await browser.newContext({
       viewport: { width: 1365, height: 900 },
-      reducedMotion: 'reduce'
+      reducedMotion: 'reduce',
+      serviceWorkers: 'block'
     });
     await context.addInitScript(() => {
       localStorage.setItem('NightCastToken', 'ci-test-token');
@@ -74,8 +75,10 @@ function silentWavDataUri() {
     const page = await context.newPage();
     const browserErrors = [];
     page.on('pageerror', error => browserErrors.push('pageerror: ' + error.message));
+    page.on('requestfailed', request => browserErrors.push('requestfailed: ' + request.url() + ' ' + (request.failure()?.errorText || '')));
     page.on('console', message => { if (message.type() === 'error') browserErrors.push('console: ' + message.text()); });
     const fixtureAudio = silentWavDataUri();
+    let apiMockHits = 0;
     const podcasts = [
       {
         id: 91001, title: 'سیاره آزمایشی اول', book_name: 'کتاب آزمایشی', author_name: 'NightCast CI',
@@ -91,7 +94,8 @@ function silentWavDataUri() {
       }
     ];
 
-    await page.route('**/api/v1/**', async route => {
+    await page.route('https://nightcast-api.tomasgermany2580.workers.dev/**', async route => {
+      apiMockHits++;
       const url = new URL(route.request().url());
       const pathname = url.pathname;
       if (pathname.endsWith('/public/podcasts') && route.request().method() === 'GET') {
@@ -129,9 +133,9 @@ function silentWavDataUri() {
     try {
       await page.waitForSelector('.podcast-card[data-id="91001"]', { timeout: 10000 });
     } catch (error) {
-      report('3. Selecting a planet opens the matching podcast details', false, 'Podcast cards did not render: ' + String(error.message || error) + ' | browser errors: ' + browserErrors.slice(-8).join(' || '));
-      report('4. Search, player, favorites and comments controls work', false, 'Prerequisite podcast cards did not render | browser errors: ' + browserErrors.slice(-8).join(' || '));
-      report('5. Mobile, tablet, desktop and TV layouts avoid horizontal overflow', false, 'Page could not reach the rendered catalogue | browser errors: ' + browserErrors.slice(-8).join(' || '));
+      report('3. Selecting a planet opens the matching podcast details', false, 'Podcast cards did not render: ' + String(error.message || error) + ' | API mock hits=' + apiMockHits + ' | browser errors: ' + browserErrors.join(' || '));
+      report('4. Search, player, favorites and comments controls work', false, 'Prerequisite podcast cards did not render | API mock hits=' + apiMockHits + ' | browser errors: ' + browserErrors.join(' || '));
+      report('5. Mobile, tablet, desktop and TV layouts avoid horizontal overflow', false, 'Page could not reach the rendered catalogue | API mock hits=' + apiMockHits + ' | browser errors: ' + browserErrors.join(' || '));
       throw new Error('Catalogue rendering prerequisite failed');
     }
 

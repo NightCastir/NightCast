@@ -77,12 +77,19 @@ function ensureConstellation(){
    if(cover){button.querySelector(".nc-planet-body").style.setProperty("--nc-planet-cover",'url("'+cover.replace(/["\\]/g,"")+'")');button.querySelector(".nc-planet-body").classList.add("has-cover")}
    button.style.setProperty("--nc-planet-index",String(index%9));
    button.addEventListener("click",()=>{
-    const detail=card.querySelector('[data-action="details"]');
+    // Cards are replaced when search, pagination, or the live API refresh re-renders.
+    // Resolve the current card at click time instead of keeping a stale DOM reference.
+    const currentCard=[...grid.querySelectorAll(".podcast-card")].find(item=>String(item.dataset.id)===id);
+    if(!currentCard)return;
+    const detail=currentCard.querySelector('[data-action="details"]');
     if(detail){detail.click();return}
-    const play=card.querySelector('[data-action="play"]');if(play)play.click();
+    const play=currentCard.querySelector('[data-action="play"]');if(play)play.click();
    });
    list.appendChild(button);
   }
+  const currentTitle=card.querySelector(".podcast-title")?.textContent?.trim()||"پادکست NightCast";
+  const titleNode=button.querySelector(".nc-planet-name");
+  if(titleNode&&titleNode.textContent!==currentTitle)titleNode.textContent=currentTitle;
   button.style.setProperty("--nc-planet-index",String(index%9));
  });
 }

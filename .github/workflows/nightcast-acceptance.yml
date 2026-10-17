@@ -1,0 +1,48 @@
+name: NightCast Acceptance Checks
+
+on:
+  push:
+    branches:
+      - feat/cinematic-cosmos-redesign
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-acceptance:
+    name: Browser and API acceptance checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install browser test dependency
+        run: npm install --no-save playwright
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run six acceptance activities
+        run: node tests/nightcast-acceptance.cjs
+
+      - name: Publish acceptance results
+        if: always()
+        run: |
+          {
+            echo "## NightCast acceptance results"
+            echo ""
+            echo "- Splash transition, real API, constellation details, player controls, and responsive layouts are reported as TRUE/FALSE in the test log."
+            echo "- Android APK build status is reported separately by the Build NightCast Android APK workflow."
+            echo ""
+            echo "The browser/API tests use mock podcast records for UI interaction tests; the live API check independently queries the real public API."
+          } >> "$GITHUB_STEP_SUMMARY"

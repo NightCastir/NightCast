@@ -994,3 +994,47 @@ footer p{
 /* ==================================================
    END
 ================================================== */
+
+/* ==================================================
+   RESPONSIVE GOOGLE SIGN-IN CONTAINER
+   Prevent the Google account / sign-in button from
+   overflowing the login card on narrow screens.
+================================================== */
+
+.login-card,
+.login-card * {
+    min-width: 0;
+}
+
+.google-login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    margin-inline: auto;
+}
+
+.google-login-container > div,
+.google-login-container iframe {
+    max-width: 100% !important;
+}
+
+@media (max-width: 380px) {
+    .login-page {
+        padding-inline: 12px;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 100%;
+        padding-inline: 14px;
+    }
+
+    .google-login-container {
+        padding-inline: 0;
+    }
+}
+

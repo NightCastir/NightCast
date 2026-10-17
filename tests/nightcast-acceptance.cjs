@@ -235,11 +235,16 @@ function silentWavDataUri() {
       for (const size of sizes) {
         await page.setViewportSize({ width: size.width, height: size.height });
         await page.waitForTimeout(120);
-        const dims = await page.evaluate(() => ({
-          viewport: document.documentElement.clientWidth,
-          content: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth)
-        }));
-        if (dims.content > dims.viewport + 3) failures.push(size.name + ': ' + dims.content + 'px > ' + dims.viewport + 'px');
+        const dims = await page.evaluate(() => {
+          const viewport = document.documentElement.clientWidth;
+          const offenders = [...document.querySelectorAll('body *')].map(el => {
+            const rect = el.getBoundingClientRect();
+            return { tag: el.tagName, id: el.id, className: typeof el.className === 'string' ? el.className.slice(0, 70) : '', left: Math.round(rect.left), right: Math.round(rect.right), width: Math.round(rect.width), position: getComputedStyle(el).position };
+          }).filter(el => el.width > 0 && (el.right > viewport + 3 || el.left < -viewport * 0.5) && el.position !== 'fixed')
+            .sort((a,b) => b.right - a.right).slice(0, 5);
+          return { viewport, content: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth), offenders };
+        });
+        if (dims.content > dims.viewport + 3) failures.push(size.name + ': ' + dims.content + 'px > ' + dims.viewport + 'px; elements=' + JSON.stringify(dims.offenders));
       }
       report('5. Mobile, tablet, desktop and TV layouts avoid horizontal overflow', failures.length === 0, failures.join('; ') || '390, 820, 1440, 1920 px');
     } catch (error) {

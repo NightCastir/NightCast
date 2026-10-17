@@ -121,7 +121,7 @@
     }
     </script>
 
-    <style
+    <style>
 
                 :root {
                     --nc-bg: #0E1C2F;
@@ -3258,7 +3258,9 @@
 @keyframes nc-heart-pop{0%{transform:scale(.72)}55%{transform:scale(1.28)}100%{transform:scale(1)}}
 @media(prefers-reduced-motion:reduce){.favorite,.nc-like-button,.favorite i,.nc-like-button i{transition:none;animation:none!important}}
 </style>
-<link rel="stylesheet" href="./css/nightcast-redesign.css?v=20261017-2">
+<link rel="stylesheet" href="../css/cosmic-experience.css?v=1">
+    <link rel="stylesheet" href="../css/nightcast-cosmos.css?v=2">
+    <link rel="stylesheet" href="../css/nightcast-responsive-fix.css?v=1">
 </head>
 
 <body>
@@ -4687,6 +4689,20 @@
 
             };
 
+            // Explicit bridge for later independent inline scripts (comments/map UI).
+            // These scripts do not share this IIFE's lexical scope.
+            window.NightCastPodcastBridge = Object.freeze({
+                getPodcasts: () => state.all,
+                getCurrentPodcast: () => state.current,
+                apiBase: CONFIG.API_BASE,
+                loginPage: CONFIG.LOGIN_PAGE,
+                getToken: () => getToken(),
+                isLoggedIn: () => isLoggedIn(),
+                toast: message => toast(message),
+                escapeHtml: value => escapeHtml(value),
+                showDownloadLoginPrompt: callback => showDownloadLoginPrompt(callback)
+            });
+
 
             document.body.classList.remove("player-open");
 
@@ -5819,6 +5835,17 @@ LOGOUT
                 document.body.classList.remove("nc-detail-open");
                 lastPodcastDetailsTrigger?.focus?.({ preventScroll: true });
             }
+
+            // The details dialog is outside #podcastGrid, so grid-level delegation cannot close it.
+            // Use document delegation to support the close button and backdrop after the modal is parsed.
+            document.addEventListener("click", event => {
+                const target = event.target;
+                if (!(target instanceof Element)) return;
+                const closeButton = target.closest('#ncPodcastDetail [data-action="close-details"]');
+                if (!closeButton) return;
+                event.preventDefault();
+                closePodcastDetails();
+            });
 
             document.addEventListener("keydown", event => {
                 if (event.key === "Escape" && document.getElementById("ncPodcastDetail")?.classList.contains("open")) {
@@ -8694,6 +8721,19 @@ body.nc-comments-open{overflow:hidden}
         (() => {
             "use strict";
 
+            const bridge = window.NightCastPodcastBridge;
+            if (!bridge) console.error("NightCast podcast bridge is unavailable.");
+            const CONFIG = { API_BASE: bridge?.apiBase || "", LOGIN_PAGE: bridge?.loginPage || "login.html" };
+            const state = {
+                get all() { return bridge?.getPodcasts?.() || []; },
+                get current() { return bridge?.getCurrentPodcast?.() || null; }
+            };
+            const toast = message => bridge?.toast?.(message);
+            const escapeHtml = value => bridge?.escapeHtml?.(value) ?? String(value ?? "");
+            const getToken = () => bridge?.getToken?.() || "";
+            const isLoggedIn = () => !!bridge?.isLoggedIn?.();
+            const showDownloadLoginPrompt = callback => bridge?.showDownloadLoginPrompt?.(callback);
+
             const NC_MAP_LAT = 36.350303;
             const NC_MAP_LNG = 59.503020;
             const NC_ADDRESS = "مشهد، بلوار شاهد، شاهد ۲۵، پلاک ۲۱";
@@ -9123,7 +9163,18 @@ body.nc-comments-open{overflow:hidden}
             loadPodcastCardStats();
 
             function openPodcastComments(id) {
-                const podcast = state.all.find(item => Number(item.id) === Number(id));
+                // Do not assume the legacy catalogue state is in this script's lexical scope.
+                // The bridge is the preferred source; the rendered card is a safe UI fallback.
+                const podcasts = (typeof state !== "undefined" && Array.isArray(state.all))
+                    ? state.all
+                    : (window.NightCastPodcastBridge?.getPodcasts?.() || []);
+                const podcastId = Number(id);
+                const card = [...document.querySelectorAll(".podcast-card[data-id]")]
+                    .find(item => Number(item.dataset.id) === podcastId);
+                const podcast = podcasts.find(item => Number(item.id) === podcastId) || (card ? {
+                    id: podcastId,
+                    title: card.querySelector(".podcast-title")?.textContent?.trim() || "پادکست NightCast"
+                } : null);
                 if (!podcast) {
                     toast("پادکست مورد نظر پیدا نشد.");
                     return;
@@ -9267,7 +9318,10 @@ body.nc-comments-open{overflow:hidden}
                 modal?.addEventListener("click", event => { if (event.target === modal) closePodcastComments(); });
                 form?.addEventListener("submit", submitPodcastComment);
                 nowComments?.addEventListener("click", () => {
-                    if (state.current) openPodcastComments(state.current.id);
+                    const currentPodcast = typeof state !== "undefined"
+                        ? state.current
+                        : window.NightCastPodcastBridge?.getCurrentPodcast?.();
+                    if (currentPodcast) openPodcastComments(currentPodcast.id);
                     else toast("ابتدا یک پادکست انتخاب کنید.");
                 });
                 input?.addEventListener("input", () => {
@@ -9378,5 +9432,6 @@ body.nc-comments-open{overflow:hidden}
         </section>
     </div>
 
+    <script src="../js/nightcast-cosmos.js?v=2" defer></script>
 </body>
 </html>

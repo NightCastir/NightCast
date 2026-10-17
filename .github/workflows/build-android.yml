@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+      - feat/cinematic-cosmos-redesign
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -32,6 +36,22 @@ jobs:
         with:
           node-version: '22'
 
+      # ============================================================
+      # 3. Java 17
+      # ============================================================
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Verify Java
+        run: |
+          set -e
+          java -version
+          javac -version
+          echo "JAVA_HOME=$JAVA_HOME"
+
       - name: Check JavaScript syntax
         run: |
           set -euo pipefail
@@ -39,6 +59,53 @@ jobs:
           find . -path './.git' -prune -o -path './node_modules' -prune -o -type f -name '*.js' -print0 \
             | xargs -0 -r -n1 node --check
           echo "JavaScript syntax checks passed."
+
+      - name: Check inline JavaScript and critical asset references
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('node:fs');
+          const vm = require('node:vm');
+          
+          const htmlFiles = ['index.html', 'users/index.html'];
+          for (const file of htmlFiles) {
+            const html = fs.readFileSync(file, 'utf8');
+            const scripts = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)];
+            let checked = 0;
+            for (const [index, match] of scripts.entries()) {
+              const attrs = match[1] || '';
+              const body = match[2] || '';
+              if (/\bsrc\s*=/.test(attrs) || /application\/ld\+json/i.test(attrs) || !body.trim()) continue;
+              new vm.Script(body, { filename: file + ':inline-script-' + index });
+              checked++;
+            }
+            console.log('TRUE | Inline JavaScript syntax | ' + file + ' (' + checked + ' scripts)');
+          }
+
+          const critical = [
+            'js/auth.js',
+            'js/cosmic-experience.js',
+            'js/router.js',
+            'js/update-checker.js',
+            'css/splash.css',
+            'css/cosmic-experience.css',
+            'users/index.html',
+            'css/nightcast-cosmos.css',
+            'js/nightcast-cosmos.js'
+          ];
+          for (const file of critical) {
+            if (!fs.existsSync(file)) throw new Error('Missing critical asset: ' + file);
+          }
+          const root = fs.readFileSync('index.html', 'utf8');
+          const archive = fs.readFileSync('users/index.html', 'utf8');
+          for (const ref of ['js/auth.js', 'js/cosmic-experience.js', 'js/router.js', 'css/splash.css']) {
+            if (!root.includes(ref)) throw new Error('Root page is missing reference: ' + ref);
+          }
+          for (const ref of ['../css/nightcast-cosmos.css?v=2', '../js/nightcast-cosmos.js?v=2']) {
+            if (!archive.includes(ref)) throw new Error('Archive page is missing reference: ' + ref);
+          }
+          console.log('TRUE | Critical JS/CSS assets and page references');
+          NODE
 
       - name: Install npm dependencies
         run: |
@@ -58,7 +125,7 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v4
         with:
-          cmdline-tools-version: '11076708'
+          # Use the action's maintained default command-line tools version.
           accept-android-sdk-licenses: true
           packages: ''
 
@@ -85,21 +152,6 @@ jobs:
 
           sdkmanager --list_installed
 
-      # ============================================================
-      # 3. Java 17
-      # ============================================================
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: '21'
-
-      - name: Verify Java
-        run: |
-          set -e
-          java -version
-          javac -version
-          echo "JAVA_HOME=$JAVA_HOME"
 
       # ============================================================
       # 6. Create clean Capacitor configuration
@@ -170,6 +222,7 @@ jobs:
           # ----------------------------------------------------------
 
           cp manifest.json www/ 2>/dev/null || true
+          cp version.json www/version.json
           cp service-worker.js www/ 2>/dev/null || true
           cp sw.js www/ 2>/dev/null || true
           cp style.css www/ 2>/dev/null || true
@@ -1096,6 +1149,7 @@ jobs:
       # 17. Build Debug APK
       # ============================================================
       - name: Build Debug APK
+        id: build_debug
         run: |
           set -e
 
@@ -1143,6 +1197,7 @@ jobs:
       # 19. Build Release APK
       # ============================================================
       - name: Build Release APK
+        id: build_release
         run: |
           set -e
 
@@ -1179,6 +1234,7 @@ jobs:
       # 20. Verify APK output
       # ============================================================
       - name: Verify APKs
+        id: verify_apks
         run: |
           set -e
 
@@ -1261,3 +1317,19 @@ jobs:
           echo "========================================"
           echo "              BUILD DONE"
           echo "========================================"
+
+      - name: Report Android APK build TRUE/FALSE
+        if: always()
+        env:
+          DEBUG_OUTCOME: ${{ steps.build_debug.outcome }}
+          RELEASE_OUTCOME: ${{ steps.build_release.outcome }}
+          APK_VERIFY_OUTCOME: ${{ steps.verify_apks.outcome }}
+        run: |
+          if [ "$DEBUG_OUTCOME" = "success" ] && [ "$RELEASE_OUTCOME" = "success" ] && [ "$APK_VERIFY_OUTCOME" = "success" ]; then
+            echo "TRUE | 6. Android Debug and Release APK build"
+            echo "TRUE | 6. Android Debug and Release APK build" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "FALSE | 6. Android Debug and Release APK build (debug=$DEBUG_OUTCOME, release=$RELEASE_OUTCOME, verify=$APK_VERIFY_OUTCOME)"
+            echo "FALSE | 6. Android Debug and Release APK build (debug=$DEBUG_OUTCOME, release=$RELEASE_OUTCOME, verify=$APK_VERIFY_OUTCOME)" >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi

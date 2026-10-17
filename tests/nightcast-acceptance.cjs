@@ -1,0 +1,521 @@
+const { chromium } = require('playwright');
+const { spawn } = require('node:child_process');
+const fs = require('node:fs');
+const path = require('node:path');
+const vm = require('node:vm');
+const YAML = require('yaml');
+const { transform } = require('lightningcss');
+
+const results = [];
+function report(name, passed, detail = '') {
+  const value = Boolean(passed);
+  results.push({ name, passed: value, detail });
+  console.log((value ? 'TRUE' : 'FALSE') + ' | ' + name + (detail ? ' | ' + detail : ''));
+}
+function assert(condition, message) {
+  if (!condition) throw new Error(message);
+}
+function walkFiles(root, extensionPattern, files = []) {
+  for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
+    if (entry.name === '.git' || entry.name === 'node_modules' || entry.name === 'android' || entry.name === 'www') continue;
+    const file = root + '/' + entry.name;
+    if (entry.isDirectory()) walkFiles(file, extensionPattern, files);
+    else if (extensionPattern.test(file)) files.push(file);
+  }
+  return files;
+}
+function silentWavDataUri() {
+  const sampleRate = 8000;
+  const samples = 40000;
+  const data = Buffer.alloc(samples);
+  const header = Buffer.alloc(44);
+  header.write('RIFF', 0);
+  header.writeUInt32LE(36 + data.length, 4);
+  header.write('WAVE', 8);
+  header.write('fmt ', 12);
+  header.writeUInt32LE(16, 16);
+  header.writeUInt16LE(1, 20);
+  header.writeUInt16LE(1, 22);
+  header.writeUInt32LE(sampleRate, 24);
+  header.writeUInt32LE(sampleRate, 28);
+  header.writeUInt16LE(1, 32);
+  header.writeUInt16LE(8, 34);
+  header.write('data', 36);
+  header.writeUInt32LE(data.length, 40);
+  return 'data:audio/wav;base64,' + Buffer.concat([header, data]).toString('base64');
+}
+
+(async () => {
+  let server;
+  let browser;
+  const runtimeErrors = [];
+  try {
+    // Static quality gates: HTML/style-tag balance, JavaScript syntax, CSS parsing, and YAML syntax.
+    const htmlFilesToValidate = ['index.html', 'users/index.html', 'users/auth.html', 'users/login.html', 'users/loginnew.html', '404.html'];
+    const malformedStyleFiles = [];
+    const inlineStyleBlocks = [];
+    for (const file of htmlFilesToValidate) {
+      const html = fs.readFileSync(file, 'utf8');
+      const opens = (html.match(/<style\b[^>]*>/gi) || []).length;
+      const closes = (html.match(/<\/style\s*>/gi) || []).length;
+      if (/<style\b(?![^>]*>)/i.test(html) || opens !== closes) malformedStyleFiles.push(file + ' (open=' + opens + ', close=' + closes + ')');
+      for (const match of html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style\s*>/gi)) {
+        inlineStyleBlocks.push({ file, code: match[1] });
+      }
+    }
+    report('0. HTML inline style tags are balanced', malformedStyleFiles.length === 0,
+      malformedStyleFiles.length ? malformedStyleFiles.join(', ') : htmlFilesToValidate.join(', '));
+
+    const jsFailures = [];
+    const jsFiles = walkFiles('.', /\.js$/i);
+    for (const file of jsFiles) {
+      try { new vm.Script(fs.readFileSync(file, 'utf8'), { filename: file }); }
+      catch (error) { jsFailures.push(file + ': ' + error.message); }
+    }
+    report('0.1. JavaScript files pass syntax parsing', jsFailures.length === 0,
+      jsFailures.slice(0, 8).join(' || ') || 'Parsed ' + jsFiles.length + ' JavaScript files');
+
+    const cssFailures = [];
+    const cssFiles = walkFiles('.', /\.css$/i);
+    for (const file of cssFiles) {
+      try { transform({ filename: file, code: Buffer.from(fs.readFileSync(file, 'utf8')) }); }
+      catch (error) { cssFailures.push(file + ': ' + error.message); }
+    }
+    for (const block of inlineStyleBlocks) {
+      try { transform({ filename: block.file + '.inline.css', code: Buffer.from(block.code) }); }
+      catch (error) { cssFailures.push(block.file + ' inline style: ' + error.message); }
+    }
+    report('0.2. CSS files and inline styles parse cleanly', cssFailures.length === 0,
+      cssFailures.slice(0, 8).join(' || ') || 'Parsed ' + cssFiles.length + ' CSS files and ' + inlineStyleBlocks.length + ' inline style blocks');
+
+    const yamlFailures = [];
+    const yamlFiles = walkFiles('.', /\.(?:yml|yaml)$/i);
+    for (const file of yamlFiles) {
+      try { YAML.parse(fs.readFileSync(file, 'utf8'), { uniqueKeys: true }); }
+      catch (error) { yamlFailures.push(file + ': ' + error.message); }
+    }
+    report('0.3. YAML configuration files parse cleanly', yamlFailures.length === 0,
+      yamlFailures.slice(0, 8).join(' || ') || 'Parsed ' + yamlFiles.length + ' YAML files');
+
+    const linkFailures = [];
+    const assetFailures = [];
+    for (const file of htmlFilesToValidate) {
+      const html = fs.readFileSync(file, 'utf8');
+      const ids = new Set([...html.matchAll(/\bid\s*=\s*["']([^"']+)["']/gi)].map(match => match[1]));
+      for (const match of html.matchAll(/<a\b[^>]*\bhref\s*=\s*["']#([^"']*)["'][^>]*>/gi)) {
+        const target = match[1].trim();
+        if (target && target !== '!' && !ids.has(target)) {
+          linkFailures.push(file + ':' + html.slice(0, match.index).split('\n').length + ' -> #' + target);
+        }
+      }
+      for (const match of html.matchAll(/<(script|link|img|source|audio|video)\b([^>]*?)>/gi)) {
+        const tag = match[1].toLowerCase();
+        const attrs = match[2];
+        const attr = name => {
+          const found = attrs.match(new RegExp("\\b" + name + "\\s*=\\s*(?:\"([^\"]*)\"|'([^']*)')", 'i'));
+          return found?.[1] ?? found?.[2] ?? '';
+        };
+        let url = '';
+        if (tag === 'script' || tag === 'img' || tag === 'source' || tag === 'audio' || tag === 'video') url = attr('src');
+        if (tag === 'link' && /stylesheet|icon|manifest|apple-touch-icon/i.test(attr('rel'))) url = attr('href');
+        if (!url || /^(?:https?:|\/\/|data:|blob:|javascript:|#)/i.test(url) || /escapeHtml|\$\{|\s\+\s/.test(url)) continue;
+        url = url.split('#')[0].split('?')[0];
+        if (!url) continue;
+        const resolved = path.normalize(url.startsWith('/') ? '.' + url : path.join(path.dirname(file), url));
+        const candidate = path.resolve(resolved);
+        const directoryIndex = path.join(candidate, 'index.html');
+        if (!fs.existsSync(candidate) && !fs.existsSync(directoryIndex)) {
+          assetFailures.push(file + ':' + html.slice(0, match.index).split('\n').length + ' -> ' + url);
+        }
+      }
+    }
+    const missingLocalReferences = [...linkFailures, ...assetFailures];
+    report('0.4. Local in-page links and static assets exist', missingLocalReferences.length === 0,
+      missingLocalReferences.slice(0, 10).join(' || ') || 'No broken local anchors or static asset paths in the six HTML entry pages');
+
+    // Activity 2: validate the actual public API, independently of browser mocks.
+    try {
+      const response = await fetch('https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=5', {
+        headers: { Accept: 'application/json' },
+        signal: AbortSignal.timeout(12000)
+      });
+      const payload = await response.json();
+      const ok = response.ok && payload?.success === true && Array.isArray(payload.podcasts) && payload.podcasts.length > 0;
+      report('2. Real podcast API returns live records', ok, 'HTTP ' + response.status + ', records=' + (payload?.podcasts?.length ?? 'n/a'));
+    } catch (error) {
+      report('2. Real podcast API returns live records', false, String(error.message || error));
+    }
+
+    server = spawn('python3', ['-m', 'http.server', '4173', '--bind', '127.0.0.1'], {
+      stdio: 'ignore',
+      detached: false
+    });
+    let serverReady = false;
+    for (let i = 0; i < 40; i++) {
+      try {
+        const response = await fetch('http://127.0.0.1:4173/index.html', { signal: AbortSignal.timeout(500) });
+        if (response.ok) { serverReady = true; break; }
+      } catch {}
+      await new Promise(resolve => setTimeout(resolve, 250));
+    }
+    assert(serverReady, 'Local static server did not start');
+
+    browser = await chromium.launch({ headless: true });
+    const context = await browser.newContext({
+      viewport: { width: 1365, height: 900 },
+      reducedMotion: 'reduce',
+      serviceWorkers: 'block'
+    });
+    await context.addInitScript(() => {
+      localStorage.setItem('NightCastToken', 'ci-test-token');
+      localStorage.setItem('NightCastUser', JSON.stringify({ id: 1, name: 'CI Test' }));
+      if (navigator.serviceWorker) {
+        navigator.serviceWorker.register = async () => ({ scope: location.origin + '/' });
+      }
+    });
+    const page = await context.newPage();
+    const browserErrors = [];
+    page.on('pageerror', error => {
+      const detail = 'pageerror: ' + error.message;
+      browserErrors.push(detail);
+      runtimeErrors.push(detail);
+    });
+    page.on('requestfailed', request => browserErrors.push('requestfailed: ' + request.url() + ' ' + (request.failure()?.errorText || '')));
+    page.on('console', message => {
+      if (message.type() !== 'error') return;
+      const detail = 'console: ' + message.text();
+      browserErrors.push(detail);
+      if (!/Failed to load resource:|net::ERR_|ERR_ABORTED|favicon\.ico/i.test(message.text())) runtimeErrors.push(detail);
+    });
+    const fixtureAudio = silentWavDataUri();
+    let apiMockHits = 0;
+    const podcasts = [
+      {
+        id: 91001, title: 'سیاره آزمایشی اول', book_name: 'کتاب آزمایشی', author_name: 'NightCast CI',
+        category_name: 'آزمایش', description: 'توضیحات آزمایش جست‌وجو', short_description: 'توضیح کوتاه آزمایش',
+        summary: 'خلاصه آزمایش', transcript: 'متن کامل آزمایش', audio_url: fixtureAudio,
+        cover_url: 'https://example.invalid/cover-one.jpg', duration_seconds: 1, tags: ['آزمایش']
+      },
+      {
+        id: 91002, title: 'سیاره آزمایشی دوم', book_name: 'کتاب دوم', author_name: 'NightCast CI',
+        category_name: 'دانش', description: 'محتوای نمونه دوم', short_description: 'توضیح نمونه دوم',
+        summary: 'خلاصه دوم', transcript: 'متن دوم', audio_url: fixtureAudio,
+        cover_url: 'https://example.invalid/cover-two.jpg', duration_seconds: 1, tags: ['دانش']
+      }
+    ];
+
+    await page.route('https://nightcast-api.tomasgermany2580.workers.dev/**', async route => {
+      apiMockHits++;
+      const url = new URL(route.request().url());
+      const pathname = url.pathname;
+      if (pathname.endsWith('/public/podcasts') && route.request().method() === 'GET') {
+        return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true, total: podcasts.length, podcasts }) });
+      }
+      if (pathname.endsWith('/public/podcasts/stats')) {
+        return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true, total: podcasts.length, stats: {} }) });
+      }
+      if (pathname.endsWith('/auth/status')) {
+        return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true, authenticated: true }) });
+      }
+      if (pathname.endsWith('/public/favorites') || pathname.includes('/public/favorites/')) {
+        return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true, favorites: [] }) });
+      }
+      if (pathname.endsWith('/comments')) {
+        return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true, comments: [] }) });
+      }
+      return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true, data: [] }) });
+    });
+    const feedFixture = { total: podcasts.length, podcasts };
+    await page.route('https://nightcast.ir/users/data/podcasts.json**', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(feedFixture) }));
+    await page.route('https://www.nightcast.ir/users/data/podcasts.json**', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(feedFixture) }));
+    await page.route('https://www.nightcast.ir/version.json**', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ version: '4.1.0' }) }));
+    await page.route(/https:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|cdnjs\.cloudflare\.com|unpkg\.com)\//, route => route.abort());
+
+    // Activity 1: splash exits and the app reaches the archive.
+    let splashOk = false;
+    try {
+      await page.goto('http://127.0.0.1:4173/index.html', { waitUntil: 'domcontentloaded', timeout: 10000 });
+      const splashPosition = await page.locator('#appSplash').evaluate(el => getComputedStyle(el).position);
+      assert(splashPosition === 'fixed', 'Splash must cover the viewport; computed position=' + splashPosition);
+      await page.waitForURL('**/users/index.html', { timeout: 10000 });
+      await page.waitForSelector('#podcastGrid', { state: 'attached', timeout: 5000 });
+      splashOk = true;
+      report('1. Splash transitions to the home/archive page', true, new URL(page.url()).pathname + '; splash position=' + splashPosition);
+    } catch (error) {
+      report('1. Splash transitions to the home/archive page', false, String(error.message || error));
+    }
+
+    // Verify the real header positioning and that the Font Awesome icon font is supplied by a CDN.
+    try {
+      await page.waitForTimeout(1200);
+      const headerState = await page.evaluate(() => {
+        const header = document.querySelector('.nc-header');
+        const icon = header?.querySelector('.brand-mark i');
+        const pseudo = icon ? getComputedStyle(icon, '::before') : null;
+        return {
+          position: header ? getComputedStyle(header).position : 'missing',
+          top: header ? getComputedStyle(header).top : 'missing',
+          iconFamily: pseudo?.fontFamily || 'missing',
+          iconContent: pseudo?.content || 'missing',
+          iconCdnFallback: !!document.querySelector('link[data-nc-fa-fallback="true"]')
+        };
+      });
+      const headerAndIconsOk = headerState.position === 'sticky' &&
+        /Font Awesome/i.test(headerState.iconFamily) &&
+        !!headerState.iconContent && headerState.iconContent !== 'none' && headerState.iconContent !== '""';
+      report('1.1. Header stays sticky and CDN icons render', headerAndIconsOk, JSON.stringify(headerState));
+    } catch (error) {
+      report('1.1. Header stays sticky and CDN icons render', false, String(error.message || error));
+    }
+
+    // The archive uses cinematic page navigation: open the Podcasts page before testing its cards.
+    try {
+      await page.locator('.nc-nav .nav-link[href="#podcasts"]').click();
+      await page.waitForFunction(() => {
+        const section = document.querySelector('#podcasts');
+        return !!section && !section.hidden && getComputedStyle(section).display !== 'none';
+      }, undefined, { timeout: 5000 });
+    } catch (error) {
+      report('3. Selecting a planet opens the matching podcast details', false, 'Podcast page navigation failed: ' + String(error.message || error));
+      report('4. Search, player, favorites and comments controls work', false, 'Podcast page navigation failed');
+      report('5. Mobile, tablet, desktop and TV layouts avoid horizontal overflow', false, 'Podcast page navigation failed');
+      throw new Error('Podcast page navigation prerequisite failed');
+    }
+
+    // Wait for the mocked catalogue so UI interactions are deterministic.
+    try {
+      const firstCard = page.locator('.podcast-card[data-id="91001"]');
+      await firstCard.waitFor({ state: 'attached', timeout: 10000 });
+      await firstCard.scrollIntoViewIfNeeded();
+      await firstCard.waitFor({ state: 'visible', timeout: 5000 });
+    } catch (error) {
+      const diagnostic = await page.evaluate(() => {
+        const card = document.querySelector('.podcast-card[data-id="91001"]');
+        const grid = document.querySelector('#podcastGrid');
+        const section = document.querySelector('#podcasts');
+        const info = el => el ? { tag: el.tagName, className: el.className, display: getComputedStyle(el).display, visibility: getComputedStyle(el).visibility, opacity: getComputedStyle(el).opacity, rect: (() => { const r = el.getBoundingClientRect(); return { x:r.x, y:r.y, width:r.width, height:r.height }; })() } : null;
+        return { card: info(card), grid: info(grid), section: info(section), body: info(document.body) };
+      });
+      report('3. Selecting a planet opens the matching podcast details', false, 'Podcast cards did not render: ' + String(error.message || error) + ' | diagnostic=' + JSON.stringify(diagnostic) + ' | API mock hits=' + apiMockHits + ' | browser errors: ' + browserErrors.join(' || '));
+      report('4. Search, player, favorites and comments controls work', false, 'Prerequisite podcast cards did not render | API mock hits=' + apiMockHits + ' | browser errors: ' + browserErrors.join(' || '));
+      report('5. Mobile, tablet, desktop and TV layouts avoid horizontal overflow', false, 'Page could not reach the rendered catalogue | API mock hits=' + apiMockHits + ' | browser errors: ' + browserErrors.join(' || '));
+      throw new Error('Catalogue rendering prerequisite failed');
+    }
+
+    // Activity 3: the constellation item must open details for the same record.
+    try {
+      await page.waitForSelector('#ncConstellation .nc-planet', { timeout: 7000 });
+      const planet = page.locator('#ncConstellation .nc-planet').filter({ hasText: 'سیاره آزمایشی اول' }).first();
+      await planet.click();
+      await page.waitForFunction(() => {
+        const modal = document.querySelector('#ncPodcastDetail');
+        return modal && modal.classList.contains('open') && modal.getAttribute('aria-hidden') === 'false';
+      }, undefined, { timeout: 5000 });
+      assert((await page.locator('#ncPodcastDetail').innerText()).includes('سیاره آزمایشی اول'), 'Details title does not match the selected planet');
+      const detailPosition = await page.locator('#ncPodcastDetail').evaluate(el => getComputedStyle(el).position);
+      assert(detailPosition === 'fixed', 'Podcast details dialog must be viewport-fixed; computed position=' + detailPosition);
+      report('3. Selecting a planet opens the matching podcast details', true, 'Matching podcast opened; dialog position=' + detailPosition);
+    } catch (error) {
+      report('3. Selecting a planet opens the matching podcast details', false, String(error.message || error));
+    }
+
+    // Activity 4: verify search, player state, favorite mutation and comments entry.
+    try {
+      const detailIsOpen = await page.locator('#ncPodcastDetail').evaluate(el => el.classList.contains('open'));
+      if (detailIsOpen) {
+        await page.locator('#ncPodcastDetail .nc-detail-close').click();
+        await page.waitForFunction(() => !document.querySelector('#ncPodcastDetail')?.classList.contains('open'), undefined, { timeout: 3000 });
+      }
+      const search = page.locator('#searchInput');
+      await search.fill('سیاره آزمایشی اول');
+      await page.waitForFunction(() => document.querySelectorAll('#podcastGrid .podcast-card').length === 1);
+      console.log('PASS | Search filters the podcast catalogue');
+      assert(await page.locator('#podcastGrid .podcast-card').first().getAttribute('data-id') === '91001', 'Search returned the wrong record');
+      await search.fill('');
+      await page.waitForFunction(() => document.querySelectorAll('#podcastGrid .podcast-card').length === 2);
+
+      await page.locator('.podcast-card[data-id="91001"] [data-action="play"]').first().click();
+      await page.waitForSelector('#playerBar.show', { timeout: 5000 });
+      assert((await page.locator('#playerTitle').innerText()).includes('سیاره آزمایشی اول'), 'Player title does not match selected podcast');
+      const audio = page.locator('audio').first();
+      await page.waitForFunction(() => {
+        const el = document.querySelector('audio');
+        return !!el && !!el.src && el.readyState >= 2 && !el.paused;
+      }, undefined, { timeout: 5000 });
+      const audioState = await page.locator('audio').evaluate(el => ({ paused: el.paused, readyState: el.readyState }));
+      assert(audioState.readyState >= 2 && audioState.paused === false, 'Audio did not enter playing state');
+      console.log('PASS | Audio entered playing state');
+      await page.locator('#playButton').click();
+      await page.waitForFunction(() => document.querySelector('audio')?.paused === true, undefined, { timeout: 5000 });
+      console.log('PASS | Audio pause control works');
+
+      await page.locator('.podcast-card[data-id="91001"] [data-action="favorite"]').click();
+      await page.waitForFunction(() => document.querySelector('.podcast-card[data-id="91001"] [data-action="favorite"]')?.getAttribute('aria-pressed') === 'true', undefined, { timeout: 3000 });
+      console.log('PASS | Favorite state toggled');
+
+      const commentsButton = page.locator('.podcast-card[data-id="91001"] [data-action="comments"]').first();
+      await commentsButton.waitFor({ state: 'visible', timeout: 5000 });
+      await commentsButton.click();
+      // Verify the user-facing click path itself. Do not call the opener directly as a fallback,
+      // because that would hide a broken event handler and produce a false positive.
+      try {
+        await page.waitForFunction(() => {
+          const modal = document.querySelector('#ncCommentsModal');
+          return !!modal && modal.classList.contains('open') && modal.getAttribute('aria-hidden') === 'false';
+        }, undefined, { timeout: 5000 });
+      } catch (error) {
+        const commentsState = await page.evaluate(() => {
+          const modal = document.querySelector('#ncCommentsModal');
+          const button = document.querySelector('.podcast-card[data-id="91001"] [data-action="comments"]');
+          return {
+            modalExists: !!modal,
+            className: modal?.className || '',
+            ariaHidden: modal?.getAttribute('aria-hidden') || '',
+            openerType: typeof window.NightCastOpenPodcastComments,
+            bodyClass: document.body.className,
+            buttonId: button?.getAttribute('data-id') || '',
+            buttonHtml: button?.outerHTML || ''
+          };
+        });
+        throw new Error('Comments button click did not open the modal: ' + JSON.stringify(commentsState) + '; wait=' + String(error.message || error));
+      }
+      assert((await page.locator('#ncCommentsPodcastTitle').innerText()).includes('سیاره آزمایشی اول'), 'Comments opened for the wrong podcast');
+      const commentsPosition = await page.locator('#ncCommentsModal').evaluate(el => getComputedStyle(el).position);
+      assert(commentsPosition === 'fixed', 'Comments dialog must be viewport-fixed; computed position=' + commentsPosition);
+      console.log('PASS | Comments dialog opens for selected podcast; position=' + commentsPosition);
+      await page.locator('#ncCommentsClose').click();
+      await page.waitForFunction(() => !document.querySelector('#ncCommentsModal')?.classList.contains('open'), undefined, { timeout: 3000 });
+      report('4. Search, play/pause, favorites and comments work', true, 'Search, audio readiness/pause, favorite state and comments dialog verified');
+    } catch (error) {
+      report('4. Search, player, favorites and comments controls work', false, String(error.message || error));
+    }
+
+    // Activity 5: measure overflow at phone, tablet, desktop and TV viewports.
+    try {
+      const sizes = [
+        { name: 'mobile', width: 390, height: 844 },
+        { name: 'tablet', width: 820, height: 1180 },
+        { name: 'desktop', width: 1440, height: 1000 },
+        { name: 'TV', width: 1920, height: 1080 }
+      ];
+      const failures = [];
+      let mobileNavigationPassed = false;
+      let mobileNavigationDetail = 'mobile navigation check was not executed';
+      for (const size of sizes) {
+        await page.setViewportSize({ width: size.width, height: size.height });
+        await page.waitForTimeout(120);
+        if (size.name === 'mobile') {
+          try {
+            await page.locator('#ncMenuToggle').click({ timeout: 5000 });
+            await page.waitForFunction(() => {
+              const drawer = document.querySelector('#ncMobileDrawer');
+              return !!drawer && drawer.classList.contains('is-open') && drawer.getAttribute('aria-hidden') === 'false';
+            }, undefined, { timeout: 3000 });
+            const drawerState = await page.evaluate(() => {
+              const drawer = document.querySelector('#ncMobileDrawer');
+              const backdrop = document.querySelector('#ncDrawerBackdrop');
+              const d = drawer?.getBoundingClientRect();
+              const b = backdrop?.getBoundingClientRect();
+              const header = document.querySelector('.nc-header');
+              const menuToggle = document.querySelector('#ncMenuToggle');
+              const toggleRect = menuToggle?.getBoundingClientRect();
+              return {
+                drawerPosition: drawer ? getComputedStyle(drawer).position : 'missing',
+                drawerWidth: Math.round(d?.width || 0),
+                drawerHeight: Math.round(d?.height || 0),
+                drawerRight: Math.round(d?.right || 0),
+                backdropPosition: backdrop ? getComputedStyle(backdrop).position : 'missing',
+                backdropWidth: Math.round(b?.width || 0),
+                headerPosition: header ? getComputedStyle(header).position : 'missing',
+                menuToggleDisplay: menuToggle ? getComputedStyle(menuToggle).display : 'missing',
+                menuToggleWidth: Math.round(toggleRect?.width || 0),
+                viewportWidth: document.documentElement.clientWidth
+              };
+            });
+            mobileNavigationPassed = drawerState.drawerPosition === 'fixed' &&
+              drawerState.backdropPosition === 'fixed' &&
+              drawerState.headerPosition === 'sticky' &&
+              drawerState.menuToggleDisplay !== 'none' &&
+              drawerState.menuToggleWidth > 0 &&
+              drawerState.drawerWidth > 0 &&
+              drawerState.drawerHeight > 0 &&
+              drawerState.backdropWidth >= drawerState.viewportWidth - 3;
+            mobileNavigationDetail = JSON.stringify(drawerState);
+            // The menu toggle sits behind the open drawer; use the drawer's own close control.
+            await page.locator('#ncDrawerClose').click({ timeout: 3000 });
+            await page.waitForFunction(() => !document.querySelector('#ncMobileDrawer')?.classList.contains('is-open'), undefined, { timeout: 3000 });
+          } catch (error) {
+            mobileNavigationPassed = false;
+            mobileNavigationDetail = String(error.message || error);
+            try {
+              if (await page.locator('#ncMobileDrawer.is-open').count()) await page.locator('#ncDrawerClose').click({ timeout: 1000 });
+            } catch {}
+          }
+        }
+        const dims = await page.evaluate(() => {
+          const viewport = document.documentElement.clientWidth;
+          const offenders = [...document.querySelectorAll('body *')].map(el => {
+            const rect = el.getBoundingClientRect();
+            return { tag: el.tagName, id: el.id, className: typeof el.className === 'string' ? el.className.slice(0, 70) : '', left: Math.round(rect.left), right: Math.round(rect.right), width: Math.round(rect.width), position: getComputedStyle(el).position, insideDrawer: !!el.closest('#ncMobileDrawer'), insideBackdrop: !!el.closest('#ncDrawerBackdrop') };
+          }).filter(el => el.width > 0 && (el.right > viewport + 3 || el.left < -viewport * 0.5) && el.position !== 'fixed' && !el.insideDrawer && !el.insideBackdrop)
+            .sort((a,b) => b.right - a.right).slice(0, 5);
+          return {
+            viewport,
+            // The document viewport width is authoritative; body.scrollWidth can include a closed fixed drawer translated off-canvas.
+            content: document.documentElement.scrollWidth,
+            rootScroll: document.documentElement.scrollWidth,
+            bodyScroll: document.body.scrollWidth,
+            bodyMargin: getComputedStyle(document.body).margin,
+            bodyPadding: getComputedStyle(document.body).padding,
+            rootOverflowX: getComputedStyle(document.documentElement).overflowX,
+            bodyOverflowX: getComputedStyle(document.body).overflowX,
+            bodyRect: (() => { const r = document.body.getBoundingClientRect(); return { left:r.left, right:r.right, width:r.width }; })(),
+            offenders
+          };
+        });
+        if (dims.content > dims.viewport + 3) failures.push(size.name + ': ' + dims.content + 'px > ' + dims.viewport + 'px; elements=' + JSON.stringify(dims.offenders));
+      }
+      report('5. Mobile, tablet, desktop and TV layouts avoid horizontal overflow', failures.length === 0, failures.join('; ') || '390, 820, 1440, 1920 px');
+      report('6. Mobile navigation drawer remains fixed and usable', mobileNavigationPassed, mobileNavigationDetail);
+    } catch (error) {
+      report('5. Mobile, tablet, desktop and TV layouts avoid horizontal overflow', false, String(error.message || error));
+    }
+  } catch (error) {
+    console.error('Test runner error:', error);
+  } finally {
+    if (browser) await browser.close().catch(() => {});
+    if (server) {
+      server.kill('SIGTERM');
+      if (server.stdout) server.stdout.destroy();
+      if (server.stderr) server.stderr.destroy();
+    }
+  }
+
+  report('8. No uncaught JavaScript runtime errors', runtimeErrors.length === 0,
+    runtimeErrors.slice(0, 10).join(' || ') || 'No uncaught page errors or actionable console errors');
+
+  // Android APK build is intentionally not used as a website quality criterion.
+  const failed = results.filter(item => !item.passed);
+  console.log('SUMMARY | ' + results.filter(item => item.passed).length + '/' + results.length + ' browser/API checks TRUE');
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    const nl = String.fromCharCode(10);
+    const rows = results.map(item =>
+      '| ' + item.name.split('|').join('/') + ' | **' +
+      (item.passed ? 'TRUE' : 'FALSE') + '** | ' +
+      String(item.detail || '').split(nl).join(' ').split('|').join(' ').slice(0, 220) + ' |'
+    ).join(nl);
+    const summary = [
+      '## Browser and API acceptance results',
+      '',
+      '| Activity | Result | Details |',
+      '|---|---|---|',
+      rows,
+      ''
+    ].join(nl);
+    fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
+  }
+  if (failed.length) process.exitCode = 1;
+})().catch(error => {
+  console.error(error);
+  process.exitCode = 1;
+});

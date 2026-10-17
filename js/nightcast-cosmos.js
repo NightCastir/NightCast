@@ -106,4 +106,41 @@ function enableCosmicCardMotion(){
  });
 }
 
+
+/* Global responsive safeguards: prevent common cards, controls and overlays escaping the viewport. */
+function installResponsiveSafeguards(){
+ if(document.getElementById("nc-responsive-safeguards"))return;
+ const style=document.createElement("style");
+ style.id="nc-responsive-safeguards";
+ style.textContent=`
+ html,body{max-width:100%;overflow-x:clip}
+ *,*::before,*::after{box-sizing:border-box}
+ img,video,iframe,canvas,svg{max-width:100%}
+ input,textarea,select,button{max-width:100%;font:inherit}
+ main,section,article,aside,header,footer,nav,form,div,a,button,p,h1,h2,h3,h4,span{min-width:0}
+ p,h1,h2,h3,h4,a,button,label,li{overflow-wrap:anywhere}
+ .podcast-grid,.podcast-list{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}
+ .podcast-card,.podcast-info,.podcast-cover{min-width:0;max-width:100%}
+ .nc-detail-dialog,.nc-comments-card,.social-menu{max-width:calc(100vw - 20px)}
+ .icon-btn,.nc-comments-close,.nc-detail-close{flex-shrink:0}
+ @media(max-width:900px){.nc-nav{gap:10px;padding-inline:12px}.nav-link{padding-inline:8px}.hero{grid-template-columns:minmax(0,1fr);gap:22px}main{padding-inline:14px}}
+ @media(max-width:650px){.nc-header{height:auto;min-height:var(--nc-header)}.nc-nav{height:auto;min-height:var(--nc-header);flex-wrap:wrap;padding-block:9px}.nav-links{order:3;width:100%;max-width:100%;margin:0;overflow-x:auto;overscroll-behavior-inline:contain;padding-bottom:2px}.nav-link{flex:0 0 auto;white-space:nowrap}.header-actions{margin-inline-start:auto}.hero{padding-top:28px}.hero h1{font-size:clamp(1.8rem,8vw,2.7rem);letter-spacing:normal}.hero-actions>*{flex:1 1 auto}.podcast-grid,.podcast-list{grid-template-columns:minmax(0,1fr)}.podcast-card{grid-template-columns:minmax(82px,30%) minmax(0,1fr)}.card-footer{flex-wrap:wrap}.nc-detail-dialog{width:100%;max-height:94dvh}.nc-detail-scroll{overflow-wrap:anywhere}}
+ @media(max-width:380px){main{padding-inline:10px}.nc-nav{padding-inline:10px}.podcast-card{grid-template-columns:76px minmax(0,1fr)}.hero-actions{flex-direction:column}.hero-actions .btn{width:100%}}
+ @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+ `;
+ document.head.appendChild(style);
+}
+function installFontAwesomeFallback(){
+ const primary=document.querySelector('link[href*="cdnjs.cloudflare.com/ajax/libs/font-awesome"]');
+ if(!primary)return;
+ const fallback=document.createElement("link");
+ fallback.rel="stylesheet";
+ fallback.href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css";
+ fallback.media="print";
+ fallback.onload=()=>{fallback.media="all"};
+ document.head.appendChild(fallback);
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>{installResponsiveSafeguards();installFontAwesomeFallback()},{once:true});
+else {installResponsiveSafeguards();installFontAwesomeFallback()}
+
 })();

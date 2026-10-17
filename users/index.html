@@ -5834,7 +5834,9 @@ LOGOUT
 
 
                 updateCardPlaying();
-                loadPodcastCardStats();
+                if (typeof window.NightCastLoadPodcastCardStats === "function") {
+                    window.NightCastLoadPodcastCardStats();
+                }
 
             }
 
@@ -9006,6 +9008,9 @@ body.nc-comments-open{overflow:hidden}
                     });
                 } catch (error) { console.warn("Podcast card stats unavailable:", error); }
             }
+
+                        window.NightCastLoadPodcastCardStats = loadPodcastCardStats;
+            loadPodcastCardStats();
 
             function openPodcastComments(id) {
                 const podcast = state.all.find(item => Number(item.id) === Number(id));

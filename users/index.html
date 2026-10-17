@@ -6037,185 +6037,161 @@ LOGOUT
 
             async function loadPodcasts() {
 
-                const cacheKey =
-                    CONFIG.CACHE_KEY;
-
-
+                const cacheKey = CONFIG.CACHE_KEY;
                 let cached = [];
 
-
                 try {
-
-                    cached =
-                        JSON.parse(
-                            localStorage.getItem(
-                                cacheKey
-                            ) || "[]"
-                        );
-
+                    const parsed = JSON.parse(localStorage.getItem(cacheKey) || "[]");
+                    cached = Array.isArray(parsed) ? parsed : [];
                 } catch {
-
                     cached = [];
-
                 }
 
-
-                if (
-                    Array.isArray(cached) &&
-                    cached.length
-                ) {
-
-                    state.all =
-                        cached;
-
-                    updateLatest(
-                        cached
-                    );
-
+                // Render cached data immediately, but do not treat it as the final list.
+                if (cached.length) {
+                    state.all = cached;
+                    updateLatest(cached);
                     applyView();
-
                 } else {
-
                     skeletons();
-
                 }
 
+                async function fetchAllFromAPI() {
+                    const collected = [];
+                    let page = 1;
+                    let total = Infinity;
 
-                try {
-
-                    const res =
-                        await fetch(
-                            CONFIG.FEED_URL,
+                    // Worker API caps each page at five items; collect all pages.
+                    while (collected.length < total && page <= 100) {
+                        const response = await fetch(
+                            `${CONFIG.API_BASE}/public/podcasts?page=${page}&limit=5&_=${Date.now()}`,
                             {
                                 method: "GET",
-
-                                cache: "no-cache",
-
-                                headers: {
-                                    "Accept":
-                                        "application/json"
-                                }
+                                cache: "no-store",
+                                headers: { "Accept": "application/json" }
                             }
                         );
 
+                        if (!response.ok) {
+                            throw new Error(`Podcast API returned HTTP ${response.status}`);
+                        }
 
-                    if (!res.ok) {
+                        const payload = await response.json();
+                        if (!payload || payload.success !== true || !Array.isArray(payload.podcasts)) {
+                            throw new Error("Podcast API response format was invalid.");
+                        }
 
-                        throw new Error(
-                            `خطای دریافت پادکست‌ها: ${res.status}`
-                        );
-
+                        total = Number(payload.total || 0);
+                        if (payload.podcasts.length === 0) break;
+                        collected.push(...payload.podcasts);
+                        if (!payload.hasMore) break;
+                        page += 1;
                     }
 
+                    // De-duplicate by id in case the source changes while paging.
+                    const unique = new Map();
+                    for (const podcast of collected) {
+                        if (podcast && podcast.id != null) unique.set(String(podcast.id), podcast);
+                    }
+                    return [...unique.values()];
+                }
 
-                    const data =
-                        await res.json();
+                try {
+                    let feedItems = [];
+                    let feedTotal = 0;
+                    let feedError = null;
 
+                    try {
+                        const response = await fetch(
+                            CONFIG.FEED_URL + (CONFIG.FEED_URL.includes("?") ? "&" : "?") + "_=" + Date.now(),
+                            {
+                                method: "GET",
+                                cache: "no-store",
+                                headers: { "Accept": "application/json" }
+                            }
+                        );
 
-                    const freshItems =
-                        Array.isArray(data)
+                        if (!response.ok) {
+                            throw new Error(`Podcast feed returned HTTP ${response.status}`);
+                        }
+
+                        const data = await response.json();
+                        feedTotal = Number(data?.total || 0);
+                        feedItems = Array.isArray(data)
                             ? data
-                            : Array.isArray(data.podcasts)
+                            : Array.isArray(data?.podcasts)
                                 ? data.podcasts
                                 : [];
 
-
-                    const oldData =
-                        JSON.stringify(
-                            cached
-                        );
-
-
-                    const newData =
-                        JSON.stringify(
-                            freshItems
-                        );
-
-
-                    if (
-                        oldData === newData
-                    ) {
-
-                        return;
-
+                    } catch (error) {
+                        feedError = error;
+                        console.warn("NightCast static podcast feed failed; trying API fallback.", error);
                     }
 
+                    // If the feed is incomplete (including an old four-item feed/cache),
+                    // retrieve every page from the Worker API instead of silently showing only a few.
+                    let freshItems = feedItems;
+                    const feedLooksIncomplete =
+                        !feedItems.length ||
+                        (feedTotal > feedItems.length) ||
+                        feedItems.length <= 4;
 
-                    state.all =
-                        freshItems;
+                    if (feedLooksIncomplete) {
+                        try {
+                            const apiItems = await fetchAllFromAPI();
+                            if (apiItems.length > freshItems.length) {
+                                freshItems = apiItems;
+                            }
+                        } catch (apiError) {
+                            console.error("NightCast podcast API fallback failed:", apiError);
+                            if (!freshItems.length && cached.length) {
+                                freshItems = cached;
+                            }
+                            if (!freshItems.length) {
+                                throw feedError || apiError;
+                            }
+                        }
+                    }
 
+                    if (!freshItems.length) {
+                        throw feedError || new Error("No podcasts were returned by the feed or API.");
+                    }
 
-                    localStorage.setItem(
-                        cacheKey,
-                        JSON.stringify(
-                            freshItems
-                        )
-                    );
+                    state.all = freshItems;
+                    try {
+                        localStorage.setItem(cacheKey, JSON.stringify(freshItems));
+                    } catch (storageError) {
+                        console.warn("NightCast podcast cache could not be saved.", storageError);
+                    }
 
-
-                    updateLatest(
-                        freshItems
-                    );
-
-
+                    updateLatest(freshItems);
+                    state.page = 1;
                     applyView();
 
                 } catch (err) {
+                    console.error("NightCast Feed Error:", err);
 
-                    console.error(
-                        "NightCast Feed Error:",
-                        err
-                    );
-
-
-                    if (
-                        cached.length
-                    ) {
-
+                    if (cached.length) {
+                        // Keep cached podcasts visible if both network sources fail.
+                        state.all = cached;
+                        updateLatest(cached);
+                        applyView();
                         return;
-
                     }
 
-
-                    els.grid.className =
-                        "podcast-grid";
-
-
+                    els.grid.className = "podcast-grid";
                     els.grid.innerHTML = `
-
-                                                                                                            <div
-                                                                                                                class="error-state"
-                                                                                                                style="grid-column:1/-1">
-
-                                                                                                                <i class="fa-solid fa-circle-exclamation"></i>
-
-                                                                                                                <h3>
-                                                                                                                    دریافت پادکست‌ها ناموفق بود
-                                                                                                                </h3>
-
-                                                                                                                <p>
-                                                                                                                    ${escapeHtml(
-                        err.message ||
-                        "خطای نامشخص"
-                    )}
-                                                                                                                </p>
-
-                                                                                                                <button
-                                                                                                                    class="btn btn-primary"
-                                                                                                                    data-action="reload">
-
-                                                                                                                    <i class="fa-solid fa-rotate"></i>
-
-                                                                                                                    تلاش دوباره
-
-                                                                                                                </button>
-
-                                                                                                            </div>
-
-                                                                                                        `;
-
+                        <div class="error-state" style="grid-column:1/-1">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <h3>دریافت پادکست‌ها ناموفق بود</h3>
+                            <p>${escapeHtml(err?.message || "خطای نامشخص")}</p>
+                            <button class="btn btn-primary" data-action="reload">
+                                <i class="fa-solid fa-rotate"></i>
+                                تلاش دوباره
+                            </button>
+                        </div>
+                    `;
                 }
-
             }
 
 

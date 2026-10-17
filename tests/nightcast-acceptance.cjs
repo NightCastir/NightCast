@@ -229,6 +229,16 @@ function silentWavDataUri() {
         openerType: typeof window.NightCastOpenPodcastComments,
         bodyClass: document.body.className
       }));
+      if (!commentsState.className.includes('open') && typeof window.NightCastOpenPodcastComments === 'function') {
+        await page.evaluate(() => window.NightCastOpenPodcastComments(91001));
+        await page.waitForTimeout(150);
+        const directState = await page.evaluate(() => ({
+          className: document.querySelector('#ncCommentsModal')?.className || '',
+          ariaHidden: document.querySelector('#ncCommentsModal')?.getAttribute('aria-hidden') || '',
+          bodyClass: document.body.className
+        }));
+        console.log('DEBUG | Direct comments opener after button click | ' + JSON.stringify(directState));
+      }
       assert(commentsState.modalExists && commentsState.className.includes('open') && commentsState.ariaHidden === 'false', 'Comments button click did not open the modal: ' + JSON.stringify(commentsState));
       assert((await page.locator('#ncCommentsPodcastTitle').innerText()).includes('سیاره آزمایشی اول'), 'Comments opened for the wrong podcast');
       console.log('PASS | Comments dialog opens for selected podcast');

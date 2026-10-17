@@ -129,10 +129,12 @@ function silentWavDataUri() {
     let splashOk = false;
     try {
       await page.goto('http://127.0.0.1:4173/index.html', { waitUntil: 'domcontentloaded', timeout: 10000 });
+      const splashPosition = await page.locator('#appSplash').evaluate(el => getComputedStyle(el).position);
+      assert(splashPosition === 'fixed', 'Splash must cover the viewport; computed position=' + splashPosition);
       await page.waitForURL('**/users/index.html', { timeout: 10000 });
       await page.waitForSelector('#podcastGrid', { state: 'attached', timeout: 5000 });
       splashOk = true;
-      report('1. Splash transitions to the home/archive page', true, new URL(page.url()).pathname);
+      report('1. Splash transitions to the home/archive page', true, new URL(page.url()).pathname + '; splash position=' + splashPosition);
     } catch (error) {
       report('1. Splash transitions to the home/archive page', false, String(error.message || error));
     }

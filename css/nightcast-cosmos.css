@@ -80,3 +80,12 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-width:760px){.hero{margin:8px 8px 0;border-radius:24px;min-height:auto}.hero-card{min-height:285px}.hero-card:before{top:37%}.hero-card:after{top:37%}.latest-title{margin-top:145px}.podcast-grid>*{min-height:245px}.podcast-grid>*:after{width:72px;top:16px;left:16px}.podcast-grid>*:nth-child(3n+2):after{width:64px}.podcast-grid>*:nth-child(3n):after{width:82px}}
 @media(min-width:1600px){.hero{max-width:1760px;margin-inline:auto}.section{max-width:1760px;margin-inline:auto}}
 @media(prefers-reduced-motion:reduce){.hero-card:before,.hero:before,.hero:after{animation:none!important}.podcast-grid>*:after{transition:none!important}}
+
+.nc-scroll-cue{position:absolute!important;z-index:4!important;bottom:22px;left:50%;transform:translateX(-50%);display:inline-flex;align-items:center;gap:12px;padding:10px 15px;border:1px solid rgba(165,205,255,.18);border-radius:999px;background:rgba(4,10,27,.58);color:#c6d9f6!important;font-size:.78rem;backdrop-filter:blur(14px);text-decoration:none!important;white-space:nowrap;animation:ncCueFloat 2.8s ease-in-out infinite}
+.nc-scroll-cue i{color:#8ce5ff}
+.nc-scroll-cue:hover{border-color:rgba(140,229,255,.48);background:rgba(20,35,70,.82)}
+.podcast-grid>[data-cosmic-card]{transform-style:preserve-3d}
+.podcast-grid>[data-cosmic-card] .nc-reveal{opacity:1}
+@keyframes ncCueFloat{0%,100%{margin-bottom:0}50%{margin-bottom:7px}}
+@media(max-width:760px){.nc-scroll-cue{bottom:12px;font-size:.72rem;padding:8px 12px}.hero{padding-bottom:92px!important}}
+@media(prefers-reduced-motion:reduce){.nc-scroll-cue{animation:none!important}}

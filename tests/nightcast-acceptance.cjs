@@ -133,6 +133,18 @@ function silentWavDataUri() {
     report('0.4. Local in-page links and static assets exist', missingLocalReferences.length === 0,
       missingLocalReferences.slice(0, 10).join(' || ') || 'No broken local anchors or static asset paths in the six HTML entry pages');
 
+    const iconCdnFailures = [];
+    for (const file of htmlFilesToValidate) {
+      const html = fs.readFileSync(file, 'utf8');
+      const hasIcons = /\\bfa-(?:solid|regular|brands)\\b/.test(html) ||
+        (file === 'index.html' && /fa-solid/.test(fs.readFileSync('js/cosmic-experience.js', 'utf8')));
+      if (hasIcons && !html.includes('fontawesome-free@6.7.2')) {
+        iconCdnFailures.push(file + ' is missing the secondary Font Awesome CDN stylesheet');
+      }
+    }
+    report('0.5. Font Awesome CDN fallback is configured on icon pages', iconCdnFailures.length === 0,
+      iconCdnFailures.join(', ') || 'All icon-bearing pages have a secondary CDN stylesheet');
+
     // Activity 2: validate the actual public API, independently of browser mocks.
     try {
       const response = await fetch('https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=5', {
@@ -245,27 +257,45 @@ function silentWavDataUri() {
       report('1. Splash transitions to the home/archive page', false, String(error.message || error));
     }
 
-    // Verify the real header positioning and that the Font Awesome icon font is supplied by a CDN.
+    // Verify sticky header geometry, desktop navigation fit, and an actual CDN icon glyph.
     try {
-      await page.waitForTimeout(1200);
+      await page.evaluate(() => document.fonts.ready);
+      await page.waitForTimeout(350);
       const headerState = await page.evaluate(() => {
         const header = document.querySelector('.nc-header');
+        const nav = header?.querySelector('.nc-nav');
+        const links = header?.querySelector('.nav-links');
         const icon = header?.querySelector('.brand-mark i');
         const pseudo = icon ? getComputedStyle(icon, '::before') : null;
+        const hr = header?.getBoundingClientRect();
         return {
           position: header ? getComputedStyle(header).position : 'missing',
           top: header ? getComputedStyle(header).top : 'missing',
+          headerLeft: Math.round(hr?.left ?? -999),
+          headerRight: Math.round(hr?.right ?? -999),
+          headerWidth: Math.round(hr?.width ?? 0),
+          viewportWidth: document.documentElement.clientWidth,
+          navWidth: Math.round(nav?.clientWidth ?? 0),
+          navScrollWidth: Math.round(nav?.scrollWidth ?? 0),
+          navLinksDisplay: links ? getComputedStyle(links).display : 'missing',
           iconFamily: pseudo?.fontFamily || 'missing',
           iconContent: pseudo?.content || 'missing',
-          iconCdnFallback: !!document.querySelector('link[data-nc-fa-fallback="true"]')
+          iconFontLoaded: document.fonts.check('900 16px "Font Awesome 6 Free"'),
+          iconCdnFallback: !!document.querySelector('link[href*="fontawesome-free@6.7.2"]')
         };
       });
       const headerAndIconsOk = headerState.position === 'sticky' &&
+        headerState.top === '0px' &&
+        headerState.headerLeft >= -1 &&
+        headerState.headerRight <= headerState.viewportWidth + 1 &&
+        headerState.navScrollWidth <= headerState.navWidth + 2 &&
+        headerState.navLinksDisplay !== 'none' &&
         /Font Awesome/i.test(headerState.iconFamily) &&
-        !!headerState.iconContent && headerState.iconContent !== 'none' && headerState.iconContent !== '""';
-      report('1.1. Header stays sticky and CDN icons render', headerAndIconsOk, JSON.stringify(headerState));
+        !!headerState.iconContent && headerState.iconContent !== 'none' && headerState.iconContent !== '""' &&
+        headerState.iconFontLoaded && headerState.iconCdnFallback;
+      report('1.1. Desktop header fits viewport and CDN icons render', headerAndIconsOk, JSON.stringify(headerState));
     } catch (error) {
-      report('1.1. Header stays sticky and CDN icons render', false, String(error.message || error));
+      report('1.1. Desktop header fits viewport and CDN icons render', false, String(error.message || error));
     }
 
     // The archive uses cinematic page navigation: open the Podcasts page before testing its cards.
@@ -417,8 +447,13 @@ function silentWavDataUri() {
               const d = drawer?.getBoundingClientRect();
               const b = backdrop?.getBoundingClientRect();
               const header = document.querySelector('.nc-header');
+              const headerNav = header?.querySelector('.nc-nav');
+              const navLinks = header?.querySelector('.nav-links');
+              const brand = header?.querySelector('.brand');
               const menuToggle = document.querySelector('#ncMenuToggle');
               const toggleRect = menuToggle?.getBoundingClientRect();
+              const headerRect = header?.getBoundingClientRect();
+              const brandRect = brand?.getBoundingClientRect();
               return {
                 drawerPosition: drawer ? getComputedStyle(drawer).position : 'missing',
                 drawerWidth: Math.round(d?.width || 0),
@@ -427,6 +462,14 @@ function silentWavDataUri() {
                 backdropPosition: backdrop ? getComputedStyle(backdrop).position : 'missing',
                 backdropWidth: Math.round(b?.width || 0),
                 headerPosition: header ? getComputedStyle(header).position : 'missing',
+                headerLeft: Math.round(headerRect?.left ?? -999),
+                headerRight: Math.round(headerRect?.right ?? -999),
+                headerWidth: Math.round(headerRect?.width || 0),
+                navWidth: Math.round(headerNav?.clientWidth || 0),
+                navScrollWidth: Math.round(headerNav?.scrollWidth || 0),
+                navLinksDisplay: navLinks ? getComputedStyle(navLinks).display : 'missing',
+                brandLeft: Math.round(brandRect?.left ?? -999),
+                brandRight: Math.round(brandRect?.right ?? -999),
                 menuToggleDisplay: menuToggle ? getComputedStyle(menuToggle).display : 'missing',
                 menuToggleWidth: Math.round(toggleRect?.width || 0),
                 viewportWidth: document.documentElement.clientWidth
@@ -437,6 +480,12 @@ function silentWavDataUri() {
               drawerState.headerPosition === 'sticky' &&
               drawerState.menuToggleDisplay !== 'none' &&
               drawerState.menuToggleWidth > 0 &&
+              drawerState.navLinksDisplay === 'none' &&
+              drawerState.headerLeft >= -1 &&
+              drawerState.headerRight <= drawerState.viewportWidth + 1 &&
+              drawerState.navScrollWidth <= drawerState.navWidth + 2 &&
+              drawerState.brandLeft >= -1 &&
+              drawerState.brandRight <= drawerState.viewportWidth + 1 &&
               drawerState.drawerWidth > 0 &&
               drawerState.drawerHeight > 0 &&
               drawerState.backdropWidth >= drawerState.viewportWidth - 3;

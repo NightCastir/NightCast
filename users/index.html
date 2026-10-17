@@ -956,11 +956,16 @@
 
                 .pagination {
                     display: flex;
+                    width: 100%;
+                    min-height: 42px;
                     justify-content: center;
                     align-items: center;
                     flex-wrap: wrap;
                     gap: 6px;
-                    margin-top: 22px;
+                    margin: 22px auto 28px;
+                    padding: 8px 4px;
+                    visibility: visible;
+                    overflow: visible;
                 }
 
                 .pagination-summary {
@@ -978,12 +983,22 @@
                 }
 
                 .page-btn {
-                    min-width: 38px;
-                    height: 38px;
+                    display: inline-flex;
+                    flex: 0 0 auto;
+                    min-width: 40px;
+                    min-height: 40px;
+                    padding: 0 10px;
+                    align-items: center;
+                    justify-content: center;
                     border-radius: 10px;
-                    background: rgba(255,255,255,.035);
+                    background: rgba(255,255,255,.06);
                     border: 1px solid var(--nc-border);
                     color: var(--nc-text-muted);
+                    font: inherit;
+                    font-size: .9rem;
+                    cursor: pointer;
+                    -webkit-appearance: none;
+                    appearance: none;
                 }
 
                     .page-btn.active,
@@ -1430,6 +1445,27 @@
 
 
                 @media(max-width:520px) {
+                    #pagination {
+                        display: flex !important;
+                        width: 100%;
+                        gap: 5px;
+                        margin: 18px auto 30px;
+                        padding: 10px 0 16px;
+                    }
+
+                    #pagination .pagination-summary {
+                        display: block;
+                        width: 100%;
+                        font-size: .78rem;
+                        margin-bottom: 8px;
+                    }
+
+                    #pagination .page-btn {
+                        min-width: 36px;
+                        min-height: 38px;
+                        padding: 0 7px;
+                        font-size: .82rem;
+                    }
 
                     .podcast-grid,
                     .loading-grid {
@@ -6073,7 +6109,7 @@ LOGOUT
                     let total = Infinity;
 
                     // Worker API caps each page at five items; collect all pages.
-                    while (collected.length < total && page <= 100) {
+                    while (page <= 100 && (page === 1 || collected.length < total)) {
                         const response = await fetch(
                             `${CONFIG.API_BASE}/public/podcasts?page=${page}&limit=5&_=${Date.now()}`,
                             {
@@ -6092,10 +6128,20 @@ LOGOUT
                             throw new Error("Podcast API response format was invalid.");
                         }
 
-                        total = Number(payload.total || 0);
+                        const reportedTotal = Number(payload.total);
+                        if (Number.isFinite(reportedTotal) && reportedTotal > 0) {
+                            total = reportedTotal;
+                        } else if (page === 1 && payload.podcasts.length < 5) {
+                            total = payload.podcasts.length;
+                        }
+
                         if (payload.podcasts.length === 0) break;
                         collected.push(...payload.podcasts);
-                        if (!payload.hasMore) break;
+
+                        // Use the reported total as the source of truth; don't stop after page 1
+                        // merely because hasMore is absent or incorrectly set in an API response.
+                        if (collected.length >= total) break;
+                        if (payload.podcasts.length < 5) break;
                         page += 1;
                     }
 

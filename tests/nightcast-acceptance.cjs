@@ -330,8 +330,8 @@ function silentWavDataUri() {
           const viewport = document.documentElement.clientWidth;
           const offenders = [...document.querySelectorAll('body *')].map(el => {
             const rect = el.getBoundingClientRect();
-            return { tag: el.tagName, id: el.id, className: typeof el.className === 'string' ? el.className.slice(0, 70) : '', left: Math.round(rect.left), right: Math.round(rect.right), width: Math.round(rect.width), position: getComputedStyle(el).position };
-          }).filter(el => el.width > 0 && (el.right > viewport + 3 || el.left < -viewport * 0.5) && el.position !== 'fixed' && !el.closest('#ncMobileDrawer') && !el.closest('#ncDrawerBackdrop'))
+            return { tag: el.tagName, id: el.id, className: typeof el.className === 'string' ? el.className.slice(0, 70) : '', left: Math.round(rect.left), right: Math.round(rect.right), width: Math.round(rect.width), position: getComputedStyle(el).position, insideDrawer: !!el.closest('#ncMobileDrawer'), insideBackdrop: !!el.closest('#ncDrawerBackdrop') };
+          }).filter(el => el.width > 0 && (el.right > viewport + 3 || el.left < -viewport * 0.5) && el.position !== 'fixed' && !el.insideDrawer && !el.insideBackdrop)
             .sort((a,b) => b.right - a.right).slice(0, 5);
           return {
             viewport,

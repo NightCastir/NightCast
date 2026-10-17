@@ -5821,6 +5821,17 @@ LOGOUT
                 lastPodcastDetailsTrigger?.focus?.({ preventScroll: true });
             }
 
+            // The details dialog is outside #podcastGrid, so grid-level delegation cannot close it.
+            // Use document delegation to support the close button and backdrop after the modal is parsed.
+            document.addEventListener("click", event => {
+                const target = event.target;
+                if (!(target instanceof Element)) return;
+                const closeButton = target.closest('#ncPodcastDetail [data-action="close-details"]');
+                if (!closeButton) return;
+                event.preventDefault();
+                closePodcastDetails();
+            });
+
             document.addEventListener("keydown", event => {
                 if (event.key === "Escape" && document.getElementById("ncPodcastDetail")?.classList.contains("open")) {
                     closePodcastDetails();

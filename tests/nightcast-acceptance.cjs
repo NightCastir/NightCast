@@ -36,6 +36,18 @@ function silentWavDataUri() {
   let server;
   let browser;
   try {
+    // Validate HTML style-tag openings in every page touched by the redesign.
+    const htmlFilesToValidate = ['index.html', 'users/index.html', 'users/auth.html', 'users/login.html', 'users/loginnew.html', '404.html'];
+    const malformedStyleFiles = [];
+    for (const file of htmlFilesToValidate) {
+      const html = fs.readFileSync(file, 'utf8');
+      for (const opening of html.matchAll(/<style\\b[^>]*>/gi)) {
+        if (opening[0].includes('{')) malformedStyleFiles.push(file + ':' + html.slice(0, opening.index).split('\\n').length);
+      }
+    }
+    report('0. HTML inline style tags are well formed', malformedStyleFiles.length === 0,
+      malformedStyleFiles.length ? malformedStyleFiles.join(', ') : htmlFilesToValidate.join(', '));
+
     // Activity 2: validate the actual public API, independently of browser mocks.
     try {
       const response = await fetch('https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=5', {

@@ -4,7 +4,8 @@ html{scroll-behavior:smooth;scroll-padding-top:100px;background:var(--nc-night)}
 body{font-family:"Vazirmatn",Tahoma,sans-serif!important;background:radial-gradient(ellipse at 50% -15%,#182b55 0,transparent 48%),linear-gradient(180deg,#030611 0%,#050a18 55%,#02040b 100%)!important;color:var(--nc-text)!important;overflow-x:clip}
 body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;background:radial-gradient(1px 1px at 12% 18%,#fff 98%,transparent),radial-gradient(1px 1px at 74% 11%,#bfeaff 98%,transparent),radial-gradient(1px 1px at 88% 42%,#fff 98%,transparent),radial-gradient(1px 1px at 33% 68%,#d5caff 98%,transparent),radial-gradient(1px 1px at 59% 84%,#fff 98%,transparent);background-size:290px 260px;opacity:.6;animation:ncStarDrift 90s linear infinite}
 #nc-cosmos-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.72}
-body>*:not(#nc-cosmos-canvas):not(.nc-cinematic-intro){position:relative;z-index:1}
+/* Keep the splash and other fixed overlays fixed; only the page layers need a foreground stacking level. */
+#appSplash.splash{z-index:1}
 a,button,input,textarea,select{transition:color .25s ease,border-color .25s ease,background .25s ease,box-shadow .25s ease,transform .25s ease}
 a{color:#b8eaff}a:hover{color:#fff}
 button{font:inherit}

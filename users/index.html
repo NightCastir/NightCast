@@ -3158,7 +3158,90 @@
             }
         }
 
-    </style>
+     
+                /* NIGHTCAST CATALOGUE REDESIGN — editorial, Castbox-inspired */
+                #podcasts .podcast-grid {
+                    display: grid !important;
+                    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                    align-items: stretch; gap: 16px !important;
+                }
+                #podcasts .podcast-card {
+                    direction: rtl; display: grid !important;
+                    grid-template-columns: 148px minmax(0, 1fr) !important;
+                    align-items: stretch; min-width: 0; min-height: 188px; overflow: hidden;
+                    border: 1px solid rgba(148,174,204,.16) !important; border-radius: 20px !important;
+                    background: linear-gradient(135deg, rgba(21,39,61,.98), rgba(10,23,39,.99)) !important;
+                    box-shadow: 0 10px 28px rgba(0,0,0,.16) !important;
+                    content-visibility: auto; contain-intrinsic-size: 220px;
+                    transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+                }
+                #podcasts .podcast-card:hover { transform: translateY(-3px); border-color: rgba(54,181,255,.42) !important; box-shadow: 0 16px 38px rgba(0,0,0,.24) !important; }
+                #podcasts .podcast-cover { position: relative; align-self: stretch; min-width: 0; min-height: 100%; height: auto; aspect-ratio: auto !important; overflow: hidden; background: #0a1422; isolation: isolate; }
+                #podcasts .podcast-cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .45s ease; }
+                #podcasts .podcast-card:hover .podcast-cover img { transform: scale(1.035); }
+                #podcasts .cover-shade { background: linear-gradient(180deg, rgba(5,12,22,.02) 35%, rgba(5,12,22,.52) 100%); }
+                #podcasts .podcast-cover-label { top: 10px; inset-inline-start: 10px; padding: 5px 7px; border-radius: 8px; font-size: .56rem; letter-spacing: .04em; }
+                #podcasts .play-card { bottom: 10px; left: 10px; width: 42px; height: 42px; border: 1px solid rgba(255,255,255,.22); background: linear-gradient(145deg,#19b5ff,#087ac1); box-shadow: 0 7px 20px rgba(5,157,249,.3); }
+                #podcasts .podcast-info { display: flex; flex-direction: column; align-items: stretch; min-width: 0; padding: 15px 16px 13px; }
+                #podcasts .podcast-card-overline { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 5px; }
+                #podcasts .podcast-category { max-width: 78%; color: #f0c978; font-size: .7rem; font-weight: 750; }
+                #podcasts .podcast-episode { flex: 0 0 auto; color: #8fa8c2; font-size: .66rem; }
+                #podcasts .podcast-title { display: -webkit-box; min-height: 0; margin: 0 0 6px; overflow: hidden; color: #f7f9fc; font-size: .98rem; font-weight: 800; line-height: 1.7; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
+                #podcasts .podcast-card .meta { display: flex; flex-wrap: wrap; gap: 4px 10px; margin: 0 0 7px; color: #9aacc1; font-size: .67rem; }
+                #podcasts .podcast-card .meta span { display: inline-flex !important; align-items: center; gap: 5px; min-width: 0; max-width: 100%; }
+                #podcasts .podcast-card .meta i { color: #41baff; }
+                #podcasts .podcast-desc { display: -webkit-box; margin: 0 0 8px; overflow: hidden; color: #bdc9d8; font-size: .75rem; line-height: 1.9; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
+                #podcasts .podcast-card-tags { display: flex !important; flex-wrap: wrap; gap: 5px; margin: 0 0 8px; max-height: 29px; overflow: hidden; }
+                #podcasts .podcast-tag { padding: 3px 7px; border: 1px solid rgba(255,255,255,.07); border-radius: 7px; background: rgba(255,255,255,.035); color: #93abc3; font-size: .61rem; }
+                #podcasts .card-footer { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: auto; padding-top: 9px; border-top: 1px solid rgba(255,255,255,.07); }
+                #podcasts .card-footer .btn { min-height: 35px; padding: 6px 10px; border-radius: 10px; font-size: .71rem; }
+                #podcasts .card-footer .btn-primary { flex: 1 1 65px; }
+                #podcasts .nc-card-details { flex: 0 0 auto; }
+                #podcasts .nc-card-download, #podcasts .card-footer .favorite { display: inline-flex; align-items: center; justify-content: center; width: 35px; min-width: 35px; height: 35px; padding: 0 !important; }
+                #podcasts .nc-comment-action { display: inline-flex; align-items: center; justify-content: center; min-height: 35px; padding: 5px 8px; border-radius: 10px; font-size: .68rem; }
+                #podcasts .nc-comment-action span { display: inline !important; }
+                #podcasts .pagination { display: flex !important; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; width: 100%; margin: 22px 0 32px; padding: 12px; border: 1px solid rgba(148,174,204,.13); border-radius: 16px; background: rgba(15,31,49,.72); }
+                #podcasts .pagination-summary { flex: 0 0 100%; text-align: center; color: #9db1c8; font-size: .78rem; line-height: 1.8; }
+                #podcasts .page-btn { display: inline-flex !important; align-items: center; justify-content: center; min-width: 38px; min-height: 38px; padding: 6px 10px; border: 1px solid rgba(148,174,204,.18); border-radius: 10px; background: rgba(255,255,255,.035); color: #dce8f5; }
+                #podcasts .page-btn.active { border-color: rgba(54,181,255,.6); background: rgba(5,157,249,.2); color: #fff; }
+                #podcasts .page-btn:disabled { opacity: .4; cursor: not-allowed; }
+                @media (max-width: 1050px) {
+                    #podcasts .podcast-grid { grid-template-columns: minmax(0,1fr) !important; }
+                    #podcasts .podcast-card { grid-template-columns: 142px minmax(0,1fr) !important; }
+                }
+                @media (max-width: 600px) {
+                    #podcasts .podcast-grid { gap: 12px !important; }
+                    #podcasts .podcast-card { grid-template-columns: 108px minmax(0,1fr) !important; min-height: 0; border-radius: 16px !important; }
+                    #podcasts .podcast-info { padding: 10px 11px 9px; }
+                    #podcasts .podcast-cover-label { top: 6px; inset-inline-start: 6px; padding: 3px 5px; font-size: .46rem; }
+                    #podcasts .play-card { width: 34px; height: 34px; bottom: 7px; left: 7px; }
+                    #podcasts .podcast-category { max-width: 100%; font-size: .62rem; }
+                    #podcasts .podcast-episode { font-size: .58rem; }
+                    #podcasts .podcast-title { font-size: .83rem; line-height: 1.65; margin-bottom: 4px; -webkit-line-clamp: 2; }
+                    #podcasts .podcast-card .meta { gap: 3px 7px; margin-bottom: 5px; font-size: .6rem; }
+                    #podcasts .podcast-desc { font-size: .69rem; line-height: 1.75; -webkit-line-clamp: 3; margin-bottom: 6px; }
+                    #podcasts .podcast-card-tags { display: none !important; }
+                    #podcasts .card-footer { gap: 5px; padding-top: 7px; }
+                    #podcasts .card-footer .btn { min-height: 32px; padding: 5px 7px; font-size: .65rem; }
+                    #podcasts .nc-card-details { flex: 1 1 56px; }
+                    #podcasts .nc-comment-action { min-height: 32px; width: 34px; padding: 4px; }
+                    #podcasts .nc-comment-action span { display: none !important; }
+                    #podcasts .nc-comment-action b { font-size: .58rem; }
+                    #podcasts .nc-card-download, #podcasts .card-footer .favorite { width: 32px; min-width: 32px; height: 32px; min-height: 32px; }
+                    #podcasts .pagination { gap: 6px; padding: 10px 7px; }
+                    #podcasts .page-btn { min-width: 35px; min-height: 35px; padding: 5px 8px; font-size: .72rem; }
+                }
+                @media (max-width: 370px) {
+                    #podcasts .podcast-card { grid-template-columns: 88px minmax(0,1fr) !important; }
+                    #podcasts .podcast-info { padding: 8px 9px; }
+                    #podcasts .podcast-title { font-size: .78rem; }
+                    #podcasts .podcast-desc { -webkit-line-clamp: 2; }
+                    #podcasts .nc-card-details span { display: none; }
+                    #podcasts .nc-card-details { flex: 0 0 32px; min-width: 32px; padding: 0 !important; }
+                }
+                @media (prefers-reduced-motion: reduce) { #podcasts .podcast-card, #podcasts .podcast-cover img { transition: none !important; } }
+
+</style>
 <style>
 .favorite,.nc-like-button{position:relative;display:inline-grid;place-items:center;flex:0 0 auto;width:42px;height:42px;padding:0;border-radius:14px;color:#aab7ca;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09);transition:color .18s,background .18s,border-color .18s,transform .18s,box-shadow .18s;touch-action:manipulation}
 .favorite i,.nc-like-button i{font-size:1.02rem;transition:transform .18s cubic-bezier(.2,.8,.2,1)}
@@ -4630,6 +4713,19 @@
             }
 
 
+            function normalizePodcastRecord(record) {
+                const p = record && typeof record === "object" ? { ...record } : {};
+                // D1 currently stores description, summary and transcript. Support
+                // the older/API aliases too, without dropping fields during rendering.
+                p.short_description = String(p.short_description || p.description || "").trim();
+                p.long_description = String(p.long_description || p.transcript || "").trim();
+                p.description = String(p.description || p.short_description || "").trim();
+                p.transcript = String(p.transcript || p.long_description || "").trim();
+                p.summary = String(p.summary || "").trim();
+                return p;
+            }
+
+
             function formatTime(sec) {
 
                 sec = Number(sec);
@@ -5662,9 +5758,9 @@ LOGOUT
                 const author = String(podcast.author_name || "NightCast");
                 const book = String(podcast.book_name || "");
                 const category = String(podcast.category_name || podcast.category || "");
-                const shortDescription = String(podcast.description || podcast.short_description || "").trim();
+                const shortDescription = String(podcast.short_description || podcast.description || "").trim();
                 const summary = String(podcast.summary || "").trim();
-                const transcript = String(podcast.transcript || podcast.long_description || "").trim();
+                const transcript = String(podcast.long_description || podcast.transcript || "").trim();
                 const tags = (Array.isArray(podcast.tags) ? podcast.tags : String(podcast.tags || "").split(/[,،]/))
                     .map(tag => String(tag).trim()).filter(Boolean);
                 const date = formatPodcastDate(podcast.publish_date || podcast.created_at);
@@ -5733,7 +5829,7 @@ LOGOUT
                 const author = String(p.author_name || "NightCast");
                 const book = String(p.book_name || "");
                 const category = String(p.category_name || p.category || "پادکست");
-                const desc = String(p.description || p.short_description || p.summary || "توضیحی برای این پادکست ثبت نشده است.");
+                const desc = String(p.short_description || p.description || p.summary || "توضیحی برای این پادکست ثبت نشده است.");
                 const cover = String(p.cover_url || placeholder);
                 const audio = String(p.audio_url || "");
                 const duration = formatTime(p.duration_seconds || 0);
@@ -5969,8 +6065,10 @@ LOGOUT
                                     p.category_name,
                                     p.tags,
                                     p.description,
+                                    p.short_description,
                                     p.summary,
-                                    p.transcript
+                                    p.transcript,
+                                    p.long_description
                                 ]
                                     .filter(Boolean)
                                     .join(" ")
@@ -6052,7 +6150,7 @@ LOGOUT
 
                 try {
                     const parsed = JSON.parse(localStorage.getItem(cacheKey) || "[]");
-                    cached = Array.isArray(parsed) ? parsed : [];
+                    cached = Array.isArray(parsed) ? parsed.map(normalizePodcastRecord) : [];
                 } catch {
                     cached = [];
                 }
@@ -6111,7 +6209,7 @@ LOGOUT
                     // De-duplicate by id in case the source changes while paging.
                     const unique = new Map();
                     for (const podcast of collected) {
-                        if (podcast && podcast.id != null) unique.set(String(podcast.id), podcast);
+                        if (podcast && podcast.id != null) unique.set(String(podcast.id), normalizePodcastRecord(podcast));
                     }
                     return [...unique.values()];
                 }
@@ -6137,39 +6235,37 @@ LOGOUT
 
                         const data = await response.json();
                         feedTotal = Number(data?.total || 0);
-                        feedItems = Array.isArray(data)
+                        feedItems = (Array.isArray(data)
                             ? data
                             : Array.isArray(data?.podcasts)
                                 ? data.podcasts
-                                : [];
+                                : []).map(normalizePodcastRecord);
 
                     } catch (error) {
                         feedError = error;
                         console.warn("NightCast static podcast feed failed; trying API fallback.", error);
                     }
 
-                    // If the feed is incomplete (including an old four-item feed/cache),
-                    // retrieve every page from the Worker API instead of silently showing only a few.
+                    // Treat D1 through the Worker API as the live source of truth on every load.
+                    // The generated JSON feed remains a resilient fallback when the API is unavailable.
                     let freshItems = feedItems;
                     const feedLooksIncomplete =
                         !feedItems.length ||
                         (feedTotal > feedItems.length) ||
                         feedItems.length <= 4;
 
-                    if (feedLooksIncomplete) {
-                        try {
-                            const apiItems = await fetchAllFromAPI();
-                            if (apiItems.length > freshItems.length) {
-                                freshItems = apiItems;
-                            }
-                        } catch (apiError) {
-                            console.error("NightCast podcast API fallback failed:", apiError);
-                            if (!freshItems.length && cached.length) {
-                                freshItems = cached;
-                            }
-                            if (!freshItems.length) {
-                                throw feedError || apiError;
-                            }
+                    try {
+                        const apiItems = await fetchAllFromAPI();
+                        if (apiItems.length && (apiItems.length >= freshItems.length || feedLooksIncomplete)) {
+                            freshItems = apiItems;
+                        }
+                    } catch (apiError) {
+                        console.error("NightCast podcast API refresh failed; retaining static feed when available.", apiError);
+                        if (!freshItems.length && cached.length) {
+                            freshItems = cached;
+                        }
+                        if (!freshItems.length) {
+                            throw feedError || apiError;
                         }
                     }
 
@@ -6177,6 +6273,7 @@ LOGOUT
                         throw feedError || new Error("No podcasts were returned by the feed or API.");
                     }
 
+                    freshItems = freshItems.map(normalizePodcastRecord);
                     state.all = freshItems;
                     try {
                         localStorage.setItem(cacheKey, JSON.stringify(freshItems));
@@ -6419,12 +6516,12 @@ LOGOUT
                 setText("ncNowTitle", p.title || "بدون عنوان");
                 setText("ncNowAuthor", p.author_name || "NightCast Radio");
 
-                const shortDescription = String(p.description || p.short_description || "").trim();
+                const shortDescription = String(p.short_description || p.description || "").trim();
                 const summary = String(p.summary || "").trim();
                 const descriptionParts = [];
                 if (shortDescription) descriptionParts.push(shortDescription);
                 if (summary && summary !== shortDescription) descriptionParts.push("خلاصه اپیزود:\n" + summary);
-                if (p.transcript || p.long_description) descriptionParts.push("متن کامل اپیزود در پنجره «جزئیات» کارت پادکست در دسترس است.");
+                if (p.long_description || p.transcript) descriptionParts.push("متن کامل اپیزود در پنجره «جزئیات» کارت پادکست در دسترس است.");
                 setText("ncNowDescription", descriptionParts.join("\n\n") || "توضیحی برای این پادکست ثبت نشده است.");
 
                 const book = document.getElementById("ncNowBook");

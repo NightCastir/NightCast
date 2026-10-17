@@ -1,4 +1,4 @@
-const CACHE_NAME = "nightcast-v1";
+const CACHE_NAME = "nightcast-v2";
 
 const APP_SHELL = [
   "/",
@@ -30,45 +30,56 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   const request = event.request;
-
   if (request.method !== "GET") return;
 
   const url = new URL(request.url);
 
-  // فایل‌های صوتی را Cache نمی‌کنیم
-  if (
-    url.pathname.endsWith(".mp3") ||
-    url.pathname.endsWith(".m4a") ||
-    url.pathname.endsWith(".aac") ||
-    url.pathname.endsWith(".ogg") ||
-    url.pathname.endsWith(".wav")
-  ) {
+  // Audio is streamed directly and never cached by this service worker.
+  if (/\.(mp3|m4a|aac|ogg|wav)(?:$|\?)/i.test(url.pathname)) return;
+
+  // Do not intercept cross-origin requests such as the API or CDN.
+  if (url.origin !== self.location.origin) return;
+
+  const isDocument = request.mode === "navigate" || request.destination === "document";
+  const isCodeOrData = /\.(html?|js|mjs|css|json|xml)(?:$|\?)/i.test(url.pathname);
+
+  // Always try the network first for HTML, JavaScript, CSS and data files.
+  // This prevents old cached code/data from surviving a deployment.
+  if (isDocument || isCodeOrData) {
+    event.respondWith(
+      fetch(request, { cache: "no-store" }).then((response) => {
+        if (response && response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+        }
+        return response;
+      }).catch(async () => {
+        const cached = await caches.match(request);
+        if (cached) return cached;
+        if (isDocument) {
+          const shell = await caches.match("/index.html");
+          if (shell) return shell;
+        }
+        return new Response("Offline: resource unavailable", {
+          status: 503,
+          headers: { "Content-Type": "text/plain; charset=utf-8" }
+        });
+      })
+    );
     return;
   }
 
+  // Cache-first for versioned/static images and other non-code assets.
   event.respondWith(
     caches.match(request).then((cached) => {
       if (cached) return cached;
-
-      return fetch(request)
-        .then((response) => {
-          if (
-            !response ||
-            response.status !== 200 ||
-            response.type === "opaque"
-          ) {
-            return response;
-          }
-
+      return fetch(request).then((response) => {
+        if (response && response.status === 200 && response.type !== "opaque") {
           const copy = response.clone();
-
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, copy);
-          });
-
-          return response;
-        })
-        .catch(() => caches.match("/index.html"));
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+        }
+        return response;
+      });
     })
   );
 });

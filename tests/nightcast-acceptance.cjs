@@ -101,28 +101,31 @@ function silentWavDataUri() {
     const assetFailures = [];
     for (const file of htmlFilesToValidate) {
       const html = fs.readFileSync(file, 'utf8');
-      const ids = new Set([...html.matchAll(/\\bid\\s*=\\s*["']([^"']+)["']/gi)].map(match => match[1]));
-      for (const match of html.matchAll(/<a\\b[^>]*\\bhref\\s*=\\s*["']#([^"']*)["'][^>]*>/gi)) {
+      const ids = new Set([...html.matchAll(/\bid\s*=\s*["']([^"']+)["']/gi)].map(match => match[1]));
+      for (const match of html.matchAll(/<a\b[^>]*\bhref\s*=\s*["']#([^"']*)["'][^>]*>/gi)) {
         const target = match[1].trim();
         if (target && target !== '!' && !ids.has(target)) {
-          linkFailures.push(file + ':' + html.slice(0, match.index).split('\\n').length + ' -> #' + target);
+          linkFailures.push(file + ':' + html.slice(0, match.index).split('\n').length + ' -> #' + target);
         }
       }
-      for (const match of html.matchAll(/<(script|link|img|source|audio|video)\\b([^>]*?)>/gi)) {
+      for (const match of html.matchAll(/<(script|link|img|source|audio|video)\b([^>]*?)>/gi)) {
         const tag = match[1].toLowerCase();
         const attrs = match[2];
-        const attr = name => attrs.match(new RegExp('\\\\b' + name + '\\\\s*=\\\\s*(["\\\'])(.*?)\\\\1', 'i'))?.[2] || '';
+        const attr = name => {
+          const found = attrs.match(new RegExp("\\b" + name + "\\s*=\\s*(?:\"([^\"]*)\"|'([^']*)')", 'i'));
+          return found?.[1] ?? found?.[2] ?? '';
+        };
         let url = '';
         if (tag === 'script' || tag === 'img' || tag === 'source' || tag === 'audio' || tag === 'video') url = attr('src');
         if (tag === 'link' && /stylesheet|icon|manifest|apple-touch-icon/i.test(attr('rel'))) url = attr('href');
-        if (!url || /^(?:https?:|\\\\/\\\\/|data:|blob:|javascript:|#)/i.test(url) || /escapeHtml|\\$\\{|\\s\\+\\s/.test(url)) continue;
+        if (!url || /^(?:https?:|\/\/|data:|blob:|javascript:|#)/i.test(url) || /escapeHtml|\$\{|\s\+\s/.test(url)) continue;
         url = url.split('#')[0].split('?')[0];
         if (!url) continue;
         const resolved = path.normalize(url.startsWith('/') ? '.' + url : path.join(path.dirname(file), url));
         const candidate = path.resolve(resolved);
         const directoryIndex = path.join(candidate, 'index.html');
         if (!fs.existsSync(candidate) && !fs.existsSync(directoryIndex)) {
-          assetFailures.push(file + ':' + html.slice(0, match.index).split('\\n').length + ' -> ' + url);
+          assetFailures.push(file + ':' + html.slice(0, match.index).split('\n').length + ' -> ' + url);
         }
       }
     }

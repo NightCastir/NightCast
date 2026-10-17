@@ -248,6 +248,8 @@ function silentWavDataUri() {
       }
       assert((await page.locator('#ncCommentsPodcastTitle').innerText()).includes('سیاره آزمایشی اول'), 'Comments opened for the wrong podcast');
       console.log('PASS | Comments dialog opens for selected podcast');
+      await page.locator('#ncCommentsClose').click();
+      await page.waitForFunction(() => !document.querySelector('#ncCommentsModal')?.classList.contains('open'), undefined, { timeout: 3000 });
       report('4. Search, play/pause, favorites and comments work', true, 'Search, audio readiness/pause, favorite state and comments dialog verified');
     } catch (error) {
       report('4. Search, player, favorites and comments controls work', false, String(error.message || error));
@@ -262,9 +264,49 @@ function silentWavDataUri() {
         { name: 'TV', width: 1920, height: 1080 }
       ];
       const failures = [];
+      let mobileNavigationPassed = false;
+      let mobileNavigationDetail = 'mobile navigation check was not executed';
       for (const size of sizes) {
         await page.setViewportSize({ width: size.width, height: size.height });
         await page.waitForTimeout(120);
+        if (size.name === 'mobile') {
+          try {
+            await page.locator('#ncMenuToggle').click({ timeout: 5000 });
+            await page.waitForFunction(() => {
+              const drawer = document.querySelector('#ncMobileDrawer');
+              return !!drawer && drawer.classList.contains('is-open') && drawer.getAttribute('aria-hidden') === 'false';
+            }, undefined, { timeout: 3000 });
+            const drawerState = await page.evaluate(() => {
+              const drawer = document.querySelector('#ncMobileDrawer');
+              const backdrop = document.querySelector('#ncDrawerBackdrop');
+              const d = drawer?.getBoundingClientRect();
+              const b = backdrop?.getBoundingClientRect();
+              return {
+                drawerPosition: drawer ? getComputedStyle(drawer).position : 'missing',
+                drawerWidth: Math.round(d?.width || 0),
+                drawerHeight: Math.round(d?.height || 0),
+                drawerRight: Math.round(d?.right || 0),
+                backdropPosition: backdrop ? getComputedStyle(backdrop).position : 'missing',
+                backdropWidth: Math.round(b?.width || 0),
+                viewportWidth: document.documentElement.clientWidth
+              };
+            });
+            mobileNavigationPassed = drawerState.drawerPosition === 'fixed' &&
+              drawerState.backdropPosition === 'fixed' &&
+              drawerState.drawerWidth > 0 &&
+              drawerState.drawerHeight > 0 &&
+              drawerState.backdropWidth >= drawerState.viewportWidth - 3;
+            mobileNavigationDetail = JSON.stringify(drawerState);
+            await page.locator('#ncMenuToggle').click({ timeout: 3000 });
+            await page.waitForFunction(() => !document.querySelector('#ncMobileDrawer')?.classList.contains('is-open'), undefined, { timeout: 3000 });
+          } catch (error) {
+            mobileNavigationPassed = false;
+            mobileNavigationDetail = String(error.message || error);
+            try {
+              if (await page.locator('#ncMobileDrawer.is-open').count()) await page.locator('#ncMenuToggle').click({ timeout: 1000 });
+            } catch {}
+          }
+        }
         const dims = await page.evaluate(() => {
           const viewport = document.documentElement.clientWidth;
           const offenders = [...document.querySelectorAll('body *')].map(el => {
@@ -288,6 +330,7 @@ function silentWavDataUri() {
         if (dims.content > dims.viewport + 3) failures.push(size.name + ': ' + dims.content + 'px > ' + dims.viewport + 'px; elements=' + JSON.stringify(dims.offenders));
       }
       report('5. Mobile, tablet, desktop and TV layouts avoid horizontal overflow', failures.length === 0, failures.join('; ') || '390, 820, 1440, 1920 px');
+      report('6. Mobile navigation drawer remains fixed and usable', mobileNavigationPassed, mobileNavigationDetail);
     } catch (error) {
       report('5. Mobile, tablet, desktop and TV layouts avoid horizontal overflow', false, String(error.message || error));
     }

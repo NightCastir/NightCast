@@ -240,8 +240,21 @@ function silentWavDataUri() {
   const failed = results.filter(item => !item.passed);
   console.log('SUMMARY | ' + results.filter(item => item.passed).length + '/' + results.length + ' browser/API checks TRUE');
   if (process.env.GITHUB_STEP_SUMMARY) {
-    const rows = results.map(item => '| ' + item.name.replace(/\\|/g, '/') + ' | **' + (item.passed ? 'TRUE' : 'FALSE') + '** | ' + String(item.detail || '').replace(/[\\r\\n|]/g, ' ').slice(0, 220) + ' |').join('\\n');
-    fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, '## Browser and API acceptance results\\n\\n| Activity | Result | Details |\\n|---|---|---|\\n' + rows + '\\n\\n');
+    const nl = String.fromCharCode(10);
+    const rows = results.map(item =>
+      '| ' + item.name.split('|').join('/') + ' | **' +
+      (item.passed ? 'TRUE' : 'FALSE') + '** | ' +
+      String(item.detail || '').split(nl).join(' ').split('|').join(' ').slice(0, 220) + ' |'
+    ).join(nl);
+    const summary = [
+      '## Browser and API acceptance results',
+      '',
+      '| Activity | Result | Details |',
+      '|---|---|---|',
+      rows,
+      ''
+    ].join(nl);
+    fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
   }
   if (failed.length) process.exitCode = 1;
 })().catch(error => {

@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /users/auth.html
+Disallow: /users/login.html
+Disallow: /users/loginnew.html
+
+Sitemap: https://nightcast.ir/sitemap.xml

@@ -543,7 +543,7 @@ img {
     min-height: 0;
     border-radius: 18px !important;
   }
-  .podcast-cover { min-height: 100%; height: 100%; aspect-ratio: auto !important; }
+  .podcast-cover { min-height: 112px; height: auto !important; aspect-ratio: 1 / 1 !important; align-self: stretch; }
   .podcast-cover img { position: absolute; inset: 0; }
   .podcast-cover-label { inset-inline-start: 6px !important; top: 7px !important; font-size: .5rem !important; padding: 4px 6px !important; }
   .play-card { width: 38px !important; height: 38px !important; bottom: 8px !important; left: 8px !important; }

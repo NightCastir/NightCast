@@ -6246,6 +6246,15 @@ LOGOUT
                         console.warn("NightCast static podcast feed failed; trying API fallback.", error);
                     }
 
+                    // Render the complete static feed immediately so a slow Worker refresh
+                    // never leaves first-time visitors staring at skeleton cards.
+                    if (feedItems.length) {
+                        state.all = feedItems.map(normalizePodcastRecord);
+                        updateLatest(state.all);
+                        updatePodcastCollectionSchema(state.all);
+                        applyView();
+                    }
+
                     // Treat D1 through the Worker API as the live source of truth on every load.
                     // The generated JSON feed remains a resilient fallback when the API is unavailable.
                     let freshItems = feedItems;

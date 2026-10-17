@@ -6673,7 +6673,12 @@ LOGOUT
                     }
         
                     else if (action === "comments") {
-                        openPodcastComments(id);
+                        if (typeof window.NightCastOpenPodcastComments === "function") {
+                            window.NightCastOpenPodcastComments(id);
+                        } else {
+                            console.error("NightCast comments module is not ready.");
+                            toast("پنجره دیدگاه‌ها بارگذاری نشده است. صفحه را یک‌بار تازه‌سازی کنید.");
+                        }
                     }
 
                     else if (
@@ -8795,6 +8800,8 @@ body.nc-comments-open{overflow:hidden}
                 loadPodcastComments(activeCommentsPodcastId);
                 if (input) setTimeout(() => input.focus({preventScroll:true}), 120);
             }
+
+            window.NightCastOpenPodcastComments = openPodcastComments;
 
             function closePodcastComments() {
                 const modal = document.getElementById("ncCommentsModal");

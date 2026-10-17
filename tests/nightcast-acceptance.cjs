@@ -303,13 +303,14 @@ function silentWavDataUri() {
               drawerState.drawerHeight > 0 &&
               drawerState.backdropWidth >= drawerState.viewportWidth - 3;
             mobileNavigationDetail = JSON.stringify(drawerState);
-            await page.locator('#ncMenuToggle').click({ timeout: 3000 });
+            // The menu toggle sits behind the open drawer; use the drawer's own close control.
+            await page.locator('#ncDrawerClose').click({ timeout: 3000 });
             await page.waitForFunction(() => !document.querySelector('#ncMobileDrawer')?.classList.contains('is-open'), undefined, { timeout: 3000 });
           } catch (error) {
             mobileNavigationPassed = false;
             mobileNavigationDetail = String(error.message || error);
             try {
-              if (await page.locator('#ncMobileDrawer.is-open').count()) await page.locator('#ncMenuToggle').click({ timeout: 1000 });
+              if (await page.locator('#ncMobileDrawer.is-open').count()) await page.locator('#ncDrawerClose').click({ timeout: 1000 });
             } catch {}
           }
         }

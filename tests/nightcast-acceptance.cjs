@@ -229,7 +229,7 @@ function silentWavDataUri() {
         openerType: typeof window.NightCastOpenPodcastComments,
         bodyClass: document.body.className
       }));
-      if (!commentsState.className.includes('open') && typeof window.NightCastOpenPodcastComments === 'function') {
+      if (!commentsState.className.includes('open') && commentsState.openerType === 'function') {
         await page.evaluate(() => window.NightCastOpenPodcastComments(91001));
         await page.waitForTimeout(150);
         const directState = await page.evaluate(() => ({

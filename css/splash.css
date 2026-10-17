@@ -424,3 +424,23 @@ body{
         transition-duration: .01ms !important;
     }
 }
+
+
+/* Cinematic space launch sequence */
+.splash{isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at 50% 42%,#152958 0%,#080f25 38%,#02040b 80%)!important;transition:opacity .85s cubic-bezier(.2,.7,.2,1),filter .85s ease,visibility .85s ease}
+.splash:before{content:"";position:absolute;inset:-20%;z-index:0;pointer-events:none;background:radial-gradient(1.5px 1.5px at 18% 20%,#fff 99%,transparent),radial-gradient(1px 1px at 73% 31%,#c9edff 99%,transparent),radial-gradient(1.5px 1.5px at 80% 72%,#fff 99%,transparent),radial-gradient(1px 1px at 38% 82%,#fff 99%,transparent);background-size:230px 210px;animation:ncSplashStarTravel 45s linear infinite}
+.splash:after{content:"";position:absolute;z-index:0;width:min(78vw,760px);aspect-ratio:1;border:1px solid rgba(161,205,255,.12);border-radius:50%;box-shadow:0 0 0 22px rgba(161,205,255,.02),0 0 0 58px rgba(161,205,255,.015),inset 0 0 80px rgba(91,143,255,.08);animation:ncSplashOrbit 24s linear infinite;pointer-events:none}
+.logo-wrapper,.loader,.version{z-index:2}
+.logo-circle{background:rgba(10,25,56,.56)!important;border:1px solid rgba(140,232,255,.38)!important;box-shadow:0 0 0 12px rgba(140,232,255,.035),0 0 70px rgba(140,232,255,.22)!important}
+.logo-wrapper h1{letter-spacing:.08em!important;text-shadow:0 0 36px rgba(140,232,255,.18)}
+.logo-wrapper h1 span{color:#9ceaff!important}
+.loader{width:min(280px,75vw)!important;margin-top:38px!important}
+.loader-bar{height:3px!important;background:rgba(255,255,255,.12)!important}
+.loader-bar span{width:0;background:linear-gradient(90deg,#8ce8ff,#a69bff,#e8c995)!important;box-shadow:0 0 18px #8ce8ff88;transition:width .28s ease;animation:none!important}
+.loader small{letter-spacing:.03em}
+.splash.is-departing{opacity:0;filter:blur(9px);visibility:hidden;pointer-events:none}
+.splash.is-departing .logo-wrapper{transform:scale(1.08);opacity:0;transition:transform .7s ease,opacity .5s ease}
+.logo-wrapper{transition:transform .7s ease,opacity .5s ease}
+@keyframes ncSplashStarTravel{to{background-position:230px 210px}}
+@keyframes ncSplashOrbit{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.splash:before,.splash:after{animation:none!important}.splash,.logo-wrapper{transition:none!important}}

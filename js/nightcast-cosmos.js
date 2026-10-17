@@ -1,5 +1,23 @@
 /* NightCast — lightweight, responsive starfield and cinematic transitions. */
 (()=>{"use strict";
+/* Font Awesome CDN fallback: the primary cdnjs URL may be blocked on some networks. */
+function ensureFontAwesomeCdn(){
+  const icon=document.querySelector(".fa-solid,.fa-regular,.fa-brands");
+  if(!icon||!document.head)return;
+  const pseudo=getComputedStyle(icon,"::before");
+  const family=pseudo.fontFamily||"";
+  const glyph=pseudo.content||"";
+  if(/Font Awesome/i.test(family)&&glyph&&glyph!=="none"&&glyph!=='""')return;
+  if(document.querySelector('link[data-nc-fa-fallback="true"]'))return;
+  const fallback=document.createElement("link");
+  fallback.rel="stylesheet";
+  fallback.href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css";
+  fallback.crossOrigin="anonymous";
+  fallback.dataset.ncFaFallback="true";
+  document.head.appendChild(fallback);
+}
+window.addEventListener("load",()=>setTimeout(ensureFontAwesomeCdn,180));
+setTimeout(ensureFontAwesomeCdn,1800);
 const reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const canvas=document.createElement("canvas");canvas.className="nc-cosmos-canvas";canvas.setAttribute("aria-hidden","true");
 const mount=()=>{if(!document.body||document.querySelector(".nc-cosmos-canvas"))return;document.body.prepend(canvas);};

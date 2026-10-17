@@ -1,6 +1,9 @@
 const { chromium } = require('playwright');
 const { spawn } = require('node:child_process');
 const fs = require('node:fs');
+const vm = require('node:vm');
+const YAML = require('yaml');
+const { transform } = require('lightningcss');
 
 const results = [];
 function report(name, passed, detail = '') {
@@ -10,6 +13,15 @@ function report(name, passed, detail = '') {
 }
 function assert(condition, message) {
   if (!condition) throw new Error(message);
+}
+function walkFiles(root, extensionPattern, files = []) {
+  for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
+    if (entry.name === '.git' || entry.name === 'node_modules' || entry.name === 'android' || entry.name === 'www') continue;
+    const file = root + '/' + entry.name;
+    if (entry.isDirectory()) walkFiles(file, extensionPattern, files);
+    else if (extensionPattern.test(file)) files.push(file);
+  }
+  return files;
 }
 function silentWavDataUri() {
   const sampleRate = 8000;
@@ -36,17 +48,52 @@ function silentWavDataUri() {
   let server;
   let browser;
   try {
-    // Validate HTML style-tag openings in every page touched by the redesign.
+    // Static quality gates: HTML/style-tag balance, JavaScript syntax, CSS parsing, and YAML syntax.
     const htmlFilesToValidate = ['index.html', 'users/index.html', 'users/auth.html', 'users/login.html', 'users/loginnew.html', '404.html'];
     const malformedStyleFiles = [];
+    const inlineStyleBlocks = [];
     for (const file of htmlFilesToValidate) {
       const html = fs.readFileSync(file, 'utf8');
-      for (const opening of html.matchAll(/<style\b[^>]*>/gi)) {
-        if (opening[0].includes('{')) malformedStyleFiles.push(file + ':' + html.slice(0, opening.index).split('\n').length);
+      const opens = (html.match(/<style\b[^>]*>/gi) || []).length;
+      const closes = (html.match(/<\/style\s*>/gi) || []).length;
+      if (/<style\b(?![^>]*>)/i.test(html) || opens !== closes) malformedStyleFiles.push(file + ' (open=' + opens + ', close=' + closes + ')');
+      for (const match of html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style\s*>/gi)) {
+        inlineStyleBlocks.push({ file, code: match[1] });
       }
     }
-    report('0. HTML inline style tags are well formed', malformedStyleFiles.length === 0,
+    report('0. HTML inline style tags are balanced', malformedStyleFiles.length === 0,
       malformedStyleFiles.length ? malformedStyleFiles.join(', ') : htmlFilesToValidate.join(', '));
+
+    const jsFailures = [];
+    const jsFiles = walkFiles('.', /\.js$/i);
+    for (const file of jsFiles) {
+      try { new vm.Script(fs.readFileSync(file, 'utf8'), { filename: file }); }
+      catch (error) { jsFailures.push(file + ': ' + error.message); }
+    }
+    report('0.1. JavaScript files pass syntax parsing', jsFailures.length === 0,
+      jsFailures.slice(0, 8).join(' || ') || 'Parsed ' + jsFiles.length + ' JavaScript files');
+
+    const cssFailures = [];
+    const cssFiles = walkFiles('.', /\.css$/i);
+    for (const file of cssFiles) {
+      try { transform({ filename: file, code: Buffer.from(fs.readFileSync(file, 'utf8')) }); }
+      catch (error) { cssFailures.push(file + ': ' + error.message); }
+    }
+    for (const block of inlineStyleBlocks) {
+      try { transform({ filename: block.file + '.inline.css', code: Buffer.from(block.code) }); }
+      catch (error) { cssFailures.push(block.file + ' inline style: ' + error.message); }
+    }
+    report('0.2. CSS files and inline styles parse cleanly', cssFailures.length === 0,
+      cssFailures.slice(0, 8).join(' || ') || 'Parsed ' + cssFiles.length + ' CSS files and ' + inlineStyleBlocks.length + ' inline style blocks');
+
+    const yamlFailures = [];
+    const yamlFiles = walkFiles('.', /\.(?:yml|yaml)$/i);
+    for (const file of yamlFiles) {
+      try { YAML.parse(fs.readFileSync(file, 'utf8'), { uniqueKeys: true }); }
+      catch (error) { yamlFailures.push(file + ': ' + error.message); }
+    }
+    report('0.3. YAML configuration files parse cleanly', yamlFailures.length === 0,
+      yamlFailures.slice(0, 8).join(' || ') || 'Parsed ' + yamlFiles.length + ' YAML files');
 
     // Activity 2: validate the actual public API, independently of browser mocks.
     try {
@@ -90,9 +137,19 @@ function silentWavDataUri() {
     });
     const page = await context.newPage();
     const browserErrors = [];
-    page.on('pageerror', error => browserErrors.push('pageerror: ' + error.message));
+    const runtimeErrors = [];
+    page.on('pageerror', error => {
+      const detail = 'pageerror: ' + error.message;
+      browserErrors.push(detail);
+      runtimeErrors.push(detail);
+    });
     page.on('requestfailed', request => browserErrors.push('requestfailed: ' + request.url() + ' ' + (request.failure()?.errorText || '')));
-    page.on('console', message => { if (message.type() === 'error') browserErrors.push('console: ' + message.text()); });
+    page.on('console', message => {
+      if (message.type() !== 'error') return;
+      const detail = 'console: ' + message.text();
+      browserErrors.push(detail);
+      if (!/Failed to load resource:|net::ERR_|ERR_ABORTED|favicon\.ico/i.test(message.text())) runtimeErrors.push(detail);
+    });
     const fixtureAudio = silentWavDataUri();
     let apiMockHits = 0;
     const podcasts = [
@@ -149,6 +206,29 @@ function silentWavDataUri() {
       report('1. Splash transitions to the home/archive page', true, new URL(page.url()).pathname + '; splash position=' + splashPosition);
     } catch (error) {
       report('1. Splash transitions to the home/archive page', false, String(error.message || error));
+    }
+
+    // Verify the real header positioning and that the Font Awesome icon font is supplied by a CDN.
+    try {
+      await page.waitForTimeout(1200);
+      const headerState = await page.evaluate(() => {
+        const header = document.querySelector('.nc-header');
+        const icon = header?.querySelector('.brand-mark i');
+        const pseudo = icon ? getComputedStyle(icon, '::before') : null;
+        return {
+          position: header ? getComputedStyle(header).position : 'missing',
+          top: header ? getComputedStyle(header).top : 'missing',
+          iconFamily: pseudo?.fontFamily || 'missing',
+          iconContent: pseudo?.content || 'missing',
+          iconCdnFallback: !!document.querySelector('link[data-nc-fa-fallback="true"]')
+        };
+      });
+      const headerAndIconsOk = headerState.position === 'sticky' &&
+        /Font Awesome/i.test(headerState.iconFamily) &&
+        !!headerState.iconContent && headerState.iconContent !== 'none' && headerState.iconContent !== '""';
+      report('1.1. Header stays sticky and CDN icons render', headerAndIconsOk, JSON.stringify(headerState));
+    } catch (error) {
+      report('1.1. Header stays sticky and CDN icons render', false, String(error.message || error));
     }
 
     // The archive uses cinematic page navigation: open the Podcasts page before testing its cards.
@@ -365,8 +445,10 @@ function silentWavDataUri() {
     }
   }
 
-  // The sixth acceptance gate is the Android build job in build-android.yml.
-  console.log('INFO | 6. Android APK build | reported separately by Build NightCast Android APK workflow');
+  report('8. No uncaught JavaScript runtime errors', runtimeErrors.length === 0,
+    runtimeErrors.slice(0, 10).join(' || ') || 'No uncaught page errors or actionable console errors');
+
+  // Android APK build is intentionally not used as a website quality criterion.
   const failed = results.filter(item => !item.passed);
   console.log('SUMMARY | ' + results.filter(item => item.passed).length + '/' + results.length + ' browser/API checks TRUE');
   if (process.env.GITHUB_STEP_SUMMARY) {

@@ -3,7 +3,7 @@
 html{scroll-behavior:smooth;scroll-padding-top:86px;background:var(--nc-space)}
 body{background:radial-gradient(ellipse at 50% -10%,rgba(53,86,170,.22),transparent 48%),linear-gradient(180deg,#050817 0%,#080d20 48%,#050817 100%)!important;color:#f5f7ff}
 .nc-cosmos-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.88;mix-blend-mode:screen}
-body>header,body>main,body>footer,body>.nc-header,body>.player,body>.nc-mobile-nav,body>.nc-bottom-nav{position:relative;z-index:1}
+body>header:not(.nc-header),body>main,body>footer,body>.player,body>.nc-mobile-nav,body>.nc-bottom-nav{position:relative;z-index:1}
 main#home{isolation:isolate}
 .hero{position:relative;min-height:min(850px,calc(100svh - 68px));display:grid;align-items:center;gap:clamp(28px,5vw,80px);padding:clamp(42px,8vw,112px) clamp(20px,6vw,92px)!important;overflow:hidden;background:radial-gradient(ellipse at 72% 50%,rgba(58,77,174,.18),transparent 45%)}
 .hero:before{content:"";position:absolute;width:clamp(260px,42vw,650px);aspect-ratio:1;left:-8%;top:5%;border:1px solid rgba(157,199,255,.12);border-radius:50%;box-shadow:0 0 0 28px rgba(111,153,255,.025),0 0 0 70px rgba(111,153,255,.018),inset 0 0 80px rgba(81,116,225,.07);pointer-events:none;animation:ncOrbitDrift 32s linear infinite}
@@ -240,3 +240,6 @@ footer{background:linear-gradient(180deg,transparent,rgba(2,5,13,.96))!important
 html,body{max-width:100%;overflow-x:clip!important}
 .hero:before{inset:3% 0 0 15%!important}
 #podcasts:before,#about:before,#contact:before{inset-inline:0!important}
+
+/* Header regression guard: keep the site header sticky above page content. */
+.nc-header{position:sticky!important;top:0;z-index:1100;width:100%;}

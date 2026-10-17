@@ -32,7 +32,7 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Run six acceptance activities
+      - name: Run browser and API acceptance checks
         run: node tests/nightcast-acceptance.cjs
 
       - name: Publish acceptance results
@@ -41,8 +41,8 @@ jobs:
           {
             echo "## NightCast acceptance results"
             echo ""
-            echo "- Splash transition, real API, constellation details, player controls, and responsive layouts are reported as TRUE/FALSE in the test log."
-            echo "- Android APK build status is reported separately by the Build NightCast Android APK workflow."
+            echo "- Seven browser/API assertions are evaluated and recorded as TRUE/FALSE in the test log, including HTML validation, the live API, splash navigation, constellation details, player controls, responsive overflow, and mobile navigation."
+            echo "- Android APK build status is reported separately by the Build NightCast Android APK workflow; this job does not claim that an APK was built."
             echo ""
             echo "The browser/API tests use mock podcast records for UI interaction tests; the live API check independently queries the real public API."
           } >> "$GITHUB_STEP_SUMMARY"

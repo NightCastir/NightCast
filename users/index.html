@@ -8745,6 +8745,9 @@ body.nc-comments-open{overflow:hidden}
             }
 
             let podcastCardStatsRequest = 0;
+            document.addEventListener("click", event => {
+                if (event.target.closest('[data-action="favorite"]')) setTimeout(loadPodcastCardStats, 900);
+            });
             async function loadPodcastCardStats() {
                 const request = ++podcastCardStatsRequest;
                 try {

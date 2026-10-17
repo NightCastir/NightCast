@@ -8803,20 +8803,6 @@ body.nc-comments-open{overflow:hidden}
 
             window.NightCastOpenPodcastComments = openPodcastComments;
 
-            // Capture-phase fallback: make the comments button work independently
-            // of the main podcast-grid event delegation.
-            document.addEventListener("click", function(event) {
-                const button = event.target.closest('[data-action="comments"]');
-                if (!button) return;
-                event.preventDefault();
-                event.stopPropagation();
-                if (typeof window.NightCastOpenPodcastComments === "function") {
-                    window.NightCastOpenPodcastComments(button.dataset.id);
-                } else {
-                    console.error("NightCast comments module is not ready.");
-                    window.alert("پنجره دیدگاه‌ها هنوز بارگذاری نشده است. صفحه را تازه‌سازی کنید.");
-                }
-            }, true);
 
             function closePodcastComments() {
                 const modal = document.getElementById("ncCommentsModal");
@@ -8994,6 +8980,40 @@ body.nc-comments-open{overflow:hidden}
         </form>
     </section>
 </div>
+
+
+<script>
+/* Independent comments click handler: deliberately separate from the enhancement IIFE. */
+(function () {
+    document.addEventListener("click", function (event) {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+        const button = target.closest('[data-action="comments"]');
+        if (!button) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const openComments = window.NightCastOpenPodcastComments;
+        if (typeof openComments === "function") {
+            openComments(button.dataset.id);
+            return;
+        }
+
+        console.error("NightCast: comments opener was not initialized.");
+        const modal = document.getElementById("ncCommentsModal");
+        const list = document.getElementById("ncCommentsList");
+        if (modal && list) {
+            list.textContent = "پنجره دیدگاه‌ها بارگذاری نشد. لطفاً صفحه را تازه‌سازی کنید؛ اگر مشکل ادامه داشت، پشتیبانی را مطلع کنید.";
+            modal.classList.add("open");
+            modal.setAttribute("aria-hidden", "false");
+            document.body.classList.add("nc-comments-open");
+        } else {
+            window.alert("قابلیت دیدگاه‌ها بارگذاری نشده است. لطفاً صفحه را تازه‌سازی کنید.");
+        }
+    }, true);
+})();
+</script>
 
 </body>
 </html>

@@ -12,7 +12,7 @@ function assert(condition, message) {
 }
 function silentWavDataUri() {
   const sampleRate = 8000;
-  const samples = 800;
+  const samples = 40000;
   const data = Buffer.alloc(samples);
   const header = Buffer.alloc(44);
   header.write('RIFF', 0);
@@ -138,7 +138,10 @@ function silentWavDataUri() {
 
     // Wait for the mocked catalogue so UI interactions are deterministic.
     try {
-      await page.waitForSelector('.podcast-card[data-id="91001"]', { timeout: 10000 });
+      const firstCard = page.locator('.podcast-card[data-id="91001"]');
+      await firstCard.waitFor({ state: 'attached', timeout: 10000 });
+      await firstCard.scrollIntoViewIfNeeded();
+      await firstCard.waitFor({ state: 'visible', timeout: 5000 });
     } catch (error) {
       report('3. Selecting a planet opens the matching podcast details', false, 'Podcast cards did not render: ' + String(error.message || error) + ' | API mock hits=' + apiMockHits + ' | browser errors: ' + browserErrors.join(' || '));
       report('4. Search, player, favorites and comments controls work', false, 'Prerequisite podcast cards did not render | API mock hits=' + apiMockHits + ' | browser errors: ' + browserErrors.join(' || '));
@@ -177,15 +180,15 @@ function silentWavDataUri() {
       const audio = page.locator('audio').first();
       await page.waitForFunction(() => {
         const el = document.querySelector('audio');
-        return !!el && !!el.src && el.readyState >= 2;
-      }, { timeout: 5000 });
+        return !!el && !!el.src && el.readyState >= 2 && !el.paused;
+      }, undefined, { timeout: 5000 });
       const audioState = await page.locator('audio').evaluate(el => ({ paused: el.paused, readyState: el.readyState }));
-      assert(audioState.readyState >= 2, 'Audio source did not become ready');
+      assert(audioState.readyState >= 2 && audioState.paused === false, 'Audio did not enter playing state');
       await page.locator('#playButton').click();
-      await page.waitForFunction(() => document.querySelector('audio')?.paused === true, { timeout: 5000 });
+      await page.waitForFunction(() => document.querySelector('audio')?.paused === true, undefined, { timeout: 5000 });
 
       await page.locator('.podcast-card[data-id="91001"] [data-action="favorite"]').click();
-      await page.waitForFunction(() => document.querySelector('.podcast-card[data-id="91001"] [data-action="favorite"]')?.getAttribute('aria-pressed') === 'true', { timeout: 3000 });
+      await page.waitForFunction(() => document.querySelector('.podcast-card[data-id="91001"] [data-action="favorite"]')?.getAttribute('aria-pressed') === 'true', undefined, { timeout: 3000 });
 
       await page.locator('.podcast-card[data-id="91001"] [data-action="comments"]').click();
       await page.waitForFunction(() => {

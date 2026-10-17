@@ -6420,9 +6420,9 @@ LOGOUT
                 const summary = String(p.summary || "").trim();
                 const descriptionParts = [];
                 if (shortDescription) descriptionParts.push(shortDescription);
-                if (summary && summary !== shortDescription) descriptionParts.push("خلاصه اپیزود:\\n" + summary);
+                if (summary && summary !== shortDescription) descriptionParts.push("خلاصه اپیزود:\n" + summary);
                 if (p.transcript || p.long_description) descriptionParts.push("متن کامل اپیزود در پنجره «جزئیات» کارت پادکست در دسترس است.");
-                setText("ncNowDescription", descriptionParts.join("\\n\\n") || "توضیحی برای این پادکست ثبت نشده است.");
+                setText("ncNowDescription", descriptionParts.join("\n\n") || "توضیحی برای این پادکست ثبت نشده است.");
 
                 const book = document.getElementById("ncNowBook");
                 if (book) {

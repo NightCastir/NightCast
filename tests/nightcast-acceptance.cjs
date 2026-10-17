@@ -220,26 +220,32 @@ function silentWavDataUri() {
       await page.waitForFunction(() => document.querySelector('.podcast-card[data-id="91001"] [data-action="favorite"]')?.getAttribute('aria-pressed') === 'true', undefined, { timeout: 3000 });
       console.log('PASS | Favorite state toggled');
 
-      await page.locator('.podcast-card[data-id="91001"] [data-action="comments"]').click();
-      await page.waitForTimeout(250);
-      const commentsState = await page.evaluate(() => ({
-        modalExists: !!document.querySelector('#ncCommentsModal'),
-        className: document.querySelector('#ncCommentsModal')?.className || '',
-        ariaHidden: document.querySelector('#ncCommentsModal')?.getAttribute('aria-hidden') || '',
-        openerType: typeof window.NightCastOpenPodcastComments,
-        bodyClass: document.body.className
-      }));
-      if (!commentsState.className.includes('open') && commentsState.openerType === 'function') {
-        await page.evaluate(() => window.NightCastOpenPodcastComments(91001));
-        await page.waitForTimeout(150);
-        const directState = await page.evaluate(() => ({
-          className: document.querySelector('#ncCommentsModal')?.className || '',
-          ariaHidden: document.querySelector('#ncCommentsModal')?.getAttribute('aria-hidden') || '',
-          bodyClass: document.body.className
-        }));
-        console.log('DEBUG | Direct comments opener after button click | ' + JSON.stringify(directState));
+      const commentsButton = page.locator('.podcast-card[data-id="91001"] [data-action="comments"]').first();
+      await commentsButton.waitFor({ state: 'visible', timeout: 5000 });
+      await commentsButton.click();
+      // Verify the user-facing click path itself. Do not call the opener directly as a fallback,
+      // because that would hide a broken event handler and produce a false positive.
+      try {
+        await page.waitForFunction(() => {
+          const modal = document.querySelector('#ncCommentsModal');
+          return !!modal && modal.classList.contains('open') && modal.getAttribute('aria-hidden') === 'false';
+        }, undefined, { timeout: 5000 });
+      } catch (error) {
+        const commentsState = await page.evaluate(() => {
+          const modal = document.querySelector('#ncCommentsModal');
+          const button = document.querySelector('.podcast-card[data-id="91001"] [data-action="comments"]');
+          return {
+            modalExists: !!modal,
+            className: modal?.className || '',
+            ariaHidden: modal?.getAttribute('aria-hidden') || '',
+            openerType: typeof window.NightCastOpenPodcastComments,
+            bodyClass: document.body.className,
+            buttonId: button?.getAttribute('data-id') || '',
+            buttonHtml: button?.outerHTML || ''
+          };
+        });
+        throw new Error('Comments button click did not open the modal: ' + JSON.stringify(commentsState) + '; wait=' + String(error.message || error));
       }
-      assert(commentsState.modalExists && commentsState.className.includes('open') && commentsState.ariaHidden === 'false', 'Comments button click did not open the modal: ' + JSON.stringify(commentsState));
       assert((await page.locator('#ncCommentsPodcastTitle').innerText()).includes('سیاره آزمایشی اول'), 'Comments opened for the wrong podcast');
       console.log('PASS | Comments dialog opens for selected podcast');
       report('4. Search, play/pause, favorites and comments work', true, 'Search, audio readiness/pause, favorite state and comments dialog verified');

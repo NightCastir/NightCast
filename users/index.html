@@ -121,9 +121,9 @@
     }
     </script>
 
-    <style
+    <style>
 
-                :root {
+:root {
                     --nc-bg: #0E1C2F;
                     --nc-bg-dark: #090F19;
                     --nc-surface: #11233A;
@@ -3240,6 +3240,72 @@
                     #podcasts .nc-card-details { flex: 0 0 32px; min-width: 32px; padding: 0 !important; }
                 }
                 @media (prefers-reduced-motion: reduce) { #podcasts .podcast-card, #podcasts .podcast-cover img { transition: none !important; } }
+
+
+/* NIGHTCAST COSMIC EXPERIENCE — complete visual layer */
+:root{--nc-bg:#030712;--nc-bg-dark:#02040b;--nc-surface:rgba(9,17,36,.78);--nc-surface-2:rgba(15,29,58,.72);--nc-primary:#8bdcff;--nc-primary-dark:#4e8cff;--nc-primary-glow:rgba(95,165,255,.3);--nc-gold:#d9c3ff;--nc-gold-dark:#9b8cff;--nc-text:#e7edff;--nc-text-white:#fff;--nc-text-muted:#9aa9ca;--nc-border:rgba(177,202,255,.13);--nc-overlay:rgba(2,5,16,.91)}
+html{background:#02040b;scroll-behavior:smooth}
+body{background:#030712;color:#e7edff}
+body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background:radial-gradient(ellipse at 18% 16%,rgba(53,75,170,.22),transparent 36%),radial-gradient(ellipse at 83% 35%,rgba(98,37,155,.18),transparent 32%),radial-gradient(ellipse at 50% 100%,rgba(11,74,125,.19),transparent 44%),#030712}
+#nc-cosmos{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;opacity:.82}
+.nc-header{background:rgba(3,7,18,.72);border-bottom:1px solid rgba(177,202,255,.12);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
+.nc-nav{max-width:1540px;gap:clamp(8px,1.5vw,24px)}
+.brand-mark{border-radius:50%;background:radial-gradient(circle at 30% 25%,#c5efff,#588bff 45%,#30236d 100%);box-shadow:0 0 25px rgba(100,164,255,.3);color:#081024}
+.brand-text strong{letter-spacing:.04em}
+.nav-link{border-radius:999px;color:#a8b7d8;transition:color .25s,background .25s,transform .25s}
+.nav-link:hover,.nav-link.active{color:#fff;background:rgba(122,161,255,.12);box-shadow:inset 0 0 0 1px rgba(177,202,255,.12)}
+.icon-btn{border-radius:50%;background:rgba(10,19,43,.62);border-color:rgba(177,202,255,.16);color:#d8e4ff}
+.icon-btn:hover{color:#fff;border-color:rgba(142,194,255,.55);box-shadow:0 0 25px rgba(83,142,255,.18)}
+main#home{max-width:1540px;margin-inline:auto;isolation:isolate}
+main#home>.nc-page{animation:ncCosmicArrive .8s cubic-bezier(.2,.7,.2,1) both}
+@keyframes ncCosmicArrive{from{opacity:0;transform:translateY(18px) scale(.99);filter:blur(5px)}to{opacity:1;transform:none;filter:none}}
+.nc-page h1,.nc-page h2,.nc-page h3{letter-spacing:-.025em}
+.nc-page .hero,.nc-page .archive-hero,.nc-page .page-hero{background:radial-gradient(ellipse at 50% 0,rgba(100,115,255,.19),transparent 60%),linear-gradient(145deg,rgba(8,16,39,.94),rgba(5,10,25,.86));border:1px solid rgba(177,202,255,.14);border-radius:28px;box-shadow:0 24px 90px rgba(0,0,0,.22)}
+.btn{border-radius:999px;transition:transform .25s,box-shadow .25s,background .25s}
+.btn:hover{transform:translateY(-2px)}
+.btn-primary,.primary-btn{background:linear-gradient(120deg,#8be4ff,#8b9eff 60%,#c5a9ff);color:#071023;box-shadow:0 8px 28px rgba(106,151,255,.19)}
+.btn-primary:hover,.primary-btn:hover{box-shadow:0 12px 38px rgba(106,151,255,.3)}
+.stats .stat{background:linear-gradient(145deg,rgba(13,25,55,.82),rgba(5,11,28,.8));border-color:rgba(177,202,255,.13);border-radius:18px;backdrop-filter:blur(14px)}
+.podcast-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(12px,1.6vw,24px)}
+.podcast-card{position:relative;background:linear-gradient(155deg,rgba(15,27,57,.9),rgba(4,9,24,.95));border:1px solid rgba(177,202,255,.14);border-radius:22px;box-shadow:0 15px 45px rgba(0,0,0,.2);transition:transform .38s cubic-bezier(.2,.7,.2,1),border-color .3s,box-shadow .3s;overflow:hidden}
+.podcast-card::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;border-radius:inherit;background:linear-gradient(135deg,rgba(163,198,255,.08),transparent 38%,rgba(170,124,255,.06));opacity:.65}
+.podcast-card:hover{transform:translateY(-7px) scale(1.012);border-color:rgba(151,193,255,.45);box-shadow:0 24px 65px rgba(0,0,0,.35),0 0 32px rgba(94,134,255,.1)}
+.podcast-cover{background:#080f25}
+.podcast-cover img{transition:transform .65s cubic-bezier(.2,.7,.2,1);filter:saturate(.88)}
+.podcast-card:hover .podcast-cover img{transform:scale(1.055)}
+.cover-shade{background:linear-gradient(180deg,transparent 38%,rgba(1,4,15,.78))}
+.play-card{background:rgba(175,218,255,.94);color:#071025;box-shadow:0 0 24px rgba(120,185,255,.28)}
+.podcast-info{padding:16px}
+.podcast-title{color:#f4f6ff}
+.podcast-desc{color:#a6b4d2}
+.meta{color:#8f9ec0}
+input,textarea,select{background:rgba(5,12,31,.8)!important;color:#eef2ff!important;border-color:rgba(177,202,255,.17)!important;border-radius:14px!important}
+input:focus,textarea:focus,select:focus{outline:none;border-color:rgba(143,190,255,.6)!important;box-shadow:0 0 0 3px rgba(100,145,255,.12)!important}
+.social-menu,.modal,.modal-content,.dropdown-menu{background:rgba(5,11,28,.96)!important;border-color:rgba(177,202,255,.16)!important;box-shadow:0 25px 80px rgba(0,0,0,.5)!important;backdrop-filter:blur(22px)}
+footer,.footer{border-color:rgba(177,202,255,.12)}
+.nc-about-hero{background:radial-gradient(ellipse at 78% 25%,rgba(92,110,255,.22),transparent 33%),radial-gradient(ellipse at 20% 90%,rgba(190,150,255,.1),transparent 30%),linear-gradient(135deg,rgba(7,14,36,.97),rgba(3,7,19,.98));border-color:rgba(177,202,255,.16);box-shadow:0 35px 110px rgba(0,0,0,.32)}
+.nc-about-title span,.nc-kicker,.nc-section-eyebrow{color:#c8baff}
+.nc-radio-dial{border-color:rgba(141,178,255,.24);box-shadow:inset 0 0 60px rgba(91,118,255,.07),0 0 0 22px rgba(255,255,255,.012),0 0 0 23px rgba(141,178,255,.04)}
+.nc-mic-core{background:radial-gradient(circle at 30% 20%,#1d315d,#060c20 70%);border-color:rgba(177,202,255,.2);color:#d5c7ff}
+.nc-waveform span{background:linear-gradient(to bottom,#8ceaff,#b7a0ff)}
+.nc-identity-quote,.nc-editorial-card,.nc-vision,.nc-onair-panel,.nc-social-intro,.nc-social-card{background:linear-gradient(145deg,rgba(13,25,53,.78),rgba(4,9,24,.82));border-color:rgba(177,202,255,.13)}
+.nc-social-card:hover{border-color:rgba(151,193,255,.4);box-shadow:0 14px 36px rgba(0,0,0,.22)}
+.nc-social-card .icon{color:#c8baff}
+.nc-contact{scroll-margin-top:100px}
+#pagination .page-btn{border-radius:999px}
+.mobile-nav{background:rgba(3,7,18,.88)!important;border-top:1px solid rgba(177,202,255,.15)!important;backdrop-filter:blur(22px)}
+::selection{background:rgba(132,164,255,.35);color:#fff}
+::-webkit-scrollbar-track{background:#030712}
+::-webkit-scrollbar-thumb{background:linear-gradient(#5368b6,#7360a5);border-radius:99px}
+.nc-cosmic-orb{position:fixed;z-index:-1;pointer-events:none;border-radius:50%;filter:blur(.2px);opacity:.45}
+.nc-cosmic-orb.orb-a{width:clamp(150px,25vw,390px);aspect-ratio:1;top:18%;left:-10%;background:radial-gradient(circle at 35% 30%,rgba(130,181,255,.24),rgba(87,83,185,.07) 45%,transparent 70%);animation:ncOrbDrift 24s ease-in-out infinite alternate}
+.nc-cosmic-orb.orb-b{width:clamp(170px,28vw,440px);aspect-ratio:1;right:-12%;top:48%;background:radial-gradient(circle at 50% 50%,rgba(175,118,255,.16),rgba(58,79,168,.05) 55%,transparent 72%);animation:ncOrbDrift 30s ease-in-out infinite alternate-reverse}
+@keyframes ncOrbDrift{from{transform:translate3d(0,-12px,0) scale(.96)}to{transform:translate3d(22px,18px,0) scale(1.06)}}
+@media(max-width:1100px){.podcast-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.nc-nav{gap:8px}.nav-link{padding:7px 9px}}
+@media(max-width:800px){.podcast-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.nc-about-hero{grid-template-columns:1fr;gap:18px}.nc-radio-stage{min-height:280px}.nc-radio-dial{width:260px;height:260px}.nc-identity,.nc-social-section{grid-template-columns:1fr}.nc-social-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:520px){.podcast-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.podcast-card{border-radius:16px}.podcast-info{padding:11px}.podcast-title{font-size:.88rem}.podcast-desc{font-size:.7rem}.play-card{width:38px;height:38px}.nc-about-hero{padding:25px 18px;border-radius:22px}.nc-about-title{font-size:clamp(2.3rem,12vw,3.5rem);letter-spacing:-1.5px}.nc-radio-stage{min-height:250px}.nc-mic-core{width:98px;height:98px}.nc-waveform{width:180px}.nc-social-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.nc-onair-panel{grid-template-columns:1fr;padding:18px}.stats{gap:7px}.stat{padding:10px}.nc-header{height:60px}}
+@media(min-width:1600px){.podcast-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){#nc-cosmos,.nc-cosmic-orb{display:none!important}main#home>.nc-page{animation:none!important}.podcast-card,.podcast-cover img{transition:none!important}}
 
 </style>
 <style>
@@ -9377,6 +9443,24 @@ body.nc-comments-open{overflow:hidden}
             <div class="nc-detail-scroll" id="ncPodcastDetailBody"></div>
         </section>
     </div>
+
+
+<script>
+(function(){
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const canvas=document.createElement('canvas'); canvas.id='nc-cosmos'; canvas.setAttribute('aria-hidden','true');
+  const orbA=document.createElement('div'); orbA.className='nc-cosmic-orb orb-a'; orbA.setAttribute('aria-hidden','true');
+  const orbB=document.createElement('div'); orbB.className='nc-cosmic-orb orb-b'; orbB.setAttribute('aria-hidden','true');
+  document.body.prepend(canvas,orbA,orbB);
+  const ctx=canvas.getContext('2d'); if(!ctx)return;
+  let w=0,h=0,dpr=1,stars=[],raf=0;
+  function resize(){dpr=Math.min(window.devicePixelRatio||1,1.7);w=innerWidth;h=innerHeight;canvas.width=Math.floor(w*dpr);canvas.height=Math.floor(h*dpr);canvas.style.width=w+'px';canvas.style.height=h+'px';ctx.setTransform(dpr,0,0,dpr,0,0);const n=Math.min(210,Math.floor(w*h/6500));stars=Array.from({length:n},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.25+.2,a:Math.random()*.58+.12,s:Math.random()*.34+.06,p:Math.random()*6.28}));}
+  function draw(t){ctx.clearRect(0,0,w,h);for(const s of stars){const twinkle=.65+.35*Math.sin(t*.0006+s.p);ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle='rgba(206,222,255,'+(s.a*twinkle)+')';ctx.fill();s.y-=s.s*.14;if(s.y<0){s.y=h;s.x=Math.random()*w;}}raf=requestAnimationFrame(draw);}
+  resize();window.addEventListener('resize',resize,{passive:true});raf=requestAnimationFrame(draw);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelAnimationFrame(raf);else raf=requestAnimationFrame(draw);});
+  let px=0,py=0;window.addEventListener('pointermove',e=>{px=(e.clientX/innerWidth-.5)*8;py=(e.clientY/innerHeight-.5)*8;orbA.style.translate=px+'px '+py+'px';orbB.style.translate=(-px*.7)+'px '+(-py*.7)+'px';},{passive:true});
+})();
+</script>
 
 </body>
 </html>

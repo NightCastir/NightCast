@@ -243,3 +243,68 @@ html,body{max-width:100%;overflow-x:clip!important}
 
 /* Header regression guard: keep the site header sticky above page content. */
 .nc-header{position:sticky!important;top:0;z-index:1100;width:100%;}
+
+
+/* Galaxy motion v4: layered nebula, slow orbital drift, floating podcast worlds. */
+.nc-constellation{
+  background:
+    radial-gradient(ellipse at 18% 18%,rgba(109,91,220,.15),transparent 34%),
+    radial-gradient(ellipse at 82% 72%,rgba(50,166,220,.13),transparent 38%),
+    radial-gradient(ellipse at 50% 48%,rgba(44,72,148,.20),transparent 58%),
+    linear-gradient(145deg,rgba(10,20,45,.88),rgba(3,7,19,.94));
+}
+.nc-constellation-stage:before{
+  content:"";position:absolute;z-index:1;top:12%;left:-22%;width:34%;height:1px;
+  pointer-events:none;opacity:0;
+  background:linear-gradient(90deg,transparent,rgba(193,235,255,.95),transparent);
+  box-shadow:0 0 12px rgba(140,229,255,.65);
+  transform:rotate(-22deg);
+  animation:ncShootingStar 8.5s ease-in-out infinite;
+}
+.nc-constellation-stage:after{
+  content:"";position:absolute;z-index:0;inset:8% 12%;border-radius:50%;
+  pointer-events:none;
+  background:radial-gradient(ellipse at 50% 50%,rgba(103,124,255,.08),transparent 63%);
+  filter:blur(8px);animation:ncNebulaBreath 10s ease-in-out infinite;
+}
+.nc-constellation-orbit{transform-origin:center;will-change:transform}
+.nc-orbit-one{animation:ncOrbitSlowOne 54s linear infinite}
+.nc-orbit-two{animation:ncOrbitSlowTwo 76s linear infinite}
+.nc-orbit-three{animation:ncOrbitSlowThree 98s linear infinite}
+.nc-constellation-sun{animation:ncSunPulse 5.5s ease-in-out infinite}
+.nc-planet{isolation:isolate;animation:ncPlanetBob 6.5s ease-in-out infinite;animation-delay:calc(var(--nc-planet-index,0)*-0.63s)}
+.nc-planet:nth-child(2n) {animation-duration:7.8s}
+.nc-planet:nth-child(3n) {animation-duration:8.6s}
+.nc-planet-body{animation:ncWorldHover 5.2s ease-in-out infinite;animation-delay:calc(var(--nc-planet-index,0)*-0.48s)}
+.nc-planet:nth-child(2n) .nc-planet-body{animation-duration:6.7s}
+.nc-planet-body:before{animation:ncRingPrecession 13s ease-in-out infinite}
+.nc-planet-body.has-cover{background-blend-mode:normal,screen}
+.nc-planet-glow{position:absolute;inset:-28%;border-radius:50%;z-index:-1;pointer-events:none;background:radial-gradient(circle,rgba(118,196,255,.14),transparent 67%);filter:blur(5px);opacity:.7;animation:ncGlowPulse 4.8s ease-in-out infinite}
+.nc-planet:focus-visible{outline:2px solid #a9edff!important;outline-offset:4px}
+.nc-planet-caption{transition:color .25s ease,transform .25s ease}
+.nc-planet:hover .nc-planet-caption,.nc-planet:focus-visible .nc-planet-caption{color:#d6f5ff;transform:translateY(-1px)}
+.nc-planet[aria-label]{touch-action:manipulation}
+@keyframes ncShootingStar{
+  0%,62%,100%{transform:translate3d(0,0,0) rotate(-22deg);opacity:0}
+  66%{opacity:.85}
+  73%{transform:translate3d(420%,230px,0) rotate(-22deg);opacity:0}
+}
+@keyframes ncNebulaBreath{0%,100%{opacity:.42;transform:scale(.94)}50%{opacity:.95;transform:scale(1.06)}}
+@keyframes ncOrbitSlowOne{from{transform:translate(-50%,-50%) rotate(-14deg)}to{transform:translate(-50%,-50%) rotate(346deg)}}
+@keyframes ncOrbitSlowTwo{from{transform:translate(-50%,-50%) rotate(28deg)}to{transform:translate(-50%,-50%) rotate(-332deg)}}
+@keyframes ncOrbitSlowThree{from{transform:translate(-50%,-50%) rotate(-33deg)}to{transform:translate(-50%,-50%) rotate(327deg)}}
+@keyframes ncSunPulse{0%,100%{filter:brightness(.96);box-shadow:inset -13px -10px 20px #02040c,0 0 45px #8ce8ff22,0 0 100px #708fff18}50%{filter:brightness(1.12);box-shadow:inset -13px -10px 20px #02040c,0 0 58px #8ce8ff38,0 0 125px #708fff25}}
+@keyframes ncPlanetBob{0%,100%{translate:0 0}50%{translate:0 -7px}}
+@keyframes ncWorldHover{0%,100%{filter:saturate(.96);translate:0 0}50%{filter:saturate(1.16);translate:0 -4px}}
+@keyframes ncRingPrecession{0%,100%{transform:rotate(-24deg) scaleY(.34)}50%{transform:rotate(12deg) scaleY(.42)}}
+@keyframes ncGlowPulse{0%,100%{opacity:.45;transform:scale(.94)}50%{opacity:.95;transform:scale(1.08)}}
+@media(max-width:600px){
+ .nc-constellation-stage:before{top:8%;width:44%;animation-duration:10s}
+ .nc-constellation-stage:after{inset:12% 2%}
+ .nc-planet{animation-duration:8s}
+ .nc-planet-body{animation-duration:7s}
+}
+@media(prefers-reduced-motion:reduce){
+ .nc-constellation-stage:before,.nc-constellation-stage:after,.nc-constellation-orbit,.nc-constellation-sun,
+ .nc-planet,.nc-planet-body,.nc-planet-body:before,.nc-planet-glow{animation:none!important;translate:none!important}
+}

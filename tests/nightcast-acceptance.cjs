@@ -41,8 +41,8 @@ function silentWavDataUri() {
     const malformedStyleFiles = [];
     for (const file of htmlFilesToValidate) {
       const html = fs.readFileSync(file, 'utf8');
-      for (const opening of html.matchAll(/<style\\b[^>]*>/gi)) {
-        if (opening[0].includes('{')) malformedStyleFiles.push(file + ':' + html.slice(0, opening.index).split('\\n').length);
+      for (const opening of html.matchAll(/<style\b[^>]*>/gi)) {
+        if (opening[0].includes('{')) malformedStyleFiles.push(file + ':' + html.slice(0, opening.index).split('\n').length);
       }
     }
     report('0. HTML inline style tags are well formed', malformedStyleFiles.length === 0,

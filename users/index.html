@@ -9295,5 +9295,26 @@ body.nc-comments-open{overflow:hidden}
 if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(registrations){registrations.forEach(function(registration){registration.unregister();});}).catch(function(){});}
   })();
 </script>
+
+<!-- Native Android update notice: app version is bundled during the APK build. -->
+<script src="../js/nightcast-version.js?v=1"></script>
+<script src="../js/update-checker.js?v=2"></script>
+<script>
+(function () {
+  function checkNightCastUpdate() {
+    if (window.NightCastUpdateChecker && typeof window.NightCastUpdateChecker.check === "function") {
+      window.NightCastUpdateChecker.check();
+    }
+  }
+  if (document.readyState === "complete") {
+    window.setTimeout(checkNightCastUpdate, 900);
+  } else {
+    window.addEventListener("load", function () {
+      window.setTimeout(checkNightCastUpdate, 900);
+    }, { once: true });
+  }
+})();
+</script>
+
 </body>
 </html>

@@ -297,6 +297,14 @@ const Login = {
 
         }
 
+        const homeButton = document.getElementById("goToIndexButton");
+
+        if (homeButton) {
+            homeButton.addEventListener("click", () => {
+                window.location.assign("/podcasts");
+            });
+        }
+
     },
 
 
@@ -1303,19 +1311,24 @@ const Login = {
 
     showLoader(){
 
-        const loader =
-            document.getElementById(
-                "authLoader"
-            );
+        const loader = document.getElementById("authLoader");
+        const help = document.getElementById("redirectHelp");
 
-
-        if(loader){
-
-            loader.classList.remove(
-                "hidden"
-            );
-
+        if (loader) {
+            loader.classList.remove("hidden");
+            loader.setAttribute("aria-busy", "true");
         }
+
+        /*
+         * Fail-safe: a stalled network/API must not leave the user
+         * trapped behind the full-screen loader indefinitely.
+         */
+        window.clearTimeout(this.loaderFailsafe);
+        this.loaderFailsafe = window.setTimeout(() => {
+            this.hideLoader();
+            if (help) help.classList.remove("hidden");
+            this.showError("اتصال بیش از حد طول کشید. می‌توانید دوباره تلاش کنید یا به صفحه اصلی بروید.");
+        }, 12000);
 
     },
 
@@ -1326,18 +1339,13 @@ const Login = {
 
     hideLoader(){
 
-        const loader =
-            document.getElementById(
-                "authLoader"
-            );
+        window.clearTimeout(this.loaderFailsafe);
 
+        const loader = document.getElementById("authLoader");
 
-        if(loader){
-
-            loader.classList.add(
-                "hidden"
-            );
-
+        if (loader) {
+            loader.classList.add("hidden");
+            loader.removeAttribute("aria-busy");
         }
 
     },

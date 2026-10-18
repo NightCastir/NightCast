@@ -425,7 +425,7 @@ function silentWavDataUri() {
         document.querySelector('.podcast-card[data-id="91001"] [data-action="play"] i')?.classList.contains('fa-play') &&
         document.querySelector('#playButton i')?.classList.contains('fa-play')
       , undefined, { timeout: 3000 });
-      await page.locator('#ncPodcastDetail [data-action="close-details"]').click();
+      await page.locator('#ncPodcastDetail .nc-detail-close').click();
       console.log('PASS | Detail play button toggles pause and synchronizes all play icons');
 
       await page.locator('.podcast-card[data-id="91001"] [data-action="favorite"]').click();

@@ -143,19 +143,8 @@
 <script src="js/cosmic-experience.js"></script>
 
 <script src="js/router.js"></script>
-<!-- Automatic "new version available" popup disabled as requested. -->
-<script>
-window.addEventListener("load", function () {
-
-    if (
-        window.NightCastUpdateChecker &&
-        typeof window.NightCastUpdateChecker.check === "function"
-    ) {
-        window.NightCastUpdateChecker.check();
-    }
-
-});
-</script>    
+<!-- Keep the checker script reference for CI/build compatibility; do not auto-run its popup. -->
+<script src="js/update-checker.js" defer></script>
 <script>
 if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {

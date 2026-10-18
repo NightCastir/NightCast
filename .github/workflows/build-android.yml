@@ -207,6 +207,8 @@ jobs:
             "appName": "NightCast",
             "webDir": "www",
             "server": {
+              "url": "https://www.nightcast.ir",
+              "cleartext": false,
               "androidScheme": "https"
             },
             "android": {
@@ -231,6 +233,7 @@ jobs:
 
           echo "=== capacitor.config.json ==="
           cat capacitor.config.json
+          node -e 'const c=require("./capacitor.config.json"); if(c.server?.url!=="https://www.nightcast.ir" || c.server?.androidScheme!=="https") throw new Error("Android must load the canonical NightCast website over HTTPS"); console.log("TRUE | Android points to the canonical website URL.");'
 
 
       # ============================================================

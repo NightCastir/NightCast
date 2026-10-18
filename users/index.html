@@ -6062,6 +6062,9 @@ LOGOUT
             ========================================================= */
 
             function applyView(options = {}) {
+                // Keep the input as the source of truth so a pending debounced search
+                // cannot leave a stale filter after the clear action.
+                state.query = els.search ? els.search.value.trim() : state.query;
                 const q = state.query.toLocaleLowerCase("fa");
                 const nextVisible = q
                     ? state.all.filter(p => [
@@ -6932,6 +6935,7 @@ LOGOUT
             els.clear.addEventListener(
                 "click",
                 () => {
+                    clearTimeout(state.searchTimer);
         
                     els.search.value =
                         "";

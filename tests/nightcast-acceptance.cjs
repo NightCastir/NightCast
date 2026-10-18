@@ -213,6 +213,24 @@ function silentWavDataUri() {
         category_name: 'دانش', description: 'محتوای نمونه دوم', short_description: 'توضیح نمونه دوم',
         summary: 'خلاصه دوم', transcript: 'متن دوم', audio_url: fixtureAudio,
         cover_url: 'https://example.invalid/cover-two.jpg', duration_seconds: 1, tags: ['دانش']
+      },
+      {
+        id: 91003, title: 'سیاره آزمایشی سوم', book_name: 'کتاب سوم', author_name: 'NightCast CI',
+        category_name: 'فرهنگ', description: 'محتوای نمونه سوم', short_description: 'توضیح نمونه سوم',
+        summary: 'خلاصه سوم', transcript: 'متن سوم', audio_url: fixtureAudio,
+        cover_url: 'https://example.invalid/cover-three.jpg', duration_seconds: 1, tags: ['فرهنگ']
+      },
+      {
+        id: 91004, title: 'سیاره آزمایشی چهارم', book_name: 'کتاب چهارم', author_name: 'NightCast CI',
+        category_name: 'هنر', description: 'محتوای نمونه چهارم', short_description: 'توضیح نمونه چهارم',
+        summary: 'خلاصه چهارم', transcript: 'متن چهارم', audio_url: fixtureAudio,
+        cover_url: 'https://example.invalid/cover-four.jpg', duration_seconds: 1, tags: ['هنر']
+      },
+      {
+        id: 91005, title: 'سیاره آزمایشی پنجم', book_name: 'کتاب پنجم', author_name: 'NightCast CI',
+        category_name: 'ادبیات', description: 'محتوای نمونه پنجم', short_description: 'توضیح نمونه پنجم',
+        summary: 'خلاصه پنجم', transcript: 'متن پنجم', audio_url: fixtureAudio,
+        cover_url: 'https://example.invalid/cover-five.jpg', duration_seconds: 1, tags: ['ادبیات']
       }
     ];
 
@@ -362,7 +380,10 @@ function silentWavDataUri() {
       console.log('PASS | Search filters the podcast catalogue');
       assert(await page.locator('#podcastGrid .podcast-card').first().getAttribute('data-id') === '91001', 'Search returned the wrong record');
       await search.fill('');
-      await page.waitForFunction(() => document.querySelectorAll('#podcastGrid .podcast-card').length === 2);
+      await page.locator('#podcastLoadSentinel').scrollIntoViewIfNeeded();
+      await page.waitForFunction(() => document.querySelectorAll('#podcastGrid .podcast-card').length === 5, undefined, { timeout: 7000 });
+      assert((await page.locator('#podcastLoadSentinel').innerText()).includes('همهٔ'), 'Infinite scroll completion status was not updated');
+      report('4.1 Infinite scroll loads the full catalogue in batches of three', true, 'All 5 fixture podcasts loaded; initial batch size configured as 3');
 
       await page.locator('.podcast-card[data-id="91001"] [data-action="play"]').first().click();
       await page.waitForSelector('#playerBar.show', { timeout: 5000 });

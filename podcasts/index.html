@@ -3278,35 +3278,12 @@
 
 <link rel="stylesheet" href="../css/nightcast-global-polish.css?v=2">
 
-<style id="nc-podcast-initial-loader-style">
-#ncPodcastInitialLoader{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;overflow:hidden;padding:24px;background:rgba(4,9,20,.91);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);opacity:1;visibility:visible;transition:opacity .38s ease,visibility .38s ease}
-#ncPodcastInitialLoader.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
-#ncPodcastInitialLoader .nc-load-stars,#ncPodcastInitialLoader .nc-load-stars:before,#ncPodcastInitialLoader .nc-load-stars:after{position:absolute;inset:-15%;content:"";pointer-events:none;background-image:radial-gradient(2px 2px at 15% 22%,rgba(255,255,255,.9) 50%,transparent 60%),radial-gradient(1px 1px at 73% 19%,rgba(150,207,255,.9) 50%,transparent 60%),radial-gradient(2px 2px at 84% 71%,rgba(255,255,255,.8) 50%,transparent 60%),radial-gradient(1px 1px at 31% 78%,rgba(233,190,112,.9) 50%,transparent 60%),radial-gradient(1px 1px at 56% 48%,rgba(255,255,255,.8) 50%,transparent 60%);background-size:390px 310px;animation:ncLoadStarsDrift 24s linear infinite}
-#ncPodcastInitialLoader .nc-load-stars:before{transform:scale(1.4);opacity:.45;background-position:120px 70px;animation-duration:38s}
-#ncPodcastInitialLoader .nc-load-stars:after{transform:scale(.8);opacity:.35;background-position:60px 140px;animation-duration:18s}
-#ncPodcastInitialLoader .nc-load-core{position:relative;width:108px;height:108px;border:1px solid rgba(125,195,255,.25);border-radius:50%;box-shadow:0 0 45px rgba(42,145,255,.13),inset 0 0 35px rgba(42,145,255,.1);animation:ncLoadCorePulse 2.2s ease-in-out infinite}
-#ncPodcastInitialLoader .nc-load-core:before,#ncPodcastInitialLoader .nc-load-core:after{content:"";position:absolute;inset:14px;border:1px solid rgba(233,190,112,.62);border-radius:50%;transform:rotate(-28deg) scaleX(1.7);animation:ncLoadOrbit 3.2s linear infinite}
-#ncPodcastInitialLoader .nc-load-core:after{inset:25px;border-color:rgba(105,190,255,.8);transform:rotate(48deg) scaleX(1.65);animation-duration:2.3s;animation-direction:reverse}
-#ncPodcastInitialLoader .nc-load-core i{position:absolute;inset:43px;border-radius:50%;background:#e9be70;box-shadow:0 0 22px 8px rgba(233,190,112,.32)}
-#ncPodcastInitialLoader .nc-load-copy{position:absolute;top:calc(50% + 88px);width:min(90vw,420px);text-align:center;color:#eaf3ff;font-size:.9rem;line-height:1.9;letter-spacing:.04em}
-#ncPodcastInitialLoader .nc-load-copy strong{display:block;color:#e9be70;font-size:.78rem;letter-spacing:.2em;margin-bottom:5px}
-#ncPodcastInitialLoader .nc-load-progress{width:min(190px,60vw);height:3px;margin:15px auto 0;border-radius:9px;background:rgba(255,255,255,.12);overflow:hidden}
-#ncPodcastInitialLoader .nc-load-progress:after{content:"";display:block;width:40%;height:100%;border-radius:9px;background:linear-gradient(90deg,transparent,#e9be70,#8ccfff,transparent);animation:ncLoadProgress 1.2s ease-in-out infinite}
-@keyframes ncLoadStarsDrift{to{transform:translate3d(3%, -2%, 0) rotate(2deg)}}
-@keyframes ncLoadOrbit{to{rotate:332deg}}
-@keyframes ncLoadCorePulse{50%{scale:1.06;filter:brightness(1.18)}}
-@keyframes ncLoadProgress{from{transform:translateX(260%)}to{transform:translateX(-260%)}}
-@media(prefers-reduced-motion:reduce){#ncPodcastInitialLoader *,#ncPodcastInitialLoader *:before,#ncPodcastInitialLoader *:after{animation:none!important;transition:none!important}}
-</style>
+
 
 </head>
 
 <body>
-    <div id="ncPodcastInitialLoader" role="status" aria-live="polite" aria-label="در حال بارگذاری همه پادکست‌ها">
-        <div class="nc-load-stars" aria-hidden="true"></div>
-        <div class="nc-load-core" aria-hidden="true"><i></i></div>
-        <div class="nc-load-copy"><strong>NIGHTCAST · COSMOS</strong>در حال دریافت و آماده‌سازی آرشیو کامل پادکست‌ها<div class="nc-load-progress" aria-hidden="true"></div></div>
-    </div>
+
 
     <header class="nc-header">
 
@@ -4671,8 +4648,7 @@
                STATE
             ========================================================= */
 
-            window.__ncPodcastLoaderStartedAt = performance.now();
-
+    
             let state = {
 
                 all: [],
@@ -6270,12 +6246,6 @@ LOGOUT
                             </button>
                         </div>
                     `;
-                } finally {
-                    const loader = document.getElementById("ncPodcastInitialLoader");
-                    if (loader) {
-                        const started = Number(window.__ncPodcastLoaderStartedAt) || performance.now();
-                        window.setTimeout(() => loader.classList.add("is-hidden"), Math.max(0, 620 - (performance.now() - started)));
-                    }
                 }
             }
 

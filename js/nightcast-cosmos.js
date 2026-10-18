@@ -53,7 +53,7 @@ function revealPodcastCards(){
  const grid=document.querySelector("#podcastGrid,.podcast-grid");
  if(!grid)return;
  const cards=grid.children;
- [...cards].forEach((card,index)=>{if(card.dataset.ncCosmosEnhanced)return;card.dataset.ncCosmosEnhanced="1";card.style.setProperty("--nc-card-index",index%8);card.setAttribute("data-cosmic-card","");if(!reduced&&"IntersectionObserver"in window){card.classList.add("nc-reveal");card.style.transitionDelay=(index%6)*45+"ms";const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add("nc-revealed");obs.unobserve(e.target)}}),{threshold:.08});obs.observe(card)}});
+ [...cards].forEach((card,index)=>{if(card.dataset.ncCosmosEnhanced)return;card.dataset.ncCosmosEnhanced="1";card.style.setProperty("--nc-card-index",index%8);card.setAttribute("data-cosmic-card","");/* Keep catalogue cards continuously visible: scroll-triggered reveal animations caused cards to fade in again after list updates. */card.classList.remove("nc-reveal","nc-revealed","is-visible");card.style.removeProperty("transition-delay");});
 }
 function watchPodcastUpdates(){
  revealPodcastCards();

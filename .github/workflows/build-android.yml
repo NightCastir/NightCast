@@ -209,7 +209,11 @@ jobs:
             "server": {
               "url": "https://www.nightcast.ir",
               "cleartext": false,
-              "androidScheme": "https"
+              "androidScheme": "https",
+              "allowNavigation": [
+                "www.nightcast.ir",
+                "nightcast.ir"
+              ]
             },
             "android": {
               "allowMixedContent": true,
@@ -233,7 +237,7 @@ jobs:
 
           echo "=== capacitor.config.json ==="
           cat capacitor.config.json
-          node -e 'const c=require("./capacitor.config.json"); if(c.server?.url!=="https://www.nightcast.ir" || c.server?.androidScheme!=="https") throw new Error("Android must load the canonical NightCast website over HTTPS"); console.log("TRUE | Android points to the canonical website URL.");'
+          node -e 'const c=require("./capacitor.config.json"); const allowed=c.server?.allowNavigation||[]; if(c.server?.url!=="https://www.nightcast.ir" || c.server?.androidScheme!=="https" || !allowed.includes("www.nightcast.ir") || !allowed.includes("nightcast.ir")) throw new Error("Android must load the canonical NightCast website over HTTPS and keep both canonical hostnames inside the WebView"); console.log("TRUE | Android points to the canonical website URL and allows both canonical hostnames.");'
 
 
       # ============================================================
@@ -1111,9 +1115,32 @@ jobs:
       # ============================================================
       - name: Sync Capacitor
         run: |
-          set -e
+          set -euo pipefail
 
           npx cap sync android
+
+          # Capacitor must carry the canonical remote website settings into
+          # the actual Android package. Checking only the source JSON is not enough.
+          GENERATED_CONFIG="android/app/src/main/assets/capacitor.config.json"
+          test -s "$GENERATED_CONFIG"
+          node - "$GENERATED_CONFIG" <<'NODE'
+          const fs = require('node:fs');
+          const file = process.argv[2];
+          const config = JSON.parse(fs.readFileSync(file, 'utf8'));
+          const server = config.server || {};
+          const allowed = server.allowNavigation || [];
+          if (server.url !== 'https://www.nightcast.ir') {
+            throw new Error('Generated Android config does not load https://www.nightcast.ir');
+          }
+          if (server.androidScheme !== 'https') {
+            throw new Error('Generated Android config must use the HTTPS scheme');
+          }
+          if (!allowed.includes('www.nightcast.ir') || !allowed.includes('nightcast.ir')) {
+            throw new Error('Generated Android config must allow both NightCast hostnames in the WebView');
+          }
+          console.log('TRUE | Packaged Android config loads the live NightCast website.');
+          console.log('TRUE | Both NightCast hostnames remain in the app WebView.');
+          NODE
 
 
       # ============================================================

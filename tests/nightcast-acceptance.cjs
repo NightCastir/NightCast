@@ -249,7 +249,7 @@ function silentWavDataUri() {
       await page.goto('http://127.0.0.1:4173/index.html', { waitUntil: 'domcontentloaded', timeout: 10000 });
       const splashPosition = await page.locator('#appSplash').evaluate(el => getComputedStyle(el).position);
       assert(splashPosition === 'fixed', 'Splash must cover the viewport; computed position=' + splashPosition);
-      await page.waitForURL('**/users/index.html', { timeout: 10000 });
+      await page.waitForURL(url => /\/podcasts\/?$/.test(url.pathname) || /\/users\/index\.html$/.test(url.pathname), { timeout: 10000 });
       await page.waitForSelector('#podcastGrid', { state: 'attached', timeout: 5000 });
       splashOk = true;
       report('1. Splash transitions to the home/archive page', true, new URL(page.url()).pathname + '; splash position=' + splashPosition);
@@ -300,7 +300,7 @@ function silentWavDataUri() {
 
     // The archive uses cinematic page navigation: open the Podcasts page before testing its cards.
     try {
-      await page.locator('.nc-nav .nav-link[href="#podcasts"]').click();
+      await page.locator('.nc-nav .nav-link[href="/podcasts"]').click();
       await page.waitForFunction(() => {
         const section = document.querySelector('#podcasts');
         return !!section && !section.hidden && getComputedStyle(section).display !== 'none';

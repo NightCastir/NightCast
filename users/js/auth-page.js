@@ -21,7 +21,7 @@
   }
 
   openidButton?.addEventListener("click", () => {
-    navigate(openidButton, "login.html", "در حال انتقال به ورود امن…");
+    navigate(openidButton, "/auth/login.html", "در حال انتقال به ورود امن…");
   });
 
   guestButton?.addEventListener("click", () => {

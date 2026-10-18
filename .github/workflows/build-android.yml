@@ -235,6 +235,11 @@ jobs:
           }
           EOF
 
+          # Capacitor prefers capacitor.config.ts over capacitor.config.json when both exist.
+          # This workflow deliberately generates the authoritative JSON config, so remove
+          # the stale TypeScript config before cap add/sync; otherwise server.url is dropped.
+          rm -f capacitor.config.ts capacitor.config.js capacitor.config.mjs
+
           echo "=== capacitor.config.json ==="
           cat capacitor.config.json
           node -e 'const c=require("./capacitor.config.json"); const allowed=c.server?.allowNavigation||[]; if(c.server?.url!=="https://www.nightcast.ir" || c.server?.androidScheme!=="https" || !allowed.includes("www.nightcast.ir") || !allowed.includes("nightcast.ir")) throw new Error("Android must load the canonical NightCast website over HTTPS and keep both canonical hostnames inside the WebView"); console.log("TRUE | Android points to the canonical website URL and allows both canonical hostnames.");'

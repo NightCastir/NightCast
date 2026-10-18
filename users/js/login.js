@@ -306,92 +306,62 @@ const Login = {
 
     initGoogle(){
 
-        /*
-        ==========================================
-        ANDROID NATIVE
-        ==========================================
-        */
+        const container = document.getElementById("googleLoginButton");
 
-        if(
-            this.isAndroidApp()
-        ){
-
-            console.log(
-                "Android Capacitor detected."
-            );
-
-
-            this.setupNativeGoogle();
-
-
+        if (!container) {
+            console.error("Google login button container not found");
             return;
-
         }
 
-
         /*
-        ==========================================
-        BROWSER GOOGLE GIS
-        ==========================================
-        */
-
-        console.log(
-            "Browser detected. Initializing Google Identity Services."
-        );
-
-
-        if(
-            window.google &&
-            google.accounts
-        ){
-
-            this.setupGoogle();
-
-
-            return;
-
-        }
-
-
-        const checker =
-            setInterval(()=>{
-
-                if(
-                    window.google &&
-                    google.accounts
-                ){
-
-                    clearInterval(
-                        checker
-                    );
-
-
+         * Show a usable, visible placeholder immediately. GIS replaces it
+         * with Google's official button once the external library is ready.
+         * This prevents a blank login panel when Google's script is delayed.
+         */
+        if (!this.isAndroidApp()) {
+            container.innerHTML = "";
+            const fallback = document.createElement("button");
+            fallback.type = "button";
+            fallback.id = "googleLoginFallback";
+            fallback.className = "nightcast-google-fallback";
+            fallback.innerHTML = '<span class="nightcast-google-fallback-icon" aria-hidden="true">G</span><span>ادامه با Google</span>';
+            fallback.addEventListener("click", () => {
+                if (window.google && window.google.accounts && window.google.accounts.id) {
                     this.setupGoogle();
-
+                } else {
+                    this.showError("سرویس ورود Google بارگذاری نشده است. اتصال اینترنت را بررسی کنید و صفحه را دوباره بارگذاری کنید.");
                 }
+            });
+            container.appendChild(fallback);
+        }
 
-            },200);
+        if (this.isAndroidApp()) {
+            console.log("Android Capacitor detected.");
+            this.setupNativeGoogle();
+            return;
+        }
 
+        console.log("Browser detected. Initializing Google Identity Services.");
 
-        setTimeout(()=>{
+        if (window.google && window.google.accounts && window.google.accounts.id) {
+            this.setupGoogle();
+            return;
+        }
 
-            clearInterval(
-                checker
-            );
-
-
-            if(
-                !this.googleReady
-            ){
-
-                console.error(
-                    "Google Identity timeout"
-                );
-
+        const checker = setInterval(() => {
+            if (window.google && window.google.accounts && window.google.accounts.id) {
+                clearInterval(checker);
+                this.setupGoogle();
             }
+        }, 200);
 
-        },10000);
-
+        setTimeout(() => {
+            clearInterval(checker);
+            if (!this.googleReady) {
+                console.error("Google Identity timeout: GIS script did not become ready.");
+                this.showError("دکمه ورود نمایش داده شده، اما سرویس Google پاسخ نمی‌دهد. اتصال اینترنت یا مسدودکننده محتوا را بررسی کنید.");
+            }
+        }, 10000);
     },
 
 
@@ -424,6 +394,12 @@ const Login = {
         }
 
 
+        const container = document.getElementById("googleLoginButton");
+        if (!container) {
+            console.error("Google login button container not found");
+            return;
+        }
+
         google.accounts.id.initialize({
 
             client_id:
@@ -445,29 +421,13 @@ const Login = {
         });
 
 
-        const container =
-            document.getElementById(
-                "googleLoginButton"
-            );
-
-
-        if(!container){
-
-            console.error(
-                "Google login button container not found"
-            );
-
-
-            return;
-
-        }
-
-
         /*
         ==========================================
         RENDER GOOGLE WEB BUTTON
         ==========================================
         */
+
+        container.innerHTML = "";
 
         google.accounts.id.renderButton(
 

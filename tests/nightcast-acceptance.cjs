@@ -261,18 +261,16 @@ function silentWavDataUri() {
     await page.route('https://www.nightcast.ir/version.json**', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ version: '4.1.0' }) }));
     await page.route(/https:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|cdnjs\.cloudflare\.com|unpkg\.com)\//, route => route.abort());
 
-    // Activity 1: splash exits and the app reaches the archive.
+    // Activity 1: the root route should navigate directly to the podcast archive.
     let splashOk = false;
     try {
       await page.goto('http://127.0.0.1:4173/index.html', { waitUntil: 'domcontentloaded', timeout: 10000 });
-      const splashPosition = await page.locator('#appSplash').evaluate(el => getComputedStyle(el).position);
-      assert(splashPosition === 'fixed', 'Splash must cover the viewport; computed position=' + splashPosition);
-      await page.waitForURL(url => /\/podcasts\/?$/.test(url.pathname) || /\/users\/index\.html$/.test(url.pathname), { timeout: 10000 });
+      await page.waitForURL(url => /\\/podcasts\\/?$/.test(url.pathname) || /\\/users\\/index\\.html$/.test(url.pathname), { timeout: 10000 });
       await page.waitForSelector('#podcastGrid', { state: 'attached', timeout: 5000 });
       splashOk = true;
-      report('1. Splash transitions to the home/archive page', true, new URL(page.url()).pathname + '; splash position=' + splashPosition);
+      report('1. Root route opens the podcast archive directly', true, new URL(page.url()).pathname + '; no blocking legacy splash required');
     } catch (error) {
-      report('1. Splash transitions to the home/archive page', false, String(error.message || error));
+      report('1. Root route opens the podcast archive directly', false, String(error.message || error));
     }
 
     // Verify sticky header geometry, desktop navigation fit, and an actual CDN icon glyph.
@@ -380,10 +378,33 @@ function silentWavDataUri() {
       console.log('PASS | Search filters the podcast catalogue');
       assert(await page.locator('#podcastGrid .podcast-card').first().getAttribute('data-id') === '91001', 'Search returned the wrong record');
       await search.fill('');
-      await page.locator('#podcastLoadSentinel').scrollIntoViewIfNeeded();
       await page.waitForFunction(() => document.querySelectorAll('#podcastGrid .podcast-card').length === 5, undefined, { timeout: 7000 });
-      assert((await page.locator('#podcastLoadSentinel').innerText()).includes('همهٔ'), 'Infinite scroll completion status was not updated');
-      report('4.1 Infinite scroll loads the full catalogue in batches of three', true, 'All 5 fixture podcasts loaded; initial batch size configured as 3');
+      const catalogueState = await page.evaluate(() => {
+        const loader = document.querySelector('#ncPodcastInitialLoader');
+        return {
+          count: document.querySelectorAll('#podcastGrid .podcast-card').length,
+          hasInfiniteSentinel: !!document.querySelector('#podcastLoadSentinel'),
+          hasPagination: !!document.querySelector('#pagination'),
+          loaderHidden: !loader || getComputedStyle(loader).visibility === 'hidden' || loader.classList.contains('is-hidden'),
+          ids: [...document.querySelectorAll('#podcastGrid .podcast-card')].map(card => card.dataset.id)
+        };
+      });
+      assert(catalogueState.count === 5, 'The complete catalogue was not rendered at once');
+      assert(!catalogueState.hasInfiniteSentinel && !catalogueState.hasPagination, 'Paging/infinite-scroll controls must be absent');
+      assert(catalogueState.loaderHidden, 'Galaxy loader did not dismiss after the complete catalogue loaded');
+      await page.evaluate(async () => {
+        window.__nightcastCardRefs = [...document.querySelectorAll('#podcastGrid .podcast-card')];
+        window.scrollTo(0, document.documentElement.scrollHeight);
+        await new Promise(resolve => setTimeout(resolve, 180));
+        window.scrollTo(0, 0);
+        await new Promise(resolve => setTimeout(resolve, 180));
+      });
+      const scrollStability = await page.evaluate(() => {
+        const cards = [...document.querySelectorAll('#podcastGrid .podcast-card')];
+        return { count: cards.length, sameNodes: window.__nightcastCardRefs.length === cards.length && window.__nightcastCardRefs.every((card, index) => card === cards[index]) };
+      });
+      assert(scrollStability.count === 5 && scrollStability.sameNodes, 'Scrolling changed/replaced podcast card DOM nodes');
+      report('4.1 Full catalogue renders once; scrolling does not replace cards', true, 'All 5 fixture records visible together; no paging controls; card DOM identity stable after down/up scroll');
 
       await page.locator('.podcast-card[data-id="91001"] [data-action="play"]').first().click();
       await page.waitForSelector('#playerBar.show', { timeout: 5000 });

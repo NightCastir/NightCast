@@ -245,11 +245,7 @@ jobs:
           # ----------------------------------------------------------
           # Root web files
           # ----------------------------------------------------------
-
-          cp manifest.json www/ 2>/dev/null || true
           cp version.json www/version.json
-          cp service-worker.js www/ 2>/dev/null || true
-          cp sw.js www/ 2>/dev/null || true
           cp style.css www/ 2>/dev/null || true
           cp app.js www/ 2>/dev/null || true
 

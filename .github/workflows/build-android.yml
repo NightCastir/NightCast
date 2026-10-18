@@ -1325,7 +1325,25 @@ jobs:
             echo "The published APK is unchanged."
           else
             git commit -m "Publish NightCast 4.0.2 release APK"
-            git push origin HEAD:main
+            # Other commits may land on main while the APK is building.
+            # Rebase onto the current remote head before publishing so this
+            # artifact commit does not fail with a non-fast-forward rejection.
+            for attempt in 1 2 3; do
+              git fetch origin main
+              if ! git rebase origin/main; then
+                git rebase --abort || true
+                echo "Could not rebase APK publish commit; refusing to overwrite remote history."
+                exit 1
+              fi
+              if git push origin HEAD:main; then
+                echo "Release APK published successfully."
+                exit 0
+              fi
+              echo "Push attempt $attempt failed; retrying against the latest main."
+              sleep 2
+            done
+            echo "Unable to publish APK after 3 attempts."
+            exit 1
           fi
 
       # ============================================================

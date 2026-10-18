@@ -42,6 +42,25 @@ const Login = {
 
 
     /* ==================================================
+       POST-LOGIN RETURN TARGET
+    ================================================== */
+
+    getPostLoginDestination(){
+        const fallback = "/podcasts";
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const next = params.get("next");
+            if (!next || !next.startsWith("/") || next.startsWith("//")) return fallback;
+            const target = new URL(next, window.location.origin);
+            if (target.origin !== window.location.origin) return fallback;
+            return target.pathname + target.search + target.hash;
+        } catch (_) {
+            return fallback;
+        }
+    },
+
+
+    /* ==================================================
        INIT
     ================================================== */
 
@@ -93,7 +112,7 @@ const Login = {
 
 
             window.location.replace(
-                "index.html"
+                this.getPostLoginDestination()
             );
 
 
@@ -1186,7 +1205,7 @@ const Login = {
             */
 
             window.location.replace(
-                "index.html"
+                this.getPostLoginDestination()
             );
 
         }
@@ -1244,7 +1263,7 @@ const Login = {
             */
 
             window.location.replace(
-                "index.html"
+                this.getPostLoginDestination()
             );
 
         }

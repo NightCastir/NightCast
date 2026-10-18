@@ -56,12 +56,8 @@
           rel="stylesheet">
 
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-          crossorigin="anonymous">
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css"
           crossorigin="anonymous">
 
     <link rel="stylesheet"
@@ -907,51 +903,6 @@
 
 
                 /* =========================================================
-                   LOADING
-                ========================================================= */
-
-                .loading-grid {
-                    display: grid;
-                    grid-template-columns: repeat(4,1fr);
-                    gap: 16px;
-                }
-
-                .skeleton {
-                    background: linear-gradient( 90deg, #11233A 25%, #17304b 50%, #11233A 75% );
-                    background-size: 200% 100%;
-                    animation: sk 1.4s infinite;
-                    border-radius: 10px;
-                }
-
-                .sk-card {
-                    background: var(--nc-surface);
-                    border: 1px solid var(--nc-border);
-                    padding: 12px;
-                    border-radius: 16px;
-                }
-
-                .sk-cover {
-                    aspect-ratio: 1;
-                    border-radius: 13px;
-                }
-
-                .sk-line {
-                    height: 12px;
-                    margin-top: 12px;
-                }
-
-                    .sk-line.short {
-                        width: 55%;
-                    }
-
-                @keyframes sk {
-                    to {
-                        background-position: -200% 0;
-                    }
-                }
-
-
-                /* =========================================================
                    EMPTY / ERROR
                 ========================================================= */
 
@@ -1309,8 +1260,7 @@
 
                 @media(max-width:1100px) {
 
-                    .podcast-grid,
-                    .loading-grid {
+                    .podcast-grid {
                         grid-template-columns: repeat(3,1fr);
                     }
 
@@ -1386,8 +1336,7 @@
                         max-width: none;
                     }
 
-                    .podcast-grid,
-                    .loading-grid {
+                    .podcast-grid {
                         grid-template-columns: repeat(2,1fr);
                         gap: 12px;
                     }
@@ -1502,8 +1451,7 @@
                         font-size: .82rem;
                     }
 
-                    .podcast-grid,
-                    .loading-grid {
+                    .podcast-grid {
                         grid-template-columns: 1fr;
                     }
 
@@ -3281,13 +3229,13 @@
 @keyframes nc-heart-pop{0%{transform:scale(.72)}55%{transform:scale(1.28)}100%{transform:scale(1)}}
 @media(prefers-reduced-motion:reduce){.favorite,.nc-like-button,.favorite i,.nc-like-button i{transition:none;animation:none!important}}
 </style>
-<link rel="stylesheet" href="../css/cosmic-experience.css?v=5">
-    <link rel="stylesheet" href="../css/nightcast-cosmos.css?v=10">
-    <link rel="stylesheet" href="../css/nightcast-responsive-fix.css?v=4">
-    <link rel="stylesheet" href="../css/nightcast-header-fix.css?v=2">
-    <link rel="stylesheet" href="../css/nightcast-player-finish.css?v=2">
+<link rel="stylesheet" href="../css/cosmic-experience.css?v=6">
+    <link rel="stylesheet" href="../css/nightcast-cosmos.css?v=11">
+    <link rel="stylesheet" href="../css/nightcast-responsive-fix.css?v=5">
+    <link rel="stylesheet" href="../css/nightcast-header-fix.css?v=3">
+    <link rel="stylesheet" href="../css/nightcast-player-finish.css?v=3">
 
-<link rel="stylesheet" href="../css/nightcast-global-polish.css?v=1">
+<link rel="stylesheet" href="../css/nightcast-global-polish.css?v=2">
 
 <style id="nc-stable-podcast-card-layout">
 /* Stable catalogue: square covers and no scroll-triggered card hiding. */
@@ -3631,7 +3579,8 @@
 
             <div id="podcastGrid"
                  class="podcast-grid"
-                 aria-live="polite">
+                 aria-live="polite"
+                 aria-busy="true">
             </div>
 
 
@@ -5702,34 +5651,6 @@ LOGOUT
                PODCAST RENDER
             ========================================================= */
 
-            function skeletons(n = 4) {
-
-                els.grid.className =
-                    "loading-grid";
-
-
-                els.grid.innerHTML =
-                    Array.from(
-                        {
-                            length: n
-                        },
-                        () => `
-                                                                                                                <div class="sk-card">
-
-                                                                                                                    <div class="skeleton sk-cover"></div>
-
-                                                                                                                    <div class="skeleton sk-line"></div>
-
-                                                                                                                    <div class="skeleton sk-line short"></div>
-
-                                                                                                                </div>
-                                                                                                            `
-                    )
-                        .join("");
-
-            }
-
-
             function formatPodcastDate(value) {
                 if (!value) return "";
                 const raw = String(value).trim();
@@ -6098,37 +6019,49 @@ LOGOUT
                     updateLatest(cached);
                     updatePodcastCollectionSchema(cached);
                     applyView();
-                    } else {
-                    skeletons();
+                } else {
+                    // Intentionally do not show a second visual loader in the archive.
+                    els.grid.className = "podcast-grid";
+                    els.grid.replaceChildren();
                 }
 
                 async function fetchAllFromAPI() {
-                    const collected = [];
-                    let page = 1;
-                    let total = Infinity;
-
-                    // Worker currently paginates its API; this is a fallback only when
-                    // the static feed is unavailable or demonstrably incomplete.
-                    while (page <= 100 && (page === 1 || collected.length < total)) {
+                    const limit = 5;
+                    const requestPage = async page => {
                         const response = await fetch(
-                            `${CONFIG.API_BASE}/public/podcasts?page=${page}&limit=5`,
+                            `${CONFIG.API_BASE}/public/podcasts?page=${page}&limit=${limit}`,
                             { method: "GET", cache: "default", headers: { "Accept": "application/json" } }
                         );
                         if (!response.ok) throw new Error(`Podcast API returned HTTP ${response.status}`);
-
                         const payload = await response.json();
                         if (!payload || payload.success !== true || !Array.isArray(payload.podcasts)) {
                             throw new Error("Podcast API response format was invalid.");
                         }
+                        return payload;
+                    };
 
-                        const reportedTotal = Number(payload.total);
-                        if (Number.isFinite(reportedTotal) && reportedTotal > 0) total = reportedTotal;
-                        else if (page === 1 && payload.podcasts.length < 5) total = payload.podcasts.length;
+                    const firstPayload = await requestPage(1);
+                    const collected = [...firstPayload.podcasts];
+                    if (!collected.length) return [];
 
-                        if (!payload.podcasts.length) break;
-                        collected.push(...payload.podcasts);
-                        if (collected.length >= total) break;
-                        page += 1;
+                    const reportedTotal = Number(firstPayload.total);
+                    const hasReliableTotal = Number.isFinite(reportedTotal) && reportedTotal > 0;
+                    if (hasReliableTotal && reportedTotal > collected.length) {
+                        const pageCount = Math.min(100, Math.ceil(reportedTotal / limit));
+                        const remainingPages = Array.from(
+                            { length: Math.max(0, pageCount - 1) },
+                            (_, index) => index + 2
+                        );
+                        const pageResults = await Promise.all(remainingPages.map(requestPage));
+                        for (const payload of pageResults) collected.push(...payload.podcasts);
+                    } else if (!hasReliableTotal && collected.length >= limit) {
+                        // Older API responses may omit total; preserve compatibility in that case.
+                        for (let page = 2; page <= 100; page += 1) {
+                            const payload = await requestPage(page);
+                            if (!payload.podcasts.length) break;
+                            collected.push(...payload.podcasts);
+                            if (payload.podcasts.length < limit) break;
+                        }
                     }
 
                     const unique = new Map();
@@ -6231,7 +6164,9 @@ LOGOUT
                             </div>
                         `;
                     }
-                } finally {}
+                } finally {
+                    els.grid.setAttribute("aria-busy", "false");
+                }
             }
 
             /* =========================================================

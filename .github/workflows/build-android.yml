@@ -1,5 +1,9 @@
 name: Build NightCast Android APK
 
+concurrency:
+  group: nightcast-android-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches:
@@ -1327,6 +1331,17 @@ jobs:
             # Start every attempt from the latest main, then apply only the APK.
             git fetch origin main
             git reset --hard origin/main
+            VERSION="$(python3 -c 'import json; print(json.load(open("version.json"))["version"])')"
+            EXPECTED_CODE="$(python3 -c 'import json; v=json.load(open("version.json"))["version"]; a,b,c=map(int,v.split(".")); print(a*10000+b*100+c)')"
+            AAPT="$ANDROID_HOME/build-tools/34.0.0/aapt"
+            test -x "$AAPT"
+            BADGING="$("$AAPT" dump badging /tmp/NightCast-release.apk)"
+            if ! printf '%s\n' "$BADGING" | grep -F "versionCode='$EXPECTED_CODE' versionName='$VERSION'" >/dev/null; then
+              echo "ERROR: Refusing to publish stale/mismatched APK."
+              echo "Expected versionName=$VERSION versionCode=$EXPECTED_CODE"
+              printf '%s\n' "$BADGING" | grep '^package:' || true
+              exit 1
+            fi
             mkdir -p downloadrelease
             cp /tmp/NightCast-release.apk downloadrelease/NightCast.apk
             test -s downloadrelease/NightCast.apk

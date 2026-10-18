@@ -66,3 +66,19 @@ hr{border-color:var(--nc-line)!important}
 @media(max-width:760px){:root{--nc-radius:20px}#episodes{padding:14px!important;gap:14px!important}#hero,.hero,.hero-section,[class*="hero"]{border-radius:24px!important;margin-inline:12px!important}header{gap:10px!important}header h1{font-size:clamp(18px,5vw,24px)!important}.nc-cinematic-intro{padding:20px}.nc-intro-title{letter-spacing:.08em}}
 @media(min-width:1600px){body{font-size:17px}main{max-width:1600px;margin-inline:auto}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.nc-reveal{opacity:1;transform:none}#nc-cosmos-canvas{display:none}}
+
+
+/* Remove the unintended blank strip after the page footer on every route. */
+html, body {
+  margin-block-end: 0 !important;
+}
+body {
+  padding-block-end: 0 !important;
+}
+footer, .nc-footer {
+  margin-block-end: 0 !important;
+}
+body > footer:last-of-type,
+body > .nc-footer:last-of-type {
+  margin-block-end: 0 !important;
+}

@@ -3,18 +3,11 @@
 <head>
     <meta charset="utf-8">
 
-    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
     <title>پادکست فارسی کتاب و اندیشه | خلاصه و بررسی کتاب — نایت‌کست</title>
 
     <meta name="theme-color" content="#090F19">
     <meta name="color-scheme" content="dark">
-
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="NightCast">
-
-    <meta name="application-name" content="NightCast">
 
     <meta name="description" content="در نایت‌کست به خلاصه و بررسی کتاب‌ها در حوزه‌های رشد فردی، روان‌شناسی، مدیریت و اندیشه گوش دهید. پادکست‌ها را جست‌وجو کنید و توضیحات هر مجموعه را بخوانید.">
 
@@ -64,11 +57,7 @@
     <link rel="stylesheet"
           href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
           crossorigin="">
-
-    <link rel="manifest"
-          href='data:application/manifest+json,{"name":"NightCast","short_name":"NightCast","start_url":"/","display":"standalone","background_color":"%23090F19","theme_color":"%23059DF9","lang":"fa","dir":"rtl","icons":[{"src":"/assets/icons/icon-192.png","sizes":"192x192","type":"image/png"},{"src":"/assets/icons/icon-512.png","sizes":"512x512","type":"image/png"}]}'>
-
-    <script type="application/ld+json">
+<script type="application/ld+json">
         {
             "@context":"https://schema.org",
             "@type":"WebSite",
@@ -3226,7 +3215,7 @@
 @media(prefers-reduced-motion:reduce){.favorite,.nc-like-button,.favorite i,.nc-like-button i{transition:none;animation:none!important}}
 </style>
 <link rel="stylesheet" href="../css/cosmic-experience.css?v=6">
-    <link rel="stylesheet" href="../css/nightcast-cosmos.css?v=12">
+    <link rel="stylesheet" href="../css/nightcast-cosmos.css?v=13">
     <link rel="stylesheet" href="../css/nightcast-responsive-fix.css?v=6">
     <link rel="stylesheet" href="../css/nightcast-header-fix.css?v=3">
     <link rel="stylesheet" href="../css/nightcast-player-finish.css?v=3">
@@ -7790,20 +7779,7 @@ document.addEventListener(
 
 
                 loadFavorites();
-
-
-                if (
-                    "serviceWorker" in
-                    navigator
-                ) {
-
-                    console.info(
-                        "NightCast PWA metadata enabled; add sw.js for full offline install support."
-                    );
-
-                }
-
-            }
+}
 
 
             document.readyState === "loading"
@@ -9262,7 +9238,7 @@ body.nc-comments-open{overflow:hidden}
     </div>
 
     <script src="../js/clean-routes.js?v=1" defer></script>
-    <script src="../js/nightcast-cosmos.js?v=10" defer></script>
+    <script src="../js/nightcast-cosmos.js?v=11" defer></script>
     <script>
     /* One catalogue, one visible presentation. Remember the visitor's choice locally. */
     (function () {
@@ -9306,5 +9282,17 @@ body.nc-comments-open{overflow:hidden}
     })();
     </script>
 
+
+<script>
+/* NightCast app-like interaction layer: prevent context menus and browser zoom shortcuts. */
+(function(){
+  'use strict';
+  document.addEventListener('contextmenu',function(event){event.preventDefault();});
+  document.addEventListener('keydown',function(event){
+    const key=event.key;
+    if((event.ctrlKey||event.metaKey)&&(['+','=','-','0'].includes(key)||key==='Add'||key==='Subtract')) event.preventDefault();
+  },{capture:true});
+})();
+</script>
 </body>
 </html>

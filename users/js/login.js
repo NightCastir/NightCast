@@ -278,25 +278,6 @@ const Login = {
 
     bindEvents(){
 
-        const guestButton =
-            document.getElementById(
-                "guestLogin"
-            );
-
-
-        if(guestButton){
-
-            guestButton.addEventListener(
-                "click",
-                ()=>{
-
-                    this.guestLogin();
-
-                }
-            );
-
-        }
-
         const homeButton = document.getElementById("goToIndexButton");
 
         if (homeButton) {

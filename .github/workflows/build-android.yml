@@ -5,13 +5,15 @@ on:
     branches:
       - main
       - feat/cinematic-cosmos-redesign
+    paths-ignore:
+      - downloadrelease/NightCast.apk
   pull_request:
     branches:
       - main
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -1301,6 +1303,30 @@ jobs:
           retention-days: 30
           if-no-files-found: error
 
+
+      # ============================================================
+      # 22.1 Publish Release APK to downloadrelease on main only
+      # ============================================================
+      - name: Publish APK to downloadrelease
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          APK="$(find android/app/build/outputs/apk/release -type f -name '*.apk' -print -quit)"
+          test -n "$APK"
+          test -s "$APK"
+          mkdir -p downloadrelease
+          cp "$APK" downloadrelease/NightCast.apk
+          test -s downloadrelease/NightCast.apk
+          ls -lh downloadrelease/NightCast.apk
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add downloadrelease/NightCast.apk
+          if git diff --cached --quiet; then
+            echo "The published APK is unchanged."
+          else
+            git commit -m "Publish NightCast 4.0.2 release APK"
+            git push origin HEAD:main
+          fi
 
       # ============================================================
       # 23. Final result

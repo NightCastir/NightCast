@@ -43,7 +43,7 @@
         animateProgress();
         const started = performance.now();
 
-        let destination = "/users/index.html";
+        let destination = "/podcasts";
         try {
             const fontReady = document.fonts && document.fonts.ready
                 ? bounded(document.fonts.ready, 1800, null)

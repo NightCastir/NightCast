@@ -1,2 +1,5 @@
 /login /users/login.html 200
 /users /users/index.html 200
+/podcasts /users/index.html 200
+/about /users/index.html 200
+/contact /users/index.html 200

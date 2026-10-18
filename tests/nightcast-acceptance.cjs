@@ -257,7 +257,7 @@ function silentWavDataUri() {
     const feedFixture = { total: podcasts.length, podcasts };
     await page.route('https://nightcast.ir/users/data/podcasts.json**', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(feedFixture) }));
     await page.route('https://www.nightcast.ir/users/data/podcasts.json**', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(feedFixture) }));
-    await page.route('https://www.nightcast.ir/version.json**', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ version: '4.1.0' }) }));
+    await page.route('https://www.nightcast.ir/version.json**', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ version: '5.2.3' }) }));
     await page.route(/https:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|cdnjs\.cloudflare\.com|unpkg\.com)\//, route => route.abort());
 
     // Activity 1: the root route should navigate directly to the podcast archive.

@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <title>NightCast | خوش آمدید</title>
+
+    <meta
+        name="theme-color"
+        content="#0b1220"
+    >
+
+    <meta
+        name="color-scheme"
+        content="dark"
+    >
+
+    <!-- ==========================================
+         NIGHTCAST STYLES
+    =========================================== -->
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link
+        rel="stylesheet"
+        href="css/core.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/login.css"
+    >
+
+
+    <!-- ==========================================
+         FONT AWESOME
+    =========================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    >
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css" crossorigin="anonymous">
+
+<link rel="stylesheet" href="../css/cosmic-experience.css?v=2">
+</head>
+
+
+<body>
+
+
+<!-- ==========================================
+     BACKGROUND
+=========================================== -->
+
+<div
+    class="background-blur blur1"
+    aria-hidden="true">
+</div>
+
+<div
+    class="background-blur blur2"
+    aria-hidden="true">
+</div>
+
+
+
+<!-- ==========================================
+     AUTH LOADER
+=========================================== -->
+
+<div
+    id="authLoader"
+    class="auth-loader hidden"
+    role="status"
+    aria-live="polite"
+    aria-label="در حال ورود"
+>
+
+    <div class="loader-box">
+
+        <div
+            class="loader-circle"
+            aria-hidden="true">
+        </div>
+
+        <h3>
+            NightCast
+        </h3>
+
+        <p id="loaderText">
+            در حال اتصال...
+        </p>
+
+    </div>
+
+</div>
+
+
+
+<!-- ==========================================
+     LOGIN PAGE
+=========================================== -->
+
+<main class="login-page">
+
+
+    <section
+        class="login-card"
+        aria-labelledby="loginTitle"
+    >
+
+
+        <!-- ==================================
+             HERO
+        =================================== -->
+
+        <div class="hero">
+
+
+            <div
+                class="brand-icon"
+                aria-hidden="true"
+            >
+
+                <i class="fa-solid fa-radio"></i>
+
+            </div>
+
+
+            <h1 id="loginTitle">
+
+                Night<span>Cast</span>
+
+            </h1>
+
+
+            <p class="hero-text">
+
+                رادیو NightCast پلی به سوی آیندست
+
+            </p>
+
+
+        </div>
+
+
+
+        <!-- ==================================
+             GOOGLE LOGIN
+             
+             Browser:
+             Google Identity Services
+
+             Android:
+             Native Credential Manager
+        =================================== -->
+
+        <div
+            id="googleLoginButton"
+            class="google-login-container"
+            aria-label="ورود با Google"
+        >
+        </div>
+
+
+
+        <!-- ==================================
+             DIVIDER
+        =================================== -->
+
+        <div
+            class="divider"
+            aria-hidden="true"
+        >
+
+            <span>
+                یا
+            </span>
+
+        </div>
+
+
+
+        <!-- ==================================
+             GUEST LOGIN
+        =================================== -->
+
+        <button
+            id="guestLogin"
+            class="btn btn-guest"
+            type="button"
+        >
+
+            <i
+                class="fa-solid fa-headphones"
+                aria-hidden="true"
+            ></i>
+
+            <span>
+                ادامه به عنوان مهمان
+            </span>
+
+        </button>
+
+        <!-- ==================================
+             APP DOWNLOADS
+             NightCast Android App
+        =================================== -->
+
+        <div class="nightcast-downloads" aria-label="دانلود اپلیکیشن NightCast">
+
+            <div class="nightcast-downloads-title">
+                <span>اپلیکیشن NightCast</span>
+                <small>نسخه اندروید را دریافت کنید</small>
+            </div>
+
+            <div class="nightcast-download-grid">
+
+                <!-- دانلود مستقیم APK -->
+                <a
+                    class="nightcast-download-card nightcast-direct-download"
+                    href="https://www.NightCast.ir/downloadrelease/NightCast.apk"
+                    download
+                    aria-label="دانلود مستقیم اپلیکیشن NightCast"
+                >
+
+                    <span class="nightcast-download-icon" aria-hidden="true">
+                        <i class="fa-solid fa-download"></i>
+                    </span>
+
+                    <span class="nightcast-download-content">
+                        <strong>دانلود مستقیم</strong>
+                        <small>فایل APK</small>
+                    </span>
+
+                    <i
+                        class="fa-solid fa-chevron-left nightcast-download-arrow"
+                        aria-hidden="true"
+                    ></i>
+
+                </a>
+
+
+                <!-- دانلود از کافه بازار -->
+                <a
+                    class="nightcast-download-card nightcast-bazaar-download"
+                    href="bazaar://details?id=ir.nightcast.app"
+                    aria-label="دریافت NightCast از کافه بازار"
+                    onclick="return openNightCastBazaar(event);"
+                >
+
+                    <span class="nightcast-download-icon" aria-hidden="true">
+                        <i class="fa-solid fa-store"></i>
+                    </span>
+
+                    <span class="nightcast-download-content">
+                        <strong>کافه بازار</strong>
+                        <small>دریافت از بازار</small>
+                    </span>
+
+                    <i
+                        class="fa-solid fa-chevron-left nightcast-download-arrow"
+                        aria-hidden="true"
+                    ></i>
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================
+             APP DOWNLOADS STYLE
+        =================================== -->
+
+        <style>
+
+            .nightcast-downloads {
+                margin: 20px 0 4px;
+                padding: 16px;
+                border: 1px solid rgba(217, 164, 65, 0.18);
+                border-radius: 20px;
+                background: linear-gradient(
+                    145deg,
+                    rgba(217, 164, 65, 0.055),
+                    rgba(11, 18, 32, 0.42)
+                );
+                box-shadow: 0 12px 35px rgba(0, 0, 0, 0.16);
+            }
+
+
+            .nightcast-downloads-title {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                margin-bottom: 12px;
+                color: #f7f1e3;
+                font-size: 14px;
+                font-weight: 700;
+            }
+
+
+            .nightcast-downloads-title small {
+                color: rgba(247, 241, 227, 0.55);
+                font-size: 11px;
+                font-weight: 500;
+            }
+
+
+            .nightcast-download-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+            }
+
+
+            .nightcast-download-card {
+                position: relative;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                min-width: 0;
+                padding: 12px 11px;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 15px;
+                color: #f7f1e3;
+                text-decoration: none;
+                overflow: hidden;
+
+                transition:
+                    transform 180ms ease,
+                    border-color 180ms ease,
+                    background 180ms ease,
+                    box-shadow 180ms ease;
+            }
+
+
+            .nightcast-download-card::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+
+                background: linear-gradient(
+                    120deg,
+                    rgba(255, 255, 255, 0.055),
+                    transparent 55%
+                );
+
+                pointer-events: none;
+            }
+
+
+            .nightcast-download-card:hover {
+                transform: translateY(-2px);
+                border-color: rgba(217, 164, 65, 0.45);
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            }
+
+
+            .nightcast-download-card:active {
+                transform: translateY(0) scale(0.985);
+            }
+
+
+            .nightcast-direct-download {
+                background: rgba(217, 164, 65, 0.075);
+            }
+
+
+            .nightcast-bazaar-download {
+                background: rgba(255, 255, 255, 0.035);
+            }
+
+
+            .nightcast-download-icon {
+                flex: 0 0 40px;
+
+                width: 40px;
+                height: 40px;
+
+                display: grid;
+                place-items: center;
+
+                border-radius: 12px;
+
+                color: #0b1220;
+                background: #d9a441;
+
+                font-size: 16px;
+
+                box-shadow:
+                    0 5px 16px rgba(217, 164, 65, 0.22);
+            }
+
+
+            .nightcast-bazaar-download .nightcast-download-icon {
+                background: #e7c27a;
+            }
+
+
+            .nightcast-download-content {
+                display: flex;
+                flex: 1;
+                min-width: 0;
+
+                flex-direction: column;
+                align-items: flex-start;
+
+                gap: 3px;
+            }
+
+
+            .nightcast-download-content strong {
+                font-size: 12px;
+                line-height: 1.4;
+                white-space: nowrap;
+            }
+
+
+            .nightcast-download-content small {
+                color: rgba(247, 241, 227, 0.55);
+                font-size: 10px;
+                line-height: 1.4;
+                white-space: nowrap;
+            }
+
+
+            .nightcast-download-arrow {
+                flex: 0 0 auto;
+
+                color: rgba(247, 241, 227, 0.38);
+
+                font-size: 10px;
+
+                transition:
+                    transform 180ms ease,
+                    color 180ms ease;
+            }
+
+
+            .nightcast-download-card:hover
+            .nightcast-download-arrow {
+                transform: translateX(-3px);
+                color: #d9a441;
+            }
+
+
+            /* موبایل */
+            @media (max-width: 420px) {
+
+                .nightcast-downloads {
+                    padding: 13px;
+                    border-radius: 17px;
+                }
+
+
+                .nightcast-downloads-title {
+                    align-items: flex-start;
+                    flex-direction: column;
+                    gap: 3px;
+                }
+
+
+                .nightcast-download-grid {
+                    grid-template-columns: 1fr;
+                }
+
+            }
+
+        </style>
+
+
+        <!-- ==================================
+             CAFE BAZAAR HANDLER
+        =================================== -->
+
+        <script>
+
+            function openNightCastBazaar(event) {
+
+                event.preventDefault();
+
+                const bazaarAppUrl =
+                    "bazaar://details?id=ir.nightcast.app";
+
+                const bazaarWebUrl =
+                    "https://cafebazaar.ir/app/ir.nightcast.app";
+
+
+                /*
+                 * ابتدا تلاش می‌کنیم اپلیکیشن کافه بازار
+                 * مستقیماً باز شود.
+                 */
+
+                window.location.href = bazaarAppUrl;
+
+
+                /*
+                 * اگر بازار روی دستگاه نصب نباشد،
+                 * نسخه وب صفحه برنامه باز می‌شود.
+                 */
+
+                window.setTimeout(function () {
+
+                    window.location.href = bazaarWebUrl;
+
+                }, 1200);
+
+
+                return false;
+
+            }
+
+        </script>
+
+        <!-- ==================================
+             LOGIN STATUS
+        =================================== -->
+
+        <div
+            id="loginMessage"
+            class="login-status"
+            role="alert"
+            aria-live="polite"
+        >
+        </div>
+
+
+
+        <!-- ==================================
+             FALLBACK REDIRECT
+        =================================== -->
+
+        <div
+            id="redirectHelp"
+            class="redirect-help hidden"
+        >
+
+            <p>
+                اگر صفحه اصلی به‌صورت خودکار باز نشد:
+            </p>
+
+
+            <button
+                type="button"
+                id="goToIndexButton"
+                class="btn btn-redirect"
+            >
+
+                <i
+                    class="fa-solid fa-house"
+                    aria-hidden="true"
+                ></i>
+
+                ورود به صفحه اصلی
+
+            </button>
+
+        </div>
+
+
+
+        <!-- ==================================
+             FOOTER
+        =================================== -->
+
+        <footer>
+
+            <p>
+
+                با ادامه، قوانین استفاده و سیاست حفظ حریم خصوصی NightCast را می‌پذیرید.
+
+            </p>
+
+        </footer>
+
+
+    </section>
+
+
+</main>
+
+
+
+<!-- ==========================================
+     GOOGLE IDENTITY SERVICES
+     
+     IMPORTANT:
+     login.js decides whether Google Web
+     authentication is used.
+
+     Browser:
+     GIS is used.
+
+     Android:
+     login.js uses native Google
+     Credential Manager instead.
+=========================================== -->
+
+<script
+    src="https://accounts.google.com/gsi/client"
+    async
+    defer
+></script>
+
+
+
+<!-- ==========================================
+     NIGHTCAST LOGIN CONTROLLER
+=========================================== -->
+
+<script
+    src="js/login.js"
+></script>
+
+
+<script src="../js/cosmic-experience.js?v=1" defer></script>
+</body>
+
+</html>
+

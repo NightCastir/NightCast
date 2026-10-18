@@ -1,0 +1,22 @@
+/* NightCast shared viewport/footer stabilization + transparent galaxy loader */
+:root{color-scheme:dark}
+html{min-height:100%;margin:0!important;padding:0!important;background:#050817;scroll-behavior:auto}
+body{min-height:100vh;min-height:100svh;margin:0!important;padding-bottom:0!important;display:flex;flex-direction:column;background-color:#050817!important}
+body>main,body>main#home,body>main.login-page{flex:1 0 auto;min-height:0}
+body>footer,body>main>footer,footer,.nc-footer{margin-bottom:0!important}
+body>footer:last-child{margin-top:auto}
+body::after{content:"";display:block;flex:0 0 0;height:0;min-height:0}
+html,body{overscroll-behavior-y:auto}
+img,video,iframe{height:auto}
+#ncGalaxyLoader{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;overflow:hidden;background:rgba(3,7,20,.28);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);opacity:1;visibility:visible;pointer-events:auto;transition:opacity .45s ease,visibility .45s ease}
+#ncGalaxyLoader[hidden]{display:none!important}
+#ncGalaxyLoader.nc-galaxy-leaving{opacity:0;visibility:hidden;pointer-events:none}
+.nc-galaxy-stars{position:absolute;inset:-30%;background-image:radial-gradient(1px 1px at 12% 22%,#fff 98%,transparent),radial-gradient(1.5px 1.5px at 38% 65%,#bfeaff 98%,transparent),radial-gradient(1px 1px at 72% 28%,#fff 98%,transparent),radial-gradient(1px 1px at 86% 76%,#c9b8ff 98%,transparent),radial-gradient(2px 2px at 54% 45%,#fff 98%,transparent);background-size:210px 190px;animation:ncGalaxyStarDrift 18s linear infinite;opacity:.8}
+.nc-galaxy-orbit{position:relative;width:86px;height:86px;border:1px solid rgba(153,216,255,.42);border-radius:50%;box-shadow:0 0 30px rgba(104,170,255,.14),inset 0 0 22px rgba(104,170,255,.12);animation:ncGalaxyRotate 4.5s linear infinite}
+.nc-galaxy-orbit:before,.nc-galaxy-orbit:after{content:"";position:absolute;inset:12px -9px;border:1px solid rgba(177,157,255,.5);border-radius:50%;transform:rotate(58deg)}
+.nc-galaxy-orbit:after{inset:24px -18px;border-color:rgba(140,232,255,.34);transform:rotate(-55deg)}
+.nc-galaxy-core{position:absolute;left:50%;top:50%;width:13px;height:13px;border-radius:50%;transform:translate(-50%,-50%);background:#c7f2ff;box-shadow:0 0 14px #8ce8ff,0 0 34px rgba(140,170,255,.9)}
+.nc-galaxy-label{position:absolute;top:calc(50% + 68px);left:0;right:0;text-align:center;color:rgba(230,241,255,.9);font:500 11px/1.8 Vazirmatn,Tahoma,sans-serif;letter-spacing:.12em}
+@keyframes ncGalaxyRotate{to{transform:rotate(360deg)}}
+@keyframes ncGalaxyStarDrift{to{transform:translate3d(4%,2%,0);background-position:210px 190px}}
+@media(prefers-reduced-motion:reduce){#ncGalaxyLoader,.nc-galaxy-orbit,.nc-galaxy-stars{animation:none!important;transition:none!important}}

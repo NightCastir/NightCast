@@ -377,7 +377,15 @@ function silentWavDataUri() {
       console.log('PASS | Search filters the podcast catalogue');
       assert(await page.locator('#podcastGrid .podcast-card').first().getAttribute('data-id') === '91001', 'Search returned the wrong record');
       await page.locator('#searchClear').click();
-      await page.waitForFunction(() => document.querySelectorAll('#podcastGrid .podcast-card').length === 5, undefined, { timeout: 7000 });
+      await page.waitForTimeout(300);
+      const restoreDebug = await page.evaluate(() => ({
+        cards: document.querySelectorAll('#podcastGrid .podcast-card').length,
+        allRecords: window.NightCastPodcastBridge?.getPodcasts?.().length ?? -1,
+        input: document.querySelector('#searchInput')?.value,
+        clearClass: document.querySelector('#searchClear')?.className,
+        cardIds: [...document.querySelectorAll('#podcastGrid .podcast-card')].map(card => card.dataset.id)
+      }));
+      assert(restoreDebug.cards === 5, 'Clearing search did not restore the full list: ' + JSON.stringify(restoreDebug));
       const catalogueState = await page.evaluate(() => {
         const loader = document.querySelector('#ncPodcastInitialLoader');
         return {

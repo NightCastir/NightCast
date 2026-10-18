@@ -4437,7 +4437,7 @@
                     "NightCastUser",
 
                 LOGIN_PAGE:
-                    "/login",
+                    "/auth/login.html",
 
                 PROFILE_PAGE:
                     "profile.html",
@@ -8523,7 +8523,7 @@ body.nc-comments-open{overflow:hidden}
 
             const bridge = window.NightCastPodcastBridge;
             if (!bridge) console.error("NightCast podcast bridge is unavailable.");
-            const CONFIG = { API_BASE: bridge?.apiBase || "", LOGIN_PAGE: bridge?.loginPage || "/login" };
+            const CONFIG = { API_BASE: bridge?.apiBase || "", LOGIN_PAGE: bridge?.loginPage || "/auth/login.html" };
             const state = {
                 get all() { return bridge?.getPodcasts?.() || []; },
                 get current() { return bridge?.getCurrentPodcast?.() || null; }

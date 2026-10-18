@@ -3264,11 +3264,11 @@
 @keyframes nc-heart-pop{0%{transform:scale(.72)}55%{transform:scale(1.28)}100%{transform:scale(1)}}
 @media(prefers-reduced-motion:reduce){.favorite,.nc-like-button,.favorite i,.nc-like-button i{transition:none;animation:none!important}}
 </style>
-<link rel="stylesheet" href="../css/cosmic-experience.css?v=2">
-    <link rel="stylesheet" href="../css/nightcast-cosmos.css?v=7">
-    <link rel="stylesheet" href="../css/nightcast-responsive-fix.css?v=2">
-    <link rel="stylesheet" href="../css/nightcast-header-fix.css?v=1">
-    <link rel="stylesheet" href="../css/nightcast-player-finish.css?v=1">
+<link rel="stylesheet" href="../css/cosmic-experience.css?v=3">
+    <link rel="stylesheet" href="../css/nightcast-cosmos.css?v=8">
+    <link rel="stylesheet" href="../css/nightcast-responsive-fix.css?v=3">
+    <link rel="stylesheet" href="../css/nightcast-header-fix.css?v=2">
+    <link rel="stylesheet" href="../css/nightcast-player-finish.css?v=2">
 </head>
 
 <body>
@@ -5832,6 +5832,7 @@ LOGOUT
                 modal.classList.add("open");
                 modal.setAttribute("aria-hidden", "false");
                 document.body.classList.add("nc-detail-open");
+                updateCardPlaying();
                 modal.querySelector("[data-action='close-details']")?.focus({ preventScroll: true });
             }
 
@@ -5844,15 +5845,29 @@ LOGOUT
                 lastPodcastDetailsTrigger?.focus?.({ preventScroll: true });
             }
 
-            // The details dialog is outside #podcastGrid, so grid-level delegation cannot close it.
-            // Use document delegation to support the close button and backdrop after the modal is parsed.
+            // Detail panel is outside #podcastGrid: delegate its play and close actions here.
             document.addEventListener("click", event => {
                 const target = event.target;
                 if (!(target instanceof Element)) return;
+
+                const playButton = target.closest('#ncPodcastDetail [data-action="play"]');
+                if (playButton) {
+                    event.preventDefault();
+                    const id = Number(playButton.dataset.id);
+                    if (!Number.isFinite(id)) return;
+                    if (state.current && Number(state.current.id) === id) {
+                        togglePlay();
+                    } else {
+                        playPodcast(id);
+                    }
+                    return;
+                }
+
                 const closeButton = target.closest('#ncPodcastDetail [data-action="close-details"]');
-                if (!closeButton) return;
-                event.preventDefault();
-                closePodcastDetails();
+                if (closeButton) {
+                    event.preventDefault();
+                    closePodcastDetails();
+                }
             });
 
             document.addEventListener("keydown", event => {
@@ -6002,6 +6017,20 @@ LOGOUT
 
                     card.classList.toggle("is-playing", playing);
                 });
+
+                // Detail panel is outside the grid; keep its control tied to the same audio state.
+                const detailPlay = document.querySelector('#ncPodcastDetail [data-action="play"]');
+                if (detailPlay) {
+                    const detailId = Number(detailPlay.dataset.id);
+                    const detailIsPlaying = !!isPlaying && detailId === currentId;
+                    const icon = detailPlay.querySelector("i");
+                    if (icon) icon.className = detailIsPlaying ? "fa-solid fa-pause" : "fa-solid fa-play";
+                    detailPlay.classList.toggle("is-playing", detailIsPlaying);
+                    detailPlay.setAttribute("aria-pressed", detailIsPlaying ? "true" : "false");
+                    detailPlay.setAttribute("aria-label", detailIsPlaying ? "توقف موقت اپیزود" : "پخش اپیزود");
+                    const label = Array.from(detailPlay.childNodes).find(node => node.nodeType === Node.TEXT_NODE);
+                    if (label) label.textContent = detailIsPlaying ? " توقف اپیزود" : " پخش اپیزود";
+                }
 
                 // Keep the featured/hero play button synchronized too.
                 if (els.latestPlay) {
@@ -9440,6 +9469,6 @@ body.nc-comments-open{overflow:hidden}
         </section>
     </div>
 
-    <script src="../js/nightcast-cosmos.js?v=4" defer></script>
+    <script src="../js/nightcast-cosmos.js?v=5" defer></script>
 </body>
 </html>

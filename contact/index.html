@@ -8896,7 +8896,11 @@ body.nc-comments-open{overflow:hidden}
                 ].filter(Boolean);
                 if (!pages.length) return;
 
-                let activeId = "home";
+                const routePage = location.pathname.replace(/\/+$/, "").split("/").pop();
+                const hashPage = location.hash.slice(1);
+                let activeId = ["podcasts", "about", "contact"].includes(hashPage)
+                    ? hashPage
+                    : (["podcasts", "about", "contact"].includes(routePage) ? routePage : "home");
                 let animating = false;
                 let queuedNavigation = null;
                 let transitionTimer = 0;
@@ -9011,12 +9015,13 @@ body.nc-comments-open{overflow:hidden}
                 }
 
                 pages.forEach(page => {
-                    const isHome = page.id === "home";
-                    page.element.hidden = !isHome;
+                    const isCurrent = page.id === activeId;
+                    page.element.hidden = !isCurrent;
                     page.element.classList.add("nc-page");
-                    page.element.setAttribute("aria-hidden", isHome ? "false" : "true");
-                    if ("inert" in page.element) page.element.inert = !isHome;
+                    page.element.setAttribute("aria-hidden", isCurrent ? "false" : "true");
+                    if ("inert" in page.element) page.element.inert = !isCurrent;
                 });
+                setActiveLinks(activeId);
 
                 document.addEventListener("click", event => {
                     const link = event.target.closest('a[href^="#"]');

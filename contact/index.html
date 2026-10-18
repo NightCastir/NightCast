@@ -3,18 +3,11 @@
 <head>
     <meta charset="utf-8">
 
-    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
     <title>NightCast | آرشیو پادکست‌های صوتی، خلاصه و تحلیل کتاب</title>
 
     <meta name="theme-color" content="#090F19">
     <meta name="color-scheme" content="dark">
-
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="NightCast">
-
-    <meta name="application-name" content="NightCast">
 
     <meta name="description" content="آرشیو پادکست‌های NightCast؛ خلاصه و تحلیل کتاب، روان‌شناسی، رشد فردی، مدیریت و دانش کاربردی با توضیحات کامل و پخش آنلاین.">
 
@@ -67,11 +60,7 @@
     <link rel="stylesheet"
           href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
           crossorigin="">
-
-    <link rel="manifest"
-          href='data:application/manifest+json,{"name":"NightCast","short_name":"NightCast","start_url":"/","display":"standalone","background_color":"%23090F19","theme_color":"%23059DF9","lang":"fa","dir":"rtl","icons":[{"src":"/assets/icons/icon-192.png","sizes":"192x192","type":"image/png"},{"src":"/assets/icons/icon-512.png","sizes":"512x512","type":"image/png"}]}'>
-
-    <script type="application/ld+json">
+<script type="application/ld+json">
         {
             "@context":"https://schema.org",
             "@type":"WebSite",
@@ -7905,20 +7894,7 @@ document.addEventListener(
 
 
                 loadFavorites();
-
-
-                if (
-                    "serviceWorker" in
-                    navigator
-                ) {
-
-                    console.info(
-                        "NightCast PWA metadata enabled; add sw.js for full offline install support."
-                    );
-
-                }
-
-            }
+}
 
 
             document.readyState === "loading"
@@ -9381,5 +9357,17 @@ body.nc-comments-open{overflow:hidden}
     <script src="../js/nightcast-cosmos.js?v=5" defer></script>
 
 <script src="../js/nightcast-galaxy-loader.js?v=1" defer></script>
+
+<script>
+/* NightCast app-like interaction layer: prevent context menus and browser zoom shortcuts. */
+(function(){
+  'use strict';
+  document.addEventListener('contextmenu',function(event){event.preventDefault();});
+  document.addEventListener('keydown',function(event){
+    const key=event.key;
+    if((event.ctrlKey||event.metaKey)&&(['+','=','-','0'].includes(key)||key==='Add'||key==='Subtract')) event.preventDefault();
+  },{capture:true});
+})();
+</script>
 </body>
 </html>

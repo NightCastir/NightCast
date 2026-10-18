@@ -400,6 +400,34 @@ function silentWavDataUri() {
       await page.waitForFunction(() => document.querySelector('audio')?.paused === true, undefined, { timeout: 5000 });
       console.log('PASS | Audio pause control works');
 
+      // The detail-dialog button must toggle the same podcast and stay synchronized with card/player controls.
+      const testPlanet = page.locator('#ncConstellation .nc-planet').filter({ hasText: 'سیاره آزمایشی اول' }).first();
+      await testPlanet.click();
+      await page.waitForFunction(() => document.querySelector('#ncPodcastDetail')?.classList.contains('open'), undefined, { timeout: 4000 });
+      const detailPlay = page.locator('#ncPodcastDetail [data-action="play"]');
+      assert(await detailPlay.getAttribute('data-id') === '91001', 'Detail play button targets the wrong podcast');
+      await detailPlay.click();
+      await page.waitForFunction(() => {
+        const audio = document.querySelector('audio');
+        return !!audio && !audio.paused && Number(document.querySelector('#ncPodcastDetail [data-action="play"]')?.dataset.id) === 91001;
+      }, undefined, { timeout: 5000 });
+      await page.waitForFunction(() =>
+        document.querySelector('#ncPodcastDetail [data-action="play"] i')?.classList.contains('fa-pause') &&
+        document.querySelector('.podcast-card[data-id="91001"] [data-action="play"] i')?.classList.contains('fa-pause') &&
+        document.querySelector('#playButton i')?.classList.contains('fa-pause')
+      , undefined, { timeout: 3000 });
+      console.log('PASS | Detail play starts the selected podcast and synchronizes all play icons');
+
+      await detailPlay.click();
+      await page.waitForFunction(() => document.querySelector('audio')?.paused === true, undefined, { timeout: 5000 });
+      await page.waitForFunction(() =>
+        document.querySelector('#ncPodcastDetail [data-action="play"] i')?.classList.contains('fa-play') &&
+        document.querySelector('.podcast-card[data-id="91001"] [data-action="play"] i')?.classList.contains('fa-play') &&
+        document.querySelector('#playButton i')?.classList.contains('fa-play')
+      , undefined, { timeout: 3000 });
+      await page.locator('#ncPodcastDetail [data-action="close-details"]').click();
+      console.log('PASS | Detail play button toggles pause and synchronizes all play icons');
+
       await page.locator('.podcast-card[data-id="91001"] [data-action="favorite"]').click();
       await page.waitForFunction(() => document.querySelector('.podcast-card[data-id="91001"] [data-action="favorite"]')?.getAttribute('aria-pressed') === 'true', undefined, { timeout: 3000 });
       console.log('PASS | Favorite state toggled');

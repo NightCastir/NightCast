@@ -2,25 +2,75 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="robots" content="noindex">
-  <meta http-equiv="refresh" content="0;url=/users/login.html">
-  <title>ورود به NightCast</title>
-  <script>
-    (function () {
-      "use strict";
-      var target = new URL("/users/login.html", window.location.origin);
-      var params = new URLSearchParams(window.location.search);
-      var next = params.get("next");
-      if (next && next.startsWith("/") && !next.startsWith("//")) {
-        target.searchParams.set("next", next);
-      }
-      window.location.replace(target.toString());
-    })();
-  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>NightCast | ورود به رادیو کهکشانی</title>
+  <meta name="theme-color" content="#050816">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="ورود به NightCast؛ رادیوی فرهنگی در مدار صداها و داستان‌ها.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/users/css/core.css">
+  <link rel="stylesheet" href="/users/css/login.css?v=20261018-cosmos1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css" crossorigin="anonymous">
 </head>
-<body>
-  <p>در حال انتقال به صفحه امن ورود NightCast…</p>
-  <p><a href="/users/login.html">اگر انتقال خودکار انجام نشد، اینجا را لمس کنید.</a></p>
+<body class="cosmic-login">
+  <!-- CSS3 cosmic scene: decorative only; login functionality remains unchanged. -->
+  <div class="cosmos-scene" aria-hidden="true">
+    <div class="cosmos-nebula nebula-one"></div>
+    <div class="cosmos-nebula nebula-two"></div>
+    <div class="cosmos-stars stars-back"></div>
+    <div class="cosmos-stars stars-front"></div>
+    <div class="cosmos-orbit orbit-one"><span class="orbit-planet"></span></div>
+    <div class="cosmos-orbit orbit-two"><span class="orbit-planet"></span></div>
+    <div class="cosmos-orbit orbit-three"><span class="orbit-planet"></span></div>
+    <div class="cosmos-shooting-star"></div>
+    <div class="cosmos-horizon"></div>
+  </div>
+
+  <div class="background-blur blur1" aria-hidden="true"></div>
+  <div class="background-blur blur2" aria-hidden="true"></div>
+
+  <div id="authLoader" class="auth-loader hidden" role="status" aria-live="polite" aria-label="در حال ورود">
+    <div class="loader-box">
+      <div class="loader-circle" aria-hidden="true"></div>
+      <h3>NightCast</h3>
+      <p id="loaderText">در حال اتصال...</p>
+    </div>
+  </div>
+
+  <main class="login-page">
+    <section class="login-card" aria-labelledby="loginTitle">
+      <div class="hero">
+        <div class="brand-icon" aria-hidden="true"><i class="fa-solid fa-radio"></i></div>
+        <p class="cosmic-eyebrow"><span></span> صدایی از دل کیهان</p>
+        <h1 id="loginTitle">Night<span>Cast</span></h1>
+        <p class="hero-text">رادیو NightCast؛ پلی به سوی جهان صداها</p>
+      </div>
+
+      <div id="googleLoginButton" class="google-login-container" aria-label="ورود با Google"></div>
+      <div id="loginMessage" class="login-status" role="alert" aria-live="polite"></div>
+
+      <footer>
+        <p>با ادامه، قوانین استفاده و سیاست حفظ حریم خصوصی NightCast را می‌پذیرید.</p>
+      </footer>
+    </section>
+  </main>
+
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="/users/js/login.js?v=20261018-2"></script>
+
+<script>
+/* NightCast app-like interaction layer; retire legacy PWA registrations. */
+(function(){
+  'use strict';
+  document.addEventListener('contextmenu',function(event){event.preventDefault();});
+  document.addEventListener('keydown',function(event){
+    if((event.ctrlKey||event.metaKey)&&(['+','=','-','0','Add','Subtract'].includes(event.key)))event.preventDefault();
+  },{capture:true});
+  if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(registrations){registrations.forEach(function(registration){registration.unregister();});}).catch(function(){});}
+})();
+</script>
 </body>
 </html>

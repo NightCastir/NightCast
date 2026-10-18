@@ -96,6 +96,8 @@ jobs:
             'css/splash.css',
             'css/cosmic-experience.css',
             'users/index.html',
+            'users/js/auth-page.js',
+            'auth/login.html',
             'css/nightcast-cosmos.css',
             'js/nightcast-cosmos.js'
           ];
@@ -112,6 +114,13 @@ jobs:
           }
           if (!root.includes('/users/index.html#podcasts') || !root.includes('window.location.hostname === "localhost"')) {
             throw new Error('Root splash page is missing the native Android archive route; this can cause a splash redirect loop in Capacitor.');
+          }
+          const authPageScript = fs.readFileSync('users/js/auth-page.js', 'utf8');
+          if (!authPageScript.includes('navigate(openidButton, "/auth/login.html"')) {
+            throw new Error('OpenID button is not routed to the bundled auth/login.html page.');
+          }
+          if (!archive.includes('LOGIN_PAGE:') || !archive.includes('"/auth/login.html"')) {
+            throw new Error('Archive login actions are not configured to open the bundled OpenID login page.');
           }
           for (const ref of ['../css/cosmic-experience.css', '../css/nightcast-cosmos.css', '../js/nightcast-cosmos.js']) {
             if (!archive.includes(ref)) throw new Error('Archive page is missing reference: ' + ref);

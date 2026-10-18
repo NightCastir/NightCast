@@ -6118,9 +6118,10 @@ LOGOUT
                     cached = [];
                 }
 
-                // Cache-first: paint the complete previously saved catalogue immediately.
-                // Keep the existing card nodes stable while a fresh catalogue is checked.
-                if (cached.length) {
+                // Cache-first only when the saved catalogue is larger than one API page.
+                // A five-item cache may be only page one, so never flash a partial archive.
+                const hasCompleteCache = cached.length > 5;
+                if (hasCompleteCache) {
                     state.all = cached;
                     updateLatest(cached);
                     updatePodcastCollectionSchema(cached);
@@ -6197,7 +6198,7 @@ LOGOUT
                     const feedLooksIncomplete =
                         !feedItems.length ||
                         (feedTotal > 0 && feedTotal > feedItems.length) ||
-                        feedItems.length <= 4;
+                        feedItems.length <= 5;
 
                     let freshItems = feedItems;
                     if (feedLooksIncomplete) {
@@ -6223,7 +6224,7 @@ LOGOUT
 
                     // Never replace the catalogue underneath a listener who has already
                     // started scrolling. If IDs match, keep the same DOM nodes and images.
-                    if (cached.length && idsChanged && window.scrollY > 80) {
+                    if (hasCompleteCache && idsChanged && window.scrollY > 80) {
                         console.info("NightCast: deferred catalogue DOM update to avoid scroll jumps.");
                         return;
                     }
@@ -6241,7 +6242,12 @@ LOGOUT
                 } catch (err) {
                     console.error("NightCast Feed Error:", err);
 
-                    if (!cached.length) {
+                    if (cached.length) {
+                        state.all = cached;
+                        updateLatest(cached);
+                        updatePodcastCollectionSchema(cached);
+                        applyView();
+                    } else {
                         els.grid.className = "podcast-grid";
                         els.grid.innerHTML = `
                             <div class="error-state" style="grid-column:1/-1">
@@ -6259,7 +6265,7 @@ LOGOUT
                     const loader = document.getElementById("ncPodcastInitialLoader");
                     if (loader) {
                         const started = Number(window.__ncPodcastLoaderStartedAt) || performance.now();
-                        const minimumVisibleMs = cached.length ? 0 : 350;
+                        const minimumVisibleMs = hasCompleteCache ? 0 : 350;
                         window.setTimeout(
                             () => loader.classList.add("is-hidden"),
                             Math.max(0, minimumVisibleMs - (performance.now() - started))

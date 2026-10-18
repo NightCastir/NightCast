@@ -5812,6 +5812,7 @@ LOGOUT
                 modal.classList.add("open");
                 modal.setAttribute("aria-hidden", "false");
                 document.body.classList.add("nc-detail-open");
+                updateCardPlaying();
                 modal.querySelector("[data-action='close-details']")?.focus({ preventScroll: true });
             }
 
@@ -5824,15 +5825,31 @@ LOGOUT
                 lastPodcastDetailsTrigger?.focus?.({ preventScroll: true });
             }
 
-            // The details dialog is outside #podcastGrid, so grid-level delegation cannot close it.
-            // Use document delegation to support the close button and backdrop after the modal is parsed.
+            // The details dialog is outside #podcastGrid, so delegate its controls at document level.
+            // All play controls use the same audio element and shared playback state.
             document.addEventListener("click", event => {
                 const target = event.target;
                 if (!(target instanceof Element)) return;
+
+                const playButton = target.closest('#ncPodcastDetail [data-action="play"]');
+                if (playButton) {
+                    event.preventDefault();
+                    if (playButton.disabled) return;
+                    const id = Number(playButton.dataset.id);
+                    if (!Number.isFinite(id)) return;
+                    if (state.current && Number(state.current.id) === id) {
+                        togglePlay();
+                    } else {
+                        playPodcast(id);
+                    }
+                    return;
+                }
+
                 const closeButton = target.closest('#ncPodcastDetail [data-action="close-details"]');
-                if (!closeButton) return;
-                event.preventDefault();
-                closePodcastDetails();
+                if (closeButton) {
+                    event.preventDefault();
+                    closePodcastDetails();
+                }
             });
 
             document.addEventListener("keydown", event => {
@@ -5997,6 +6014,30 @@ LOGOUT
                         ? "توقف موقت پادکست " + (latest.title || "")
                         : "پخش آخرین پادکست");
                     els.latestPlay.setAttribute("aria-pressed", isLatestPlaying ? "true" : "false");
+                }
+
+                // The detail dialog is outside the grid; synchronize it from the real audio state.
+                const detailButton = document.querySelector('#ncPodcastDetail [data-action="play"]');
+                if (detailButton) {
+                    const detailId = Number(detailButton.dataset.id);
+                    const detailIsCurrent = Number.isFinite(detailId) && detailId === currentId;
+                    const detailIsPlaying = detailIsCurrent && isPlaying;
+                    const detailIcon = detailButton.querySelector("i");
+                    if (detailIcon) detailIcon.className = detailIsPlaying ? "fa-solid fa-pause" : "fa-solid fa-play";
+
+                    const detailTitle = document.querySelector("#ncDetailTitle")?.textContent?.trim() || "";
+                    detailButton.setAttribute("aria-label", detailIsPlaying
+                        ? "توقف موقت اپیزود " + detailTitle
+                        : "پخش اپیزود " + detailTitle);
+                    detailButton.setAttribute("aria-pressed", detailIsPlaying ? "true" : "false");
+                    detailButton.classList.toggle("is-playing", detailIsPlaying);
+
+                    for (const node of detailButton.childNodes) {
+                        if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
+                            node.textContent = detailIsPlaying ? " توقف اپیزود" : " پخش اپیزود";
+                            break;
+                        }
+                    }
                 }
             }
 

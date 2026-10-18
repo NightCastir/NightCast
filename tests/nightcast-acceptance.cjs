@@ -136,8 +136,7 @@ function silentWavDataUri() {
     const iconCdnFailures = [];
     for (const file of htmlFilesToValidate) {
       const html = fs.readFileSync(file, 'utf8');
-      const hasIcons = /\bfa-(?:solid|regular|brands)\b/.test(html) ||
-        (file === 'index.html' && /fa-solid/.test(fs.readFileSync('js/cosmic-experience.js', 'utf8')));
+      const hasIcons = /\bfa-(?:solid|regular|brands)\b/.test(html);
       if (hasIcons && !html.includes('fontawesome-free@6.7.2')) {
         iconCdnFailures.push(file + ' is missing the secondary Font Awesome CDN stylesheet');
       }

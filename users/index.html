@@ -6025,7 +6025,7 @@ LOGOUT
                     const detailIcon = detailButton.querySelector("i");
                     if (detailIcon) detailIcon.className = detailIsPlaying ? "fa-solid fa-pause" : "fa-solid fa-play";
 
-                    const detailTitle = document.querySelector("#ncDetailTitle")?.textContent?.trim() || "";
+                    const detailTitle = document.querySelector("#ncPodcastDetailTitle")?.textContent?.trim() || "";
                     detailButton.setAttribute("aria-label", detailIsPlaying
                         ? "توقف موقت اپیزود " + detailTitle
                         : "پخش اپیزود " + detailTitle);

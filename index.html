@@ -72,10 +72,18 @@
   <script>
     (function () {
       "use strict";
-      var target = "/podcasts";
+      // Cloudflare serves /podcasts on the public website, but the Capacitor
+      // WebView is a local asset origin and may resolve /podcasts back to this
+      // splash document, creating an infinite splash -> splash redirect loop.
+      // Route native builds directly to the bundled archive HTML instead.
+      var isNativeShell = window.location.hostname === "localhost" ||
+        window.location.protocol === "capacitor:" ||
+        (window.Capacitor && typeof window.Capacitor.isNativePlatform === "function" &&
+          window.Capacitor.isNativePlatform());
+      var target = isNativeShell ? "/users/index.html#podcasts" : "/podcasts";
       window.setTimeout(function () {
         window.location.replace(target);
-      }, 1550);
+      }, 900);
     })();
   </script>
 

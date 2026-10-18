@@ -1,6 +1,7 @@
 {
   "version": "5.2.3",
-  "title": "نسخه جدید NightCast",
-  "message": "نسخه 5.2.3 اپلیکیشن NightCast آماده دریافت است.",
-  "downloadUrl": "https://www.NightCast.ir/downloadrelease/NightCast.apk"
+  "title": "به‌روزرسانی NightCast",
+  "message": "نسخه جدید NightCast منتشر شده است. برای دریافت اصلاحات و امکانات جدید، برنامه را به‌روزرسانی کنید.",
+  "githubUrl": "https://github.com/NightCastir/NightCast/raw/refs/heads/main/downloadrelease/NightCast.apk",
+  "downloadUrl": "https://www.nightcast.ir/downloadrelease/NightCast.apk"
 }

@@ -1006,6 +1006,12 @@ footer p{
     min-width: 0;
 }
 
+/* Keep the transparent galaxy veil visual-only on the login page.
+   It must never intercept taps on Google's cross-origin sign-in iframe. */
+#ncGalaxyLoader {
+    pointer-events: none !important;
+}
+
 .google-login-container {
     display: flex;
     align-items: center;

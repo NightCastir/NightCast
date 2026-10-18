@@ -3282,8 +3282,8 @@
 @media(prefers-reduced-motion:reduce){.favorite,.nc-like-button,.favorite i,.nc-like-button i{transition:none;animation:none!important}}
 </style>
 <link rel="stylesheet" href="../css/cosmic-experience.css?v=4">
-    <link rel="stylesheet" href="../css/nightcast-cosmos.css?v=8">
-    <link rel="stylesheet" href="../css/nightcast-responsive-fix.css?v=3">
+    <link rel="stylesheet" href="../css/nightcast-cosmos.css?v=12">
+    <link rel="stylesheet" href="../css/nightcast-responsive-fix.css?v=6">
     <link rel="stylesheet" href="../css/nightcast-header-fix.css?v=2">
     <link rel="stylesheet" href="../css/nightcast-player-finish.css?v=2">
 
@@ -3556,6 +3556,7 @@
 
         <section class="section"
                  id="podcasts"
+                 data-view-mode="list"
                  aria-labelledby="podcastHeading">
 
             <div class="section-head">
@@ -3602,6 +3603,19 @@
 
             </div>
 
+
+            <div class="nc-view-settings" role="group" aria-label="تنظیمات نمایش پادکست‌ها">
+                <span class="nc-view-settings-label">نحوه نمایش پادکست‌ها</span>
+                <div class="nc-view-switch">
+                    <button type="button" class="nc-view-button is-active" data-nc-view="list" aria-pressed="true">
+                        <i class="fa-solid fa-list" aria-hidden="true"></i><span>لیستی</span>
+                    </button>
+                    <button type="button" class="nc-view-button" data-nc-view="galaxy" aria-pressed="false">
+                        <i class="fa-solid fa-orbit" aria-hidden="true"></i><span>کهکشانی</span>
+                    </button>
+                </div>
+                <span id="ncViewModeStatus" class="nc-sr-only" aria-live="polite"></span>
+            </div>
 
             <div class="stats"
                  aria-label="آمار NightCast">
@@ -9360,7 +9374,40 @@ body.nc-comments-open{overflow:hidden}
     </div>
 
     <script src="../js/clean-routes.js?v=1" defer></script>
-    <script src="../js/nightcast-cosmos.js?v=5" defer></script>
+    <script src="../js/nightcast-cosmos.js?v=10" defer></script>
+    <script>
+    /* Keep the /podcasts static entry in sync with the canonical archive preference. */
+    (function () {
+        "use strict";
+        const key = "nightcast-podcast-view-mode";
+        const section = document.getElementById("podcasts");
+        if (!section) return;
+        const buttons = Array.from(document.querySelectorAll("[data-nc-view]"));
+        const status = document.getElementById("ncViewModeStatus");
+        const grid = document.getElementById("podcastGrid");
+        function readMode() {
+            try { return localStorage.getItem(key) === "galaxy" ? "galaxy" : "list"; }
+            catch (_) { return "list"; }
+        }
+        function applyMode(mode, persist) {
+            mode = mode === "galaxy" ? "galaxy" : "list";
+            section.dataset.viewMode = mode;
+            if (grid) grid.classList.toggle("nc-view-galaxy", mode === "galaxy");
+            buttons.forEach(function (button) {
+                const active = button.dataset.ncView === mode;
+                button.classList.toggle("is-active", active);
+                button.setAttribute("aria-pressed", active ? "true" : "false");
+            });
+            if (status) status.textContent = mode === "galaxy" ? "نمایش کهکشانی فعال شد." : "نمایش لیستی فعال شد.";
+            if (persist) { try { localStorage.setItem(key, mode); } catch (_) {} }
+            window.dispatchEvent(new CustomEvent("nightcast:viewchange", { detail: { mode: mode } }));
+        }
+        buttons.forEach(function (button) {
+            button.addEventListener("click", function () { applyMode(button.dataset.ncView, true); });
+        });
+        applyMode(readMode(), false);
+    })();
+    </script>
 
 </body>
 </html>

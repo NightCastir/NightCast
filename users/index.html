@@ -784,8 +784,7 @@
                     overflow: hidden;
                     box-shadow: 0 8px 30px rgba(0,0,0,.18);
                     transition: transform .25s, box-shadow .25s, border-color .25s;
-                    content-visibility: auto;
-                    contain-intrinsic-size: 450px;
+                    /* Avoid content-visibility placeholder swaps that can shift scroll position. */
                 }
 
                     .podcast-card:hover {
@@ -4665,6 +4664,8 @@
 
                 loadObserver: null,
 
+                isLoadingBatch: false,
+
                 totalPages: 1,
 
                 current: null,
@@ -6065,6 +6066,7 @@ LOGOUT
             }
 
             function loadNextPodcastBatch() {
+                if (state.isLoadingBatch) return;
                 if (!state.visible.length) {
                     render([]);
                     updateInfiniteScrollStatus();
@@ -6074,18 +6076,26 @@ LOGOUT
                     updateInfiniteScrollStatus();
                     return;
                 }
-                const start = state.renderedCount;
-                const end = Math.min(start + state.batchSize, state.visible.length);
-                const nextBatch = state.visible.slice(start, end);
-                state.renderedCount = end;
-                render(nextBatch, start > 0);
-                updateInfiniteScrollStatus();
+
+                // Guard the observer against duplicate callbacks while a batch is being committed.
+                state.isLoadingBatch = true;
+                try {
+                    const start = state.renderedCount;
+                    const end = Math.min(start + state.batchSize, state.visible.length);
+                    const nextBatch = state.visible.slice(start, end);
+                    render(nextBatch, start > 0);
+                    state.renderedCount = end;
+                    updateInfiniteScrollStatus();
+                } finally {
+                    state.isLoadingBatch = false;
+                }
             }
 
             if (els.loadSentinel && "IntersectionObserver" in window) {
                 state.loadObserver = new IntersectionObserver(entries => {
-                    if (entries.some(entry => entry.isIntersecting)) loadNextPodcastBatch();
-                }, { root: null, rootMargin: "320px 0px", threshold: 0 });
+                    if (state.isLoadingBatch || !entries.some(entry => entry.isIntersecting)) return;
+                    loadNextPodcastBatch();
+                }, { root: null, rootMargin: "160px 0px", threshold: 0 });
             }
 
             /* =========================================================

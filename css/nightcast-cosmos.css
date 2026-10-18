@@ -336,3 +336,32 @@ main#home .hero h1{max-width:100%;overflow-wrap:normal;word-break:normal}
   #ncMobileDrawer{z-index:12010!important;pointer-events:auto}
   #ncMobileDrawer.is-open{pointer-events:auto}
 }
+
+
+/* User-selectable catalogue presentation: only one view is visible at a time. */
+#podcasts .nc-view-settings{
+  display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap;
+  margin:0 0 18px;padding:12px 14px;border:1px solid rgba(148,174,204,.16);
+  border-radius:16px;background:linear-gradient(120deg,rgba(13,28,47,.9),rgba(9,18,34,.82));
+}
+#podcasts .nc-view-settings-label{color:#b9c9dc;font-size:.86rem;font-weight:700}
+#podcasts .nc-view-switch{display:inline-flex;align-items:center;gap:5px;padding:4px;border:1px solid rgba(148,174,204,.2);border-radius:13px;background:rgba(0,0,0,.22)}
+#podcasts .nc-view-button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:40px;padding:7px 14px;border:1px solid transparent;border-radius:10px;background:transparent;color:#b8c7da;font:inherit;font-size:.84rem;font-weight:750;white-space:nowrap;cursor:pointer;transition:background .18s ease,color .18s ease,border-color .18s ease}
+#podcasts .nc-view-button:hover{color:#fff;background:rgba(255,255,255,.06)}
+#podcasts .nc-view-button.is-active{color:#fff;border-color:rgba(104,223,255,.32);background:linear-gradient(135deg,rgba(29,150,218,.28),rgba(99,102,241,.2));box-shadow:0 0 18px rgba(48,164,228,.1)}
+#podcasts .nc-view-button:focus-visible{outline:2px solid #8fe7ff;outline-offset:3px}
+#podcasts[data-view-mode="list"] #ncConstellation{display:none!important}
+#podcasts[data-view-mode="list"] #podcastGrid{display:grid}
+#podcasts[data-view-mode="galaxy"] #podcastGrid{display:none!important}
+#podcasts[data-view-mode="galaxy"] #ncConstellation{display:block!important}
+#podcasts[data-view-mode="galaxy"] .nc-constellation{margin-block:0 24px}
+#podcasts .nc-sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+@media(max-width:600px){
+  #podcasts .nc-view-settings{justify-content:space-between;gap:8px;padding:10px;margin-bottom:14px}
+  #podcasts .nc-view-settings-label{font-size:.75rem}
+  #podcasts .nc-view-switch{gap:3px}
+  #podcasts .nc-view-button{min-height:38px;padding:6px 10px;font-size:.76rem}
+}
+@media(prefers-reduced-motion:reduce){
+  #podcasts .nc-view-button{transition:none}
+}

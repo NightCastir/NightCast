@@ -2,7 +2,7 @@
     "use strict";
 
     const CURRENT_VERSION = window.NIGHTCAST_APP_VERSION || "0.0.0";
-    const VERSION_URL = new URL("/version.json", window.location.href).href;
+    const VERSION_URL = "https://raw.githubusercontent.com/NightCastir/NightCast/main/version.json";
     const FALLBACK_GITHUB_APK = "https://github.com/NightCastir/NightCast/raw/refs/heads/main/downloadrelease/NightCast.apk";
 
     function compareVersions(a, b) {
@@ -72,7 +72,7 @@
 
     async function check() {
         // This prompt is for the installed Android app, not ordinary web visitors.
-        const nativeCapacitor = !!(window.Capacitor && typeof window.Capacitor.isNativePlatform === "function" && window.Capacitor.isNativePlatform());
+        const nativeCapacitor = !!((window.Capacitor && typeof window.Capacitor.isNativePlatform === "function" && window.Capacitor.isNativePlatform()) || window.location.protocol === "capacitor:" || window.location.hostname === "localhost");
         if (!nativeCapacitor) return;
         if (!CURRENT_VERSION || CURRENT_VERSION === "0.0.0") {
             console.warn("NightCast update check skipped: bundled app version is missing.");

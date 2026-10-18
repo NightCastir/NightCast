@@ -6024,6 +6024,11 @@ LOGOUT
             }
 
             function loadNextPodcastBatch() {
+                if (!state.visible.length) {
+                    render([]);
+                    updateInfiniteScrollStatus();
+                    return;
+                }
                 if (state.renderedCount >= state.visible.length) {
                     updateInfiniteScrollStatus();
                     return;

@@ -46,13 +46,13 @@
 
     <link rel="stylesheet"
           href="css/splash.css">
-    <link rel="stylesheet" href="css/cosmic-experience.css?v=2">
+    <link rel="stylesheet" href="css/cosmic-experience.css?v=3">
 
      <meta name="theme-color" content="#050a16">
       <script type="module" src="https://unpkg.com/@capacitor/core@latest/dist/capacitor.js"></script>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/nightcast-player-finish.css?v=1">
+    <link rel="stylesheet" href="css/nightcast-player-finish.css?v=2">
 </head>
 
 <body>
@@ -140,22 +140,11 @@
 </noscript>
 
 <script src="js/auth.js"></script>
-<script src="js/cosmic-experience.js"></script>
+<script src="js/cosmic-experience.js?v=2"></script>
 
 <script src="js/router.js"></script>
-<!-- Automatic "new version available" popup disabled as requested. -->
-<script>
-window.addEventListener("load", function () {
-
-    if (
-        window.NightCastUpdateChecker &&
-        typeof window.NightCastUpdateChecker.check === "function"
-    ) {
-        window.NightCastUpdateChecker.check();
-    }
-
-});
-</script>    
+<!-- Keep the checker script reference for CI/build compatibility; do not auto-run its popup. -->
+<script src="js/update-checker.js"></script>
 <script>
 if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {

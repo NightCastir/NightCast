@@ -6,7 +6,7 @@
     "/about": { target: "about", label: "درباره NightCast" },
     "/contact": { target: "contact", label: "تماس با ما" }
   };
-  const path = window.location.pathname.replace(/\\/+$/, "") || "/";
+  const path = window.location.pathname.replace(/\/+$/, "") || "/";
   const route = routes[path];
   if (!route) return;
 

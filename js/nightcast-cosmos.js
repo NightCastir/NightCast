@@ -181,17 +181,7 @@ function installResponsiveSafeguards(){
  `;
  document.head.appendChild(style);
 }
-function installFontAwesomeFallback(){
- const primary=document.querySelector('link[href*="cdnjs.cloudflare.com/ajax/libs/font-awesome"]');
- if(!primary)return;
- const fallback=document.createElement("link");
- fallback.rel="stylesheet";
- fallback.href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css";
- fallback.media="print";
- fallback.onload=()=>{fallback.media="all"};
- document.head.appendChild(fallback);
-}
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>{installResponsiveSafeguards();installFontAwesomeFallback()},{once:true});
-else {installResponsiveSafeguards();installFontAwesomeFallback()}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",installResponsiveSafeguards,{once:true});
+else installResponsiveSafeguards()
 
 })();

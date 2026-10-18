@@ -100,8 +100,14 @@ jobs:
           }
           const root = fs.readFileSync('index.html', 'utf8');
           const archive = fs.readFileSync('users/index.html', 'utf8');
-          for (const ref of ['js/auth.js', 'js/cosmic-experience.js', 'js/router.js', 'css/splash.css']) {
-            if (!root.includes(ref)) throw new Error('Root page is missing reference: ' + ref);
+
+          // The root page is intentionally a lightweight, standalone splash/redirect.
+          // App assets belong to the archive page; do not require them on this splash page.
+          if (!root.includes('class="nc-splash"') || !root.includes('window.location.replace(target)') || !root.includes('"/podcasts"')) {
+            throw new Error('Root splash page is missing its splash markup or /podcasts redirect');
+          }
+          for (const ref of ['../css/cosmic-experience.css', '../css/nightcast-cosmos.css', '../js/nightcast-cosmos.js']) {
+            if (!archive.includes(ref)) throw new Error('Archive page is missing reference: ' + ref);
           }
           // Validate asset paths independently from cache-busting versions (?v=1, ?v=2, ?v=3, ...).
           // A CSS release can advance before its paired JavaScript release; CI must not require a stale query string.
@@ -494,13 +500,11 @@ jobs:
               '<script src="app-version.js"></script>'
           )
 
-          if checker_tag not in index:
-              raise SystemExit(
-                  "ERROR: update-checker.js script tag "
-                  "was not found in www/index.html."
-              )
-
-          if version_tag not in index:
+          # The root entry point is a standalone splash/redirect and intentionally
+          # does not load the update checker. Inject the version script only on
+          # pages that actually include the checker; do not fail APK preparation
+          # just because the lightweight splash page omits it.
+          if checker_tag in index and version_tag not in index:
               index = index.replace(
                   checker_tag,
                   version_tag
@@ -508,6 +512,8 @@ jobs:
                   + checker_tag,
                   1
               )
+          elif checker_tag not in index:
+              print("Standalone splash has no update-checker script; version label injection skipped.")
 
           index_file.write_text(
               index,

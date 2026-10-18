@@ -407,3 +407,54 @@ main#home .hero h1{max-width:100%;overflow-wrap:normal;word-break:normal}
   }
   #contact .nc-contact-grid .nc-contact-map-card{padding:10px!important}
 }
+
+
+/* FINAL CONTACT TEXT INSET: apply spacing to the actual text containers, not only the outer cards. */
+#contact .nc-contact-hero{
+  box-sizing:border-box!important;
+  padding:clamp(20px,3vw,32px)!important;
+}
+#contact .nc-contact-hero>div,
+#contact .nc-contact-hero>p{
+  box-sizing:border-box!important;
+  min-width:0!important;
+  padding:8px 10px!important;
+}
+#contact .nc-contact-info .nc-contact-card{
+  box-sizing:border-box!important;
+  display:flex!important;
+  align-items:flex-start!important;
+  gap:14px!important;
+  padding:22px 24px!important;
+}
+#contact .nc-contact-info .nc-contact-card>.nc-contact-icon{
+  flex:0 0 42px!important;
+  margin:4px 2px!important;
+}
+#contact .nc-contact-info .nc-contact-card>div:not(.nc-contact-icon){
+  box-sizing:border-box!important;
+  flex:1 1 0!important;
+  min-width:0!important;
+  padding:10px 12px!important;
+  margin:0!important;
+}
+#contact .nc-contact-info .nc-contact-card small,
+#contact .nc-contact-info .nc-contact-card strong{
+  display:block!important;
+  max-width:100%!important;
+  line-height:1.9!important;
+  overflow-wrap:anywhere!important;
+}
+#contact .nc-contact-info .nc-contact-card strong{padding:3px 0!important}
+#contact .nc-contact-info .nc-contact-card a{display:inline-block!important;padding:2px 0!important}
+#contact .nc-contact-grid .nc-contact-map-card{padding:14px!important;box-sizing:border-box!important}
+#contact .nc-contact-grid .nc-contact-map-card .nc-map{width:100%!important;max-width:100%!important}
+@media(max-width:760px){
+  #contact .nc-contact-hero{padding:16px!important}
+  #contact .nc-contact-hero>div,
+  #contact .nc-contact-hero>p{padding:6px 8px!important}
+  #contact .nc-contact-info .nc-contact-card{padding:14px 16px!important;gap:10px!important}
+  #contact .nc-contact-info .nc-contact-card>div:not(.nc-contact-icon){padding:8px 10px!important}
+  #contact .nc-contact-info .nc-contact-card>.nc-contact-icon{flex-basis:36px!important}
+  #contact .nc-contact-grid .nc-contact-map-card{padding:10px!important}
+}

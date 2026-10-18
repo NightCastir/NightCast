@@ -265,7 +265,7 @@ function silentWavDataUri() {
     let splashOk = false;
     try {
       await page.goto('http://127.0.0.1:4173/index.html', { waitUntil: 'domcontentloaded', timeout: 10000 });
-      await page.waitForURL(url => /\\/podcasts\\/?$/.test(url.pathname) || /\\/users\\/index\\.html$/.test(url.pathname), { timeout: 10000 });
+      await page.waitForURL(url => url.pathname.includes('/podcasts') || url.pathname.endsWith('/users/index.html'), { timeout: 10000 });
       await page.waitForSelector('#podcastGrid', { state: 'attached', timeout: 5000 });
       splashOk = true;
       report('1. Root route opens the podcast archive directly', true, new URL(page.url()).pathname + '; no blocking legacy splash required');

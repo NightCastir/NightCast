@@ -1,248 +1,63 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-    >
-
-    <title>NightCast | خوش آمدید</title>
-
-    <meta
-        name="theme-color"
-        content="#0b1220"
-    >
-
-    <meta
-        name="color-scheme"
-        content="dark"
-    >
-
-    <!-- ==========================================
-         NIGHTCAST STYLES
-    =========================================== -->
-
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-<link
-        rel="stylesheet"
-        href="/users/css/core.css"
-    >
-
-    <link
-        rel="stylesheet"
-        href="/users/css/login.css"
-    >
-
-
-    <!-- ==========================================
-         FONT AWESOME
-    =========================================== -->
-
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    >
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css" crossorigin="anonymous">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>NightCast | ورود به رادیو کهکشانی</title>
+  <meta name="theme-color" content="#050816">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="ورود به NightCast؛ رادیوی فرهنگی در مدار صداها و داستان‌ها.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/users/css/core.css">
+  <link rel="stylesheet" href="/users/css/login.css?v=20261018-cosmos1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
+<body class="cosmic-login">
+  <!-- CSS3 cosmic scene: decorative only; login functionality remains unchanged. -->
+  <div class="cosmos-scene" aria-hidden="true">
+    <div class="cosmos-nebula nebula-one"></div>
+    <div class="cosmos-nebula nebula-two"></div>
+    <div class="cosmos-stars stars-back"></div>
+    <div class="cosmos-stars stars-front"></div>
+    <div class="cosmos-orbit orbit-one"><span class="orbit-planet"></span></div>
+    <div class="cosmos-orbit orbit-two"><span class="orbit-planet"></span></div>
+    <div class="cosmos-orbit orbit-three"><span class="orbit-planet"></span></div>
+    <div class="cosmos-shooting-star"></div>
+    <div class="cosmos-horizon"></div>
+  </div>
 
+  <div class="background-blur blur1" aria-hidden="true"></div>
+  <div class="background-blur blur2" aria-hidden="true"></div>
 
-<body>
-
-
-<!-- ==========================================
-     BACKGROUND
-=========================================== -->
-
-<div
-    class="background-blur blur1"
-    aria-hidden="true">
-</div>
-
-<div
-    class="background-blur blur2"
-    aria-hidden="true">
-</div>
-
-
-
-<!-- ==========================================
-     AUTH LOADER
-=========================================== -->
-
-<div
-    id="authLoader"
-    class="auth-loader hidden"
-    role="status"
-    aria-live="polite"
-    aria-label="در حال ورود"
->
-
+  <div id="authLoader" class="auth-loader hidden" role="status" aria-live="polite" aria-label="در حال ورود">
     <div class="loader-box">
-
-        <div
-            class="loader-circle"
-            aria-hidden="true">
-        </div>
-
-        <h3>
-            NightCast
-        </h3>
-
-        <p id="loaderText">
-            در حال اتصال...
-        </p>
-
+      <div class="loader-circle" aria-hidden="true"></div>
+      <h3>NightCast</h3>
+      <p id="loaderText">در حال اتصال...</p>
     </div>
+  </div>
 
-</div>
+  <main class="login-page">
+    <section class="login-card" aria-labelledby="loginTitle">
+      <div class="hero">
+        <div class="brand-icon" aria-hidden="true"><i class="fa-solid fa-radio"></i></div>
+        <p class="cosmic-eyebrow"><span></span> صدایی از دل کیهان</p>
+        <h1 id="loginTitle">Night<span>Cast</span></h1>
+        <p class="hero-text">رادیو NightCast؛ پلی به سوی جهان صداها</p>
+      </div>
 
+      <div id="googleLoginButton" class="google-login-container" aria-label="ورود با Google"></div>
+      <div id="loginMessage" class="login-status" role="alert" aria-live="polite"></div>
 
-
-<!-- ==========================================
-     LOGIN PAGE
-=========================================== -->
-
-<main class="login-page">
-
-
-    <section
-        class="login-card"
-        aria-labelledby="loginTitle"
-    >
-
-
-        <!-- ==================================
-             HERO
-        =================================== -->
-
-        <div class="hero">
-
-
-            <div
-                class="brand-icon"
-                aria-hidden="true"
-            >
-
-                <i class="fa-solid fa-radio"></i>
-
-            </div>
-
-
-            <h1 id="loginTitle">
-
-                Night<span>Cast</span>
-
-            </h1>
-
-
-            <p class="hero-text">
-
-                رادیو NightCast پلی به سوی آیندست
-
-            </p>
-
-
-        </div>
-
-
-
-        <!-- ==================================
-             GOOGLE LOGIN
-             
-             Browser:
-             Google Identity Services
-
-             Android:
-             Native Credential Manager
-        =================================== -->
-
-        <div
-            id="googleLoginButton"
-            class="google-login-container"
-            aria-label="ورود با Google"
-        >
-        </div>
-
-
-
-        <!-- ==================================
-             LOGIN STATUS
-        =================================== -->
-
-        <div
-            id="loginMessage"
-            class="login-status"
-            role="alert"
-            aria-live="polite"
-        >
-        </div>
-
-
-
-        <!-- ==================================
-             FOOTER
-        =================================== -->
-
-        <footer>
-
-            <p>
-
-                با ادامه، قوانین استفاده و سیاست حفظ حریم خصوصی NightCast را می‌پذیرید.
-
-            </p>
-
-        </footer>
-
-
+      <footer>
+        <p>با ادامه، قوانین استفاده و سیاست حفظ حریم خصوصی NightCast را می‌پذیرید.</p>
+      </footer>
     </section>
+  </main>
 
-
-</main>
-
-
-
-<!-- ==========================================
-     GOOGLE IDENTITY SERVICES
-     
-     IMPORTANT:
-     login.js decides whether Google Web
-     authentication is used.
-
-     Browser:
-     GIS is used.
-
-     Android:
-     login.js uses native Google
-     Credential Manager instead.
-=========================================== -->
-
-<script
-    src="https://accounts.google.com/gsi/client"
-    async
-    defer
-></script>
-
-
-
-<!-- ==========================================
-     NIGHTCAST LOGIN CONTROLLER
-=========================================== -->
-
-<script
-    src="/users/js/login.js?v=20261018-2"
-></script>
-
-
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="/users/js/login.js?v=20261018-2"></script>
 </body>
-
 </html>
-

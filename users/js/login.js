@@ -977,34 +977,28 @@ const Login = {
             ==========================================
             */
 
-            const result =
+            const controller = new AbortController();
+            const requestTimeout = window.setTimeout(() => controller.abort(), 12000);
 
-                await fetch(
-
-                    API_URL +
-                    "/public/openid/google",
-
+            let result;
+            try {
+                result = await fetch(
+                    API_URL + "/public/openid/google",
                     {
-
-                        method:"POST",
-
-                        headers:{
-
-                            "Content-Type":
-                            "application/json"
-
-                        },
-
-                        body:JSON.stringify({
-
-                            idToken:
-                                idToken
-
-                        })
-
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ idToken }),
+                        signal: controller.signal
                     }
-
                 );
+            } catch (requestError) {
+                if (requestError && requestError.name === "AbortError") {
+                    throw new Error("پاسخ سرور ورود بیش از ۱۲ ثانیه طول کشید. لطفاً دوباره تلاش کنید.");
+                }
+                throw new Error("ارتباط با سرور ورود برقرار نشد. اینترنت را بررسی کرده و دوباره تلاش کنید.");
+            } finally {
+                window.clearTimeout(requestTimeout);
+            }
 
 
             /*

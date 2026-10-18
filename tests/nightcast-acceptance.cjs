@@ -300,7 +300,7 @@ function silentWavDataUri() {
 
     // The archive uses cinematic page navigation: open the Podcasts page before testing its cards.
     try {
-      await page.locator('.nc-nav .nav-link[href="/podcasts"]').click();
+      await page.locator('.nc-nav .nav-link[href="#podcasts"]').click();
       await page.waitForFunction(() => {
         const section = document.querySelector('#podcasts');
         return !!section && !section.hidden && getComputedStyle(section).display !== 'none';

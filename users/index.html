@@ -6102,19 +6102,56 @@ LOGOUT
                VIEW
             ========================================================= */
 
-            function applyView() {
+            function applyView(options = {}) {
                 const q = state.query.toLocaleLowerCase("fa");
-                state.visible = q
+                const nextVisible = q
                     ? state.all.filter(p => [
                         p.title, p.book_name, p.author_name, p.category_name, p.tags,
                         p.description, p.short_description, p.summary, p.transcript, p.long_description
                     ].filter(Boolean).join(" ").toLocaleLowerCase("fa").includes(q))
                     : state.all;
 
-                state.renderedCount = 0;
+                // A background API refresh should not clear and rebuild cards that the
+                // listener is currently reading. Keep the DOM and scroll position when
+                // the rendered podcast IDs are unchanged.
+                const previousCount = state.renderedCount;
+                const existingIds = Array.from(els.grid.querySelectorAll(".podcast-card"))
+                    .map(card => String(card.dataset.id || ""));
+                const expectedIds = nextVisible.slice(0, existingIds.length)
+                    .map(p => String(p.id));
+                const canKeepDom = options.preserveExisting === true &&
+                    existingIds.length > 0 &&
+                    existingIds.length === Math.min(previousCount, nextVisible.length) &&
+                    existingIds.every((id, index) => id === expectedIds[index]);
+
+                state.visible = nextVisible;
+                if (canKeepDom) {
+                    // The refreshed feed has the same card order. Avoid a visual flash,
+                    // DOM replacement, and scroll anchoring changes.
+                    state.renderedCount = existingIds.length;
+                    updateStats();
+                    updateInfiniteScrollStatus();
+                    return;
+                }
+
                 if (state.loadObserver && els.loadSentinel) state.loadObserver.unobserve(els.loadSentinel);
                 els.grid.innerHTML = "";
-                loadNextPodcastBatch();
+                if (options.preserveExisting === true && previousCount > state.batchSize) {
+                    // If the catalogue changed, retain approximately the same amount of
+                    // content so the visitor does not suddenly fall back to three cards.
+                    state.renderedCount = 0;
+                    const keepCount = Math.min(previousCount, state.visible.length);
+                    if (keepCount > 0) {
+                        render(state.visible.slice(0, keepCount));
+                        state.renderedCount = keepCount;
+                        updateInfiniteScrollStatus();
+                    } else {
+                        loadNextPodcastBatch();
+                    }
+                } else {
+                    state.renderedCount = 0;
+                    loadNextPodcastBatch();
+                }
                 updateStats();
             }
 
@@ -6273,9 +6310,9 @@ LOGOUT
 
                     updateLatest(freshItems);
                     updatePodcastCollectionSchema(freshItems);
-                    // Keep the listener's current page when the background refresh completes.
-                    // applyView() will clamp it only if the refreshed result has fewer pages.
-                    applyView();
+                    // Keep already-rendered podcast cards stable when the API refresh completes.
+                    // Replacing the entire grid here caused cards to disappear/reappear during scroll.
+                    applyView({ preserveExisting: true });
 
                 } catch (err) {
                     console.error("NightCast Feed Error:", err);

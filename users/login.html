@@ -2,7 +2,7 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <title>NightCast | ورود به رادیو کهکشانی</title>
   <meta name="theme-color" content="#050816">
   <meta name="color-scheme" content="dark">
@@ -60,5 +60,17 @@
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="/users/js/login.js?v=20261018-2"></script>
+
+<script>
+/* NightCast app-like interaction layer; retire legacy PWA registrations. */
+(function(){
+  'use strict';
+  document.addEventListener('contextmenu',function(event){event.preventDefault();});
+  document.addEventListener('keydown',function(event){
+    if((event.ctrlKey||event.metaKey)&&(['+','=','-','0','Add','Subtract'].includes(event.key)))event.preventDefault();
+  },{capture:true});
+  if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(registrations){registrations.forEach(function(registration){registration.unregister();});}).catch(function(){});}
+})();
+</script>
 </body>
 </html>

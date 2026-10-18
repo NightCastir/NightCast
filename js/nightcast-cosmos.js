@@ -8,7 +8,7 @@ function ensureFontAwesomeCdn(){
   const family=pseudo.fontFamily||"";
   const glyph=pseudo.content||"";
   if(/Font Awesome/i.test(family)&&glyph&&glyph!=="none"&&glyph!=='""')return;
-  if(document.querySelector('link[data-nc-fa-fallback="true"]'))return;
+  if(document.querySelector('link[href*="fontawesome-free@6.7.2"]'))return;
   const fallback=document.createElement("link");
   fallback.rel="stylesheet";
   fallback.href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css";

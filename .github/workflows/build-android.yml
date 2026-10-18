@@ -365,9 +365,9 @@ jobs:
           # ----------------------------------------------------------
           # Generate Android versionCode
           #
-          # 4.1.0 -> 40100
-          # 4.2.0 -> 40200
-          # 4.3.0 -> 40300
+          # 5.2.0 -> 50200
+          # 5.2.3 -> 50203
+          # 5.3.0 -> 50300
           # ----------------------------------------------------------
 
           version_code = (
@@ -1335,7 +1335,9 @@ jobs:
               echo "The published APK is unchanged."
               exit 0
             fi
-            git commit -m "Publish NightCast 4.0.2 release APK"
+            VERSION="$(python3 -c 'import json; print(json.load(open("version.json"))["version"])')"
+            test "$VERSION" = "5.2.3"
+            git commit -m "Publish NightCast ${VERSION} release APK"
             if git push origin HEAD:main; then
               echo "Release APK published successfully."
               exit 0

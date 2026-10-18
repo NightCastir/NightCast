@@ -1013,13 +1013,47 @@ footer p{
     width: 100%;
     max-width: 100%;
     min-width: 0;
-    overflow: hidden;
+    overflow: visible;
     margin-inline: auto;
+    position: relative;
+    z-index: 2;
 }
 
 .google-login-container > div,
 .google-login-container iframe {
     max-width: 100% !important;
+}
+
+.nightcast-google-fallback {
+    width: 320px;
+    max-width: 100%;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border: 1px solid #dadce0;
+    border-radius: 6px;
+    background: #fff;
+    color: #202124;
+    font: 500 14px/1.4 Vazirmatn, Tahoma, sans-serif;
+    cursor: pointer;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 3;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.nightcast-google-fallback:focus-visible {
+    outline: 3px solid #8ab4f8;
+    outline-offset: 3px;
+}
+
+.nightcast-google-fallback-icon {
+    font: 700 20px/1 Arial, sans-serif;
+    color: #4285f4;
 }
 
 @media (max-width: 380px) {

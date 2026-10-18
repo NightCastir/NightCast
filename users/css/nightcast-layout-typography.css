@@ -1,0 +1,194 @@
+/* NightCast contact spacing + responsive typography audit layer.
+   Presentation-only overrides. Preserve routes, API, player and auth behavior. */
+:root {
+  --nc-content-gutter: clamp(16px, 3.2vw, 48px);
+  --nc-panel-inset: clamp(20px, 3.2vw, 42px);
+  --nc-copy-line: 1.95;
+}
+
+/* Consistent safe gutters and prevent flex/grid children from forcing overflow. */
+#podcasts, #about, #contact,
+.nc-about-shell, .nc-contact-shell,
+.nc-about-hero, .nc-contact-hero,
+.nc-about-grid, .nc-contact-grid,
+.nc-contact-info, .nc-social-section,
+.podcast-grid, .podcast-card, .podcast-info {
+  min-width: 0;
+  max-width: 100%;
+}
+#podcasts, #about, #contact {
+  padding-inline: var(--nc-content-gutter) !important;
+}
+.nc-about-shell, .nc-contact-shell {
+  width: 100%;
+  margin-inline: auto;
+}
+.nc-about-copy, .nc-about-panel, .nc-about-hero,
+.nc-contact-hero, .nc-contact-panel, .nc-contact-card,
+.nc-social-intro {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+.nc-about-copy, .nc-about-panel, .nc-contact-panel {
+  padding: var(--nc-panel-inset) !important;
+}
+.nc-about-copy p, .nc-about-panel p, .nc-contact-hero p,
+.nc-contact-panel p, .nc-contact-card p, .nc-social-intro p {
+  max-width: 68ch;
+  line-height: var(--nc-copy-line);
+  text-wrap: pretty;
+}
+.nc-contact-hero {
+  align-items: flex-start;
+  gap: clamp(18px, 3vw, 38px);
+  padding: clamp(18px, 2.6vw, 34px) !important;
+  margin-bottom: clamp(18px, 2.4vw, 30px);
+  border: 1px solid rgba(165, 205, 255, .14);
+  border-radius: clamp(18px, 2vw, 28px);
+  background: linear-gradient(135deg, rgba(15, 30, 52, .9), rgba(7, 15, 30, .76));
+}
+.nc-contact-hero > div,
+.nc-contact-hero > p {
+  min-width: 0;
+}
+.nc-contact-hero h2 {
+  max-width: 19ch;
+  font-size: clamp(1.55rem, 2.7vw, 2.65rem) !important;
+  line-height: 1.55 !important;
+  letter-spacing: 0 !important;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+.nc-contact-hero p {
+  flex: 1 1 34ch;
+  margin: 0 !important;
+  font-size: clamp(.95rem, 1.15vw, 1.08rem) !important;
+  line-height: 2.05 !important;
+}
+.nc-section-eyebrow, .nc-kicker {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 10px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.nc-contact-grid {
+  align-items: stretch;
+  gap: clamp(14px, 1.8vw, 24px);
+}
+.nc-contact-card {
+  padding: clamp(16px, 1.7vw, 22px) !important;
+  gap: clamp(12px, 1.4vw, 18px);
+}
+.nc-contact-card strong {
+  font-size: clamp(.9rem, 1vw, 1rem) !important;
+  line-height: 1.9 !important;
+  overflow-wrap: anywhere;
+}
+.nc-contact-card small {
+  font-size: clamp(.74rem, .82vw, .82rem) !important;
+  line-height: 1.8;
+}
+.nc-about-hero {
+  gap: clamp(20px, 3vw, 42px);
+  padding: clamp(22px, 3.2vw, 46px) !important;
+}
+.nc-about-copy h2, .nc-about-copy h3, .nc-about-panel h3 {
+  line-height: 1.55 !important;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+.nc-about-copy p, .nc-about-panel p {
+  font-size: clamp(.94rem, 1.1vw, 1.06rem);
+}
+.section-head {
+  min-width: 0;
+  gap: 14px 22px;
+}
+.section-title, #podcastHeading {
+  max-width: 100%;
+  font-size: clamp(1.45rem, 2.3vw, 2.15rem) !important;
+  line-height: 1.55 !important;
+  letter-spacing: 0 !important;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+.section-sub {
+  max-width: 65ch;
+  font-size: clamp(.9rem, 1vw, 1rem) !important;
+  line-height: 1.95 !important;
+}
+.podcast-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: clamp(12px, 1.5vw, 22px) !important;
+}
+.podcast-card { min-width: 0; }
+.podcast-info { padding: clamp(13px, 1.25vw, 19px) !important; }
+.podcast-title {
+  font-size: clamp(.98rem, 1.02vw, 1.13rem) !important;
+  line-height: 1.7 !important;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+.podcast-desc {
+  font-size: clamp(.84rem, .88vw, .94rem) !important;
+  line-height: 1.95 !important;
+  overflow-wrap: anywhere;
+}
+.podcast-card .meta, .podcast-category, .podcast-episode, .podcast-tag {
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+.card-footer { gap: 8px; }
+.card-footer .btn { font-size: clamp(.78rem, .82vw, .88rem); }
+
+/* Standard desktop / small laptop. */
+@media (max-width: 1199px) {
+  .podcast-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  .nc-contact-grid { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); }
+  .nc-contact-hero { flex-wrap: wrap; }
+  .nc-contact-hero p { flex-basis: 30ch; }
+}
+/* Tablet portrait and landscape: readable type and balanced card density. */
+@media (max-width: 900px) {
+  :root { --nc-content-gutter: clamp(15px, 3vw, 26px); --nc-panel-inset: clamp(18px, 3vw, 28px); }
+  .podcast-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .nc-contact-grid { grid-template-columns: minmax(0, 1fr); }
+  .nc-contact-map-card { min-height: 320px; }
+  .nc-map { height: 300px; }
+  .nc-about-hero { grid-template-columns: minmax(0, 1fr) !important; }
+  .nc-contact-hero { display: flex; flex-direction: column; align-items: stretch; }
+  .nc-contact-hero h2 { max-width: 26ch; font-size: clamp(1.55rem, 3.5vw, 2.15rem) !important; }
+  .nc-contact-hero p { flex: auto; }
+}
+/* Mobile: single-column text, comfortable edge spacing, no clipped long words. */
+@media (max-width: 600px) {
+  :root { --nc-content-gutter: 14px; --nc-panel-inset: 19px; }
+  #podcasts, #about, #contact { padding-inline: var(--nc-content-gutter) !important; }
+  .podcast-grid { grid-template-columns: minmax(0, 1fr) !important; gap: 16px !important; }
+  .nc-contact-hero { padding: 20px !important; gap: 12px; border-radius: 20px; }
+  .nc-contact-hero h2 { font-size: clamp(1.45rem, 6vw, 1.9rem) !important; line-height: 1.65 !important; }
+  .nc-contact-hero p { font-size: .95rem !important; line-height: 2.05 !important; }
+  .nc-contact-card { align-items: flex-start; }
+  .nc-contact-map-card { min-height: 280px; padding: 7px; }
+  .nc-map { height: 260px; }
+  .section-head { align-items: stretch; }
+  .section-title, #podcastHeading { font-size: clamp(1.35rem, 5.5vw, 1.8rem) !important; }
+  .podcast-title { font-size: 1.02rem !important; }
+  .podcast-desc { font-size: .9rem !important; }
+  .card-footer .btn { font-size: .82rem; }
+}
+/* Narrow phones and zoomed layouts. */
+@media (max-width: 380px) {
+  :root { --nc-content-gutter: 11px; --nc-panel-inset: 16px; }
+  .nc-contact-hero { padding: 16px !important; }
+  .nc-contact-hero h2 { font-size: 1.38rem !important; }
+  .nc-contact-card { padding: 14px !important; gap: 10px; }
+  .nc-contact-icon { width: 40px; height: 40px; }
+  .podcast-info { padding: 13px !important; }
+  .card-footer { gap: 6px; }
+  .card-footer .btn { padding-inline: 9px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nc-contact-card, .podcast-card, .podcast-cover img { transition: none !important; }
+}

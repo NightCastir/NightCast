@@ -110,6 +110,9 @@ jobs:
           if (!root.includes('class="nc-splash"') || !root.includes('window.location.replace(target)') || !root.includes('"/podcasts"')) {
             throw new Error('Root splash page is missing its splash markup or /podcasts redirect');
           }
+          if (!root.includes('/users/index.html#podcasts') || !root.includes('window.location.hostname === "localhost"')) {
+            throw new Error('Root splash page is missing the native Android archive route; this can cause a splash redirect loop in Capacitor.');
+          }
           for (const ref of ['../css/cosmic-experience.css', '../css/nightcast-cosmos.css', '../js/nightcast-cosmos.js']) {
             if (!archive.includes(ref)) throw new Error('Archive page is missing reference: ' + ref);
           }

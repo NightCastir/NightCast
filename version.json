@@ -1,7 +1,7 @@
 {
-  "version": "5.2.3",
+  "version": "5.2.4",
   "title": "به‌روزرسانی NightCast",
-  "message": "نسخه جدید NightCast منتشر شده است. برای دریافت اصلاحات و امکانات جدید، برنامه را به‌روزرسانی کنید.",
+  "message": "نسخه ۵.۲.۴ مشکل حلقه بارگذاری اولیه در برنامه اندروید را برطرف می‌کند. برای دریافت اصلاحات، برنامه را به‌روزرسانی کنید.",
   "marketUrl": "https://cafebazaar.ir/app/ir.nightcast.app",
   "githubUrl": "https://github.com/NightCastir/NightCast/raw/refs/heads/main/downloadrelease/NightCast.apk",
   "downloadUrl": "https://www.nightcast.ir/downloadrelease/NightCast.apk"

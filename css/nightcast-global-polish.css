@@ -20,3 +20,8 @@ img,video,iframe{height:auto}
 @keyframes ncGalaxyRotate{to{transform:rotate(360deg)}}
 @keyframes ncGalaxyStarDrift{to{transform:translate3d(4%,2%,0);background-position:210px 190px}}
 @media(prefers-reduced-motion:reduce){#ncGalaxyLoader,.nc-galaxy-orbit,.nc-galaxy-stars{animation:none!important;transition:none!important}}
+
+/* Keep scroll-triggered reveal effects from shifting content vertically. */
+.nc-reveal{transform:none!important;transition:opacity .24s ease!important;will-change:auto!important}
+.nc-reveal.nc-visible{transform:none!important}
+@media(prefers-reduced-motion:reduce){.nc-reveal{transition:none!important}}

@@ -376,7 +376,7 @@ function silentWavDataUri() {
       await page.waitForFunction(() => document.querySelectorAll('#podcastGrid .podcast-card').length === 1);
       console.log('PASS | Search filters the podcast catalogue');
       assert(await page.locator('#podcastGrid .podcast-card').first().getAttribute('data-id') === '91001', 'Search returned the wrong record');
-      await search.fill('');
+      await page.locator('#searchClear').click();
       await page.waitForFunction(() => document.querySelectorAll('#podcastGrid .podcast-card').length === 5, undefined, { timeout: 7000 });
       const catalogueState = await page.evaluate(() => {
         const loader = document.querySelector('#ncPodcastInitialLoader');

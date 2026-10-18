@@ -349,19 +349,28 @@ function silentWavDataUri() {
 
     // Explicitly opt into galaxy mode; list mode is the performance-friendly default.
     try {
+      const initialView = await page.evaluate(() => ({
+        mode: document.querySelector('#podcasts')?.dataset.viewMode,
+        gridVisible: getComputedStyle(document.querySelector('#podcastGrid')).display !== 'none',
+        hasConstellation: !!document.querySelector('#ncConstellation'),
+        hasStarfield: !!document.querySelector('.nc-cosmos-canvas')
+      }));
+      assert(initialView.mode === 'list' && initialView.gridVisible && !initialView.hasConstellation && !initialView.hasStarfield,
+        'List mode should not mount the duplicate constellation or animated starfield: ' + JSON.stringify(initialView));
       await page.locator('[data-nc-view="galaxy"]').click();
       await page.waitForSelector('#ncConstellation .nc-planet', { state: 'visible', timeout: 7000 });
       const viewState = await page.evaluate(() => ({
         mode: document.querySelector('#podcasts')?.dataset.viewMode,
         gridDisplay: getComputedStyle(document.querySelector('#podcastGrid')).display,
         galaxyVisible: !!document.querySelector('#ncConstellation') && getComputedStyle(document.querySelector('#ncConstellation')).display !== 'none',
+        hasStarfield: !!document.querySelector('.nc-cosmos-canvas'),
         storedMode: localStorage.getItem('nightcast-podcast-view-mode'),
         activePressed: document.querySelector('[data-nc-view="galaxy"]')?.getAttribute('aria-pressed')
       }));
       assert(viewState.mode === 'galaxy' && viewState.gridDisplay === 'none' && viewState.galaxyVisible,
         'Galaxy mode must hide the list instead of displaying both: ' + JSON.stringify(viewState));
-      assert(viewState.storedMode === 'galaxy' && viewState.activePressed === 'true',
-        'Galaxy choice was not saved and exposed accessibly: ' + JSON.stringify(viewState));
+      assert(viewState.storedMode === 'galaxy' && viewState.activePressed === 'true' && viewState.hasStarfield,
+        'Galaxy choice was not saved, exposed accessibly, or did not activate its visual layer: ' + JSON.stringify(viewState));
       report('2.1 List and galaxy modes are exclusive and preference persists', true, JSON.stringify(viewState));
     } catch (error) {
       report('2.1 List and galaxy modes are exclusive and preference persists', false, String(error.message || error));
@@ -395,7 +404,7 @@ function silentWavDataUri() {
       await page.waitForFunction(() => {
         const section = document.querySelector('#podcasts');
         const grid = document.querySelector('#podcastGrid');
-        return section?.dataset.viewMode === 'list' && !!grid && getComputedStyle(grid).display !== 'none' && !document.querySelector('#ncConstellation');
+        return section?.dataset.viewMode === 'list' && !!grid && getComputedStyle(grid).display !== 'none' && !document.querySelector('#ncConstellation') && !document.querySelector('.nc-cosmos-canvas');
       }, undefined, { timeout: 5000 });
       const search = page.locator('#searchInput');
       await search.fill('سیاره آزمایشی اول');
@@ -486,7 +495,7 @@ function silentWavDataUri() {
       await page.locator('[data-nc-view="list"]').click();
       await page.waitForFunction(() => {
         const section = document.querySelector('#podcasts');
-        return section?.dataset.viewMode === 'list' && getComputedStyle(document.querySelector('#podcastGrid')).display !== 'none' && !document.querySelector('#ncConstellation');
+        return section?.dataset.viewMode === 'list' && getComputedStyle(document.querySelector('#podcastGrid')).display !== 'none' && !document.querySelector('#ncConstellation') && !document.querySelector('.nc-cosmos-canvas');
       }, undefined, { timeout: 5000 });
       console.log('PASS | Detail play button toggles pause and synchronizes all play icons');
 
@@ -737,6 +746,8 @@ function silentWavDataUri() {
       report('6. Mobile navigation drawer remains fixed and usable', mobileNavigationPassed, mobileNavigationDetail);
 
       try {
+        await page.locator('[data-nc-view="galaxy"]').click();
+        await page.waitForSelector('#ncConstellation .nc-planet', { state: 'visible', timeout: 5000 });
         await page.emulateMedia({ reducedMotion: 'no-preference' });
         const motion = await page.evaluate(() => {
           const style = (selector, pseudo) => {

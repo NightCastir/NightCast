@@ -5832,6 +5832,7 @@ LOGOUT
                 modal.classList.add("open");
                 modal.setAttribute("aria-hidden", "false");
                 document.body.classList.add("nc-detail-open");
+                updateCardPlaying();
                 modal.querySelector("[data-action='close-details']")?.focus({ preventScroll: true });
             }
 
@@ -5844,15 +5845,29 @@ LOGOUT
                 lastPodcastDetailsTrigger?.focus?.({ preventScroll: true });
             }
 
-            // The details dialog is outside #podcastGrid, so grid-level delegation cannot close it.
-            // Use document delegation to support the close button and backdrop after the modal is parsed.
+            // The details dialog is outside #podcastGrid, so grid-level delegation
+            // cannot handle its episode play button or close button.
             document.addEventListener("click", event => {
                 const target = event.target;
                 if (!(target instanceof Element)) return;
+
+                const playButton = target.closest('#ncPodcastDetail [data-action="play"]');
+                if (playButton) {
+                    event.preventDefault();
+                    const id = Number(playButton.dataset.id);
+                    if (state.current && Number(state.current.id) === id) {
+                        togglePlay();
+                    } else {
+                        playPodcast(id);
+                    }
+                    return;
+                }
+
                 const closeButton = target.closest('#ncPodcastDetail [data-action="close-details"]');
-                if (!closeButton) return;
-                event.preventDefault();
-                closePodcastDetails();
+                if (closeButton) {
+                    event.preventDefault();
+                    closePodcastDetails();
+                }
             });
 
             document.addEventListener("keydown", event => {
@@ -6002,6 +6017,20 @@ LOGOUT
 
                     card.classList.toggle("is-playing", playing);
                 });
+
+                // The detail dialog is outside the podcast grid; synchronize its
+                // episode button from the same single audio-player state.
+                const detailPlay = document.querySelector('#ncPodcastDetail [data-action="play"]');
+                if (detailPlay) {
+                    const detailId = Number(detailPlay.dataset.id);
+                    const detailIsPlaying = !!isPlaying && detailId === currentId;
+                    const icon = detailPlay.querySelector("i");
+                    if (icon) icon.className = detailIsPlaying ? "fa-solid fa-pause" : "fa-solid fa-play";
+                    detailPlay.classList.toggle("is-playing", detailIsPlaying);
+                    detailPlay.setAttribute("aria-pressed", detailIsPlaying ? "true" : "false");
+                    detailPlay.setAttribute("aria-label", detailIsPlaying ? "توقف موقت اپیزود" : "پخش اپیزود");
+                    detailPlay.lastChild.textContent = detailIsPlaying ? " توقف اپیزود" : " پخش اپیزود";
+                }
 
                 // Keep the featured/hero play button synchronized too.
                 if (els.latestPlay) {

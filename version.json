@@ -1,7 +1,7 @@
 {
-  "version": "5.2.5",
+  "version": "5.2.6",
   "title": "به‌روزرسانی NightCast",
-  "message": "نسخه ۵.۲.۵ انیمیشن بارگذاری را واضح‌تر نمایش می‌دهد و مسیر ورود OpenID را در برنامه اندروید اصلاح می‌کند.",
+  "message": "نسخه ۵.۲.۶ رابط کاربری برنامه اندروید را مستقیماً از وب‌سایت رسمی NightCast بارگذاری می‌کند تا صفحات و ورود با نسخه وب یکسان باشند.",
   "marketUrl": "https://cafebazaar.ir/app/ir.nightcast.app",
   "githubUrl": "https://github.com/NightCastir/NightCast/raw/refs/heads/main/downloadrelease/NightCast.apk",
   "downloadUrl": "https://www.nightcast.ir/downloadrelease/NightCast.apk"

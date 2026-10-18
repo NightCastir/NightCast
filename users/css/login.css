@@ -1078,3 +1078,230 @@ footer p{
     }
 }
 
+
+
+/* ==================================================
+   NIGHTCAST COSMIC LOGIN — responsive CSS3 scene
+   Decorative layers never intercept sign-in controls.
+================================================== */
+body.cosmic-login {
+    min-height: 100vh;
+    min-height: 100svh;
+    isolation: isolate;
+    overflow-x: clip;
+    background:
+        radial-gradient(ellipse at 50% 8%, rgba(24, 56, 119, .38), transparent 45%),
+        linear-gradient(160deg, #030611 0%, #071329 52%, #09091e 100%);
+}
+.cosmos-scene {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    contain: strict;
+    background:
+        radial-gradient(ellipse at 18% 28%, rgba(40, 104, 220, .13), transparent 34%),
+        radial-gradient(ellipse at 83% 72%, rgba(126, 55, 190, .13), transparent 36%);
+}
+.cosmos-nebula {
+    position: absolute;
+    width: min(70vw, 760px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    filter: blur(clamp(38px, 7vw, 100px));
+    opacity: .28;
+    will-change: transform;
+    animation: ncNebulaDrift 24s ease-in-out infinite alternate;
+}
+.nebula-one {
+    top: -34%;
+    left: -18%;
+    background: radial-gradient(circle, rgba(30, 116, 255, .7), rgba(49, 54, 154, .15) 45%, transparent 70%);
+}
+.nebula-two {
+    right: -22%;
+    bottom: -42%;
+    background: radial-gradient(circle, rgba(130, 55, 222, .65), rgba(0, 199, 255, .12) 46%, transparent 70%);
+    animation-delay: -11s;
+    animation-duration: 31s;
+}
+.cosmos-stars {
+    position: absolute;
+    inset: -50%;
+    width: 200%;
+    height: 200%;
+    background-repeat: repeat;
+    transform-origin: center;
+    will-change: transform;
+}
+.stars-back {
+    opacity: .44;
+    background-image:
+        radial-gradient(1px 1px at 25px 35px, #fff 98%, transparent),
+        radial-gradient(1px 1px at 95px 115px, #9edbff 98%, transparent),
+        radial-gradient(1.5px 1.5px at 165px 75px, #fff 98%, transparent),
+        radial-gradient(1px 1px at 215px 165px, #b8c7ff 98%, transparent);
+    background-size: 260px 220px;
+    animation: ncStarTravel 115s linear infinite;
+}
+.stars-front {
+    opacity: .28;
+    background-image:
+        radial-gradient(2px 2px at 45px 65px, #fff 98%, transparent),
+        radial-gradient(1px 1px at 145px 25px, #7de7ff 98%, transparent),
+        radial-gradient(1.5px 1.5px at 225px 135px, #d7caff 98%, transparent);
+    background-size: 310px 270px;
+    animation: ncStarTravel 78s linear infinite reverse;
+}
+.cosmos-orbit {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    border: 1px solid rgba(139, 188, 255, .11);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) rotate(-22deg);
+    box-shadow: 0 0 28px rgba(56, 130, 255, .035), inset 0 0 24px rgba(56, 130, 255, .025);
+}
+.orbit-one { width: min(78vw, 850px); height: min(35vw, 380px); animation: ncOrbitTilt 46s linear infinite; }
+.orbit-two { width: min(95vw, 1050px); height: min(54vw, 560px); transform: translate(-50%, -50%) rotate(28deg); animation: ncOrbitTiltReverse 70s linear infinite; }
+.orbit-three { width: min(58vw, 640px); height: min(72vw, 720px); transform: translate(-50%, -50%) rotate(66deg); border-color: rgba(180, 126, 255, .08); animation: ncOrbitTilt 88s linear infinite reverse; }
+.orbit-planet {
+    position: absolute;
+    top: 11%;
+    left: 16%;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #b5eaff;
+    box-shadow: 0 0 9px 3px rgba(82, 189, 255, .42), 0 0 28px 8px rgba(82, 189, 255, .12);
+}
+.orbit-two .orbit-planet {
+    top: 72%;
+    left: 83%;
+    width: 5px;
+    height: 5px;
+    background: #d6baff;
+    box-shadow: 0 0 9px 3px rgba(177, 111, 255, .4), 0 0 26px 8px rgba(177, 111, 255, .12);
+}
+.orbit-three .orbit-planet { top: 24%; left: 79%; width: 4px; height: 4px; }
+.cosmos-shooting-star {
+    position: absolute;
+    top: 17%;
+    left: -25%;
+    width: clamp(70px, 13vw, 150px);
+    height: 1px;
+    opacity: 0;
+    transform: rotate(-24deg);
+    background: linear-gradient(90deg, transparent, rgba(130, 220, 255, .95), #fff);
+    filter: drop-shadow(0 0 5px #55caff);
+    animation: ncShootingStar 11s ease-in-out infinite;
+}
+.cosmos-horizon {
+    position: absolute;
+    left: -20%;
+    right: -20%;
+    bottom: -47%;
+    height: 70%;
+    border-radius: 50%;
+    border-top: 1px solid rgba(81, 157, 255, .2);
+    background: radial-gradient(ellipse at 50% 0%, rgba(28, 80, 168, .15), transparent 65%);
+    box-shadow: 0 -18px 70px rgba(34, 98, 210, .06);
+}
+.login-page {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    min-height: 100svh;
+    padding-top: max(28px, env(safe-area-inset-top));
+    padding-bottom: max(28px, env(safe-area-inset-bottom));
+}
+.login-card {
+    position: relative;
+    overflow: hidden;
+    border-color: rgba(150, 196, 255, .19);
+    background: linear-gradient(145deg, rgba(11, 22, 46, .82), rgba(8, 12, 29, .78));
+    box-shadow: 0 24px 90px rgba(0, 0, 0, .48), 0 0 50px rgba(49, 110, 235, .08), inset 0 1px 0 rgba(255,255,255,.08);
+    animation: ncCardArrive .85s cubic-bezier(.2,.75,.25,1) both;
+}
+.login-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 14%;
+    right: 14%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(115, 213, 255, .65), transparent);
+    pointer-events: none;
+}
+.login-card > * { position: relative; z-index: 1; }
+.cosmic-eyebrow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 9px;
+    margin-top: 23px;
+    color: #a6c8ed;
+    font-size: 12px;
+    letter-spacing: .04em;
+}
+.cosmic-eyebrow span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #62ddff;
+    box-shadow: 0 0 12px #62ddff;
+    animation: ncSignalPulse 2.5s ease-in-out infinite;
+}
+.brand-icon {
+    border: 1px solid rgba(155, 224, 255, .55);
+    background: radial-gradient(circle at 35% 25%, #55dcff, #1764d9 54%, #182c77);
+    box-shadow: 0 0 26px rgba(33, 152, 255, .28), 0 0 68px rgba(42, 106, 255, .15), inset 0 1px 10px rgba(255,255,255,.25);
+}
+.hero h1 { text-shadow: 0 0 28px rgba(67, 173, 255, .15); }
+.login-card footer { border-color: rgba(150, 196, 255, .12); }
+.auth-loader { z-index: 99999; }
+@keyframes ncNebulaDrift {
+    from { transform: translate3d(-2%, -1%, 0) scale(.94) rotate(0deg); }
+    to { transform: translate3d(8%, 7%, 0) scale(1.1) rotate(18deg); }
+}
+@keyframes ncStarTravel {
+    from { transform: rotate(0deg) translate3d(0, 0, 0); }
+    to { transform: rotate(8deg) translate3d(3%, 2%, 0); }
+}
+@keyframes ncOrbitTilt { from { rotate: 0deg; } to { rotate: 360deg; } }
+@keyframes ncOrbitTiltReverse { from { rotate: 0deg; } to { rotate: -360deg; } }
+@keyframes ncShootingStar {
+    0%, 64%, 100% { opacity: 0; transform: translate3d(0,0,0) rotate(-24deg); }
+    66% { opacity: .9; }
+    74% { opacity: 0; transform: translate3d(145vw, 42vh, 0) rotate(-24deg); }
+}
+@keyframes ncCardArrive {
+    from { opacity: 0; transform: translateY(16px) scale(.985); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes ncSignalPulse {
+    0%, 100% { opacity: .6; transform: scale(.9); }
+    50% { opacity: 1; transform: scale(1.25); }
+}
+@media (max-width: 600px) {
+    .cosmos-nebula { opacity: .2; filter: blur(46px); }
+    .orbit-one { width: 115vw; height: 48vw; }
+    .orbit-two { width: 130vw; height: 75vw; }
+    .orbit-three { width: 90vw; height: 120vw; }
+    .login-card { padding: 26px 20px; border-radius: 24px; }
+    .brand-icon { width: 78px; height: 78px; font-size: 34px; }
+    .hero h1 { font-size: clamp(30px, 9vw, 38px); }
+    .cosmos-shooting-star { top: 12%; }
+}
+@media (max-width: 360px) {
+    .login-page { padding-inline: 10px; }
+    .login-card { padding: 22px 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .cosmos-nebula, .cosmos-stars, .cosmos-orbit, .cosmos-shooting-star,
+    .brand-icon, .cosmic-eyebrow span, .login-card {
+        animation: none !important;
+    }
+    .login-card { opacity: 1; transform: none; }
+}

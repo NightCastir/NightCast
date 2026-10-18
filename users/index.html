@@ -628,6 +628,24 @@
                    SEARCH
                 ========================================================= */
 
+                .infinite-scroll-sentinel {
+                    display: flex;
+                    width: 100%;
+                    min-height: 48px;
+                    align-items: center;
+                    justify-content: center;
+                    margin: 18px auto 28px;
+                    padding: 12px 16px;
+                    color: var(--nc-text-muted, #a9bbd0);
+                    font-size: .88rem;
+                    line-height: 1.8;
+                    text-align: center;
+                    border: 1px solid rgba(148, 174, 204, .16);
+                    border-radius: 14px;
+                    background: rgba(15, 31, 49, .52);
+                }
+                .infinite-scroll-sentinel[hidden] { display: none !important; }
+
                 .page-size-control {
                     position: sticky;
                     top: calc(var(--nc-header, 64px) + 8px);
@@ -3554,16 +3572,7 @@
 
                 </div>
 
-                <div class="page-size-control">
-                    <label for="pageSizeSelect">تعداد نمایش در هر صفحه</label>
-                    <select id="pageSizeSelect" aria-label="انتخاب تعداد پادکست در هر صفحه">
-                        <option value="4">۴ پادکست</option>
-                        <option value="8" selected>۸ پادکست</option>
-                        <option value="12">۱۲ پادکست</option>
-                        <option value="16">۱۶ پادکست</option>
-                        <option value="all">نمایش همه</option>
-                    </select>
-                </div>
+
 
             </div>
 
@@ -3621,9 +3630,8 @@
             </div>
 
 
-            <div id="pagination"
-                 class="pagination"
-                 aria-label="صفحه‌بندی">
+            <div id="podcastLoadSentinel" class="infinite-scroll-sentinel" role="status" aria-live="polite" aria-label="بارگذاری پادکست‌های بیشتر">
+                برای دیدن پادکست‌های بیشتر اسکرول کنید
             </div>
 
         </section>
@@ -4556,8 +4564,7 @@
                 search:
                     $("#searchInput"),
 
-                pageSize:
-                    $("#pageSizeSelect"),
+                loadSentinel: $("#podcastLoadSentinel"),
 
                 clear:
                     $("#searchClear"),
@@ -4652,14 +4659,11 @@
 
                 page: 1,
 
-                pageSize: (() => {
-                    try {
-                        const saved = localStorage.getItem("NightCastPodcastPageSizeV2");
-                        return ["4", "8", "12", "16", "all"].includes(saved) ? saved : "12";
-                    } catch {
-                        return "12";
-                    }
-                })(),
+                renderedCount: 0,
+
+                batchSize: 3,
+
+                loadObserver: null,
 
                 totalPages: 1,
 
@@ -5885,7 +5889,7 @@ LOGOUT
                 '</article>';
             }
 
-            function render(items) {
+            function render(items, append = false) {
 
                 els.grid.className =
                     "podcast-grid";
@@ -5937,10 +5941,12 @@ LOGOUT
                 }
 
 
-                els.grid.innerHTML =
-                    items
-                        .map(renderCard)
-                        .join("");
+                const cardsHtml = items.map(renderCard).join("");
+                if (append) {
+                    els.grid.insertAdjacentHTML("beforeend", cardsHtml);
+                } else {
+                    els.grid.innerHTML = cardsHtml;
+                }
 
 
                 updateCardPlaying();
@@ -5996,64 +6002,44 @@ LOGOUT
 
 
             /* =========================================================
-               PAGINATION
+               INFINITE SCROLL — LOAD THREE PODCASTS AT A TIME
             ========================================================= */
 
-            function renderPagination() {
-                if (!els.pagination) return;
-
-                const totalPages = Math.max(1, Number(state.totalPages) || 1);
-                const currentPage = Math.min(Math.max(1, Number(state.page) || 1), totalPages);
-                const pageSize = state.pageSize === "all"
-                    ? Math.max(state.visible.length, 1)
-                    : Number(state.pageSize);
-                const startItem = state.visible.length ? ((currentPage - 1) * pageSize) + 1 : 0;
-                const endItem = Math.min(currentPage * pageSize, state.visible.length);
-
-                els.pagination.innerHTML = "";
-                els.pagination.setAttribute("role", "navigation");
-                els.pagination.setAttribute("aria-label", "صفحه‌بندی پادکست‌ها");
-
-                const summary = document.createElement("div");
-                summary.className = "pagination-summary";
-                summary.textContent = `صفحه ${currentPage.toLocaleString("fa-IR")} از ${totalPages.toLocaleString("fa-IR")} • نمایش ${startItem.toLocaleString("fa-IR")} تا ${endItem.toLocaleString("fa-IR")} از ${state.visible.length.toLocaleString("fa-IR")} پادکست`;
-                els.pagination.appendChild(summary);
-
-                if (totalPages <= 1) return;
-
-                const addButton = (label, page, options = {}) => {
-                    const button = document.createElement("button");
-                    button.type = "button";
-                    button.className = "page-btn" + (options.active ? " active" : "");
-                    button.textContent = label;
-                    button.disabled = Boolean(options.disabled);
-                    if (options.active) button.setAttribute("aria-current", "page");
-                    button.setAttribute("aria-label", options.ariaLabel || `رفتن به صفحه ${label}`);
-                    button.addEventListener("click", () => {
-                        if (button.disabled || page === state.page) return;
-                        state.page = page;
-                        applyView();
-                        document.getElementById("podcasts")?.scrollIntoView({ behavior: "smooth", block: "start" });
-                    });
-                    els.pagination.appendChild(button);
-                };
-
-                addButton("قبلی", currentPage - 1, {
-                    disabled: currentPage === 1,
-                    ariaLabel: "رفتن به صفحه قبلی"
-                });
-
-                for (let i = 1; i <= totalPages; i++) {
-                    addButton(i.toLocaleString("fa-IR"), i, {
-                        active: i === currentPage,
-                        ariaLabel: `رفتن به صفحه ${i.toLocaleString("fa-IR")}`
-                    });
+            function updateInfiniteScrollStatus() {
+                if (!els.loadSentinel) return;
+                const shown = Math.min(state.renderedCount, state.visible.length);
+                if (!state.visible.length) {
+                    els.loadSentinel.textContent = "";
+                    els.loadSentinel.hidden = true;
+                    return;
                 }
+                els.loadSentinel.hidden = false;
+                if (shown >= state.visible.length) {
+                    els.loadSentinel.textContent = `همهٔ ${state.visible.length.toLocaleString("fa-IR")} پادکست نمایش داده شد`;
+                    state.loadObserver?.unobserve(els.loadSentinel);
+                } else {
+                    els.loadSentinel.textContent = "برای بارگذاری ۳ پادکست دیگر اسکرول کنید";
+                    state.loadObserver?.observe(els.loadSentinel);
+                }
+            }
 
-                addButton("بعدی", currentPage + 1, {
-                    disabled: currentPage === totalPages,
-                    ariaLabel: "رفتن به صفحه بعدی"
-                });
+            function loadNextPodcastBatch() {
+                if (state.renderedCount >= state.visible.length) {
+                    updateInfiniteScrollStatus();
+                    return;
+                }
+                const start = state.renderedCount;
+                const end = Math.min(start + state.batchSize, state.visible.length);
+                const nextBatch = state.visible.slice(start, end);
+                state.renderedCount = end;
+                render(nextBatch, start > 0);
+                updateInfiniteScrollStatus();
+            }
+
+            if (els.loadSentinel && "IntersectionObserver" in window) {
+                state.loadObserver = new IntersectionObserver(entries => {
+                    if (entries.some(entry => entry.isIntersecting)) loadNextPodcastBatch();
+                }, { root: null, rootMargin: "320px 0px", threshold: 0 });
             }
 
             /* =========================================================
@@ -6061,95 +6047,19 @@ LOGOUT
             ========================================================= */
 
             function applyView() {
+                const q = state.query.toLocaleLowerCase("fa");
+                state.visible = q
+                    ? state.all.filter(p => [
+                        p.title, p.book_name, p.author_name, p.category_name, p.tags,
+                        p.description, p.short_description, p.summary, p.transcript, p.long_description
+                    ].filter(Boolean).join(" ").toLocaleLowerCase("fa").includes(q))
+                    : state.all;
 
-                const q =
-                    state.query
-                        .toLocaleLowerCase("fa");
-
-
-                state.visible =
-                    q
-
-                        ? state.all.filter(
-                            p =>
-                                [
-                                    p.title,
-                                    p.book_name,
-                                    p.author_name,
-                                    p.category_name,
-                                    p.tags,
-                                    p.description,
-                                    p.short_description,
-                                    p.summary,
-                                    p.transcript,
-                                    p.long_description
-                                ]
-                                    .filter(Boolean)
-                                    .join(" ")
-                                    .toLocaleLowerCase("fa")
-                                    .includes(q)
-                        )
-
-                        : state.all;
-
-
-                state.totalPages =
-                    Math.max(
-                        1,
-                        Math.ceil(
-                            state.visible.length /
-                            (state.pageSize === "all" ? Math.max(state.visible.length, 1) : Number(state.pageSize))
-                        )
-                    );
-
-
-                if (
-                    state.page >
-                    state.totalPages
-                ) {
-
-                    state.page = 1;
-
-                }
-
-
-                const pageSize = state.pageSize === "all"
-                    ? Math.max(state.visible.length, 1)
-                    : Number(state.pageSize);
-                const start = (state.page - 1) * pageSize;
-
-                render(
-                    state.visible.slice(
-                        start,
-                        start + pageSize
-                    )
-                );
-
-
-                renderPagination();
-
+                state.renderedCount = 0;
+                if (state.loadObserver && els.loadSentinel) state.loadObserver.unobserve(els.loadSentinel);
+                els.grid.innerHTML = "";
+                loadNextPodcastBatch();
                 updateStats();
-
-            }
-
-
-            /* =========================================================
-               PAGE SIZE PREFERENCE
-            ========================================================= */
-
-            if (els.pageSize) {
-                els.pageSize.value = state.pageSize;
-                els.pageSize.addEventListener("change", () => {
-                    const selected = els.pageSize.value;
-                    state.pageSize = ["4", "8", "12", "16", "all"].includes(selected) ? selected : "12";
-                    state.page = 1;
-                    try {
-                        localStorage.setItem("NightCastPodcastPageSizeV2", state.pageSize);
-                    } catch (error) {
-                        console.warn("NightCast page-size preference could not be saved.", error);
-                    }
-                    applyView();
-                });
             }
 
 

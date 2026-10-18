@@ -5876,7 +5876,7 @@ LOGOUT
                 }
             });
 
-            function renderCard(p) {
+            function renderCard(p, index = 0) {
                 const id = Number(p.id);
                 const title = String(p.title || p.book_name || "بدون عنوان");
                 const author = String(p.author_name || "NightCast");
@@ -5895,7 +5895,7 @@ LOGOUT
 
                 return '<article id="podcast-' + escapeHtml(String(p.slug || id)) + '" class="podcast-card" data-id="' + id + '">' +
                     '<div class="podcast-cover">' +
-                        '<img src="' + escapeHtml(cover) + '" alt="جلد پادکست ' + escapeHtml(title) + '" width="320" height="320" loading="eager" decoding="async" onerror="this.onerror=null;this.src=\'' + placeholder + '\'">' +
+                        '<img src="' + escapeHtml(cover) + '" alt="جلد پادکست ' + escapeHtml(title) + '" width="320" height="320" loading="${index < 2 ? "eager" : "lazy"}" decoding="async" fetchpriority="${index === 0 ? "high" : "auto"}" onerror="this.onerror=null;this.src=\'' + placeholder + '\'">' +
                         '<div class="cover-shade"></div>' +
                         '<span class="podcast-cover-label"><i class="fa-solid fa-wave-square" aria-hidden="true"></i> NIGHTCAST</span>' +
                         '<button type="button" class="play-card" data-action="play" data-id="' + id + '" aria-label="پخش ' + escapeHtml(title) + '"' + (audio ? "" : " disabled") + '><i class="fa-solid fa-play" aria-hidden="true"></i></button>' +
@@ -5976,7 +5976,7 @@ LOGOUT
                 }
 
 
-                const cardsHtml = items.map(renderCard).join("");
+                const cardsHtml = items.map((item, index) => renderCard(item, index)).join("");
                 if (append) {
                     els.grid.insertAdjacentHTML("beforeend", cardsHtml);
                 } else {
@@ -6108,7 +6108,6 @@ LOGOUT
             ========================================================= */
 
             async function loadPodcasts() {
-
                 const cacheKey = CONFIG.CACHE_KEY;
                 let cached = [];
 
@@ -6119,29 +6118,32 @@ LOGOUT
                     cached = [];
                 }
 
-                // Keep the galaxy loader visible until the complete catalogue is ready.
-                // Cache is a fallback only; avoid flashing stale/partial cards on startup.
-                if (!cached.length) skeletons();
+                // Cache-first: paint the complete previously saved catalogue immediately.
+                // Keep the existing card nodes stable while a fresh catalogue is checked.
+                if (cached.length) {
+                    state.all = cached;
+                    updateLatest(cached);
+                    updatePodcastCollectionSchema(cached);
+                    applyView();
+                    const cachedLoader = document.getElementById("ncPodcastInitialLoader");
+                    if (cachedLoader) requestAnimationFrame(() => cachedLoader.classList.add("is-hidden"));
+                } else {
+                    skeletons();
+                }
 
                 async function fetchAllFromAPI() {
                     const collected = [];
                     let page = 1;
                     let total = Infinity;
 
-                    // Worker API caps each page at five items; collect all pages.
+                    // Worker currently paginates its API; this is a fallback only when
+                    // the static feed is unavailable or demonstrably incomplete.
                     while (page <= 100 && (page === 1 || collected.length < total)) {
                         const response = await fetch(
-                            `${CONFIG.API_BASE}/public/podcasts?page=${page}&limit=5&_=${Date.now()}`,
-                            {
-                                method: "GET",
-                                cache: "no-store",
-                                headers: { "Accept": "application/json" }
-                            }
+                            `${CONFIG.API_BASE}/public/podcasts?page=${page}&limit=5`,
+                            { method: "GET", cache: "default", headers: { "Accept": "application/json" } }
                         );
-
-                        if (!response.ok) {
-                            throw new Error(`Podcast API returned HTTP ${response.status}`);
-                        }
+                        if (!response.ok) throw new Error(`Podcast API returned HTTP ${response.status}`);
 
                         const payload = await response.json();
                         if (!payload || payload.success !== true || !Array.isArray(payload.podcasts)) {
@@ -6149,24 +6151,15 @@ LOGOUT
                         }
 
                         const reportedTotal = Number(payload.total);
-                        if (Number.isFinite(reportedTotal) && reportedTotal > 0) {
-                            total = reportedTotal;
-                        } else if (page === 1 && payload.podcasts.length < 5) {
-                            total = payload.podcasts.length;
-                        }
+                        if (Number.isFinite(reportedTotal) && reportedTotal > 0) total = reportedTotal;
+                        else if (page === 1 && payload.podcasts.length < 5) total = payload.podcasts.length;
 
-                        if (payload.podcasts.length === 0) break;
+                        if (!payload.podcasts.length) break;
                         collected.push(...payload.podcasts);
-
-                        // Use the reported total as the source of truth; don't stop after page 1
-                        // merely because hasMore is absent or incorrectly set in an API response.
                         if (collected.length >= total) break;
-                        // Continue paging while the reported total has not been collected;
-                        // a short intermediate page must not silently truncate the catalogue.
                         page += 1;
                     }
 
-                    // De-duplicate by id in case the source changes while paging.
                     const unique = new Map();
                     for (const podcast of collected) {
                         if (podcast && podcast.id != null) unique.set(String(podcast.id), normalizePodcastRecord(podcast));
@@ -6180,18 +6173,14 @@ LOGOUT
                     let feedError = null;
 
                     try {
-                        const response = await fetch(
-                            CONFIG.FEED_URL + (CONFIG.FEED_URL.includes("?") ? "&" : "?") + "_=" + Date.now(),
-                            {
-                                method: "GET",
-                                cache: "no-store",
-                                headers: { "Accept": "application/json" }
-                            }
-                        );
-
-                        if (!response.ok) {
-                            throw new Error(`Podcast feed returned HTTP ${response.status}`);
-                        }
+                        // Do not append a timestamp or use no-store: the full JSON feed can
+                        // be cached by the browser/CDN and avoids serial API round-trips.
+                        const response = await fetch(CONFIG.FEED_URL, {
+                            method: "GET",
+                            cache: "default",
+                            headers: { "Accept": "application/json" }
+                        });
+                        if (!response.ok) throw new Error(`Podcast feed returned HTTP ${response.status}`);
 
                         const data = await response.json();
                         feedTotal = Number(data?.total || 0);
@@ -6200,43 +6189,45 @@ LOGOUT
                             : Array.isArray(data?.podcasts)
                                 ? data.podcasts
                                 : []).map(normalizePodcastRecord);
-
                     } catch (error) {
                         feedError = error;
-                        console.warn("NightCast static podcast feed failed; trying API fallback.", error);
+                        console.warn("NightCast podcast feed failed; trying API fallback.", error);
                     }
 
-                    // Do not display the static feed until it has been compared with the full API catalogue.
-                    // This prevents partial cards appearing and then being replaced after the first render.
-
-                    // Treat D1 through the Worker API as the live source of truth on every load.
-                    // The generated JSON feed remains a resilient fallback when the API is unavailable.
-                    let freshItems = feedItems;
                     const feedLooksIncomplete =
                         !feedItems.length ||
-                        (feedTotal > feedItems.length) ||
+                        (feedTotal > 0 && feedTotal > feedItems.length) ||
                         feedItems.length <= 4;
 
-                    try {
-                        const apiItems = await fetchAllFromAPI();
-                        if (apiItems.length && (apiItems.length >= freshItems.length || feedLooksIncomplete)) {
-                            freshItems = apiItems;
-                        }
-                    } catch (apiError) {
-                        console.error("NightCast podcast API refresh failed; retaining static feed when available.", apiError);
-                        if (!freshItems.length && cached.length) {
-                            freshItems = cached;
-                        }
-                        if (!freshItems.length) {
-                            throw feedError || apiError;
+                    let freshItems = feedItems;
+                    if (feedLooksIncomplete) {
+                        try {
+                            const apiItems = await fetchAllFromAPI();
+                            if (apiItems.length) freshItems = apiItems;
+                        } catch (apiError) {
+                            console.warn("NightCast API fallback failed.", apiError);
+                            if (!freshItems.length && !cached.length) throw feedError || apiError;
                         }
                     }
 
                     if (!freshItems.length) {
+                        if (cached.length) return;
                         throw feedError || new Error("No podcasts were returned by the feed or API.");
                     }
 
                     freshItems = freshItems.map(normalizePodcastRecord);
+                    const oldIds = state.all.map(p => String(p.id));
+                    const newIds = freshItems.map(p => String(p.id));
+                    const idsChanged = oldIds.length !== newIds.length ||
+                        oldIds.some((id, index) => id !== newIds[index]);
+
+                    // Never replace the catalogue underneath a listener who has already
+                    // started scrolling. If IDs match, keep the same DOM nodes and images.
+                    if (cached.length && idsChanged && window.scrollY > 80) {
+                        console.info("NightCast: deferred catalogue DOM update to avoid scroll jumps.");
+                        return;
+                    }
+
                     state.all = freshItems;
                     try {
                         localStorage.setItem(cacheKey, JSON.stringify(freshItems));
@@ -6246,43 +6237,36 @@ LOGOUT
 
                     updateLatest(freshItems);
                     updatePodcastCollectionSchema(freshItems);
-                    // Keep already-rendered podcast cards stable when the API refresh completes.
-                    // Replacing the entire grid here caused cards to disappear/reappear during scroll.
-                    applyView({ preserveExisting: true });
-
+                    applyView({ preserveExisting: !idsChanged });
                 } catch (err) {
                     console.error("NightCast Feed Error:", err);
 
-                    if (cached.length) {
-                        // Keep cached podcasts visible if both network sources fail.
-                        state.all = cached;
-                        updateLatest(cached);
-                        updatePodcastCollectionSchema(cached);
-                        applyView();
-                        return;
+                    if (!cached.length) {
+                        els.grid.className = "podcast-grid";
+                        els.grid.innerHTML = `
+                            <div class="error-state" style="grid-column:1/-1">
+                                <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+                                <h3>دریافت پادکست‌ها ناموفق بود</h3>
+                                <p>${escapeHtml(err?.message || "خطای نامشخص")}</p>
+                                <button class="btn btn-primary" data-action="reload">
+                                    <i class="fa-solid fa-rotate" aria-hidden="true"></i>
+                                    تلاش دوباره
+                                </button>
+                            </div>
+                        `;
                     }
-
-                    els.grid.className = "podcast-grid";
-                    els.grid.innerHTML = `
-                        <div class="error-state" style="grid-column:1/-1">
-                            <i class="fa-solid fa-circle-exclamation"></i>
-                            <h3>دریافت پادکست‌ها ناموفق بود</h3>
-                            <p>${escapeHtml(err?.message || "خطای نامشخص")}</p>
-                            <button class="btn btn-primary" data-action="reload">
-                                <i class="fa-solid fa-rotate"></i>
-                                تلاش دوباره
-                            </button>
-                        </div>
-                    `;
                 } finally {
                     const loader = document.getElementById("ncPodcastInitialLoader");
                     if (loader) {
                         const started = Number(window.__ncPodcastLoaderStartedAt) || performance.now();
-                        window.setTimeout(() => loader.classList.add("is-hidden"), Math.max(0, 620 - (performance.now() - started)));
+                        const minimumVisibleMs = cached.length ? 0 : 350;
+                        window.setTimeout(
+                            () => loader.classList.add("is-hidden"),
+                            Math.max(0, minimumVisibleMs - (performance.now() - started))
+                        );
                     }
                 }
             }
-
 
             /* =========================================================
                LATEST

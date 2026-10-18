@@ -784,8 +784,7 @@
                     overflow: hidden;
                     box-shadow: 0 8px 30px rgba(0,0,0,.18);
                     transition: transform .25s, box-shadow .25s, border-color .25s;
-                    content-visibility: auto;
-                    contain-intrinsic-size: 450px;
+                    /* Avoid content-visibility placeholder swaps that can shift scroll position. */
                 }
 
                     .podcast-card:hover {
@@ -3196,7 +3195,7 @@
                     border: 1px solid rgba(148,174,204,.16) !important; border-radius: 20px !important;
                     background: linear-gradient(135deg, rgba(21,39,61,.98), rgba(10,23,39,.99)) !important;
                     box-shadow: 0 10px 28px rgba(0,0,0,.16) !important;
-                    content-visibility: auto; contain-intrinsic-size: 220px;
+                    content-visibility: visible; contain-intrinsic-size: none;
                     transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease;
                 }
                 #podcasts .podcast-card:hover { transform: translateY(-3px); border-color: rgba(54,181,255,.42) !important; box-shadow: 0 16px 38px rgba(0,0,0,.24) !important; }
@@ -3289,9 +3288,36 @@
     <link rel="stylesheet" href="../css/nightcast-player-finish.css?v=2">
 
 <link rel="stylesheet" href="../css/nightcast-global-polish.css?v=1">
+
+<style id="nc-podcast-initial-loader-style">
+#ncPodcastInitialLoader{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;overflow:hidden;padding:24px;background:rgba(4,9,20,.91);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);opacity:1;visibility:visible;transition:opacity .38s ease,visibility .38s ease}
+#ncPodcastInitialLoader.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
+#ncPodcastInitialLoader .nc-load-stars,#ncPodcastInitialLoader .nc-load-stars:before,#ncPodcastInitialLoader .nc-load-stars:after{position:absolute;inset:-15%;content:"";pointer-events:none;background-image:radial-gradient(2px 2px at 15% 22%,rgba(255,255,255,.9) 50%,transparent 60%),radial-gradient(1px 1px at 73% 19%,rgba(150,207,255,.9) 50%,transparent 60%),radial-gradient(2px 2px at 84% 71%,rgba(255,255,255,.8) 50%,transparent 60%),radial-gradient(1px 1px at 31% 78%,rgba(233,190,112,.9) 50%,transparent 60%),radial-gradient(1px 1px at 56% 48%,rgba(255,255,255,.8) 50%,transparent 60%);background-size:390px 310px;animation:ncLoadStarsDrift 24s linear infinite}
+#ncPodcastInitialLoader .nc-load-stars:before{transform:scale(1.4);opacity:.45;background-position:120px 70px;animation-duration:38s}
+#ncPodcastInitialLoader .nc-load-stars:after{transform:scale(.8);opacity:.35;background-position:60px 140px;animation-duration:18s}
+#ncPodcastInitialLoader .nc-load-core{position:relative;width:108px;height:108px;border:1px solid rgba(125,195,255,.25);border-radius:50%;box-shadow:0 0 45px rgba(42,145,255,.13),inset 0 0 35px rgba(42,145,255,.1);animation:ncLoadCorePulse 2.2s ease-in-out infinite}
+#ncPodcastInitialLoader .nc-load-core:before,#ncPodcastInitialLoader .nc-load-core:after{content:"";position:absolute;inset:14px;border:1px solid rgba(233,190,112,.62);border-radius:50%;transform:rotate(-28deg) scaleX(1.7);animation:ncLoadOrbit 3.2s linear infinite}
+#ncPodcastInitialLoader .nc-load-core:after{inset:25px;border-color:rgba(105,190,255,.8);transform:rotate(48deg) scaleX(1.65);animation-duration:2.3s;animation-direction:reverse}
+#ncPodcastInitialLoader .nc-load-core i{position:absolute;inset:43px;border-radius:50%;background:#e9be70;box-shadow:0 0 22px 8px rgba(233,190,112,.32)}
+#ncPodcastInitialLoader .nc-load-copy{position:absolute;top:calc(50% + 88px);width:min(90vw,420px);text-align:center;color:#eaf3ff;font-size:.9rem;line-height:1.9;letter-spacing:.04em}
+#ncPodcastInitialLoader .nc-load-copy strong{display:block;color:#e9be70;font-size:.78rem;letter-spacing:.2em;margin-bottom:5px}
+#ncPodcastInitialLoader .nc-load-progress{width:min(190px,60vw);height:3px;margin:15px auto 0;border-radius:9px;background:rgba(255,255,255,.12);overflow:hidden}
+#ncPodcastInitialLoader .nc-load-progress:after{content:"";display:block;width:40%;height:100%;border-radius:9px;background:linear-gradient(90deg,transparent,#e9be70,#8ccfff,transparent);animation:ncLoadProgress 1.2s ease-in-out infinite}
+@keyframes ncLoadStarsDrift{to{transform:translate3d(3%, -2%, 0) rotate(2deg)}}
+@keyframes ncLoadOrbit{to{rotate:332deg}}
+@keyframes ncLoadCorePulse{50%{scale:1.06;filter:brightness(1.18)}}
+@keyframes ncLoadProgress{from{transform:translateX(260%)}to{transform:translateX(-260%)}}
+@media(prefers-reduced-motion:reduce){#ncPodcastInitialLoader *,#ncPodcastInitialLoader *:before,#ncPodcastInitialLoader *:after{animation:none!important;transition:none!important}}
+</style>
+
 </head>
 
 <body>
+    <div id="ncPodcastInitialLoader" role="status" aria-live="polite" aria-label="در حال بارگذاری همه پادکست‌ها">
+        <div class="nc-load-stars" aria-hidden="true"></div>
+        <div class="nc-load-core" aria-hidden="true"><i></i></div>
+        <div class="nc-load-copy"><strong>NIGHTCAST · COSMOS</strong>در حال دریافت و آماده‌سازی آرشیو کامل پادکست‌ها<div class="nc-load-progress" aria-hidden="true"></div></div>
+    </div>
 
     <header class="nc-header">
 
@@ -3629,10 +3655,6 @@
                  aria-live="polite">
             </div>
 
-
-            <div id="podcastLoadSentinel" class="infinite-scroll-sentinel" role="status" aria-live="polite" aria-label="بارگذاری پادکست‌های بیشتر">
-                برای دیدن پادکست‌های بیشتر اسکرول کنید
-            </div>
 
         </section>
 
@@ -4558,13 +4580,8 @@
                 grid:
                     $("#podcastGrid"),
 
-                pagination:
-                    $("#pagination"),
-
                 search:
                     $("#searchInput"),
-
-                loadSentinel: $("#podcastLoadSentinel"),
 
                 clear:
                     $("#searchClear"),
@@ -4651,21 +4668,15 @@
                STATE
             ========================================================= */
 
+            window.__ncPodcastLoaderStartedAt = performance.now();
+
             let state = {
 
                 all: [],
 
                 visible: [],
 
-                page: 1,
-
                 renderedCount: 0,
-
-                batchSize: 3,
-
-                loadObserver: null,
-
-                totalPages: 1,
 
                 current: null,
 
@@ -6046,65 +6057,41 @@ LOGOUT
                INFINITE SCROLL — LOAD THREE PODCASTS AT A TIME
             ========================================================= */
 
-            function updateInfiniteScrollStatus() {
-                if (!els.loadSentinel) return;
-                const shown = Math.min(state.renderedCount, state.visible.length);
-                if (!state.visible.length) {
-                    els.loadSentinel.textContent = "";
-                    els.loadSentinel.hidden = true;
-                    return;
-                }
-                els.loadSentinel.hidden = false;
-                if (shown >= state.visible.length) {
-                    els.loadSentinel.textContent = `همهٔ ${state.visible.length.toLocaleString("fa-IR")} پادکست نمایش داده شد`;
-                    state.loadObserver?.unobserve(els.loadSentinel);
-                } else {
-                    els.loadSentinel.textContent = "برای بارگذاری ۳ پادکست دیگر اسکرول کنید";
-                    state.loadObserver?.observe(els.loadSentinel);
-                }
-            }
-
-            function loadNextPodcastBatch() {
-                if (!state.visible.length) {
-                    render([]);
-                    updateInfiniteScrollStatus();
-                    return;
-                }
-                if (state.renderedCount >= state.visible.length) {
-                    updateInfiniteScrollStatus();
-                    return;
-                }
-                const start = state.renderedCount;
-                const end = Math.min(start + state.batchSize, state.visible.length);
-                const nextBatch = state.visible.slice(start, end);
-                state.renderedCount = end;
-                render(nextBatch, start > 0);
-                updateInfiniteScrollStatus();
-            }
-
-            if (els.loadSentinel && "IntersectionObserver" in window) {
-                state.loadObserver = new IntersectionObserver(entries => {
-                    if (entries.some(entry => entry.isIntersecting)) loadNextPodcastBatch();
-                }, { root: null, rootMargin: "320px 0px", threshold: 0 });
-            }
-
             /* =========================================================
                VIEW
             ========================================================= */
 
-            function applyView() {
+            function applyView(options = {}) {
+                // Keep the input as the source of truth so a pending debounced search
+                // cannot leave a stale filter after the clear action.
+                state.query = els.search ? els.search.value.trim() : state.query;
                 const q = state.query.toLocaleLowerCase("fa");
-                state.visible = q
+                const nextVisible = q
                     ? state.all.filter(p => [
                         p.title, p.book_name, p.author_name, p.category_name, p.tags,
                         p.description, p.short_description, p.summary, p.transcript, p.long_description
                     ].filter(Boolean).join(" ").toLocaleLowerCase("fa").includes(q))
                     : state.all;
 
-                state.renderedCount = 0;
-                if (state.loadObserver && els.loadSentinel) state.loadObserver.unobserve(els.loadSentinel);
-                els.grid.innerHTML = "";
-                loadNextPodcastBatch();
+                const existingIds = Array.from(els.grid.querySelectorAll(".podcast-card"))
+                    .map(card => String(card.dataset.id || ""));
+                const expectedIds = nextVisible.map(p => String(p.id));
+                const canKeepDom = options.preserveExisting === true &&
+                    existingIds.length === expectedIds.length &&
+                    existingIds.length > 0 &&
+                    existingIds.every((id, index) => id === expectedIds[index]);
+
+                state.visible = nextVisible;
+                if (canKeepDom) {
+                    state.renderedCount = existingIds.length;
+                    updateStats();
+                    return;
+                }
+
+                // Commit the entire filtered catalogue at once. Scrolling never adds,
+                // removes, or replaces cards; only an explicit search changes the list.
+                render(state.visible);
+                state.renderedCount = state.visible.length;
                 updateStats();
             }
 
@@ -6125,14 +6112,9 @@ LOGOUT
                     cached = [];
                 }
 
-                // Render cached data immediately, but do not treat it as the final list.
-                if (cached.length) {
-                    state.all = cached;
-                    updateLatest(cached);
-                    applyView();
-                } else {
-                    skeletons();
-                }
+                // Keep the galaxy loader visible until the complete catalogue is ready.
+                // Cache is a fallback only; avoid flashing stale/partial cards on startup.
+                if (!cached.length) skeletons();
 
                 async function fetchAllFromAPI() {
                     const collected = [];
@@ -6217,14 +6199,8 @@ LOGOUT
                         console.warn("NightCast static podcast feed failed; trying API fallback.", error);
                     }
 
-                    // Render the complete static feed immediately so a slow Worker refresh
-                    // never leaves first-time visitors staring at skeleton cards.
-                    if (feedItems.length) {
-                        state.all = feedItems.map(normalizePodcastRecord);
-                        updateLatest(state.all);
-                        updatePodcastCollectionSchema(state.all);
-                        applyView();
-                    }
+                    // Do not display the static feed until it has been compared with the full API catalogue.
+                    // This prevents partial cards appearing and then being replaced after the first render.
 
                     // Treat D1 through the Worker API as the live source of truth on every load.
                     // The generated JSON feed remains a resilient fallback when the API is unavailable.
@@ -6263,9 +6239,9 @@ LOGOUT
 
                     updateLatest(freshItems);
                     updatePodcastCollectionSchema(freshItems);
-                    // Keep the listener's current page when the background refresh completes.
-                    // applyView() will clamp it only if the refreshed result has fewer pages.
-                    applyView();
+                    // Keep already-rendered podcast cards stable when the API refresh completes.
+                    // Replacing the entire grid here caused cards to disappear/reappear during scroll.
+                    applyView({ preserveExisting: true });
 
                 } catch (err) {
                     console.error("NightCast Feed Error:", err);
@@ -6291,6 +6267,12 @@ LOGOUT
                             </button>
                         </div>
                     `;
+                } finally {
+                    const loader = document.getElementById("ncPodcastInitialLoader");
+                    if (loader) {
+                        const started = Number(window.__ncPodcastLoaderStartedAt) || performance.now();
+                        window.setTimeout(() => loader.classList.add("is-hidden"), Math.max(0, 620 - (performance.now() - started)));
+                    }
                 }
             }
 
@@ -6953,6 +6935,7 @@ LOGOUT
             els.clear.addEventListener(
                 "click",
                 () => {
+                    clearTimeout(state.searchTimer);
         
                     els.search.value =
                         "";
@@ -8524,8 +8507,7 @@ body.nc-comments-open{overflow:hidden}
                     min-width: 0; display: flex; flex-direction: column;
                     border: 1px solid rgba(255,255,255,.075); border-radius: 22px;
                     background: linear-gradient(155deg, rgba(20,39,62,.98), rgba(10,24,41,.98));
-                    box-shadow: 0 14px 38px rgba(0,0,0,.20); content-visibility: auto;
-                    contain-intrinsic-size: 520px;
+                    box-shadow: 0 14px 38px rgba(0,0,0,.20);
                     transition: transform .24s ease, border-color .24s ease, box-shadow .24s ease;
                 }
                 .podcast-card:hover { transform: translateY(-5px); border-color: rgba(5,157,249,.32); box-shadow: 0 20px 48px rgba(0,0,0,.28), 0 0 0 1px rgba(5,157,249,.045); }
@@ -9380,6 +9362,5 @@ body.nc-comments-open{overflow:hidden}
     <script src="../js/clean-routes.js?v=1" defer></script>
     <script src="../js/nightcast-cosmos.js?v=5" defer></script>
 
-<script src="../js/nightcast-galaxy-loader.js?v=1" defer></script>
 </body>
 </html>

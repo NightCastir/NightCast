@@ -347,6 +347,26 @@ function silentWavDataUri() {
       throw new Error('Catalogue rendering prerequisite failed');
     }
 
+    // Explicitly opt into galaxy mode; list mode is the performance-friendly default.
+    try {
+      await page.locator('[data-nc-view="galaxy"]').click();
+      await page.waitForSelector('#ncConstellation .nc-planet', { state: 'visible', timeout: 7000 });
+      const viewState = await page.evaluate(() => ({
+        mode: document.querySelector('#podcasts')?.dataset.viewMode,
+        gridDisplay: getComputedStyle(document.querySelector('#podcastGrid')).display,
+        galaxyVisible: !!document.querySelector('#ncConstellation') && getComputedStyle(document.querySelector('#ncConstellation')).display !== 'none',
+        storedMode: localStorage.getItem('nightcast-podcast-view-mode'),
+        activePressed: document.querySelector('[data-nc-view="galaxy"]')?.getAttribute('aria-pressed')
+      }));
+      assert(viewState.mode === 'galaxy' && viewState.gridDisplay === 'none' && viewState.galaxyVisible,
+        'Galaxy mode must hide the list instead of displaying both: ' + JSON.stringify(viewState));
+      assert(viewState.storedMode === 'galaxy' && viewState.activePressed === 'true',
+        'Galaxy choice was not saved and exposed accessibly: ' + JSON.stringify(viewState));
+      report('2.1 List and galaxy modes are exclusive and preference persists', true, JSON.stringify(viewState));
+    } catch (error) {
+      report('2.1 List and galaxy modes are exclusive and preference persists', false, String(error.message || error));
+    }
+
     // Activity 3: the constellation item must open details for the same record.
     try {
       await page.waitForSelector('#ncConstellation .nc-planet', { timeout: 7000 });
@@ -371,6 +391,12 @@ function silentWavDataUri() {
         await page.locator('#ncPodcastDetail .nc-detail-close').click();
         await page.waitForFunction(() => !document.querySelector('#ncPodcastDetail')?.classList.contains('open'), undefined, { timeout: 3000 });
       }
+      await page.locator('[data-nc-view="list"]').click();
+      await page.waitForFunction(() => {
+        const section = document.querySelector('#podcasts');
+        const grid = document.querySelector('#podcastGrid');
+        return section?.dataset.viewMode === 'list' && !!grid && getComputedStyle(grid).display !== 'none' && !document.querySelector('#ncConstellation');
+      }, undefined, { timeout: 5000 });
       const search = page.locator('#searchInput');
       await search.fill('سیاره آزمایشی اول');
       await page.waitForFunction(() => document.querySelectorAll('#podcastGrid .podcast-card').length === 1);
@@ -428,6 +454,9 @@ function silentWavDataUri() {
       await page.waitForFunction(() => document.querySelector('audio')?.paused === true, undefined, { timeout: 5000 });
       console.log('PASS | Audio pause control works');
 
+      // Switch to galaxy mode only for the planet/detail interaction.
+      await page.locator('[data-nc-view="galaxy"]').click();
+      await page.waitForSelector('#ncConstellation .nc-planet', { state: 'visible', timeout: 5000 });
       // The detail-dialog button must toggle the same podcast and stay synchronized with card/player controls.
       const testPlanet = page.locator('#ncConstellation .nc-planet').filter({ hasText: 'سیاره آزمایشی اول' }).first();
       await testPlanet.click();
@@ -454,6 +483,11 @@ function silentWavDataUri() {
         document.querySelector('#playButton i')?.classList.contains('fa-play')
       , undefined, { timeout: 3000 });
       await page.locator('#ncPodcastDetail .nc-detail-close').click();
+      await page.locator('[data-nc-view="list"]').click();
+      await page.waitForFunction(() => {
+        const section = document.querySelector('#podcasts');
+        return section?.dataset.viewMode === 'list' && getComputedStyle(document.querySelector('#podcastGrid')).display !== 'none' && !document.querySelector('#ncConstellation');
+      }, undefined, { timeout: 5000 });
       console.log('PASS | Detail play button toggles pause and synchronizes all play icons');
 
       await page.locator('.podcast-card[data-id="91001"] [data-action="favorite"]').click();

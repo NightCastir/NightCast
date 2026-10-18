@@ -7,7 +7,7 @@
    /users/js/app.js
 
    Version:
-   4.1.0
+   5.2.3
 
    Main Application Controller
 
@@ -26,7 +26,7 @@ const App = {
 
 
 
-    version:"4.1.0",
+    version:"5.2.3",
 
 
 

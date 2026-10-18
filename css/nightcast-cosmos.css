@@ -367,22 +367,43 @@ main#home .hero h1{max-width:100%;overflow-wrap:normal;word-break:normal}
 }
 
 
-/* Contact section: keep panel copy comfortably inset from every edge. */
-#contact .nc-contact-card{
-  padding:clamp(16px,2.2vw,24px)!important;
-}
-#contact .nc-contact-card>div:last-child{
+/* Contact section spacing guard: explicit panel and copy insets across breakpoints. */
+#contact .nc-contact-grid .nc-contact-info > .nc-contact-card,
+#contact .nc-contact-info .nc-contact-card{
+  box-sizing:border-box!important;
+  padding:22px 24px!important;
+  gap:16px!important;
   min-width:0;
-  padding-inline:3px;
 }
-#contact .nc-contact-map-card{
-  padding:clamp(10px,1.4vw,16px)!important;
+#contact .nc-contact-info .nc-contact-card > div:last-child{
+  box-sizing:border-box!important;
+  flex:1 1 auto!important;
+  min-width:0!important;
+  padding:6px 8px!important;
+  margin:0!important;
+}
+#contact .nc-contact-info .nc-contact-card small,
+#contact .nc-contact-info .nc-contact-card strong,
+#contact .nc-contact-info .nc-contact-card a{
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
+#contact .nc-contact-grid .nc-contact-map-card{
+  box-sizing:border-box!important;
+  padding:14px!important;
 }
 #contact .nc-contact-map-card .nc-map{
+  width:100%;
   max-width:100%;
 }
 @media(max-width:760px){
-  #contact .nc-contact-card{padding:16px!important}
-  #contact .nc-contact-card>div:last-child{padding-inline:4px}
-  #contact .nc-contact-map-card{padding:10px!important}
+  #contact .nc-contact-grid .nc-contact-info > .nc-contact-card,
+  #contact .nc-contact-info .nc-contact-card{
+    padding:16px 18px!important;
+    gap:12px!important;
+  }
+  #contact .nc-contact-info .nc-contact-card > div:last-child{
+    padding:5px 6px!important;
+  }
+  #contact .nc-contact-grid .nc-contact-map-card{padding:10px!important}
 }

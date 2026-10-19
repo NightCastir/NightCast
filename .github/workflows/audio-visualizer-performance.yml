@@ -4,11 +4,17 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - 'js/nightcast-app.js'
+      - 'js/nightcast-player.js'
+      - 'css/nightcast-base.css'
       - '.github/workflows/audio-visualizer-performance.yml'
   pull_request:
     branches: [main]
     paths:
       - 'index.html'
+      - 'js/nightcast-app.js'
+      - 'js/nightcast-player.js'
+      - 'css/nightcast-base.css'
       - '.github/workflows/audio-visualizer-performance.yml'
   workflow_dispatch:
 
@@ -28,15 +34,19 @@ jobs:
           node <<'NODE'
           const fs = require('node:fs');
           const html = fs.readFileSync('index.html', 'utf8');
+          const app = fs.readFileSync('js/nightcast-app.js', 'utf8');
+          const player = fs.readFileSync('js/nightcast-player.js', 'utf8');
+          const styles = fs.readFileSync('css/nightcast-base.css', 'utf8');
+          const source = html + '\n' + app + '\n' + player + '\n' + styles;
           const checks = [
-            ['visualizer canvas exists', /id=["']ncAudioVisualizer["']/.test(html)],
-            ['frequency-domain analysis is real', /getByteFrequencyData\s*\(/.test(html) && /createAnalyser\s*\(/.test(html)],
-            ['time-domain samples contribute to bar heights', /getByteTimeDomainData\s*\(/.test(html) && /const rms = Math\.sqrt/.test(html)],
-            ['low analyser smoothing is configured', /smoothingTimeConstant\s*=\s*0\.42/.test(html)],
-            ['render rate is capped near 30 FPS', /timestamp - ncVisualizerLastFrame < 30/.test(html)],
-            ['device pixel ratio is bounded', /Math\.min\(window\.devicePixelRatio \|\| 1, 1\.5\)/.test(html)],
-            ['bar count is bounded', /Math\.max\(16, Math\.min\(36,/.test(html)],
-            ['animation stops when audio stops', /!els\.audio\.paused && !els\.audio\.ended/.test(html)]
+            ['visualizer canvas exists', /id=["']ncAudioVisualizer["']/.test(source)],
+            ['frequency-domain analysis is real', /getByteFrequencyData\s*\(/.test(source) && /createAnalyser\s*\(/.test(source)],
+            ['time-domain samples contribute to bar heights', /getByteTimeDomainData\s*\(/.test(source) && /const rms = Math\.sqrt/.test(source)],
+            ['low analyser smoothing is configured', /smoothingTimeConstant\s*=\s*0\.42/.test(source)],
+            ['render rate is capped near 30 FPS', /timestamp - ncVisualizerLastFrame < 30/.test(source)],
+            ['device pixel ratio is bounded', /Math\.min\(window\.devicePixelRatio \|\| 1, 1\.5\)/.test(source)],
+            ['bar count is bounded', /Math\.max\(16, Math\.min\(36,/.test(source)],
+            ['animation stops when audio stops', /!els\.audio\.paused && !els\.audio\.ended/.test(source)]
           ];
           for (const [name, ok] of checks) console.log(`${ok ? 'PASS' : 'FAIL'} | ${name}`);
           if (checks.some(([, ok]) => !ok)) process.exit(1);

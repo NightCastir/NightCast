@@ -95,6 +95,10 @@ const assert = require('node:assert/strict');
         texture: getComputedStyle(document.documentElement).getPropertyValue('--nc-theme-texture').trim()
       }));
       check('theme tokens and distinct texture resolve for ' + themeId, appearance.id === themeId && !!appearance.primary && !!appearance.surface && appearance.texture.includes('unsplash.com'));
+      await page.setViewportSize({ width: 360, height: 800 });
+      check('no horizontal overflow on mobile for ' + themeId, await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1));
+      await page.setViewportSize({ width: 1440, height: 900 });
+      check('no horizontal overflow on desktop for ' + themeId, await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1));
       const card = page.locator('#podcastGrid .podcast-card').first();
       const cardAppearance = await card.evaluate(el => ({bg:getComputedStyle(el).backgroundImage,border:getComputedStyle(el).borderColor,color:getComputedStyle(el).color}));
       observedCardSurfaces.add(cardAppearance.bg + '|' + cardAppearance.border + '|' + cardAppearance.color);

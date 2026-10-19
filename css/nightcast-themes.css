@@ -200,3 +200,49 @@ html[data-theme] .status-info,html[data-theme] .badge-info,html[data-theme] [dat
 .nc-theme-ribbon-swatches,.nc-theme-swatches{display:none!important}
 
 @media(max-width:760px){html[data-theme] body{background-attachment:scroll,scroll!important}}
+
+
+/* GLOBAL TEXTURE VISIBILITY FIX (2026-10-19).
+   Previous overlays were 91% opaque on the page, 94% on cards and 96% on panels,
+   which effectively hid the Unsplash images even though their URLs were configured.
+   These deliberately translucent overlays reveal the selected theme artwork while preserving text contrast. */
+html[data-theme] body{
+  background-image:
+    linear-gradient(135deg,
+      color-mix(in srgb,var(--nc-theme-bg) 42%,transparent),
+      color-mix(in srgb,var(--nc-theme-bg) 30%,transparent)),
+    var(--nc-theme-texture)!important;
+  background-size:cover,cover!important;
+  background-position:center,center!important;
+  background-attachment:scroll,scroll!important;
+}
+html[data-theme] #podcastGrid.podcast-grid>.podcast-card,
+html[data-theme] #podcastGrid.podcast-grid>article.podcast-card,
+html[data-theme] .podcast-grid>.podcast-card,
+html[data-theme] .podcast-grid>article.podcast-card,
+html[data-theme] .podcast-grid>div.podcast-card{
+  background-image:
+    linear-gradient(145deg,
+      color-mix(in srgb,var(--nc-theme-surface) 62%,transparent),
+      color-mix(in srgb,var(--nc-theme-bg) 48%,transparent)),
+    var(--nc-theme-texture)!important;
+  background-size:cover,cover!important;
+  background-position:center,center!important;
+}
+html[data-theme] .profile-panel,
+html[data-theme] .nc-comments-card,
+html[data-theme] .nc-detail-dialog,
+html[data-theme] .hero-card,
+html[data-theme] .nc-about-hero,
+html[data-theme] .nc-contact-card{
+  background-image:
+    linear-gradient(145deg,
+      color-mix(in srgb,var(--nc-theme-surface) 70%,transparent),
+      color-mix(in srgb,var(--nc-theme-bg) 55%,transparent)),
+    var(--nc-theme-texture)!important;
+  background-size:cover,cover!important;
+  background-position:center,center!important;
+}
+@media(max-width:700px){
+  html[data-theme] body{background-attachment:scroll,scroll!important}
+}

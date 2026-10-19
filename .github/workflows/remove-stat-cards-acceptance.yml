@@ -24,12 +24,12 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - name: Check removed counters and null-safe updates
+      - name: Check canonical archive counters and legacy alias
         shell: bash
         run: |
           node <<'NODE'
           const fs = require('node:fs');
-          const files = ['index.html', 'users/index.html'];
+          const files = ['index.html'];
           let failed = false;
           for (const file of files) {
             const html = fs.readFileSync(file, 'utf8');
@@ -46,6 +46,17 @@ jobs:
               console.log(`${ok ? 'PASS' : 'FAIL'} | ${file} | ${name}`);
               if (!ok) failed = true;
             }
+          }
+          const alias = fs.readFileSync('users/index.html', 'utf8');
+          const aliasChecks = [
+            ['legacy archive is a lightweight alias', alias.length < 2000],
+            ['legacy archive is noindex', /noindex,follow/.test(alias)],
+            ['legacy archive does not duplicate statistic panels', !/podcastCount|bookCount|favoriteCount|profile-stats/.test(alias)],
+            ['legacy archive preserves the canonical redirect', /window.location.replace\(target.toString\(\)\)/.test(alias)]
+          ];
+          for (const [name, ok] of aliasChecks) {
+            console.log(`${ok ? 'PASS' : 'FAIL'} | users/index.html | ${name}`);
+            if (!ok) failed = true;
           }
           if (failed) process.exit(1);
           NODE

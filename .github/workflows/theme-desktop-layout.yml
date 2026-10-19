@@ -10,12 +10,12 @@ on:
       - 'css/nightcast-profile.css'
       - 'css/nightcast-themes.css'
       - 'tests/theme-system-acceptance.cjs'
-      - '.github/workflows/theme-system-acceptance.yml'
       - '.github/workflows/theme-functionality.yml'
       - '.github/workflows/theme-mobile-layout.yml'
       - '.github/workflows/theme-desktop-layout.yml'
       - '.github/workflows/theme-loader-accessibility.yml'
       - '.github/workflows/theme-release-readiness.yml'
+      - '.github/workflows/theme-system-acceptance.yml'
   pull_request:
     branches: [main]
     paths:
@@ -26,12 +26,12 @@ on:
       - 'css/nightcast-profile.css'
       - 'css/nightcast-themes.css'
       - 'tests/theme-system-acceptance.cjs'
-      - '.github/workflows/theme-system-acceptance.yml'
       - '.github/workflows/theme-functionality.yml'
       - '.github/workflows/theme-mobile-layout.yml'
       - '.github/workflows/theme-desktop-layout.yml'
       - '.github/workflows/theme-loader-accessibility.yml'
       - '.github/workflows/theme-release-readiness.yml'
+      - '.github/workflows/theme-system-acceptance.yml'
   workflow_dispatch:
 
 permissions:
@@ -75,9 +75,9 @@ jobs:
           const test = fs.readFileSync('tests/theme-system-acceptance.cjs', 'utf8');
           const themeIds = ['midnight-cosmos','aurora','studio-noir','deep-ocean','royal-gold','neon-city','persian-heritage','moonlight'];
           const checks = [
-  ['desktop viewport checks exist for all eight themes', test.includes('theme grid stays within desktop viewport for ' + themeId) && test.includes('width: 1440')],
-  ['theme card grid is defined', /\.nc-theme-grid\s*\{/.test(css)],
-  ['desktop bounds are checked against viewport width', test.includes('desktopGrid.x + desktopGrid.width <= 1440.5')]
+          ['desktop viewport checks exist for all eight themes', test.includes('theme grid stays within desktop viewport for ' + themeId) && test.includes('width: 1440')],
+          ['theme card grid is defined', /\.nc-theme-grid\s*\{/.test(css)],
+          ['desktop bounds are checked against viewport width', test.includes('desktopGrid.x + desktopGrid.width <= 1440.5')]
           ];
           let failed = false;
           for (const [label, ok] of checks) { console.log((ok ? 'PASS' : 'FAIL') + ' | ' + label); if (!ok) failed = true; }

@@ -6,12 +6,18 @@ on:
       - main
     paths:
       - 'index.html'
+      - 'js/nightcast-app.js'
+      - 'js/nightcast-player.js'
+      - 'css/nightcast-base.css'
       - '.github/workflows/podcast-player-live-verify.yml'
   push:
     branches:
       - main
     paths:
       - 'index.html'
+      - 'js/nightcast-app.js'
+      - 'js/nightcast-player.js'
+      - 'css/nightcast-base.css'
       - '.github/workflows/podcast-player-live-verify.yml'
   workflow_dispatch:
 
@@ -39,9 +45,13 @@ jobs:
           node <<'NODE'
           const fs = require('node:fs');
           const html = fs.readFileSync('index.html', 'utf8');
+          const app = fs.readFileSync('js/nightcast-app.js', 'utf8');
+          const player = fs.readFileSync('js/nightcast-player.js', 'utf8');
+          const styles = fs.readFileSync('css/nightcast-base.css', 'utf8');
+          const source = html + '\n' + app + '\n' + player + '\n' + styles;
           const checks = [
             ['visualizer canvas', /id=["']ncAudioVisualizer["']/.test(html)],
-            ['real frequency analyser', /getByteFrequencyData/.test(html)],
+            ['real frequency analyser', /getByteFrequencyData/.test(source)],
             ['audio analyser connection', /createAnalyser\s*\(/.test(html)],
             ['clickable player artwork', /id=["']playerCover["'][^>]*nc-player-cover-clickable/.test(html) || /class=["'][^"']*nc-player-cover-clickable[^"']*["'][^>]*id=["']playerCover["']/.test(html)],
             ['keyboard activation', /playerCover\?\.addEventListener\(['"]keydown['"]/.test(html)],
@@ -109,9 +119,13 @@ jobs:
             for url in "${urls[@]}"; do
               echo "Checking ${url}"
               body="$(curl --location --silent --show-error --max-time 20 --user-agent 'NightCast-Live-Verification/1.0' "${url}" 2>/dev/null || true)"
-              if [[ "${body}" == *'ncAudioVisualizer'* && "${body}" == *'getByteFrequencyData'* && "${body}" == *'nc-player-cover-clickable'* ]]; then
-                echo "PASS: production HTML contains the live visualizer and clickable artwork."
-                exit 0
+              if [[ "${body}" == *'ncAudioVisualizer'* && "${body}" == *'nc-player-cover-clickable'* && "${body}" == *'/js/nightcast-app.js?v=1'* ]]; then
+                app_js="$(curl --location --silent --show-error --max-time 20 --user-agent 'NightCast-Live-Verification/1.0' "https://nightcast.ir/js/nightcast-app.js?v=1" 2>/dev/null || true)"
+                player_js="$(curl --location --silent --show-error --max-time 20 --user-agent 'NightCast-Live-Verification/1.0' "https://nightcast.ir/js/nightcast-player.js?v=1" 2>/dev/null || true)"
+                if [[ "${app_js}" == *'getByteFrequencyData'* && "${app_js}" == *'createAnalyser('* && "${player_js}" == *'playerCover' ]]; then
+                  echo "PASS: production HTML references the external app/player scripts and the published scripts contain the visualizer/player implementation."
+                  exit 0
+                fi
               fi
             done
             echo "Feature not visible yet; retrying in 30 seconds."

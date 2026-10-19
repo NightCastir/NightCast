@@ -1,5 +1,6 @@
 const { chromium } = require('playwright');
 const { spawn } = require('node:child_process');
+const net = require('node:net');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
@@ -236,10 +237,20 @@ function silentWavDataUri() {
     });
     let serverReady = false;
     for (let i = 0; i < 40; i++) {
-      try {
-        const response = await fetch('http://127.0.0.1:4173/index.html', { signal: AbortSignal.timeout(500) });
-        if (response.ok) { serverReady = true; break; }
-      } catch {}
+      const connected = await new Promise(resolve => {
+        const socket = net.createConnection({ host: '127.0.0.1', port: 4173 });
+        let settled = false;
+        const finish = value => {
+          if (settled) return;
+          settled = true;
+          socket.destroy();
+          resolve(value);
+        };
+        socket.once('connect', () => finish(true));
+        socket.once('error', () => finish(false));
+        socket.setTimeout(300, () => finish(false));
+      });
+      if (connected) { serverReady = true; break; }
       await new Promise(resolve => setTimeout(resolve, 250));
     }
     assert(serverReady, 'Local static server did not start');

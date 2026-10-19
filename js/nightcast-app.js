@@ -3019,7 +3019,7 @@ document.addEventListener(
 
         const button =
             event.target.closest(
-                "#requestBookSummaryBtn, #homeBookSummaryRequestBtn"
+                "#requestBookSummaryBtn, #homeBookSummaryRequestBtn, [data-request-book-summary]"
             );
 
         if (!button) {
@@ -3284,6 +3284,26 @@ document.addEventListener(
 
 
                 /* -----------------------------------------------------
+                      PROFILE SETTINGS SHORTCUT
+                 ----------------------------------------------------- */
+
+                const profileSettingsBtn = document.getElementById("profileSettingsBtn");
+                if (profileSettingsBtn) {
+                    profileSettingsBtn.addEventListener("click", () => {
+                        closeProfileOverlay();
+                        const viewSettings = document.querySelector(".nc-view-settings");
+                        if (viewSettings) {
+                            window.setTimeout(() => {
+                                viewSettings.scrollIntoView({ behavior: "smooth", block: "center" });
+                                viewSettings.setAttribute("tabindex", "-1");
+                                viewSettings.focus({ preventScroll: true });
+                            }, 220);
+                        }
+                    });
+                }
+
+
+            /* -----------------------------------------------------
                       PROFILE LOGOUT
                  ----------------------------------------------------- */
 

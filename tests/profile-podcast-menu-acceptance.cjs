@@ -10,6 +10,10 @@ const assert = require('node:assert/strict');
     if (!ok) failures.push(name);
   };
   try {
+    await page.addInitScript(() => {
+      localStorage.setItem('NightCastToken', 'ci-test-token');
+      localStorage.setItem('NightCastUser', JSON.stringify({ id: 1, name: 'CI Test' }));
+    });
     await page.goto('http://127.0.0.1:4173/', { waitUntil: 'domcontentloaded', timeout: 15000 });
 
     check('desktop navigation has one suggestion button', await page.locator('#requestBookSummaryBtn').count() === 1);

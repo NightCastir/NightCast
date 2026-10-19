@@ -37,6 +37,11 @@ check('Former archive-relative assets resolve from root', () => {
   const missing = [...new Set(localRefs)].filter(ref => !fs.existsSync(path.join(process.cwd(), ref.replace(/^\//, ''))));
   assert.deepEqual(missing, [], 'Missing root-relative assets: ' + missing.join(', '));
 });
+check('Root entry keeps the previous podcast-section landing behavior', () => {
+  const routes = fs.readFileSync('js/clean-routes.js', 'utf8');
+  assert.match(routes, /["']\\/["']\\s*:\\s*["']podcasts["']/);
+  assert.match(routes, /path === ["']\\/["'][^;]*#podcasts/);
+});
 check('Legacy /podcasts page redirects immediately and preserves query/hash', () => {
   assert.match(legacy, /window\.location\.replace\(target\)/);
   assert.match(legacy, /window\.location\.search/);

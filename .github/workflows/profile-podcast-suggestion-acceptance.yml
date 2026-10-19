@@ -68,7 +68,7 @@ jobs:
               ['button clearly offers podcast suggestion', /پیشنهاد پادکست دلخواه/.test(button)],
               ['button uses audio-oriented icon', /fa-headphones/.test(button)],
               ['mobile drawer contains podcast suggestion action', /data-request-book-summary[\s\S]{0,260}پیشنهاد پادکست دلخواه/.test(html)],
-              ['profile has settings shortcut', /id="profileSettingsBtn"[\s\S]{0,240}تنظیمات/.test(html)],
+              ['profile does not duplicate global theme picker in settings', !html.includes('id="profileSettingsBtn"') && !html.includes('id="profileThemeSettings"')],
               ['profile CTA card is removed', !/profileLogged[\s\S]{0,1800}پادکست دلخواهت را پیشنهاد بده/.test(html)],
               ['modal describes podcast production', /پیشنهاد کتاب برای ساخت پادکست/.test(html)],
               ['request form keeps stable ID', /id="bookSummaryRequestForm"/.test(html)],

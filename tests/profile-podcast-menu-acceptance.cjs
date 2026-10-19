@@ -18,7 +18,7 @@ const assert = require('node:assert/strict');
 
     check('desktop navigation has one suggestion button', await page.locator('#requestBookSummaryBtn').count() === 1);
     check('profile suggestion button is no longer inside profile', await page.locator('#profileLogged #requestBookSummaryBtn, #profileLogged .profile-book-request').count() === 0);
-    check('profile has Settings shortcut', await page.locator('#profileSettingsBtn').count() === 1);
+    check('profile does not duplicate the global theme picker in settings', await page.locator('#profileSettingsBtn, #profileThemeSettings').count() === 0);
     check('profile retains Favorites', await page.locator('#profileFavorites').count() === 1);
     check('profile retains Logout', await page.locator('#profileLogout').count() === 1);
     check('request modal and form are retained', await page.locator('#bookSummaryRequestModal #bookSummaryRequestForm').count() === 1);

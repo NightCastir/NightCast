@@ -77,7 +77,7 @@ jobs:
           const checks = [
           ['loader has semantic progressbar', /role="progressbar"[^>]*aria-valuemin="0"[^>]*aria-valuemax="100"/.test(html)],
           ['loader has determinate fill', html.includes('nc-entry-progress-fill')],
-          ['theme selection has accessible announcement', html.includes('ncThemeLauncher') && test.includes('global theme ribbon reflects the persisted selection')],
+          ['theme selection has accessible announcement', test.includes('homepage exposes floating theme launcher') && test.includes('global theme ribbon reflects the persisted selection')],
           ['reduced motion is respected', css.includes('prefers-reduced-motion:reduce')]
           ];
           let failed = false;

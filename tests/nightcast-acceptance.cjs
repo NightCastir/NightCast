@@ -324,12 +324,12 @@ function silentWavDataUri() {
       await page.goto('http://127.0.0.1:4173/about/index.html?alias=about', { waitUntil: 'domcontentloaded', timeout: 10000 });
       await page.waitForURL(url => url.pathname === '/' && url.search === '?alias=about' && url.hash === '#about', { timeout: 5000 });
       await page.waitForSelector('#about', { state: 'attached', timeout: 5000 });
-      assert(await page.locator('.nav-link[href="#about"].active').count() > 0, 'About alias must activate About navigation');
+      await page.waitForFunction(() => !!document.querySelector('.nav-link[href="#about"].active'), null, { timeout: 5000 });
 
       await page.goto('http://127.0.0.1:4173/contact/index.html?alias=contact#podcasts', { waitUntil: 'domcontentloaded', timeout: 10000 });
       await page.waitForURL(url => url.pathname === '/' && url.search === '?alias=contact' && url.hash === '#podcasts', { timeout: 5000 });
       await page.waitForSelector('#podcastGrid', { state: 'attached', timeout: 5000 });
-      assert(await page.locator('.nav-link[href="#podcasts"].active').count() > 0, 'Explicit section hash must override the alias default');
+      await page.waitForFunction(() => !!document.querySelector('.nav-link[href="#podcasts"].active'), null, { timeout: 5000 });
       report('1.3. Legacy section aliases return to the canonical root and preserve query/hash', true, page.url());
     } catch (error) {
       report('1.3. Legacy section aliases return to the canonical root and preserve query/hash', false, String(error.message || error));

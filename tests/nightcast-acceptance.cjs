@@ -327,7 +327,7 @@ function silentWavDataUri() {
       report('1. Root route is the single canonical podcast document', false, String(error.message || error));
     }
 
-    // Activity 1.3: legacy section documents land on the canonical root and honor hashes.
+    // Activity 1.3: legacy section documents land on clean section URLs without hashes.
     try {
       await page.goto('http://127.0.0.1:4173/about/index.html?alias=about', { waitUntil: 'domcontentloaded', timeout: 10000 });
       await page.waitForURL(url => url.pathname === '/about' && url.search === '?alias=about' && url.hash === '', { timeout: 5000 });
@@ -336,8 +336,8 @@ function silentWavDataUri() {
 
       await page.goto('http://127.0.0.1:4173/contact/index.html?alias=contact#podcasts', { waitUntil: 'domcontentloaded', timeout: 10000 });
       await page.waitForURL(url => url.pathname === '/contact' && url.search === '?alias=contact' && url.hash === '', { timeout: 5000 });
-      await page.waitForSelector('#podcastGrid', { state: 'attached', timeout: 5000 });
-      await page.waitForFunction(() => !!document.querySelector('.nav-link[href="/"].active'), null, { timeout: 5000 });
+      await page.waitForSelector('#contact', { state: 'attached', timeout: 5000 });
+      await page.waitForFunction(() => !!document.querySelector('.nav-link[href="/contact"].active'), null, { timeout: 5000 });
       report('1.3. Legacy section aliases resolve to clean section URLs', true, page.url());
     } catch (error) {
       report('1.3. Legacy section aliases resolve to clean section URLs', false, String(error.message || error));

@@ -3162,3 +3162,12 @@
 .nc-player-cover-clickable:focus-visible{outline:2px solid #8ce8ff}
 @media(max-width:760px){.nc-audio-visualizer-wrap{order:4;flex:1 0 100%;max-width:none;padding:0 12px}.nc-audio-visualizer{height:32px}.nc-visualizer-status{display:none}.player-inner{flex-wrap:wrap}}
 @media(prefers-reduced-motion:reduce){.nc-player-cover-clickable{transition:none}}
+
+
+/* Podcast suggestion action in the primary navigation */
+.nav-links .nav-link-button{border:0;background:transparent;font:inherit;cursor:pointer;white-space:nowrap}
+.nc-drawer-links .nc-drawer-action{width:100%;min-height:76px;display:flex;align-items:center;gap:12px;padding:12px 14px;text-align:right;color:inherit;font:inherit;background:transparent;border:1px solid transparent;border-radius:16px;cursor:pointer}
+.nc-drawer-links .nc-drawer-action:hover,.nc-drawer-links .nc-drawer-action:focus-visible{background:rgba(141,199,255,.08);border-color:rgba(141,199,255,.17)}
+.nc-drawer-action>span:nth-child(2){display:flex;flex:1;min-width:0;flex-direction:column;gap:4px}
+.nc-drawer-action strong{font-size:.92rem;color:var(--nc-text,#f4f7ff)}
+.nc-drawer-action small{font-size:.76rem;color:var(--nc-text-muted,#a9b7d0);line-height:1.6}

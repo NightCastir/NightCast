@@ -8993,7 +8993,7 @@ body.nc-comments-open{overflow:hidden}
                     if (!link) return;
                     const url = new URL(link.href, location.href);
                     if (url.origin !== location.origin) return;
-                    const cleanRoute = url.pathname.replace(/\\/+$/, "") || "/";
+                    const cleanRoute = url.pathname.replace(/\/+$/, "") || "/";
                     const id = cleanRoute === "/" || cleanRoute === "/index.html" || cleanRoute === "/podcasts"
                         ? "podcasts"
                         : cleanRoute.slice(1);
@@ -9041,7 +9041,7 @@ body.nc-comments-open{overflow:hidden}
                 }
 
                 window.addEventListener("popstate", () => {
-                    const currentPath = location.pathname.replace(/\\/+$/, "") || "/";
+                    const currentPath = location.pathname.replace(/\/+$/, "") || "/";
                     const hashSection = location.hash.slice(1);
                     const id = ["podcasts", "about", "contact"].includes(hashSection)
                         ? hashSection

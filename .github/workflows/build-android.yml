@@ -141,7 +141,7 @@ jobs:
             throw new Error('Guest, password, SMS, or generic OpenID login paths must not be exposed by login pages.');
           }
           for (const ref of ['/css/cosmic-experience.css', '/css/nightcast-cosmos.css', '/js/nightcast-cosmos.js']) {
-            if (!archive.includes(ref)) throw new Error('Archive page is missing reference: ' + ref);
+            if (!root.includes(ref)) throw new Error('Root archive is missing reference: ' + ref);
           }
           // Validate asset paths independently from cache-busting versions (?v=1, ?v=2, ?v=3, ...).
           // A CSS release can advance before its paired JavaScript release; CI must not require a stale query string.

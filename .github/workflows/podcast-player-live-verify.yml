@@ -17,6 +17,9 @@ on:
 
 permissions:
   contents: read
+  pages: read
+  deployments: read
+  actions: read
 
 concurrency:
   group: nightcast-player-live-verification
@@ -48,10 +51,41 @@ jobs:
           if (checks.some(([, ok]) => !ok)) process.exit(1);
           NODE
 
+  pages-diagnostics:
+    name: Inspect GitHub Pages publication settings
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Report Pages source and deployment configuration
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              const { data } = await github.rest.repos.getPages({
+                owner: context.repo.owner,
+                repo: context.repo.repo
+              });
+              core.info(JSON.stringify({
+                status: data.status,
+                html_url: data.html_url,
+                cname: data.cname,
+                source: data.source,
+                build_type: data.build_type,
+                https_enforced: data.https_enforced
+              }, null, 2));
+              core.setOutput('pages_url', data.html_url || 'https://nightcastir.github.io');
+              core.setOutput('pages_status', data.status || 'unknown');
+            } catch (error) {
+              core.error(`Unable to read GitHub Pages configuration (HTTP ${error.status || 'unknown'}): ${error.message}`);
+              core.error('If Pages is disabled or this token cannot read Pages settings, configure/verify Settings > Pages in the repository.');
+              throw error;
+            }
+
   live-site-check:
     name: Verify feature is actually visible on production
     if: github.event_name != 'pull_request'
-    needs: source-check
+    needs: [source-check, pages-diagnostics]
     runs-on: ubuntu-latest
     timeout-minutes: 18
     steps:
@@ -64,6 +98,8 @@ jobs:
             "https://nightcast.ir/podcasts/index.html?nc_live_check=${GITHUB_SHA}"
             "https://www.nightcast.ir/podcasts/?nc_live_check=${GITHUB_SHA}"
             "https://www.nightcast.ir/podcasts/index.html?nc_live_check=${GITHUB_SHA}"
+            "https://nightcastir.github.io/podcasts/?nc_live_check=${GITHUB_SHA}"
+            "https://nightcastir.github.io/podcasts/index.html?nc_live_check=${GITHUB_SHA}"
           )
           deadline=$((SECONDS + 900))
           while (( SECONDS < deadline )); do
@@ -78,5 +114,5 @@ jobs:
             echo "Feature not visible yet; retrying in 30 seconds."
             sleep 30
           done
-          echo "::error::Production site did not expose the podcast visualizer/artwork feature within 15 minutes. Check the actual web-host deployment connection, production branch, CDN/origin cache, and route serving /podcasts/index.html."
+          echo "::error::Production site did not expose the podcast visualizer/artwork feature within 15 minutes. Review the Pages diagnostics above, the configured publishing branch/folder, custom domain/CNAME, and CDN/origin cache."
           exit 1

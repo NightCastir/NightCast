@@ -54,8 +54,8 @@ jobs:
             ['real frequency analyser', /getByteFrequencyData/.test(source)],
             ['audio analyser connection', /createAnalyser\s*\(/.test(html)],
             ['clickable player artwork', /id=["']playerCover["'][^>]*nc-player-cover-clickable/.test(html) || /class=["'][^"']*nc-player-cover-clickable[^"']*["'][^>]*id=["']playerCover["']/.test(html)],
-            ['keyboard activation', /playerCover\?\.addEventListener\(['"]keydown['"]/.test(html)],
-            ['responsive visualizer styles', /\.nc-audio-visualizer-wrap/.test(html)]
+            ['keyboard activation', /playerCover\?\.addEventListener\(['"]keydown['"]/.test(source)],
+            ['responsive visualizer styles', /\.nc-audio-visualizer-wrap/.test(source)]
           ];
           for (const [name, ok] of checks) console.log(`${ok ? 'PASS' : 'FAIL'} ${name}`);
           if (checks.some(([, ok]) => !ok)) process.exit(1);

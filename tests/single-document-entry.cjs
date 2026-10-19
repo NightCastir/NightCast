@@ -50,7 +50,8 @@ check('Root entry keeps the previous podcast-section landing behavior', () => {
   const routes = fs.readFileSync('js/clean-routes.js', 'utf8');
   assert.ok(routes.includes('"/": "podcasts"'), 'Root path must target the podcast section');
   assert.ok(routes.includes('"/index.html": "podcasts"'), 'Bundled index.html must target the podcast section');
-  assert.ok(routes.includes('link.getAttribute("href") === "#podcasts"'), 'Podcast navigation active state must be preserved');
+  assert.ok(routes.includes('href === "#" + targetId'), 'Active navigation must follow the selected section');
+  assert.ok(routes.includes('const targetId = hashTarget || routes[path]'), 'Direct section hashes must override the default podcast landing section');
 });
 check('Legacy /podcasts page redirects immediately and preserves query/hash', () => {
   assert.match(legacy, /window\.location\.replace\(target\)/);
@@ -60,26 +61,37 @@ check('Legacy /podcasts page redirects immediately and preserves query/hash', ()
   assert.match(redirects, /^\/podcasts\s+\/\s+301$/m);
   assert.match(redirects, /^\/podcasts\/\s+\/\s+301$/m);
 });
-check('About and contact routes serve their route-specific documents', () => {
+check('Legacy archive and section URLs are lightweight aliases to the canonical document', () => {
+  const aliases = [
+    { file: 'users/index.html', section: 'podcasts' },
+    { file: 'about/index.html', section: 'about' },
+    { file: 'contact/index.html', section: 'contact' }
+  ];
+  for (const alias of aliases) {
+    const html = fs.readFileSync(alias.file, 'utf8');
+    assert.ok(html.length < 2000, alias.file + ' must remain a lightweight compatibility document, not a duplicated site');
+    assert.match(html, /<meta name="robots" content="noindex,follow">/i);
+    assert.match(html, /<link rel="canonical" href="https:\/\/nightcast\.ir\/">/i);
+    assert.match(html, /target\.search = current\.search/);
+    assert.ok(html.includes('target.hash = current.hash || "' + alias.section + '"'), alias.file + ' must choose its section when no hash was provided');
+    assert.match(html, /window\.location\.replace\(target\.toString\(\)\)/);
+    assert.ok(html.includes('href="/#' + alias.section + '"'), alias.file + ' must provide a no-JavaScript fallback');
+  }
   assert.match(redirects, /^\/about\s+\/about\/index\.html\s+200$/m);
   assert.match(redirects, /^\/contact\s+\/contact\/index\.html\s+200$/m);
-  assert.doesNotMatch(redirects, /^\/(?:about|contact)\s+\/users\/index\.html\s+200$/m);
-
-  const about = fs.readFileSync('about/index.html', 'utf8');
-  const contact = fs.readFileSync('contact/index.html', 'utf8');
-  assert.match(about, /<link rel="canonical" href="https:\/\/nightcast\.ir\/about">/i);
-  assert.match(about, /<meta property="og:url" content="https:\/\/nightcast\.ir\/about">/i);
-  assert.match(about, /<title>درباره NightCast \| رادیوی فرهنگی نایت‌کست<\/title>/i);
-  assert.match(contact, /<link rel="canonical" href="https:\/\/nightcast\.ir\/contact">/i);
-  assert.match(contact, /<meta property="og:url" content="https:\/\/nightcast\.ir\/contact">/i);
-  assert.match(contact, /<title>تماس با NightCast \| ارتباط با نایت‌کست<\/title>/i);
 });
-check('Sitemap lists canonical public pages only', () => {
+
+check('Canonical route handler honors direct section hashes and active navigation', () => {
+  const routes = fs.readFileSync('js/clean-routes.js', 'utf8');
+  assert.match(routes, /const hashTarget = validSections\.has\(requestedHash\) \? requestedHash : null/);
+  assert.match(routes, /const targetId = hashTarget \|\| routes\[path\]/);
+  assert.match(routes, /href === "#" \+ targetId/);
+});
+
+check('Sitemap lists only the canonical HTML document', () => {
   const sitemap = fs.readFileSync('sitemap.xml', 'utf8');
   assert.match(sitemap, /<loc>https:\/\/nightcast\.ir\/<\/loc>/);
-  assert.match(sitemap, /<loc>https:\/\/nightcast\.ir\/about<\/loc>/);
-  assert.match(sitemap, /<loc>https:\/\/nightcast\.ir\/contact<\/loc>/);
-  assert.doesNotMatch(sitemap, /<loc>https:\/\/nightcast\.ir\/podcasts<\/loc>/);
+  assert.doesNotMatch(sitemap, /<loc>https:\/\/nightcast\.ir\/(?:about|contact|podcasts)<\/loc>/);
 });
 
 check('Canonical archive remains Persian RTL and responsive', () => {

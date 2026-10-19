@@ -144,12 +144,9 @@ function silentWavDataUri() {
     report('0.5. Font Awesome CDN fallback is configured on icon pages', iconCdnFailures.length === 0,
       iconCdnFailures.join(', ') || 'All icon-bearing pages have a secondary CDN stylesheet');
 
-    // Route metadata must match the clean URL, and every archive copy must publish the real RSS path.
+    // Only the root document is indexable; legacy paths are small aliases into its sections.
     const routeMetadataExpectations = [
-      { file: 'index.html', canonical: 'https://nightcast.ir/', title: 'NightCast | آرشیو پادکست‌های صوتی، خلاصه و تحلیل کتاب' },
-      { file: 'users/index.html', canonical: 'https://nightcast.ir/podcasts', title: 'پادکست فارسی کتاب و اندیشه | خلاصه و بررسی کتاب — نایت‌کست' },
-      { file: 'about/index.html', canonical: 'https://nightcast.ir/about', title: 'درباره NightCast | رادیوی فرهنگی نایت‌کست' },
-      { file: 'contact/index.html', canonical: 'https://nightcast.ir/contact', title: 'تماس با NightCast | ارتباط با نایت‌کست' }
+      { file: 'index.html', canonical: 'https://nightcast.ir/', title: 'NightCast | آرشیو پادکست‌های صوتی، خلاصه و تحلیل کتاب' }
     ];
     const routeMetadataFailures = [];
     for (const route of routeMetadataExpectations) {
@@ -163,9 +160,27 @@ function silentWavDataUri() {
       if (ogUrl !== route.canonical) routeMetadataFailures.push(route.file + ' og:url=' + ogUrl);
       if (rssUrl !== 'https://nightcast.ir/data/podcasts.xml') routeMetadataFailures.push(route.file + ' RSS=' + rssUrl);
     }
-    report('0.6. Clean-route canonical/social metadata and RSS URLs are correct',
+    report('0.6. Canonical root metadata and RSS discovery are correct',
       routeMetadataFailures.length === 0,
-      routeMetadataFailures.join(' || ') || 'Four entry documents match their canonical routes and use the canonical RSS feed');
+      routeMetadataFailures.join(' || ') || 'Canonical HTML, social URL, title, and RSS feed agree on the root document');
+
+    const routeAliasFailures = [];
+    for (const alias of [
+      { file: 'users/index.html', section: 'podcasts' },
+      { file: 'about/index.html', section: 'about' },
+      { file: 'contact/index.html', section: 'contact' }
+    ]) {
+      const html = fs.readFileSync(alias.file, 'utf8');
+      if (html.length >= 2000) routeAliasFailures.push(alias.file + ' is not a lightweight alias (' + html.length + ' bytes)');
+      if (!html.includes('noindex,follow')) routeAliasFailures.push(alias.file + ' must be noindex');
+      if (!html.includes('href="https://nightcast.ir/"')) routeAliasFailures.push(alias.file + ' canonical must be root');
+      if (!html.includes('target.hash = current.hash || "' + alias.section + '"')) routeAliasFailures.push(alias.file + ' section target is missing');
+      if (!html.includes('window.location.replace(target.toString())')) routeAliasFailures.push(alias.file + ' redirect is missing');
+      if (!html.includes('href="/#' + alias.section + '"')) routeAliasFailures.push(alias.file + ' fallback link is missing');
+    }
+    report('0.7. Legacy archive/About/Contact documents are lightweight aliases',
+      routeAliasFailures.length === 0,
+      routeAliasFailures.join(' || ') || 'Three compatibility documents preserve query/hash and target their canonical section');
 
     // Activity 2: validate the actual public API, independently of browser mocks.
     try {
@@ -302,6 +317,22 @@ function silentWavDataUri() {
       report('1.2. Legacy /podcasts links redirect to root and preserve query/hash', true, page.url());
     } catch (error) {
       report('1. Root route is the single canonical podcast document', false, String(error.message || error));
+    }
+
+    // Activity 1.3: legacy section documents land on the canonical root and honor hashes.
+    try {
+      await page.goto('http://127.0.0.1:4173/about/index.html?alias=about', { waitUntil: 'domcontentloaded', timeout: 10000 });
+      await page.waitForURL(url => url.pathname === '/' && url.search === '?alias=about' && url.hash === '#about', { timeout: 5000 });
+      await page.waitForSelector('#about', { state: 'attached', timeout: 5000 });
+      await page.waitForFunction(() => !!document.querySelector('.nav-link[href="#about"].active'), null, { timeout: 5000 });
+
+      await page.goto('http://127.0.0.1:4173/contact/index.html?alias=contact#podcasts', { waitUntil: 'domcontentloaded', timeout: 10000 });
+      await page.waitForURL(url => url.pathname === '/' && url.search === '?alias=contact' && url.hash === '#podcasts', { timeout: 5000 });
+      await page.waitForSelector('#podcastGrid', { state: 'attached', timeout: 5000 });
+      await page.waitForFunction(() => !!document.querySelector('.nav-link[href="#podcasts"].active'), null, { timeout: 5000 });
+      report('1.3. Legacy section aliases return to the canonical root and preserve query/hash', true, page.url());
+    } catch (error) {
+      report('1.3. Legacy section aliases return to the canonical root and preserve query/hash', false, String(error.message || error));
     }
 
     // Verify sticky header geometry, desktop navigation fit, and an actual CDN icon glyph.

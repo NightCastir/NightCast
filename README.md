@@ -26,81 +26,39 @@ GitHub Actions
         └── Release APK
 ```
 
-## مسیرهای شناخته‌شده
+## ساختار canonical وب‌سایت
 
-| مسیر | کاربرد |
+| مسیر / فایل | کاربرد |
 |---|---|
-| `index.html` | صفحه اصلی ریشه |
-| `users/login.html` | صفحه ورود کاربران |
-| `users/index.html` | صفحه اصلی بخش کاربران |
+| `index.html` | تنها سند کامل و canonical وب‌سایت؛ شامل آرشیو پادکست‌ها، درباره ما و تماس با ما |
+| `/podcasts` | مسیر سازگاری که به آرشیو اصلی در `/` هدایت می‌شود |
+| `users/index.html` | فایل سازگاری سبک؛ مسیر اصلی آرشیو نیست |
+| `/about` و `/contact` | مسیرهای سازگاری سبک که به بخش مربوط در سند اصلی می‌روند |
+| `users/login.html` و `/login` | صفحه ورود Google |
+| `js/clean-routes.js` | انتخاب بخش مقصد بر اساس مسیر و hash و تنظیم منوی فعال |
 | `.github/workflows/build-android.yml` | Workflow ساخت APK |
-| `package.json` | وابستگی‌ها و اسکریپت‌های Node.js |
-| `assets/icons/icon-512.png` | فایل آیکون لانچر که Workflow استفاده می‌کند |
+| `capacitor.config.ts` | منبع اصلی تنظیمات Capacitor |
 
-## مسیر ورود موردنظر
+## مسیر ورود و ناوبری
+
+صفحه اصلی وب از `index.html` ریشه شروع می‌شود؛ صفحه welcome جداگانه‌ای در مسیر ورود وجود ندارد. پادکست‌ها، درباره ما و تماس با ما بخش‌های یک سند هستند. مسیرهای قدیمی نگه داشته شده‌اند تا bookmarkها و لینک‌های قبلی از کار نیفتند؛ فایل‌های سازگاری query و hash موجود را حفظ می‌کنند و در صورت نبود hash به بخش مناسب می‌روند.
 
 ```text
-/index.html
-    ↓
-/users/login.html
-    ↓
-/users/index.html
+/                 -> index.html#podcasts (landing default)
+/about            -> /#about
+/contact          -> /#contact
+/podcasts         -> /
+/users/index.html -> /#podcasts
+/login            -> users/login.html
 ```
 
-این مسیر هدف موردنظر پروژه است. برای تأیید رفتار واقعی، باید redirectهای داخل HTML و JavaScript هر سه فایل بررسی شوند؛ مسیر `login.html` با `users/login.html` یکسان نیست.
+فایل‌های `users/index.html`، `about/index.html` و `contact/index.html` عمداً باید کوچک بمانند و نباید دوباره شامل نسخه کامل HTML سایت شوند. تنها `index.html` منبع کامل صفحه عمومی است.
 
 ## ساخت APK اندروید
 
-Workflow ارائه‌شده این مراحل را اجرا می‌کند:
+Workflow ساخت، `index.html` ریشه را به `www/index.html` کپی می‌کند و فایل‌های CSS، JavaScript، آیکون‌ها و صفحات ورود را در مسیرهای مربوط قرار می‌دهد. تنظیم URL وب از `capacitor.config.ts` خوانده می‌شود؛ فایل Java تولیدشده داخل `android/` منبع پایدار نیست.
 
-1. دریافت مخزن با `actions/checkout`.
-2. راه‌اندازی Node.js نسخه 22.
-3. نصب وابستگی‌ها با `npm ci` در صورت وجود `package-lock.json`، وگرنه `npm install`.
-4. نصب Android SDK شامل `platform-tools`، `platforms;android-34`، `build-tools;34.0.0` و `ndk;27.0.11718014`.
-5. راه‌اندازی Java نسخه 21.
-6. تولید `capacitor.config.json` با `appId: ir.nightcast.app` و `webDir: www`.
-7. آماده‌سازی پوشه `www`.
-8. ساخت پلتفرم Android با `npx cap add android`.
-9. تنظیم آیکون برنامه.
-10. ایجاد پلاگین بومی Google Sign-In و افزودن وابستگی‌های Credential Manager.
-11. اجرای `npx cap sync android`.
-12. اعتبارسنجی Gradle و ساخت Debug و Release APK.
-13. بارگذاری Artifactهای `NightCast-Debug-APK` و `NightCast-Release-APK`.
-
-Artifactها طبق Workflow برای 30 روز نگهداری می‌شوند.
-
-## نکته مهم درباره ورودی APK
-
-در Workflow ارائه‌شده این دستور وجود دارد:
-
-```bash
-cp users/index.html www/index.html
-```
-
-این دستور محتوای `users/index.html` را به‌عنوان `www/index.html` قرار می‌دهد؛ در نتیجه صفحه شروع APK، صفحه اصلی ریشه مخزن نخواهد بود.
-
-اگر هدف این است که APK از `index.html` ریشه شروع شود، دستور باید این باشد:
-
-```bash
-cp index.html www/index.html
-```
-
-و پوشه کاربران نیز در مسیر خودش کپی شود:
-
-```bash
-mkdir -p www/users
-cp -r users/* www/users/
-```
-
-بعد از ساخت، این سه فایل باید وجود داشته باشند:
-
-```text
-www/index.html
-www/users/login.html
-www/users/index.html
-```
-
-همچنین باید redirectهای درون فایل‌ها بررسی شوند تا مسیرهای نسبی اشتباه نباشند. این README به‌تنهایی کد برنامه را تغییر نمی‌دهد.
+منابع بومی پایدار در `android-template/src/main/java/ir/nightcast/app/` نگهداری می‌شوند. برای بررسی ساختار ورودی وب و منابع بومی، آزمون‌های GitHub Actions را اجرا کن؛ موفقیت ساخت APK جایگزین آزمون مرورگر و API وب‌سایت نیست.
 
 ## پیکربندی Capacitor شناخته‌شده
 

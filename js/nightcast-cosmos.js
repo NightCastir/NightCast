@@ -36,7 +36,7 @@ if("IntersectionObserver"in window){const observer=new IntersectionObserver(entr
 function enhanceNavigation(){
  const hero=document.querySelector("main#home .hero");
  if(hero&&!hero.querySelector(".nc-scroll-cue")){
-  const cue=document.createElement("a");cue.className="nc-scroll-cue";cue.href="#podcasts";cue.innerHTML='<span>کشف جهان NightCast</span><i class="fa-solid fa-arrow-down" aria-hidden="true"></i>';cue.setAttribute("aria-label","رفتن به بخش پادکست‌ها");hero.appendChild(cue);
+  const cue=document.createElement("a");cue.className="nc-scroll-cue";cue.href="/";cue.innerHTML='<span>کشف جهان NightCast</span><i class="fa-solid fa-arrow-down" aria-hidden="true"></i>';cue.setAttribute("aria-label","رفتن به بخش پادکست‌ها");hero.appendChild(cue);
  }
  const sections=[...document.querySelectorAll("main section[id],main#home")].filter(s=>s.id);
  const links=[...document.querySelectorAll(".nc-nav .nav-link,.nc-drawer-links a")];

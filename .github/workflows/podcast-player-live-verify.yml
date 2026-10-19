@@ -52,7 +52,7 @@ jobs:
           const checks = [
             ['visualizer canvas', /id=["']ncAudioVisualizer["']/.test(html)],
             ['real frequency analyser', /getByteFrequencyData/.test(source)],
-            ['audio analyser connection', /createAnalyser\s*\(/.test(html)],
+            ['audio analyser connection', /createAnalyser\s*\(/.test(source)],
             ['clickable player artwork', /id=["']playerCover["'][^>]*nc-player-cover-clickable/.test(html) || /class=["'][^"']*nc-player-cover-clickable[^"']*["'][^>]*id=["']playerCover["']/.test(html)],
             ['keyboard activation', /playerCover\?\.addEventListener\(['"]keydown['"]/.test(source)],
             ['responsive visualizer styles', /\.nc-audio-visualizer-wrap/.test(source)]

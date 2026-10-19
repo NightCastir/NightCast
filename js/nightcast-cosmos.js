@@ -43,7 +43,7 @@ function enhanceNavigation(){
  if("IntersectionObserver"in window&&sections.length){
   const navObserver=new IntersectionObserver(entries=>{
    entries.forEach(entry=>{if(!entry.isIntersecting)return;const id=entry.target.id;
-    document.querySelectorAll(".nc-nav .nav-link").forEach(a=>{const active=a.getAttribute("href")==="#"+id;a.classList.toggle("active",active);if(active)a.setAttribute("aria-current","location");else a.removeAttribute("aria-current")});
+    document.querySelectorAll(".nc-nav .nav-link").forEach(a=>{const route=id==="podcasts"?"/":"/"+id;const active=a.getAttribute("href")===route;a.classList.toggle("active",active);if(active)a.setAttribute("aria-current","location");else a.removeAttribute("aria-current")});
    });
   },{rootMargin:"-25% 0px -60% 0px",threshold:0});
   sections.forEach(s=>navObserver.observe(s));

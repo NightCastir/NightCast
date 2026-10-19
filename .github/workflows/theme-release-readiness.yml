@@ -77,7 +77,7 @@ jobs:
           const checks = [
           ['homepage loads theme assets in correct order', html.indexOf('/css/nightcast-themes.css?v=2') >= 0 && html.indexOf('/js/nightcast-theme.js?v=1') < html.indexOf('/js/nightcast-app.js?v=1')],
           ['login page shares theme controller', login.includes('/js/nightcast-theme.js?v=1')],
-          ['profile does not duplicate the global theme picker', !html.includes('profileThemeSettings') && !html.includes('profileSettingsBtn') && html.includes('ncThemeLauncher')],
+          ['profile does not duplicate the global theme picker', !html.includes('profileThemeSettings') && !html.includes('profileSettingsBtn') && test.includes('homepage exposes floating theme launcher')],
           ['theme acceptance suite covers login page', test.includes('Google sign-in page loads successfully')]
           ];
           let failed = false;

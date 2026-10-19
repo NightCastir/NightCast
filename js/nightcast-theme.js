@@ -89,6 +89,7 @@
   }
   let transitionBusy = false;
   let transitionToken = 0;
+  let transitionInertState = [];
   function ensureTransitionOverlay() {
     let el = document.getElementById("nc-theme-transition");
     if (el) return el;
@@ -150,6 +151,8 @@
     const overlay = ensureTransitionOverlay();
     const oldBusy = document.body.getAttribute("aria-busy");
     document.body.setAttribute("aria-busy","true");
+    transitionInertState = [...document.body.children].filter(node => node !== overlay && !/^(SCRIPT|STYLE|LINK)$/.test(node.tagName)).map(node => ({node, inert:node.inert}));
+    transitionInertState.forEach(entry => { entry.node.inert = true; });
     overlay.classList.add("is-active");
     overlay.querySelector(".nct-card").setAttribute("aria-busy","true");
     setTransitionProgress(overlay, 3, "در حال اعمال پالت رنگ و ساختار تم…");
@@ -185,6 +188,8 @@
     await new Promise(resolve => setTimeout(resolve, 220));
     overlay.classList.remove("is-active");
     overlay.querySelector(".nct-card").removeAttribute("aria-busy");
+    transitionInertState.forEach(entry => { entry.node.inert = entry.inert; });
+    transitionInertState = [];
     document.body.setAttribute("aria-busy", oldBusy === null ? "false" : oldBusy);
     transitionBusy = false;
     document.dispatchEvent(new CustomEvent("nightcast:theme-transition-complete", {detail:{id:key}}));

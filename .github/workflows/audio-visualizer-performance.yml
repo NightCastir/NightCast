@@ -1,0 +1,43 @@
+name: NightCast Audio Visualizer Performance
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'podcasts/index.html'
+      - '.github/workflows/audio-visualizer-performance.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'podcasts/index.html'
+      - '.github/workflows/audio-visualizer-performance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  visualizer-check:
+    name: Validate responsive low-cost speech visualizer
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify real audio analysis and bounded rendering cost
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('podcasts/index.html', 'utf8');
+          const checks = [
+            ['visualizer canvas exists', /id=["']ncAudioVisualizer["']/.test(html)],
+            ['frequency-domain analysis is real', /getByteFrequencyData\s*\(/.test(html) && /createAnalyser\s*\(/.test(html)],
+            ['time-domain samples contribute to bar heights', /getByteTimeDomainData\s*\(/.test(html) && /const rms = Math\.sqrt/.test(html)],
+            ['low analyser smoothing is configured', /smoothingTimeConstant\s*=\s*0\.42/.test(html)],
+            ['render rate is capped near 30 FPS', /timestamp - ncVisualizerLastFrame < 30/.test(html)],
+            ['device pixel ratio is bounded', /Math\.min\(window\.devicePixelRatio \|\| 1, 1\.5\)/.test(html)],
+            ['bar count is bounded', /Math\.max\(16, Math\.min\(36,/.test(html)],
+            ['animation stops when audio stops', /!els\.audio\.paused && !els\.audio\.ended/.test(html)]
+          ];
+          for (const [name, ok] of checks) console.log(`${ok ? 'PASS' : 'FAIL'} | ${name}`);
+          if (checks.some(([, ok]) => !ok)) process.exit(1);
+          NODE

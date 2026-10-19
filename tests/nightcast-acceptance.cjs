@@ -48,6 +48,8 @@ function silentWavDataUri() {
 (async () => {
   let server;
   let browser;
+  let pageForCoverage = null;
+  let cssCoverageStarted = false;
   const runtimeErrors = [];
   try {
     // Static quality gates: HTML/style-tag balance, JavaScript syntax, CSS parsing, and YAML syntax.
@@ -256,6 +258,13 @@ function silentWavDataUri() {
       }
     });
     const page = await context.newPage();
+    pageForCoverage = page;
+    try {
+      await page.coverage.startCSSCoverage({ resetOnNavigation: false });
+      cssCoverageStarted = true;
+    } catch (coverageError) {
+      report('9. CSS coverage instrumentation starts', false, String(coverageError.message || coverageError));
+    }
     const browserErrors = [];
     page.on('pageerror', error => {
       const detail = 'pageerror: ' + error.message;
@@ -899,6 +908,36 @@ function silentWavDataUri() {
   } catch (error) {
     console.error('Test runner error:', error);
   } finally {
+    if (pageForCoverage && cssCoverageStarted) {
+      try {
+        const entries = await pageForCoverage.coverage.stopCSSCoverage();
+        const localEntries = entries.filter(entry => entry.url.startsWith('http://127.0.0.1:4173/'));
+        const fileStats = localEntries.map(entry => {
+          const usedBytes = (entry.ranges || []).reduce((sum, range) => sum + Math.max(0, range.end - range.start), 0);
+          const totalBytes = entry.text.length;
+          return {
+            file: new URL(entry.url).pathname,
+            totalBytes,
+            usedBytes: Math.min(totalBytes, usedBytes),
+            unusedBytes: Math.max(0, totalBytes - usedBytes),
+            unusedPercent: totalBytes ? Math.round((Math.max(0, totalBytes - usedBytes) / totalBytes) * 100) : 0
+          };
+        }).sort((a, b) => b.unusedBytes - a.unusedBytes);
+        const totalBytes = fileStats.reduce((sum, item) => sum + item.totalBytes, 0);
+        const usedBytes = fileStats.reduce((sum, item) => sum + item.usedBytes, 0);
+        report('9. CSS usage coverage across browser journeys', totalBytes > 0,
+          JSON.stringify({
+            measuredLocalStylesheets: fileStats.length,
+            totalCssBytes: totalBytes,
+            usedCssBytes: usedBytes,
+            unusedCssBytes: Math.max(0, totalBytes - usedBytes),
+            unusedPercent: totalBytes ? Math.round((Math.max(0, totalBytes - usedBytes) / totalBytes) * 100) : 0,
+            largestUnusedFiles: fileStats.slice(0, 8)
+          }));
+      } catch (coverageError) {
+        report('9. CSS usage coverage across browser journeys', false, String(coverageError.message || coverageError));
+      }
+    }
     if (browser) await browser.close().catch(() => {});
     if (server) {
       server.kill('SIGTERM');

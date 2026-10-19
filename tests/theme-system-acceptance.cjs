@@ -49,10 +49,30 @@ const assert = require('node:assert/strict');
     check('persisted theme is marked selected', await page.locator('[data-theme-choice="aurora"]').getAttribute('aria-pressed') === 'true');
 
     await page.setViewportSize({ width: 360, height: 800 });
-    const panel = await page.locator('.profile-panel').boundingBox();
-    const grid = await page.locator('.nc-theme-grid').boundingBox();
+    const panel = await page.locator('.profile-overlay > .profile-panel').boundingBox();
+    const grid = await page.locator('#profileThemeSettings .nc-theme-grid').boundingBox();
     check('profile panel fits narrow mobile viewport', !!panel && panel.x >= 0 && panel.x + panel.width <= 360.5);
+
     check('theme grid fits inside the profile panel', !!panel && !!grid && grid.x >= panel.x - 1 && grid.x + grid.width <= panel.x + panel.width + 1);
+
+    const themeIds = ['midnight-cosmos','aurora','studio-noir','deep-ocean','royal-gold','neon-city','persian-heritage','moonlight'];
+    for (const themeId of themeIds) {
+      await page.evaluate(id => window.NightCastThemes.apply(id, false), themeId);
+      const appearance = await page.evaluate(() => ({
+        id: document.documentElement.dataset.theme,
+        primary: getComputedStyle(document.documentElement).getPropertyValue('--nc-theme-primary').trim(),
+        surface: getComputedStyle(document.documentElement).getPropertyValue('--nc-theme-surface').trim(),
+        bodyBackground: getComputedStyle(document.body).backgroundColor
+      }));
+      check('theme tokens resolve for ' + themeId, appearance.id === themeId && !!appearance.primary && !!appearance.surface);
+      await page.setViewportSize({ width: 1440, height: 900 });
+      const desktopGrid = await page.locator('#profileThemeSettings .nc-theme-grid').boundingBox();
+      check('theme grid stays within desktop viewport for ' + themeId, !!desktopGrid && desktopGrid.x >= 0 && desktopGrid.x + desktopGrid.width <= 1440.5);
+      await page.setViewportSize({ width: 360, height: 800 });
+      const mobileGrid = await page.locator('#profileThemeSettings .nc-theme-grid').boundingBox();
+      check('theme grid stays within mobile viewport for ' + themeId, !!mobileGrid && mobileGrid.x >= 0 && mobileGrid.x + mobileGrid.width <= 360.5);
+    }
+    await page.evaluate(() => window.NightCastThemes.apply('aurora', false));
 
     const loginResponse = await page.goto('http://127.0.0.1:4173/users/login.html', { waitUntil: 'domcontentloaded', timeout: 30000 });
     check('Google sign-in page loads successfully', !!loginResponse && loginResponse.ok());

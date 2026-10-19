@@ -182,7 +182,7 @@ function silentWavDataUri() {
       if (html.length >= 2000) routeAliasFailures.push(alias.file + ' is not a lightweight alias (' + html.length + ' bytes)');
       if (!html.includes('noindex,follow')) routeAliasFailures.push(alias.file + ' must be noindex');
       if (!html.includes('href="https://nightcast.ir/"')) routeAliasFailures.push(alias.file + ' canonical must be root');
-      if (!html.includes('target.hash = current.hash || "' + alias.section + '"')) routeAliasFailures.push(alias.file + ' section target is missing');
+      if (!html.includes('target.hash = "";' ) || !html.includes('target.searchParams.set("__route", "' + alias.section + '")')) routeAliasFailures.push(alias.file + ' clean route target is missing');
       if (!html.includes('window.location.replace(target.toString())')) routeAliasFailures.push(alias.file + ' redirect is missing');
       if (!html.includes('href="' + (alias.section === "podcasts" ? "/" : "/" + alias.section) + '"')) routeAliasFailures.push(alias.file + ' fallback link is missing');
     }

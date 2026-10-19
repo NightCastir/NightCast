@@ -40,18 +40,26 @@
   if (!targetId) return;
 
   function activateRoute() {
+    if (typeof window.NightCastNavigate === "function") {
+      window.NightCastNavigate(targetId, { updateHash: false, scroll: false });
+      return true;
+    }
+
     const target = document.getElementById(targetId);
     if (!target) return false;
-
+    document.querySelectorAll("main#home > .nc-page").forEach(page => {
+      const active = page.id === targetId;
+      page.hidden = !active;
+      page.setAttribute("aria-hidden", active ? "false" : "true");
+      if ("inert" in page) page.inert = !active;
+    });
     document.querySelectorAll(".nav-link").forEach(link => {
       const href = link.getAttribute("href");
-      const active = href === path ||
-        ((path === "/" || path === "/index.html") && href === "/");
+      const active = href === path || ((path === "/" || path === "/index.html") && href === "/");
       link.classList.toggle("active", active);
       if (active) link.setAttribute("aria-current", "page");
       else link.removeAttribute("aria-current");
     });
-
     target.scrollIntoView({ behavior: "auto", block: "start" });
     return true;
   }

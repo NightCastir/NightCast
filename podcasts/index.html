@@ -5577,24 +5577,23 @@ LOGOUT
 
 
             function updateStats() {
+                // These counters are optional UI. The catalogue and favorites must
+                // continue working when the count panels are intentionally absent.
+                if (els.count) {
+                    els.count.textContent = state.all.length.toLocaleString("fa-IR");
+                }
 
-                els.count.textContent =
-                    state.all.length.toLocaleString("fa-IR");
-
-
-                els.books.textContent =
-                    new Set(
+                if (els.books) {
+                    els.books.textContent = new Set(
                         state.all
                             .map(x => x.book_name)
                             .filter(Boolean)
-                    )
-                        .size
-                        .toLocaleString("fa-IR");
+                    ).size.toLocaleString("fa-IR");
+                }
 
-
-                els.favCount.textContent =
-                    totalFavoriteCount.toLocaleString("fa-IR");
-
+                if (els.favCount) {
+                    els.favCount.textContent = totalFavoriteCount.toLocaleString("fa-IR");
+                }
             }
 
 

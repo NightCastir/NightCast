@@ -42,6 +42,12 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Verify canonical Android source structure
+        run: |
+          set -euo pipefail
+          node tests/android-source-structure.cjs
+
+
       # ============================================================
       # 3. Java 17
       # ============================================================
@@ -213,55 +219,32 @@ jobs:
 
 
       # ============================================================
-      # 6. Create clean Capacitor configuration
+      # 6. Validate the single canonical Capacitor configuration
       # ============================================================
-      - name: Create clean capacitor.config.json
+      - name: Validate capacitor.config.ts
         run: |
-          set -e
+          set -euo pipefail
 
-          cat > capacitor.config.json << 'EOF'
-          {
-            "appId": "ir.nightcast.app",
-            "appName": "NightCast",
-            "webDir": "www",
-            "server": {
-              "url": "https://www.nightcast.ir",
-              "cleartext": false,
-              "androidScheme": "https",
-              "allowNavigation": [
-                "www.nightcast.ir",
-                "nightcast.ir"
-              ]
-            },
-            "android": {
-              "allowMixedContent": true,
-              "backgroundColor": "#050a16"
-            },
-            "plugins": {
-              "SplashScreen": {
-                "launchShowDuration": 0,
-                "launchAutoHide": true,
-                "backgroundColor": "#050a16",
-                "splashFullScreen": true,
-                "splashImmersive": true
-              },
-              "StatusBar": {
-                "style": "DARK",
-                "backgroundColor": "#050a16"
-              }
-            }
+          test -s capacitor.config.ts
+          node <<'NODE'
+          const fs = require('node:fs');
+          const source = fs.readFileSync('capacitor.config.ts', 'utf8');
+          const required = [
+            ["appId", /appId:\s*'ir\.nightcast\.app'/],
+            ["appName", /appName:\s*'NightCast'/],
+            ["remote entry URL", /url:\s*'https:\/\/www\.nightcast\.ir'/],
+            ["HTTPS scheme", /androidScheme:\s*'https'/],
+            ["www hostname allowlist", /allowNavigation:\s*\[[^\]]*'www\.nightcast\.ir'/s],
+            ["apex hostname allowlist", /allowNavigation:\s*\[[^\]]*'nightcast\.ir'/s]
+          ];
+          for (const [label, pattern] of required) {
+            if (!pattern.test(source)) throw new Error('capacitor.config.ts missing required setting: ' + label);
+            console.log('TRUE | Canonical Capacitor setting | ' + label);
           }
-          EOF
-
-          # Capacitor prefers capacitor.config.ts over capacitor.config.json when both exist.
-          # This workflow deliberately generates the authoritative JSON config, so remove
-          # the stale TypeScript config before cap add/sync; otherwise server.url is dropped.
-          rm -f capacitor.config.ts capacitor.config.js capacitor.config.mjs
-
-          echo "=== capacitor.config.json ==="
-          cat capacitor.config.json
-          node -e 'const c=require("./capacitor.config.json"); const allowed=c.server?.allowNavigation||[]; if(c.server?.url!=="https://www.nightcast.ir" || c.server?.androidScheme!=="https" || !allowed.includes("www.nightcast.ir") || !allowed.includes("nightcast.ir")) throw new Error("Android must load the canonical NightCast website over HTTPS and keep both canonical hostnames inside the WebView"); console.log("TRUE | Android points to the canonical website URL and allows both canonical hostnames.");'
-
+          if (fs.existsSync('capacitor.config.json')) {
+            throw new Error('Do not maintain a second root Capacitor config; capacitor.config.ts is authoritative.');
+          }
+          NODE
 
       # ============================================================
       # 7. Prepare www
@@ -673,330 +656,27 @@ jobs:
       # ============================================================
       # 10. Add Native Google Sign-In
       # ============================================================
-      - name: Add Native Google Sign-In
+      - name: Install tracked native Android sources
         run: |
-          set -e
-
-          mkdir -p android/app/src/main/java/ir/nightcast/app
-
-
-          # ----------------------------------------------------------
-          # MainActivity.java
-          # ----------------------------------------------------------
-
-          cat > android/app/src/main/java/ir/nightcast/app/MainActivity.java << 'EOF'
-          package ir.nightcast.app;
-
-          import android.content.pm.ActivityInfo;
-          import android.os.Bundle;
-          import android.view.View;
-
-          import androidx.core.graphics.Insets;
-          import androidx.core.view.ViewCompat;
-          import androidx.core.view.WindowInsetsCompat;
-
-          import com.getcapacitor.BridgeActivity;
-
-          public class MainActivity extends BridgeActivity {
-
-              @Override
-              public void onCreate(Bundle savedInstanceState) {
-
-                  setRequestedOrientation(
-                          ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                  );
-
-                  registerPlugin(NightCastGoogleAuth.class);
-
-                  super.onCreate(savedInstanceState);
-
-                  View contentView =
-                          findViewById(android.R.id.content);
-
-                  if (contentView != null) {
-
-                      ViewCompat.setOnApplyWindowInsetsListener(
-                              contentView,
-                              (view, windowInsets) -> {
-
-                                  Insets systemInsets =
-                                          windowInsets.getInsets(
-                                                  WindowInsetsCompat.Type.statusBars()
-                                                          | WindowInsetsCompat.Type.displayCutout()
-                                          );
-
-                                  view.setPadding(
-                                          systemInsets.left,
-                                          systemInsets.top,
-                                          systemInsets.right,
-                                          view.getPaddingBottom()
-                                  );
-
-                                  return windowInsets;
-                              }
-                      );
-
-                      ViewCompat.requestApplyInsets(contentView);
-                  }
-              }
-          }
-          EOF
-
-
-          # ----------------------------------------------------------
-          # NightCastGoogleAuth.java
-          # ----------------------------------------------------------
-
-          cat > android/app/src/main/java/ir/nightcast/app/NightCastGoogleAuth.java << 'EOF'
-          package ir.nightcast.app;
-
-          import android.app.Activity;
-
-          import androidx.core.content.ContextCompat;
-          import androidx.credentials.Credential;
-          import androidx.credentials.CredentialManager;
-          import androidx.credentials.CustomCredential;
-          import androidx.credentials.GetCredentialRequest;
-          import androidx.credentials.GetCredentialResponse;
-          import androidx.credentials.CredentialManagerCallback;
-          import androidx.credentials.exceptions.GetCredentialCancellationException;
-          import androidx.credentials.exceptions.GetCredentialException;
-          import androidx.credentials.exceptions.NoCredentialException;
-
-          import com.getcapacitor.JSObject;
-          import com.getcapacitor.Plugin;
-          import com.getcapacitor.PluginCall;
-          import com.getcapacitor.PluginMethod;
-          import com.getcapacitor.annotation.CapacitorPlugin;
-
-          import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption;
-          import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
-
-          @CapacitorPlugin(name = "NightCastGoogleAuth")
-          public class NightCastGoogleAuth extends Plugin {
-
-              private static final String WEB_CLIENT_ID =
-                      "242292157493-km4c11qgkf0lr3e6pv9paspkn95jbf3a.apps.googleusercontent.com";
-
-              private CredentialManager credentialManager;
-
-              private boolean signInInProgress = false;
-
-
-              @Override
-              public void load() {
-                  super.load();
-
-                  credentialManager =
-                          CredentialManager.create(getContext());
-              }
-
-
-              @PluginMethod
-              public void signIn(PluginCall call) {
-
-                  Activity activity = getActivity();
-
-                  if (activity == null) {
-                      call.reject(
-                              "Android Activity is not available."
-                      );
-                      return;
-                  }
-
-                  if (signInInProgress) {
-                      call.reject(
-                              "Google sign-in is already in progress."
-                      );
-                      return;
-                  }
-
-                  signInInProgress = true;
-
-
-                  final GetSignInWithGoogleOption googleOption;
-
-                  try {
-
-                      googleOption =
-                              new GetSignInWithGoogleOption.Builder(
-                                      WEB_CLIENT_ID
-                              ).build();
-
-                  } catch (Exception e) {
-
-                      signInInProgress = false;
-
-                      call.reject(
-                              "Unable to initialize Google sign-in."
-                      );
-
-                      return;
-                  }
-
-
-                  final GetCredentialRequest request =
-                          new GetCredentialRequest.Builder()
-                                  .addCredentialOption(googleOption)
-                                  .build();
-
-
-                  credentialManager.getCredentialAsync(
-                          activity,
-                          request,
-                          null,
-                          ContextCompat.getMainExecutor(activity),
-                          new CredentialManagerCallback<
-                                  GetCredentialResponse,
-                                  GetCredentialException>() {
-
-                              @Override
-                              public void onResult(
-                                      GetCredentialResponse result
-                              ) {
-
-                                  signInInProgress = false;
-
-                                  handleCredential(
-                                          call,
-                                          result
-                                  );
-                              }
-
-
-                              @Override
-                              public void onError(
-                                      GetCredentialException error
-                              ) {
-
-                                  signInInProgress = false;
-
-
-                                  if (error instanceof
-                                          GetCredentialCancellationException) {
-
-                                      call.reject(
-                                              "Google sign-in was cancelled."
-                                      );
-
-                                      return;
-                                  }
-
-
-                                  if (error instanceof
-                                          NoCredentialException) {
-
-                                      call.reject(
-                                              "No Google credential is available on this device."
-                                      );
-
-                                      return;
-                                  }
-
-
-                                  String message =
-                                          error.getMessage();
-
-                                  if (message == null ||
-                                          message.trim().isEmpty()) {
-
-                                      message =
-                                              "Unknown Google sign-in error.";
-                                  }
-
-
-                                  call.reject(
-                                          "Google sign-in failed: "
-                                                  + message
-                                  );
-                              }
-                          }
-                  );
-              }
-
-
-              private void handleCredential(
-                      PluginCall call,
-                      GetCredentialResponse result
-              ) {
-
-                  try {
-
-                      Credential credential =
-                              result.getCredential();
-
-
-                      if (!(credential instanceof CustomCredential)) {
-
-                          call.reject(
-                                  "Google did not return a Google ID credential."
-                          );
-
-                          return;
-                      }
-
-
-                      CustomCredential customCredential =
-                              (CustomCredential) credential;
-
-
-                      if (!GoogleIdTokenCredential
-                              .TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
-                              .equals(customCredential.getType())) {
-
-                          call.reject(
-                                  "Unsupported Google credential type."
-                          );
-
-                          return;
-                      }
-
-
-                      GoogleIdTokenCredential googleCredential =
-                              GoogleIdTokenCredential.createFrom(
-                                      customCredential.getData()
-                              );
-
-
-                      String idToken =
-                              googleCredential.getIdToken();
-
-
-                      if (idToken == null ||
-                              idToken.isEmpty()) {
-
-                          call.reject(
-                                  "Google did not return an ID token."
-                          );
-
-                          return;
-                      }
-
-
-                      JSObject response =
-                              new JSObject();
-
-                      response.put(
-                              "idToken",
-                              idToken
-                      );
-
-
-                      call.resolve(response);
-
-
-                  } catch (Exception e) {
-
-                      call.reject(
-                              "Google credential processing failed."
-                      );
-                  }
-              }
-          }
-          EOF
-
-
-          echo "Native Google Sign-In files created."
+          set -euo pipefail
+
+          SOURCE_DIR="android-template/src/main/java/ir/nightcast/app"
+          TARGET_DIR="android/app/src/main/java/ir/nightcast/app"
+
+          test -s "$SOURCE_DIR/MainActivity.java"
+          test -s "$SOURCE_DIR/NightCastGoogleAuth.java"
+          mkdir -p "$TARGET_DIR"
+          cp "$SOURCE_DIR/MainActivity.java" "$TARGET_DIR/MainActivity.java"
+          cp "$SOURCE_DIR/NightCastGoogleAuth.java" "$TARGET_DIR/NightCastGoogleAuth.java"
+
+          grep -q '^package ir\.nightcast\.app;' "$TARGET_DIR/MainActivity.java"
+          grep -q '^package ir\.nightcast\.app;' "$TARGET_DIR/NightCastGoogleAuth.java"
+          grep -q 'registerPlugin(NightCastGoogleAuth.class)' "$TARGET_DIR/MainActivity.java"
+          grep -q '@CapacitorPlugin(name = "NightCastGoogleAuth")' "$TARGET_DIR/NightCastGoogleAuth.java"
+
+          echo "TRUE | Native Android source files copied from tracked templates."
+          echo "TRUE | MainActivity registers NightCastGoogleAuth."
+          echo "TRUE | Google sign-in plugin annotation is present."
 
 
       # ============================================================
@@ -1172,8 +852,8 @@ jobs:
         run: |
           set -e
 
-          echo "=== Capacitor configuration ==="
-          cat capacitor.config.json
+          echo "=== Canonical Capacitor configuration ==="
+          cat capacitor.config.ts
 
 
           echo ""

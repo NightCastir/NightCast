@@ -229,7 +229,7 @@ function silentWavDataUri() {
       const statusSeparator = apiResult.stdout.lastIndexOf('__HTTP_STATUS__');
       if (statusSeparator < 0) throw new Error('API response did not include an HTTP status');
       const responseBody = apiResult.stdout.slice(0, statusSeparator);
-      const status = Number(apiResult.stdout.slice(statusSeparator + 1).trim());
+      const status = Number(apiResult.stdout.slice(statusSeparator + '__HTTP_STATUS__'.length).trim());
       const payload = JSON.parse(responseBody);
       const apiFirstPageMs = Date.now() - apiStartedAt;
       const ok = status === 200 && payload?.success === true && Array.isArray(payload.podcasts) && payload.podcasts.length > 0;

@@ -3332,7 +3332,7 @@
         <nav class="nc-nav" aria-label="ناوبری اصلی">
 
             <a class="brand"
-               href="#podcasts"
+               href="/"
                aria-label="NightCast">
 
                 <span class="brand-mark">
@@ -3351,17 +3351,17 @@
 
 
 <a class="nav-link"
-                   href="#podcasts">
+                   href="/">
                     پادکست‌ها
                 </a>
 
                 <a class="nav-link"
-                   href="#about">
+                   href="/about">
                     درباره ما
                 </a>
 
                 <a class="nav-link"
-                   href="#contact">
+                   href="/contact">
                     تماس با ما
                 </a>
 
@@ -3445,9 +3445,9 @@
             </button>
         </div>
         <p class="nc-drawer-caption">به دنیای NightCast خوش آمدید</p>
-        <nav class="nc-drawer-links" aria-label="بخش‌های سایت"><a href="#podcasts"><span class="nc-drawer-icon"><i class="fa-solid fa-headphones" aria-hidden="true"></i></span><span><strong>پادکست‌ها</strong><small>کشف روایت‌ها و ایده‌ها</small></span><i class="fa-solid fa-arrow-left nc-drawer-arrow" aria-hidden="true"></i></a>
-            <a href="#about"><span class="nc-drawer-icon"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></span><span><strong>درباره ما</strong><small>داستان و مأموریت ما</small></span><i class="fa-solid fa-arrow-left nc-drawer-arrow" aria-hidden="true"></i></a>
-            <a href="#contact"><span class="nc-drawer-icon"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i></span><span><strong>تماس با ما</strong><small>در ارتباط بمانیم</small></span><i class="fa-solid fa-arrow-left nc-drawer-arrow" aria-hidden="true"></i></a>
+        <nav class="nc-drawer-links" aria-label="بخش‌های سایت"><a href="/"><span class="nc-drawer-icon"><i class="fa-solid fa-headphones" aria-hidden="true"></i></span><span><strong>پادکست‌ها</strong><small>کشف روایت‌ها و ایده‌ها</small></span><i class="fa-solid fa-arrow-left nc-drawer-arrow" aria-hidden="true"></i></a>
+            <a href="/about"><span class="nc-drawer-icon"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></span><span><strong>درباره ما</strong><small>داستان و مأموریت ما</small></span><i class="fa-solid fa-arrow-left nc-drawer-arrow" aria-hidden="true"></i></a>
+            <a href="/contact"><span class="nc-drawer-icon"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i></span><span><strong>تماس با ما</strong><small>در ارتباط بمانیم</small></span><i class="fa-solid fa-arrow-left nc-drawer-arrow" aria-hidden="true"></i></a>
         </nav>
         <div class="nc-drawer-foot"><span class="nc-live-dot"></span> صدای ایده‌های ماندگار</div>
     </aside>
@@ -3577,7 +3577,7 @@
                             </button>
 
                             <a class="btn btn-secondary"
-                               href="#contact">
+                               href="/contact">
                                 <i class="fa-solid fa-location-dot"></i>
                                 ارتباط با NightCast
                             </a>
@@ -4138,15 +4138,15 @@
             </div>
 
 
-            <div class="footer-links"><a href="#podcasts">
+            <div class="footer-links"><a href="/">
                     پادکست‌ها
                 </a>
 
-                <a href="#about">
+                <a href="/about">
                     درباره ما
                 </a>
 
-                <a href="#contact">
+                <a href="/contact">
                     تماس با ما
                 </a>
 
@@ -4276,7 +4276,7 @@
     ============================================================= -->
 
     <nav class="mobile-nav"
-         aria-label="ناوبری موبایل"><a href="#podcasts">
+         aria-label="ناوبری موبایل"><a href="/">
 
             <i class="fa-solid fa-headphones"></i>
 
@@ -4287,7 +4287,7 @@
         </a>
 
 
-        <a href="#about">
+        <a href="/about">
 
             <i class="fa-solid fa-circle-info"></i>
 
@@ -4298,7 +4298,7 @@
         </a>
 
 
-        <a href="#contact">
+        <a href="/contact">
 
             <i class="fa-solid fa-phone"></i>
 
@@ -8856,7 +8856,10 @@ body.nc-comments-open{overflow:hidden}
                 ].filter(Boolean);
                 if (!pages.length) return;
 
-                const routePage = location.pathname.replace(/\/+$/, "").split("/").pop();
+                const cleanPath = location.pathname.replace(/\/+$/, "") || "/";
+                const routePage = cleanPath === "/" || cleanPath === "/index.html" || cleanPath === "/podcasts"
+                    ? "podcasts"
+                    : cleanPath.split("/").pop();
                 const hashPage = location.hash.slice(1);
                 let activeId = ["podcasts", "about", "contact"].includes(hashPage)
                     ? hashPage
@@ -8873,7 +8876,8 @@ body.nc-comments-open{overflow:hidden}
 
                 function setActiveLinks(id) {
                     navLinks.forEach(link => {
-                        const active = link.getAttribute("href") === "#" + id;
+                        const route = id === "podcasts" ? "/" : "/" + id;
+                        const active = link.getAttribute("href") === route;
                         link.classList.toggle("active", active);
                         if (active) link.setAttribute("aria-current", "page");
                         else link.removeAttribute("aria-current");
@@ -8957,8 +8961,9 @@ body.nc-comments-open{overflow:hidden}
                         activeId = id;
                         animating = false;
                         setActiveLinks(id);
-                        if (options.updateHash !== false && location.hash !== "#" + id) {
-                            history.pushState({ nightcastPage: id }, "", "#" + id);
+                        const cleanRoute = id === "podcasts" ? "/" : "/" + id;
+                        if (options.updateHash !== false && (location.pathname !== cleanRoute || location.hash)) {
+                            history.pushState({ nightcastPage: id }, "", cleanRoute + location.search);
                         }
                         if (id === "contact" && window.L && window.ncMapInstance) {
                             window.setTimeout(() => window.ncMapInstance.invalidateSize(), 180);
@@ -8984,9 +8989,14 @@ body.nc-comments-open{overflow:hidden}
                 setActiveLinks(activeId);
 
                 document.addEventListener("click", event => {
-                    const link = event.target.closest('a[href^="#"]');
+                    const link = event.target.closest("a[href]");
                     if (!link) return;
-                    const id = link.getAttribute("href").slice(1);
+                    const url = new URL(link.href, location.href);
+                    if (url.origin !== location.origin) return;
+                    const cleanRoute = url.pathname.replace(/\/+$/, "") || "/";
+                    const id = cleanRoute === "/" || cleanRoute === "/index.html" || cleanRoute === "/podcasts"
+                        ? "podcasts"
+                        : cleanRoute.slice(1);
                     if (!pages.some(page => page.id === id)) return;
                     event.preventDefault();
                     showPage(id);
@@ -9019,17 +9029,26 @@ body.nc-comments-open{overflow:hidden}
                     if (window.matchMedia("(min-width: 801px)").matches) closeDrawer();
                 }, { passive: true });
 
-                const initialId = location.hash.slice(1);
+                const requestedSection = location.hash.slice(1);
+                const initialId = ["podcasts", "about", "contact"].includes(requestedSection)
+                    ? requestedSection
+                    : routePage;
                 if (pages.some(page => page.id === initialId)) {
                     activeId = "home";
-                    showPage(initialId, { updateHash: false, scroll: false, force: initialId !== "home" });
+                    showPage(initialId, { updateHash: false, scroll: false, force: true });
                 } else {
                     setActiveLinks("home");
                 }
 
                 window.addEventListener("popstate", () => {
-                    const id = location.hash.slice(1) || "home";
-                    if (pages.some(page => page.id === id)) showPage(id, { updateHash: false });
+                    const currentPath = location.pathname.replace(/\/+$/, "") || "/";
+                    const hashSection = location.hash.slice(1);
+                    const id = ["podcasts", "about", "contact"].includes(hashSection)
+                        ? hashSection
+                        : (currentPath === "/" || currentPath === "/index.html" || currentPath === "/podcasts"
+                            ? "podcasts"
+                            : currentPath.slice(1));
+                    if (pages.some(page => page.id === id)) showPage(id, { updateHash: false, scroll: false, force: true });
                 });
                 window.NightCastNavigate = showPage;
             }

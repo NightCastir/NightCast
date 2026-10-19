@@ -1,7 +1,12 @@
-/* Canonical single-document routes and hash-aware section entry for NightCast. */
+/* Clean, hash-free routes for the shared NightCast document. */
 (() => {
   "use strict";
 
+  const sectionPaths = {
+    podcasts: "/",
+    about: "/about",
+    contact: "/contact"
+  };
   const routes = {
     "/": "podcasts",
     "/index.html": "podcasts",
@@ -9,27 +14,52 @@
     "/about": "about",
     "/contact": "contact"
   };
-  const path = window.location.pathname.replace(/\/+$/, "") || "/";
-  const requestedHash = window.location.hash.slice(1);
-  const validSections = new Set(["podcasts", "about", "contact"]);
-  const hashTarget = validSections.has(requestedHash) ? requestedHash : null;
-  const targetId = hashTarget || routes[path];
+  const validSections = new Set(Object.keys(sectionPaths));
+  const current = new URL(window.location.href);
+  let path = current.pathname.replace(/\/+$/, "") || "/";
+  const routeHint = current.searchParams.get("__route");
+  const requestedHash = current.hash.slice(1);
+  const legacySection = validSections.has(requestedHash) ? requestedHash : null;
+
+  // Old alias documents pass a short-lived route hint. Replace it with a clean URL.
+  if ((path === "/" || path === "/index.html") && validSections.has(routeHint)) {
+    path = sectionPaths[routeHint];
+    current.pathname = path;
+    current.searchParams.delete("__route");
+    current.hash = "";
+    window.history.replaceState(null, "", current.pathname + current.search + current.hash);
+  } else if (legacySection) {
+    // Migrate old /#about-style links to their clean route without breaking bookmarks.
+    path = sectionPaths[legacySection];
+    current.pathname = path;
+    current.hash = "";
+    window.history.replaceState(null, "", current.pathname + current.search);
+  }
+
+  const targetId = legacySection || routes[path];
   if (!targetId) return;
 
   function activateRoute() {
+    if (typeof window.NightCastNavigate === "function") {
+      window.NightCastNavigate(targetId, { updateHash: false, scroll: false });
+      return true;
+    }
+
     const target = document.getElementById(targetId);
     if (!target) return false;
-
+    document.querySelectorAll("main#home > .nc-page").forEach(page => {
+      const active = page.id === targetId;
+      page.hidden = !active;
+      page.setAttribute("aria-hidden", active ? "false" : "true");
+      if ("inert" in page) page.inert = !active;
+    });
     document.querySelectorAll(".nav-link").forEach(link => {
       const href = link.getAttribute("href");
-      const active = href === "#" + targetId ||
-        href === path ||
-        ((path === "/" || path === "/index.html") && !hashTarget && href === "#podcasts");
+      const active = href === path || ((path === "/" || path === "/index.html") && href === "/");
       link.classList.toggle("active", active);
       if (active) link.setAttribute("aria-current", "page");
       else link.removeAttribute("aria-current");
     });
-
     target.scrollIntoView({ behavior: "auto", block: "start" });
     return true;
   }

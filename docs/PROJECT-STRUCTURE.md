@@ -9,11 +9,11 @@
 ## Public routes and single-document navigation
 
 - The only full public HTML document is root `index.html`. It contains the podcast archive and the About/Contact sections.
-- `users/index.html`, `about/index.html`, and `contact/index.html` are lightweight compatibility aliases, not independent copies of the site. They preserve the query string and an existing hash; otherwise they target `/#podcasts`, `/#about`, or `/#contact`.
-- `_redirects` keeps clean and legacy URLs working. The About/Contact rewrites serve their small alias documents, which then navigate to the matching section in the canonical document.
-- `js/clean-routes.js` must honor explicit `#podcasts`, `#about`, and `#contact` hashes. With no section hash, the root entry defaults to the podcast archive.
+- `users/index.html`, `about/index.html`, `contact/index.html`, and `podcasts/index.html` are lightweight compatibility aliases, not independent copies of the site. They preserve query parameters and migrate old links to clean paths without adding a fragment.
+- `_redirects` rewrites `/about` and `/contact` to the canonical root document while preserving the visible clean URL. The shared route script selects the corresponding section from `location.pathname`; legacy section hashes are migrated to clean paths with `history.replaceState`.
+- `js/clean-routes.js` uses clean paths (`/`, `/about`, `/contact`) and strips legacy section hashes from the address bar. With no section route, the root entry defaults to the podcast archive.
 - `sitemap.xml` lists the canonical root URL only. Section aliases are not separate indexable HTML pages.
-- Do not restore full-page copies in compatibility files: that duplicates hundreds of kilobytes of HTML, causes route behavior to drift, and increases maintenance and validation costs.
+- The current site still uses one shared HTML document containing the archive, About, and Contact sections. Clean paths remove `#` from navigation, but they do not yet make those sections independent HTML documents. Do not restore full-page copies in compatibility files: that duplicates hundreds of kilobytes of HTML, causes route behavior to drift, and increases maintenance and validation costs.
 
 ## Source vs generated files
 

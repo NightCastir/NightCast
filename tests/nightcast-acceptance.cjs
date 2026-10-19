@@ -182,13 +182,34 @@ function silentWavDataUri() {
       if (html.length >= 2000) routeAliasFailures.push(alias.file + ' is not a lightweight alias (' + html.length + ' bytes)');
       if (!html.includes('noindex,follow')) routeAliasFailures.push(alias.file + ' must be noindex');
       if (!html.includes('href="https://nightcast.ir/"')) routeAliasFailures.push(alias.file + ' canonical must be root');
-      if (!html.includes('target.hash = current.hash || "' + alias.section + '"')) routeAliasFailures.push(alias.file + ' section target is missing');
+      if (!html.includes('target.hash = "";' ) || !html.includes('target.searchParams.set("__route", "' + alias.section + '")')) routeAliasFailures.push(alias.file + ' clean route target is missing');
       if (!html.includes('window.location.replace(target.toString())')) routeAliasFailures.push(alias.file + ' redirect is missing');
-      if (!html.includes('href="/#' + alias.section + '"')) routeAliasFailures.push(alias.file + ' fallback link is missing');
+      if (!html.includes('href="' + (alias.section === "podcasts" ? "/" : "/" + alias.section) + '"')) routeAliasFailures.push(alias.file + ' fallback link is missing');
     }
     report('0.7. Legacy archive/About/Contact documents are lightweight aliases',
       routeAliasFailures.length === 0,
-      routeAliasFailures.join(' || ') || 'Three compatibility documents preserve query/hash and target their canonical section');
+      routeAliasFailures.join(' || ') || 'Three compatibility documents preserve query parameters and use clean section URLs');
+
+    const cleanRouteFailures = [];
+    const archiveHtml = fs.readFileSync('index.html', 'utf8');
+    const redirects = fs.readFileSync('_redirects', 'utf8');
+    const routeScript = fs.readFileSync('js/clean-routes.js', 'utf8');
+    const cosmosScript = fs.readFileSync('js/nightcast-cosmos.js', 'utf8');
+    if (/<a\b[^>]*\bhref=["']#(?:podcasts|about|contact)["']/i.test(archiveHtml) || cosmosScript.includes('cue.href="#podcasts"')) {
+      cleanRouteFailures.push('archive or generated navigation still links to section fragments');
+    }
+    if (archiveHtml.includes('history.pushState({ nightcastPage: id }, "", "#" + id)')) {
+      cleanRouteFailures.push('animated page router still writes hash URLs');
+    }
+    if (!redirects.includes('/about /index.html 200') || !redirects.includes('/contact /index.html 200')) {
+      cleanRouteFailures.push('About/Contact must rewrite to the shared document while retaining clean paths');
+    }
+    if (!routeScript.includes('history.replaceState') || !routeScript.includes('sectionPaths')) {
+      cleanRouteFailures.push('clean route resolver or legacy hash migration is missing');
+    }
+    report('0.8. Navigation uses clean paths and does not generate section hashes',
+      cleanRouteFailures.length === 0,
+      cleanRouteFailures.join(' || ') || 'Navigation uses /, /about, and /contact; legacy fragments are migrated away');
 
     // Activity 2: validate the actual public API, independently of browser mocks.
     try {
@@ -320,27 +341,27 @@ function silentWavDataUri() {
       splashOk = true;
       report('1. Root route is the single canonical podcast document', true, new URL(page.url()).pathname + '; loader dismissed after podcast cards rendered');
       await page.goto('http://127.0.0.1:4173/podcasts/?legacy=1#podcasts', { waitUntil: 'domcontentloaded', timeout: 10000 });
-      await page.waitForURL(url => url.pathname === '/' && url.search === '?legacy=1' && url.hash === '#podcasts', { timeout: 5000 });
+      await page.waitForURL(url => url.pathname === '/' && url.search === '?legacy=1' && url.hash === '', { timeout: 5000 });
       await page.waitForSelector('#podcastGrid', { state: 'attached', timeout: 5000 });
-      report('1.2. Legacy /podcasts links redirect to root and preserve query/hash', true, page.url());
+      report('1.2. Legacy /podcasts links redirect to root without a fragment', true, page.url());
     } catch (error) {
       report('1. Root route is the single canonical podcast document', false, String(error.message || error));
     }
 
-    // Activity 1.3: legacy section documents land on the canonical root and honor hashes.
+    // Activity 1.3: legacy section documents land on clean section URLs without hashes.
     try {
       await page.goto('http://127.0.0.1:4173/about/index.html?alias=about', { waitUntil: 'domcontentloaded', timeout: 10000 });
-      await page.waitForURL(url => url.pathname === '/' && url.search === '?alias=about' && url.hash === '#about', { timeout: 5000 });
+      await page.waitForURL(url => url.pathname === '/about' && url.search === '?alias=about' && url.hash === '', { timeout: 5000 });
       await page.waitForSelector('#about', { state: 'attached', timeout: 5000 });
-      await page.waitForFunction(() => !!document.querySelector('.nav-link[href="#about"].active'), null, { timeout: 5000 });
+      await page.waitForFunction(() => !!document.querySelector('.nav-link[href="/about"].active'), null, { timeout: 5000 });
 
       await page.goto('http://127.0.0.1:4173/contact/index.html?alias=contact#podcasts', { waitUntil: 'domcontentloaded', timeout: 10000 });
-      await page.waitForURL(url => url.pathname === '/' && url.search === '?alias=contact' && url.hash === '#podcasts', { timeout: 5000 });
-      await page.waitForSelector('#podcastGrid', { state: 'attached', timeout: 5000 });
-      await page.waitForFunction(() => !!document.querySelector('.nav-link[href="#podcasts"].active'), null, { timeout: 5000 });
-      report('1.3. Legacy section aliases return to the canonical root and preserve query/hash', true, page.url());
+      await page.waitForURL(url => url.pathname === '/contact' && url.search === '?alias=contact' && url.hash === '', { timeout: 5000 });
+      await page.waitForSelector('#contact', { state: 'attached', timeout: 5000 });
+      await page.waitForFunction(() => !!document.querySelector('.nav-link[href="/contact"].active'), null, { timeout: 5000 });
+      report('1.3. Legacy section aliases resolve to clean section URLs', true, page.url());
     } catch (error) {
-      report('1.3. Legacy section aliases return to the canonical root and preserve query/hash', false, String(error.message || error));
+      report('1.3. Legacy section aliases resolve to clean section URLs', false, String(error.message || error));
     }
 
     // Verify sticky header geometry, desktop navigation fit, and an actual CDN icon glyph.
@@ -386,7 +407,7 @@ function silentWavDataUri() {
 
     // The archive uses cinematic page navigation: open the Podcasts page before testing its cards.
     try {
-      await page.locator('.nc-nav .nav-link[href="#podcasts"]').click();
+      await page.locator('.nc-nav .nav-link[href="/"]').click();
       await page.waitForFunction(() => {
         const section = document.querySelector('#podcasts');
         return !!section && !section.hidden && getComputedStyle(section).display !== 'none';

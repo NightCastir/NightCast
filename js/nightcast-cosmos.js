@@ -36,14 +36,14 @@ if("IntersectionObserver"in window){const observer=new IntersectionObserver(entr
 function enhanceNavigation(){
  const hero=document.querySelector("main#home .hero");
  if(hero&&!hero.querySelector(".nc-scroll-cue")){
-  const cue=document.createElement("a");cue.className="nc-scroll-cue";cue.href="#podcasts";cue.innerHTML='<span>کشف جهان NightCast</span><i class="fa-solid fa-arrow-down" aria-hidden="true"></i>';cue.setAttribute("aria-label","رفتن به بخش پادکست‌ها");hero.appendChild(cue);
+  const cue=document.createElement("a");cue.className="nc-scroll-cue";cue.href="/";cue.innerHTML='<span>کشف جهان NightCast</span><i class="fa-solid fa-arrow-down" aria-hidden="true"></i>';cue.setAttribute("aria-label","رفتن به بخش پادکست‌ها");hero.appendChild(cue);
  }
  const sections=[...document.querySelectorAll("main section[id],main#home")].filter(s=>s.id);
  const links=[...document.querySelectorAll(".nc-nav .nav-link,.nc-drawer-links a")];
  if("IntersectionObserver"in window&&sections.length){
   const navObserver=new IntersectionObserver(entries=>{
    entries.forEach(entry=>{if(!entry.isIntersecting)return;const id=entry.target.id;
-    document.querySelectorAll(".nc-nav .nav-link").forEach(a=>{const active=a.getAttribute("href")==="#"+id;a.classList.toggle("active",active);if(active)a.setAttribute("aria-current","location");else a.removeAttribute("aria-current")});
+    document.querySelectorAll(".nc-nav .nav-link").forEach(a=>{const route=id==="podcasts"?"/":"/"+id;const active=a.getAttribute("href")===route;a.classList.toggle("active",active);if(active)a.setAttribute("aria-current","location");else a.removeAttribute("aria-current")});
    });
   },{rootMargin:"-25% 0px -60% 0px",threshold:0});
   sections.forEach(s=>navObserver.observe(s));

@@ -47,11 +47,12 @@
 .nc-google-chip i{color:var(--nc-theme-primary)}
 .profile-panel{width:min(520px,100%);max-height:min(760px,calc(100dvh - 24px));padding:clamp(14px,3vw,22px);border-radius:22px;overscroll-behavior:contain}
 .profile-overlay{padding:max(12px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
-.profile-header{gap:13px;padding-bottom:15px;align-items:center}
-.profile-avatar-wrap{width:68px;height:68px;flex-basis:68px}
-.profile-user-info{min-width:0;flex:1}
-.profile-user-info h2{font-size:clamp(16px,4vw,20px);overflow-wrap:anywhere}
-.profile-user-info p{font-size:12px;overflow-wrap:anywhere}
+.profile-header{display:flex;flex-direction:column;align-items:center;gap:8px;padding-bottom:15px;text-align:center}
+.profile-avatar-wrap{width:68px;height:68px;flex:0 0 68px}
+.profile-user-info{min-width:0;width:100%;text-align:center}
+.profile-user-info h2{font-size:clamp(16px,4vw,20px);margin-bottom:4px;overflow-wrap:anywhere}
+.profile-user-info p{font-size:12px;overflow-wrap:anywhere;text-align:center!important;direction:ltr!important}
+.nc-google-details{justify-content:center}
 .profile-section{padding-top:14px}
 .profile-stats{gap:7px;margin-bottom:14px}
 .profile-stat{padding:10px 6px;border:1px solid var(--nc-theme-border)}

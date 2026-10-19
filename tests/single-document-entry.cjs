@@ -47,6 +47,7 @@ check('Legacy /podcasts page redirects immediately and preserves query/hash', ()
   assert.match(legacy, /window\.location\.replace\(target\)/);
   assert.match(legacy, /window\.location\.search/);
   assert.match(legacy, /window\.location\.hash/);
+  assert.ok(legacy.includes('index\\.html'), 'Direct /podcasts/index.html bookmarks must also redirect');
   assert.match(redirects, /^\/podcasts\s+\/\s+301$/m);
   assert.match(redirects, /^\/podcasts\/\s+\/\s+301$/m);
 });

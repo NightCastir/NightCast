@@ -76,7 +76,7 @@ jobs:
           const themeIds = ['midnight-cosmos','aurora','studio-noir','deep-ocean','royal-gold','neon-city','persian-heritage','moonlight'];
           const checks = [
           ['mobile viewport checks exist for all eight themes', test.includes('theme grid stays within mobile viewport for ' + themeId) && test.includes('width: 360')],
-          ['theme grid has responsive CSS', /\.nc-theme-grid\s*\{/.test(css) && css.includes('minmax(0, 1fr)')],
+          ['theme grid has responsive CSS', /\.nc-theme-grid\s*\{/.test(css) && /minmax\\(0,1fr\\)/.test(css)],
           ['mobile viewport overflow assertion exists', test.includes('profile panel fits narrow mobile viewport') && test.includes('theme grid fits inside the profile panel')]
           ];
           let failed = false;

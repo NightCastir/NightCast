@@ -4,6 +4,7 @@ on:
     branches: [main, 'feat/theme-system-and-adaptive-loader']
     paths:
       - 'index.html'
+      - 'users/login.html'
       - 'js/nightcast-app.js'
       - 'js/nightcast-theme.js'
       - 'css/nightcast-profile.css'

@@ -123,8 +123,8 @@ jobs:
           if (!authPageScript.includes('"/login"')) {
             throw new Error('Legacy auth entry must redirect to the canonical Google-only /login page.');
           }
-          if (!/LOGIN_PAGE:\s*"\/login"/.test(archive)) {
-            throw new Error('Archive account actions must use the canonical Google-only /login route.');
+          if (!/LOGIN_PAGE:\s*"\/login"/.test(archive) || archive.includes('/auth/login.html')) {
+            throw new Error('Every archive login entry must use the canonical Google-only /login route.');
           }
           if (!googleLoginPage.includes('id="googleLoginButton"') ||
               !googleLoginScript.includes('/public/openid/google') ||

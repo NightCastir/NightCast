@@ -6,6 +6,8 @@ const assert = require('node:assert/strict');
 const root = fs.readFileSync('index.html', 'utf8');
 const legacy = fs.readFileSync('podcasts/index.html', 'utf8');
 const redirects = fs.readFileSync('_redirects', 'utf8');
+const app = fs.readFileSync('js/nightcast-app.js', 'utf8');
+const appSource = root + '\n' + app;
 
 function check(name, fn) {
   try { fn(); console.log('TRUE | ' + name); }
@@ -24,7 +26,7 @@ check('Welcome hero is removed from the canonical entry', () => {
 check('Root document contains the real podcast archive', () => {
   assert.match(root, /id=["']podcastGrid["']/i);
   assert.match(root, /id=["']podcasts["']/i);
-  assert.match(root, /function loadPodcasts\s*\(/);
+  assert.match(appSource, /function loadPodcasts\s*\(/);
 });
 check('Root is the canonical URL for the podcast archive', () => {
   assert.match(root, /<link rel=["']canonical["'] href=["']https:\/\/nightcast\.ir\//i);
@@ -36,9 +38,9 @@ check('No second-document timed splash redirect remains on root', () => {
 });
 check('Galaxy loader is part of the archive document and waits for essential readiness', () => {
   assert.match(root, /id=["']nc-entry-loader["']/);
-  assert.match(root, /Promise\.allSettled\(\[loadPodcasts\(\),\s*loadFavorites\(\)\]\)/);
-  assert.match(root, /Promise\.all\(\[archiveReady,\s*fontsReady\]\)/);
-  assert.match(root, /dismissArchiveLoader/);
+  assert.match(appSource, /Promise\.allSettled\(\[loadPodcasts\(\),\s*loadFavorites\(\)\]\)/);
+  assert.match(appSource, /Promise\.all\(\[archiveReady,\s*fontsReady\]\)/);
+  assert.match(appSource, /dismissArchiveLoader/);
 });
 check('Former archive-relative assets resolve from root', () => {
   assert.doesNotMatch(root, /(?:href|src)=["']\.\.\//i);

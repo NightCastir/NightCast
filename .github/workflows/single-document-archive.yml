@@ -67,14 +67,36 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Verify public root and legacy route
+      - name: Verify public root and legacy route after Pages propagation
         env:
           SITE_URL: https://www.nightcast.ir
         run: |
           set -euo pipefail
-          curl --fail --silent --show-error --location --max-time 25 "$SITE_URL/" -o /tmp/nightcast-root.html
-          grep -qi 'id="podcastGrid"' /tmp/nightcast-root.html
-          grep -qi 'id="nc-entry-loader"' /tmp/nightcast-root.html
-          curl --fail --silent --show-error --location --max-time 25 "$SITE_URL/podcasts" -o /tmp/nightcast-legacy.html
-          grep -qi 'id="podcastGrid"' /tmp/nightcast-legacy.html
-          echo "Public root and legacy /podcasts route both resolve to the canonical archive."
+          deadline=$((SECONDS + 300))
+          attempt=0
+          while (( SECONDS < deadline )); do
+            attempt=$((attempt + 1))
+            echo "Production smoke attempt $attempt"
+            if curl --fail --silent --show-error --location --max-time 25 "$SITE_URL/?nc_smoke=${GITHUB_SHA}-${attempt}" -o /tmp/nightcast-root.html; then
+              root_grid=false
+              root_loader=false
+              grep -qi 'id="podcastGrid"' /tmp/nightcast-root.html && root_grid=true || true
+              grep -qi 'id="nc-entry-loader"' /tmp/nightcast-root.html && root_loader=true || true
+              echo "www root markers: podcastGrid=${root_grid}, galaxyLoader=${root_loader}"
+              if [[ "${root_grid}" == true && "${root_loader}" == true ]]; then
+                if curl --fail --silent --show-error --location --max-time 25 "$SITE_URL/podcasts?nc_smoke=${GITHUB_SHA}-${attempt}" -o /tmp/nightcast-legacy.html; then
+                  # curl follows HTTP redirects but does not execute the compatibility page's JS redirect.
+                  if grep -qi 'id="podcastGrid"' /tmp/nightcast-legacy.html || { grep -q 'window.location.replace(target)' /tmp/nightcast-legacy.html && grep -qi 'rel="canonical" href="https://nightcast.ir/"' /tmp/nightcast-legacy.html; }; then
+                    echo "PASS: www root serves the canonical archive with its integrated loader; legacy /podcasts either redirects at HTTP level or provides the immediate compatibility redirect."
+                    exit 0
+                  fi
+                fi
+              fi
+            fi
+            echo "Deployment/CDN has not exposed the expected root archive yet; retrying in 15 seconds."
+            sleep 15
+          done
+          echo "::error::The www production root or legacy /podcasts route did not expose the canonical archive after five minutes."
+          echo "Root response markers:"
+          grep -oiE 'podcastGrid|nc-entry-loader|nc-splash|window.location.replace' /tmp/nightcast-root.html | sort | uniq -c || true
+          exit 1

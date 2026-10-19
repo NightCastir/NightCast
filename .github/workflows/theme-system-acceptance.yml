@@ -64,6 +64,7 @@ jobs:
           const js = fs.readFileSync('js/nightcast-theme.js', 'utf8');
           const css = fs.readFileSync('css/nightcast-themes.css', 'utf8');
           const app = fs.readFileSync('js/nightcast-app.js', 'utf8');
+          const test = fs.readFileSync('tests/theme-system-acceptance.cjs', 'utf8');
           const checks = [
             ['all eight theme IDs are implemented', ['midnight-cosmos','aurora','studio-noir','deep-ocean','royal-gold','neon-city','persian-heritage','moonlight'].every(id => js.includes('"'+id+'"'))],
             ['theme picker exists globally and is absent from profile settings', (html.match(/data-theme-choice=/g) || []).length === 0 && test.includes('homepage exposes floating theme launcher')],

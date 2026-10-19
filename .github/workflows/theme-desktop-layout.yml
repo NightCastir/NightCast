@@ -75,7 +75,7 @@ jobs:
           const test = fs.readFileSync('tests/theme-system-acceptance.cjs', 'utf8');
           const themeIds = ['midnight-cosmos','aurora','studio-noir','deep-ocean','royal-gold','neon-city','persian-heritage','moonlight'];
           const checks = [
-          ['desktop viewport checks exist for all eight themes', test.includes('theme grid stays within desktop viewport for ' + themeId) && test.includes('width: 1440')],
+          ['desktop viewport checks exist for all eight themes', test.includes("for (const themeId of themeIds)") && test.includes("'theme grid stays within desktop viewport for ' + themeId") && test.includes('width: 1440')],
           ['theme card grid is defined', /\.nc-theme-grid\s*\{/.test(css)],
           ['desktop bounds are checked against viewport width', test.includes('desktopGrid.x + desktopGrid.width <= 1440.5')]
           ];

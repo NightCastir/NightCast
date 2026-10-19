@@ -1,5 +1,5 @@
 const { chromium } = require('playwright');
-const { spawn } = require('node:child_process');
+const { spawn, spawnSync } = require('node:child_process');
 const net = require('node:net');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -215,17 +215,26 @@ function silentWavDataUri() {
       cleanRouteFailures.join(' || ') || 'Navigation uses /, /about, and /contact; legacy fragments are migrated away');
 
     // Activity 2: validate the real public API and record its response latency.
+    // Use curl for this external smoke test: Node 22's undici parser can throw
+    // an uncaught internal assertion when the remote edge closes a streamed socket.
     try {
       const apiStartedAt = Date.now();
-      const response = await fetch('https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=5', {
-        headers: { Accept: 'application/json' },
-        signal: AbortSignal.timeout(12000)
-      });
+      const apiUrl = 'https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=5';
+      const apiResult = spawnSync('curl', [
+        '--silent', '--show-error', '--fail', '--max-time', '12',
+        '--write-out', '__HTTP_STATUS__%{http_code}', '-H', 'Accept: application/json', apiUrl
+      ], { encoding: 'utf8', timeout: 13000, maxBuffer: 2 * 1024 * 1024 });
+      if (apiResult.error) throw apiResult.error;
+      if (apiResult.status !== 0) throw new Error((apiResult.stderr || 'curl failed').trim() + ' (exit ' + apiResult.status + ')');
+      const statusSeparator = apiResult.stdout.lastIndexOf('__HTTP_STATUS__');
+      if (statusSeparator < 0) throw new Error('API response did not include an HTTP status');
+      const responseBody = apiResult.stdout.slice(0, statusSeparator);
+      const status = Number(apiResult.stdout.slice(statusSeparator + '__HTTP_STATUS__'.length).trim());
+      const payload = JSON.parse(responseBody);
       const apiFirstPageMs = Date.now() - apiStartedAt;
-      const payload = await response.json();
-      const ok = response.ok && payload?.success === true && Array.isArray(payload.podcasts) && payload.podcasts.length > 0;
+      const ok = status === 200 && payload?.success === true && Array.isArray(payload.podcasts) && payload.podcasts.length > 0;
       report('2. Real podcast API returns live records', ok,
-        'HTTP ' + response.status + ', first-page=' + apiFirstPageMs + 'ms, records=' + (payload?.podcasts?.length ?? 'n/a') +
+        'HTTP ' + status + ', first-page=' + apiFirstPageMs + 'ms, records=' + (payload?.podcasts?.length ?? 'n/a') +
         ', reported-total=' + (payload?.total ?? 'n/a'));
     } catch (error) {
       report('2. Real podcast API returns live records', false, String(error.message || error));

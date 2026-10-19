@@ -28,6 +28,8 @@ async function main() {
         assert.equal(new URL(page.url()).pathname, '/', 'Production entry navigated away from the canonical root');
 
         await page.waitForSelector('#podcastGrid', { state: 'attached', timeout: 15000 });
+        assert.equal(await page.locator('#heroTitle, main .hero').count(), 0, 'Live root still contains the welcome hero');
+        assert.equal(await page.locator('main > #podcasts').count(), 1, 'Live root must begin its main content with the podcast archive');
         await page.waitForFunction(() => {
           const loader = document.getElementById('nc-entry-loader');
           return !loader || loader.classList.contains('is-hidden');

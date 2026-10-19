@@ -66,8 +66,12 @@
  .nc-theme-ribbon-preview{height:60px}
  .nc-avatar-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
  .profile-panel{max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 18px);padding:15px;overflow-y:auto}
- .profile-header{gap:11px}
- .profile-avatar-wrap{width:58px;height:58px;flex-basis:58px}
+ .profile-header{gap:8px;display:flex;flex-direction:column;align-items:center;text-align:center}
+ .profile-avatar-wrap{width:62px;height:62px;flex:0 0 62px}
+ .profile-user-info{width:100%;text-align:center}
+ .profile-user-info h2{margin-bottom:4px}
+ .profile-user-info p{text-align:center!important;direction:ltr!important}
+ .nc-google-details{justify-content:center}
  .profile-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 @media(prefers-reduced-motion:reduce){.nc-theme-launcher,.nc-theme-ribbon,.nc-theme-ribbon-scrim,.nc-theme-ribbon-option,.nc-avatar-option{transition:none!important;animation:none!important}}

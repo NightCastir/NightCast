@@ -5,12 +5,14 @@ on:
     paths:
       - 'index.html'
       - 'users/index.html'
+      - 'js/nightcast-app.js'
       - '.github/workflows/profile-podcast-suggestion-acceptance.yml'
   pull_request:
     branches: [main]
     paths:
       - 'index.html'
       - 'users/index.html'
+      - 'js/nightcast-app.js'
       - '.github/workflows/profile-podcast-suggestion-acceptance.yml'
   workflow_dispatch:
 

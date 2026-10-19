@@ -3279,6 +3279,15 @@
 .nc-player-like{width:36px;height:36px;border-radius:50%;margin-inline-start:8px}
 @keyframes nc-heart-pop{0%{transform:scale(.72)}55%{transform:scale(1.28)}100%{transform:scale(1)}}
 @media(prefers-reduced-motion:reduce){.favorite,.nc-like-button,.favorite i,.nc-like-button i{transition:none;animation:none!important}}
+/* Real Web Audio frequency visualizer inside the compact bottom player. */
+.nc-audio-visualizer-wrap{direction:ltr;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex:1 1 210px;min-width:120px;max-width:320px;padding:3px 10px}
+.nc-audio-visualizer{display:block;width:100%;height:42px;overflow:visible}
+.nc-visualizer-status{font-size:.62rem;line-height:1.2;color:rgba(190,220,255,.66);direction:rtl;white-space:nowrap}
+.nc-player-cover-clickable{cursor:pointer;outline-offset:4px;transition:transform .2s,box-shadow .2s}
+.nc-player-cover-clickable:hover{transform:scale(1.04);box-shadow:0 0 0 2px rgba(111,214,255,.7),0 0 22px rgba(54,156,255,.22)}
+.nc-player-cover-clickable:focus-visible{outline:2px solid #8ce8ff}
+@media(max-width:760px){.nc-audio-visualizer-wrap{order:4;flex:1 0 100%;max-width:none;padding:0 12px}.nc-audio-visualizer{height:32px}.nc-visualizer-status{display:none}.player-inner{flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){.nc-player-cover-clickable{transition:none}}
 </style>
 <link rel="stylesheet" href="../css/cosmic-experience.css?v=6">
     <link rel="stylesheet" href="../css/nightcast-cosmos.css?v=16">

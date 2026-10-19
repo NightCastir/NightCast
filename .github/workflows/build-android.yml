@@ -116,11 +116,23 @@ jobs:
             throw new Error('Root splash page is missing the native Android archive route; this can cause a splash redirect loop in Capacitor.');
           }
           const authPageScript = fs.readFileSync('users/js/auth-page.js', 'utf8');
-          if (!authPageScript.includes('navigate(openidButton, "/auth/login.html"')) {
-            throw new Error('OpenID button is not routed to the bundled auth/login.html page.');
+          const googleLoginPage = fs.readFileSync('users/login.html', 'utf8');
+          const googleLoginScript = fs.readFileSync('users/js/login.js', 'utf8');
+          const legacyAuthPage = fs.readFileSync('auth/login.html', 'utf8');
+          const legacyWelcomePage = fs.readFileSync('users/auth.html', 'utf8');
+          if (!authPageScript.includes('"/login"')) {
+            throw new Error('Legacy auth entry must redirect to the canonical Google-only /login page.');
           }
-          if (!archive.includes('LOGIN_PAGE:') || !archive.includes('"/auth/login.html"')) {
-            throw new Error('Archive login actions are not configured to open the bundled OpenID login page.');
+          if (!/LOGIN_PAGE:\s*"\/login"/.test(archive)) {
+            throw new Error('Archive account actions must use the canonical Google-only /login route.');
+          }
+          if (!googleLoginPage.includes('id="googleLoginButton"') ||
+              !googleLoginScript.includes('/public/openid/google') ||
+              !googleLoginScript.includes('NightCastGoogleAuth')) {
+            throw new Error('Canonical login must use Google sign-in and exchange the Google ID token with the NightCast API.');
+          }
+          if (/passwordForm|smsRequestForm|smsVerifyForm|oidcButton|guestButton/.test(legacyAuthPage + legacyWelcomePage)) {
+            throw new Error('Legacy password, SMS, generic OpenID, or guest login UI must not ship.');
           }
           for (const ref of ['../css/cosmic-experience.css', '../css/nightcast-cosmos.css', '../js/nightcast-cosmos.js']) {
             if (!archive.includes(ref)) throw new Error('Archive page is missing reference: ' + ref);

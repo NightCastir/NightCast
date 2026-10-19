@@ -1628,116 +1628,101 @@ LOGOUT
                     cached = [];
                 }
 
-                // Keep the galaxy loader visible until the complete catalogue is ready.
-                // Cache is a fallback only; avoid flashing stale/partial cards on startup.
-                if (!cached.length) skeletons();
+                // Render a saved catalogue immediately. Refresh from the network afterwards.
+                if (cached.length) {
+                    state.all = cached;
+                    updateLatest(cached);
+                    updatePodcastCollectionSchema(cached);
+                    applyView();
+                    window.__NC_CACHED_CATALOG_RENDERED = true;
+                } else {
+                    skeletons();
+                }
 
                 async function fetchAllFromAPI() {
+                    const pageSize = 5; // Worker API currently caps each page at five records.
                     const collected = [];
-                    let page = 1;
-                    let total = Infinity;
 
-                    // Worker API caps each page at five items; collect all pages.
-                    while (page <= 100 && (page === 1 || collected.length < total)) {
+                    async function fetchPage(page) {
                         const response = await fetch(
-                            `${CONFIG.API_BASE}/public/podcasts?page=${page}&limit=5&_=${Date.now()}`,
+                            `${CONFIG.API_BASE}/public/podcasts?page=${page}&limit=${pageSize}`,
                             {
                                 method: "GET",
                                 cache: "no-store",
                                 headers: { "Accept": "application/json" }
                             }
                         );
-
                         if (!response.ok) {
-                            throw new Error(`Podcast API returned HTTP ${response.status}`);
+                            throw new Error(`Podcast API returned HTTP ${response.status} on page ${page}`);
                         }
-
                         const payload = await response.json();
                         if (!payload || payload.success !== true || !Array.isArray(payload.podcasts)) {
-                            throw new Error("Podcast API response format was invalid.");
+                            throw new Error(`Podcast API response format was invalid on page ${page}.`);
                         }
-
-                        const reportedTotal = Number(payload.total);
-                        if (Number.isFinite(reportedTotal) && reportedTotal > 0) {
-                            total = reportedTotal;
-                        } else if (page === 1 && payload.podcasts.length < 5) {
-                            total = payload.podcasts.length;
-                        }
-
-                        if (payload.podcasts.length === 0) break;
-                        collected.push(...payload.podcasts);
-
-                        // Use the reported total as the source of truth; don't stop after page 1
-                        // merely because hasMore is absent or incorrectly set in an API response.
-                        if (collected.length >= total) break;
-                        // Continue paging while the reported total has not been collected;
-                        // a short intermediate page must not silently truncate the catalogue.
-                        page += 1;
+                        return payload;
                     }
 
-                    // De-duplicate by id in case the source changes while paging.
+                    // One request discovers the total; fetch remaining pages concurrently.
+                    const first = await fetchPage(1);
+                    collected.push(...first.podcasts);
+                    const reportedTotal = Number(first.total);
+                    if (Number.isFinite(reportedTotal) && reportedTotal > 0) {
+                        const pageCount = Math.min(100, Math.ceil(reportedTotal / pageSize));
+                        if (pageCount > 1) {
+                            const remaining = await Promise.all(
+                                Array.from({ length: pageCount - 1 }, (_, index) => fetchPage(index + 2))
+                            );
+                            for (const payload of remaining) collected.push(...payload.podcasts);
+                        }
+                    } else {
+                        // Compatibility fallback for API responses that omit the total.
+                        let page = 2;
+                        let lastPage = first.podcasts;
+                        while (page <= 100 && lastPage.length === pageSize) {
+                            const payload = await fetchPage(page);
+                            lastPage = payload.podcasts;
+                            if (!lastPage.length) break;
+                            collected.push(...lastPage);
+                            page += 1;
+                        }
+                    }
+
                     const unique = new Map();
                     for (const podcast of collected) {
-                        if (podcast && podcast.id != null) unique.set(String(podcast.id), normalizePodcastRecord(podcast));
+                        if (podcast && podcast.id != null) {
+                            unique.set(String(podcast.id), normalizePodcastRecord(podcast));
+                        }
                     }
                     return [...unique.values()];
                 }
 
                 try {
-                    let feedItems = [];
-                    let feedTotal = 0;
-                    let feedError = null;
-
-                    try {
-                        const response = await fetch(
-                            CONFIG.FEED_URL + (CONFIG.FEED_URL.includes("?") ? "&" : "?") + "_=" + Date.now(),
-                            {
-                                method: "GET",
-                                cache: "no-store",
-                                headers: { "Accept": "application/json" }
-                            }
-                        );
-
-                        if (!response.ok) {
-                            throw new Error(`Podcast feed returned HTTP ${response.status}`);
-                        }
-
-                        const data = await response.json();
-                        feedTotal = Number(data?.total || 0);
-                        feedItems = (Array.isArray(data)
-                            ? data
-                            : Array.isArray(data?.podcasts)
-                                ? data.podcasts
-                                : []).map(normalizePodcastRecord);
-
-                    } catch (error) {
-                        feedError = error;
-                        console.warn("NightCast static podcast feed failed; trying API fallback.", error);
-                    }
-
-                    // Do not display the static feed until it has been compared with the full API catalogue.
-                    // This prevents partial cards appearing and then being replaced after the first render.
-
-                    // Treat D1 through the Worker API as the live source of truth on every load.
-                    // The generated JSON feed remains a resilient fallback when the API is unavailable.
-                    let freshItems = feedItems;
-                    const feedLooksIncomplete =
-                        !feedItems.length ||
-                        (feedTotal > feedItems.length) ||
-                        feedItems.length <= 4;
-
+                    // Prefer the live D1-backed API. Avoid a separate feed round-trip on success.
+                    let freshItems = cached.length ? cached : [];
                     try {
                         const apiItems = await fetchAllFromAPI();
-                        if (apiItems.length && (apiItems.length >= freshItems.length || feedLooksIncomplete)) {
-                            freshItems = apiItems;
-                        }
+                        if (apiItems.length) freshItems = apiItems;
+                        else if (!freshItems.length) throw new Error("The podcast API returned an empty catalogue.");
                     } catch (apiError) {
-                        console.error("NightCast podcast API refresh failed; retaining static feed when available.", apiError);
-                        if (!freshItems.length && cached.length) {
-                            freshItems = cached;
-                        }
+                        console.error("NightCast podcast API refresh failed; trying cached/static fallback.", apiError);
                         if (!freshItems.length) {
-                            throw feedError || apiError;
+                            try {
+                                const response = await fetch(CONFIG.FEED_URL, {
+                                    method: "GET",
+                                    headers: { "Accept": "application/json" }
+                                });
+                                if (!response.ok) throw new Error(`Podcast feed returned HTTP ${response.status}`);
+                                const data = await response.json();
+                                const feedItems = (Array.isArray(data)
+                                    ? data
+                                    : Array.isArray(data?.podcasts)
+                                        ? data.podcasts
+                                        : []).map(normalizePodcastRecord);
+                                if (feedItems.length) freshItems = feedItems;
+                                else throw new Error("The static podcast feed returned an empty catalogue.");
+                            } catch (feedError) {
+                                if (!freshItems.length) throw feedError || apiError;
+                            }
                         }
                     }
 
@@ -3580,6 +3565,11 @@ document.addEventListener(
                     loader.classList.add("is-hidden");
                     window.setTimeout(() => loader.remove(), 500);
                 };
+                // The cached catalogue has already been rendered synchronously. Reveal it after
+                // the first paint while the live API refresh continues in the background.
+                if (window.__NC_CACHED_CATALOG_RENDERED) {
+                    requestAnimationFrame(() => requestAnimationFrame(dismissArchiveLoader));
+                }
                 // A failed or stalled third-party request must never trap a listener behind the loader.
                 window.setTimeout(dismissArchiveLoader, 25000);
                 Promise.all([archiveReady, fontsReady]).then(() => {

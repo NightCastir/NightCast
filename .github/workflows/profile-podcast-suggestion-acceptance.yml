@@ -6,6 +6,8 @@ on:
       - 'index.html'
       - 'users/index.html'
       - 'js/nightcast-app.js'
+      - 'css/nightcast-base.css'
+      - 'css/nightcast-profile.css'
       - '.github/workflows/profile-podcast-suggestion-acceptance.yml'
   pull_request:
     branches: [main]
@@ -42,9 +44,12 @@ jobs:
             const modalIndex = html.indexOf('id="bookSummaryRequestModal"');
             const modal = modalIndex < 0 ? '' : html.slice(modalIndex, modalIndex + 1800);
             const checks = [
-              ['profile CTA has inviting heading', /پادکست دلخواهت را پیشنهاد بده/.test(html)],
+              ['desktop navigation contains podcast suggestion action', /class="nav-link nav-link-button"[\s\S]{0,240}پیشنهاد پادکست دلخواه/.test(html)],
               ['button clearly offers podcast suggestion', /پیشنهاد پادکست دلخواه/.test(button)],
               ['button uses audio-oriented icon', /fa-headphones/.test(button)],
+              ['mobile drawer contains podcast suggestion action', /data-request-book-summary[\s\S]{0,260}پیشنهاد پادکست دلخواه/.test(html)],
+              ['profile has settings shortcut', /id="profileSettingsBtn"[\s\S]{0,240}تنظیمات/.test(html)],
+              ['profile CTA card is removed', !/profileLogged[\s\S]{0,1800}پادکست دلخواهت را پیشنهاد بده/.test(html)],
               ['modal describes podcast production', /پیشنهاد کتاب برای ساخت پادکست/.test(html)],
               ['request form keeps stable ID', /id="bookSummaryRequestForm"/.test(html)],
               ['request API route remains connected', /\/book-summary-requests/.test(source)],

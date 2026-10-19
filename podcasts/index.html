@@ -3280,9 +3280,10 @@
 @keyframes nc-heart-pop{0%{transform:scale(.72)}55%{transform:scale(1.28)}100%{transform:scale(1)}}
 @media(prefers-reduced-motion:reduce){.favorite,.nc-like-button,.favorite i,.nc-like-button i{transition:none;animation:none!important}}
 /* Real Web Audio frequency visualizer inside the compact bottom player. */
-.nc-audio-visualizer-wrap{direction:ltr;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex:1 1 210px;min-width:120px;max-width:320px;padding:3px 10px}
-.nc-audio-visualizer{display:block;width:100%;height:42px;overflow:visible}
-.nc-visualizer-status{font-size:.62rem;line-height:1.2;color:rgba(190,220,255,.66);direction:rtl;white-space:nowrap}
+.nc-audio-visualizer-wrap{position:relative;direction:ltr;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex:1 1 210px;min-width:120px;max-width:320px;padding:4px 12px;border:1px solid rgba(95,184,255,.11);border-radius:14px;background:linear-gradient(115deg,rgba(30,94,145,.08),rgba(112,91,190,.06));overflow:hidden}
+.nc-audio-visualizer-wrap:before{content:"";position:absolute;inset-inline:12px;top:50%;height:1px;background:rgba(133,205,255,.12);pointer-events:none}
+.nc-audio-visualizer{position:relative;z-index:1;display:block;width:100%;height:42px;overflow:hidden}
+.nc-visualizer-status{font-size:.62rem;line-height:1.2;color:rgba(190,220,255,.72);direction:rtl;white-space:nowrap;letter-spacing:.01em}
 .nc-player-cover-clickable{cursor:pointer;outline-offset:4px;transition:transform .2s,box-shadow .2s}
 .nc-player-cover-clickable:hover{transform:scale(1.04);box-shadow:0 0 0 2px rgba(111,214,255,.7),0 0 22px rgba(54,156,255,.22)}
 .nc-player-cover-clickable:focus-visible{outline:2px solid #8ce8ff}
@@ -6352,15 +6353,18 @@ LOGOUT
             let ncAudioContext = null;
             let ncAnalyser = null;
             let ncFrequencyData = null;
+            let ncTimeData = null;
             let ncVisualizerFrame = 0;
             let ncVisualizerUnavailable = false;
+            let ncVisualizerLastFrame = 0;
+            let ncVisualizerLevels = [];
 
             function prepareAudioVisualizer() {
                 const canvas = document.getElementById("ncAudioVisualizer");
                 const status = document.getElementById("ncVisualizerStatus");
                 if (!canvas) return;
                 if (ncVisualizerUnavailable) {
-                    if (status) status.textContent = "نمایش فرکانس در این منبع پشتیبانی نمی‌شود";
+                    if (status) status.textContent = "پخش فعال است؛ تحلیل این منبع محدود است";
                     return;
                 }
                 try {
@@ -6369,17 +6373,19 @@ LOGOUT
                     if (!ncAudioContext) {
                         ncAudioContext = new AudioContextClass();
                         ncAnalyser = ncAudioContext.createAnalyser();
-                        ncAnalyser.fftSize = 128;
-                        ncAnalyser.minDecibels = -90;
-                        ncAnalyser.maxDecibels = -18;
-                        ncAnalyser.smoothingTimeConstant = 0.78;
+                        /* Short analysis window + low analyser smoothing keeps speech transients responsive. */
+                        ncAnalyser.fftSize = 256;
+                        ncAnalyser.minDecibels = -88;
+                        ncAnalyser.maxDecibels = -20;
+                        ncAnalyser.smoothingTimeConstant = 0.42;
                         ncFrequencyData = new Uint8Array(ncAnalyser.frequencyBinCount);
+                        ncTimeData = new Uint8Array(ncAnalyser.fftSize);
                         const source = ncAudioContext.createMediaElementSource(els.audio);
                         source.connect(ncAnalyser);
                         ncAnalyser.connect(ncAudioContext.destination);
                     }
                     if (ncAudioContext.state === "suspended") ncAudioContext.resume().catch(() => {});
-                    if (status) status.textContent = "تحلیل زنده فرکانس";
+                    if (status) status.textContent = "تحلیل زنده صدا";
                     drawAudioVisualizer();
                 } catch (error) {
                     ncVisualizerUnavailable = true;
@@ -6391,42 +6397,77 @@ LOGOUT
             function drawAudioVisualizer() {
                 cancelAnimationFrame(ncVisualizerFrame);
                 const canvas = document.getElementById("ncAudioVisualizer");
-                const context = canvas?.getContext("2d");
-                if (!canvas || !context || !ncAnalyser || !ncFrequencyData) return;
-                const render = () => {
+                const context = canvas?.getContext("2d", { alpha: true, desynchronized: true });
+                if (!canvas || !context || !ncAnalyser || !ncFrequencyData || !ncTimeData) return;
+
+                const render = timestamp => {
+                    if (timestamp - ncVisualizerLastFrame < 30) {
+                        ncVisualizerFrame = requestAnimationFrame(render);
+                        return;
+                    }
+                    ncVisualizerLastFrame = timestamp;
                     const width = canvas.clientWidth || 280;
                     const height = canvas.clientHeight || 42;
-                    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-                    if (canvas.width !== Math.round(width * dpr) || canvas.height !== Math.round(height * dpr)) {
-                        canvas.width = Math.round(width * dpr);
-                        canvas.height = Math.round(height * dpr);
+                    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+                    const pixelWidth = Math.max(1, Math.round(width * dpr));
+                    const pixelHeight = Math.max(1, Math.round(height * dpr));
+                    if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+                        canvas.width = pixelWidth;
+                        canvas.height = pixelHeight;
                     }
                     context.setTransform(dpr, 0, 0, dpr, 0, 0);
                     context.clearRect(0, 0, width, height);
                     ncAnalyser.getByteFrequencyData(ncFrequencyData);
-                    const bars = Math.min(48, ncFrequencyData.length);
-                    const gap = Math.max(1.5, width / (bars * 4.5));
+                    ncAnalyser.getByteTimeDomainData(ncTimeData);
+
+                    const bars = Math.max(16, Math.min(36, Math.floor(width / 5.5)));
+                    const gap = Math.max(1.25, Math.min(3, width / (bars * 10)));
                     const barWidth = Math.max(1.5, (width - gap * (bars - 1)) / bars);
                     const mid = height / 2;
+                    const maxHeight = Math.max(5, height - 5);
+                    const gradient = context.createLinearGradient(0, 0, width, height);
+                    gradient.addColorStop(0, "#43d9ff");
+                    gradient.addColorStop(.52, "#55aaff");
+                    gradient.addColorStop(1, "#b5a0ff");
+                    context.fillStyle = gradient;
+                    context.shadowColor = "rgba(62,181,255,.28)";
+                    context.shadowBlur = 3;
+
+                    if (ncVisualizerLevels.length !== bars) ncVisualizerLevels = Array(bars).fill(0.035);
                     for (let i = 0; i < bars; i++) {
-                        const value = ncFrequencyData[Math.floor(i * ncFrequencyData.length / bars)] / 255;
-                        const barHeight = Math.max(2, Math.pow(value, 0.78) * (height - 5));
+                        const from = Math.floor(i * ncFrequencyData.length / bars);
+                        const to = Math.max(from + 1, Math.floor((i + 1) * ncFrequencyData.length / bars));
+                        let freqTotal = 0;
+                        for (let j = from; j < to; j++) freqTotal += ncFrequencyData[j];
+                        const frequency = (freqTotal / (to - from)) / 255;
+
+                        const tFrom = Math.floor(i * ncTimeData.length / bars);
+                        const tTo = Math.max(tFrom + 1, Math.floor((i + 1) * ncTimeData.length / bars));
+                        let energy = 0;
+                        for (let j = tFrom; j < tTo; j++) {
+                            const sample = (ncTimeData[j] - 128) / 128;
+                            energy += sample * sample;
+                        }
+                        const rms = Math.sqrt(energy / (tTo - tFrom));
+                        const target = Math.min(1, Math.pow(frequency, .58) * .72 + Math.pow(rms, .72) * .9);
+                        const previous = ncVisualizerLevels[i];
+                        const level = previous + (target - previous) * (target > previous ? .72 : .28);
+                        ncVisualizerLevels[i] = level;
+                        const barHeight = Math.max(2.5, level * maxHeight);
                         const x = i * (barWidth + gap);
-                        const gradient = context.createLinearGradient(0, mid - barHeight / 2, 0, mid + barHeight / 2);
-                        gradient.addColorStop(0, "#a9f4ff");
-                        gradient.addColorStop(.48, "#43bfff");
-                        gradient.addColorStop(1, "#8d79ff");
-                        context.fillStyle = gradient;
-                        const radius = Math.min(barWidth / 2, 3);
+                        const y = mid - barHeight / 2;
+                        const radius = Math.min(barWidth / 2, 2.5);
                         context.beginPath();
-                        if (typeof context.roundRect === "function") context.roundRect(x, mid - barHeight / 2, barWidth, barHeight, radius);
-                        else context.rect(x, mid - barHeight / 2, barWidth, barHeight);
+                        if (typeof context.roundRect === "function") context.roundRect(x, y, barWidth, barHeight, radius);
+                        else context.rect(x, y, barWidth, barHeight);
                         context.fill();
                     }
+                    context.shadowBlur = 0;
                     if (!els.audio.paused && !els.audio.ended) ncVisualizerFrame = requestAnimationFrame(render);
                     else ncVisualizerFrame = 0;
                 };
-                render();
+                ncVisualizerLastFrame = 0;
+                render(performance.now());
             }
 
             els.audio.addEventListener("play", () => {

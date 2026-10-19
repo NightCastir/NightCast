@@ -94,11 +94,58 @@
                 });
             }
 
-            function initMap() {
-                const mapEl = document.getElementById("ncMap");
-                if (!mapEl) return;
+            let ncLeafletLoadPromise = null;
 
-                if (!window.L) {
+            function ensureLeafletLoaded() {
+                if (window.L) return Promise.resolve();
+                if (ncLeafletLoadPromise) return ncLeafletLoadPromise;
+
+                ncLeafletLoadPromise = new Promise((resolve, reject) => {
+                    const stylesheet = document.querySelector('link[data-nc-leaflet-css]') ||
+                        document.createElement("link");
+                    stylesheet.rel = "stylesheet";
+                    stylesheet.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+                    stylesheet.crossOrigin = "";
+                    stylesheet.dataset.ncLeafletCss = "true";
+                    const cssReady = stylesheet.sheet
+                        ? Promise.resolve()
+                        : new Promise((cssResolve, cssReject) => {
+                            stylesheet.addEventListener("load", cssResolve, { once: true });
+                            stylesheet.addEventListener("error", () => cssReject(new Error("Leaflet CSS could not be loaded")), { once: true });
+                        });
+                    if (!stylesheet.isConnected) document.head.appendChild(stylesheet);
+
+                    const script = document.querySelector('script[data-nc-leaflet-js]') ||
+                        document.createElement("script");
+                    script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+                    script.crossOrigin = "";
+                    script.dataset.ncLeafletJs = "true";
+                    const jsReady = window.L
+                        ? Promise.resolve()
+                        : new Promise((jsResolve, jsReject) => {
+                            script.addEventListener("load", jsResolve, { once: true });
+                            script.addEventListener("error", () => jsReject(new Error("Leaflet JavaScript could not be loaded")), { once: true });
+                        });
+                    if (!script.isConnected && !window.L) document.body.appendChild(script);
+
+                    Promise.all([cssReady, jsReady]).then(resolve).catch(error => {
+                        ncLeafletLoadPromise = null;
+                        reject(error);
+                    });
+                });
+                return ncLeafletLoadPromise;
+            }
+
+            async function initMap() {
+                const mapEl = document.getElementById("ncMap");
+                if (!mapEl || mapEl.dataset.ncMapInitialized === "true" ||
+                    mapEl.dataset.ncMapInitialized === "loading") return;
+                mapEl.dataset.ncMapInitialized = "loading";
+
+                try {
+                    await ensureLeafletLoaded();
+                } catch (error) {
+                    mapEl.dataset.ncMapInitialized = "false";
                     mapEl.innerHTML = `
                         <div class="empty"
                              style="height:100%;display:grid;place-items:center;margin:0">
@@ -108,6 +155,7 @@
                     return;
                 }
 
+                mapEl.dataset.ncMapInitialized = "true";
                 const map = L.map(mapEl, {
                     center: [NC_MAP_LAT, NC_MAP_LNG],
                     zoom: 16,
@@ -302,8 +350,11 @@
                         if (options.updateHash !== false && (location.pathname !== cleanRoute || location.hash)) {
                             history.pushState({ nightcastPage: id }, "", cleanRoute + location.search);
                         }
-                        if (id === "contact" && window.L && window.ncMapInstance) {
-                            window.setTimeout(() => window.ncMapInstance.invalidateSize(), 180);
+                        if (id === "contact") {
+                            window.setTimeout(() => {
+                                initMap();
+                                if (window.ncMapInstance) window.ncMapInstance.invalidateSize();
+                            }, 80);
                         }
                         if (options.scroll !== false) {
                             window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" });
@@ -652,7 +703,6 @@
                 bindCommentsUI();
                 bindSectionNavigation();
                 bindReveal();
-                initMap();
             }
 
             if (document.readyState === "loading") {

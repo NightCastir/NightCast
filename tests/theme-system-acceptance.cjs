@@ -19,7 +19,8 @@ const assert = require('node:assert/strict');
 
     await page.waitForFunction(() => !!window.NightCastThemes, null, { timeout: 10000 });
     check('theme controller exposes the eight themes', (await page.evaluate(() => window.NightCastThemes.list().length)) === 8);
-    check('all eight theme cards are present', (await page.locator('[data-theme-choice]').count()) === 8);
+    check('profile no longer contains duplicate theme cards', (await page.locator('#profileThemeSettings, [data-theme-choice]').count()) === 0);
+    check('global theme launcher is present', (await page.locator('#ncThemeLauncher').count()) === 1);
     check('loader has a semantic progress bar and numeric value', await page.locator('#nc-entry-track[role="progressbar"][aria-valuemin="0"][aria-valuemax="100"]').count() === 1);
     check('loader uses a determinate fill element', await page.locator('#nc-entry-progress-fill').count() === 1);
 
@@ -33,12 +34,6 @@ const assert = require('node:assert/strict');
     check('theme texture token is configured', await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--nc-theme-texture').includes('unsplash.com')));
     check('selected theme is persisted locally', await page.evaluate(() => localStorage.getItem('nightcast-theme')) === 'aurora');
     check('theme button is available globally rather than in profile settings', await page.locator('#ncThemeLauncher').count() === 1);
-
-    await page.locator('[data-theme-choice="aurora"]').click();
-    check('selecting Aurora updates the document theme', await page.locator('html').getAttribute('data-theme') === 'aurora');
-    check('selecting Aurora updates global CSS variables', await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--nc-theme-primary').trim().toLowerCase()) === '#34d399');
-    check('selected theme is announced accessibly', (await page.locator('#ncThemeSelectionStatus').innerText()).includes('شفق قطبی'));
-    check('active theme is persisted locally', await page.evaluate(() => localStorage.getItem('nightcast-theme')) === 'aurora');
 
     await page.reload({ waitUntil: 'domcontentloaded' });
     check('saved theme survives a reload', await page.locator('html').getAttribute('data-theme') === 'aurora');
@@ -82,10 +77,15 @@ const assert = require('node:assert/strict');
       document.getElementById('profileGuest').hidden = true;
       document.getElementById('profileLogged').hidden = false;
     });
-    check('profile has no duplicate theme settings panel', await page.locator('#profileThemeSettings, #profileSettingsBtn').count() === 0);
+    check('profile has no duplicate theme settings panel or settings button', await page.locator('#profileThemeSettings, #profileSettingsBtn').count() === 0);
     check('global theme ribbon reflects the persisted selection', await page.locator('[data-ribbon-theme-choice="aurora"]').getAttribute('aria-pressed') === 'true');
 
+    await page.evaluate(() => {
+      const grid = document.getElementById('podcastGrid');
+      if (grid && !grid.querySelector('.podcast-card')) grid.innerHTML = '<article class="podcast-card"><h3>Theme acceptance card</h3><p>Surface and text sample</p><button type="button">Action</button></article>';
+    });
     const themeIds = ['midnight-cosmos','aurora','studio-noir','deep-ocean','royal-gold','neon-city','persian-heritage','moonlight'];
+    const observedCardSurfaces = new Set();
     for (const themeId of themeIds) {
       await page.evaluate(id => window.NightCastThemes.apply(id, false), themeId);
       const appearance = await page.evaluate(() => ({
@@ -96,10 +96,11 @@ const assert = require('node:assert/strict');
       }));
       check('theme tokens and distinct texture resolve for ' + themeId, appearance.id === themeId && !!appearance.primary && !!appearance.surface && appearance.texture.includes('unsplash.com'));
       const card = page.locator('#podcastGrid .podcast-card').first();
-      if (await card.count()) {
-        const cardAppearance = await card.evaluate(el => ({bg:getComputedStyle(el).backgroundImage,border:getComputedStyle(el).borderColor,color:getComputedStyle(el).color}));
-        check('podcast card surface and border are theme-bound for ' + themeId, cardAppearance.bg.includes('linear-gradient') && !!cardAppearance.border && !!cardAppearance.color);
-      }
+      const cardAppearance = await card.evaluate(el => ({bg:getComputedStyle(el).backgroundImage,border:getComputedStyle(el).borderColor,color:getComputedStyle(el).color}));
+      observedCardSurfaces.add(cardAppearance.bg + '|' + cardAppearance.border + '|' + cardAppearance.color);
+      check('podcast card surface and border are theme-bound for ' + themeId, cardAppearance.bg.includes('linear-gradient') && !!cardAppearance.border && !!cardAppearance.color);
+    }
+    check('podcast card appearance changes across theme palettes', observedCardSurfaces.size >= 7);
     }
     await page.evaluate(() => window.NightCastThemes.apply('aurora', false));
 

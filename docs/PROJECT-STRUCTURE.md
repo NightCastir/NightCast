@@ -6,6 +6,15 @@
 - **Android:** `MainActivity` launches Capacitor's WebView. The remote entry URL is defined once in `capacitor.config.ts` as `https://www.nightcast.ir`.
 - **Native Google sign-in:** `NightCastGoogleAuth.java` is a separate Capacitor plugin registered by `MainActivity`. Keep this separate from app startup; it has a different responsibility.
 
+## Public routes and single-document navigation
+
+- The only full public HTML document is root `index.html`. It contains the podcast archive and the About/Contact sections.
+- `users/index.html`, `about/index.html`, and `contact/index.html` are lightweight compatibility aliases, not independent copies of the site. They preserve the query string and an existing hash; otherwise they target `/#podcasts`, `/#about`, or `/#contact`.
+- `_redirects` keeps clean and legacy URLs working. The About/Contact rewrites serve their small alias documents, which then navigate to the matching section in the canonical document.
+- `js/clean-routes.js` must honor explicit `#podcasts`, `#about`, and `#contact` hashes. With no section hash, the root entry defaults to the podcast archive.
+- `sitemap.xml` lists the canonical root URL only. Section aliases are not separate indexable HTML pages.
+- Do not restore full-page copies in compatibility files: that duplicates hundreds of kilobytes of HTML, causes route behavior to drift, and increases maintenance and validation costs.
+
 ## Source vs generated files
 
 The Android build recreates the `android/` directory during CI. Consequently, files written only into `android/app/src/main/java/` during a workflow are build outputs and are not durable source files.

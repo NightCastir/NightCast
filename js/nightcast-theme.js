@@ -1,0 +1,159 @@
+/* NightCast Theme System: global CSS theme tokens, persistent preference, and themed loader. */
+(() => {
+  "use strict";
+  const STORAGE_KEY = "nightcast-theme";
+  const DEFAULT_THEME = "midnight-cosmos";
+  const themes = {
+    "midnight-cosmos": { name:"Midnight Cosmos", fa:"کیهان نیمه‌شب", subtitle:"جهان شنیداری در دل کیهان", image:"https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=900&q=72", loader:"https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=1600&q=78", colors:["#050816","#8B5CF6","#38BDF8","#67E8F9"] },
+    "aurora": { name:"Aurora", fa:"شفق قطبی", subtitle:"نورهای زنده در آسمان شب", image:"https://images.unsplash.com/photo-1531366936337-7c912a4589a7?auto=format&fit=crop&w=900&q=72", loader:"https://images.unsplash.com/photo-1531366936337-7c912a4589a7?auto=format&fit=crop&w=1600&q=78", colors:["#071410","#34D399","#2DD4BF","#A78BFA"] },
+    "studio-noir": { name:"Studio Noir", fa:"استودیوی سیاه", subtitle:"حس استودیوی حرفه‌ای رادیو", image:"https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=900&q=72", loader:"https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1600&q=78", colors:["#101112","#F59E0B","#FBBF24","#4ADE80"] },
+    "deep-ocean": { name:"Deep Ocean", fa:"اقیانوس عمیق", subtitle:"آرامش آبی و موج‌های نرم", image:"https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=900&q=72", loader:"https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=1600&q=78", colors:["#061826","#0EA5E9","#22D3EE","#2DD4BF"] },
+    "royal-gold": { name:"Royal Gold", fa:"طلایی سلطنتی", subtitle:"هویت لوکس و ظریف", image:"https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=900&q=72", loader:"https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1600&q=78", colors:["#0B0B0D","#D4AF37","#F3D98B","#A67C36"] },
+    "neon-city": { name:"Neon City", fa:"شهر نئون", subtitle:"انرژی موسیقی و نورهای شهری", image:"https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=900&q=72", loader:"https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=1600&q=78", colors:["#100817","#F472B6","#22D3EE","#C084FC"] },
+    "persian-heritage": { name:"Persian Heritage", fa:"میراث ایرانی", subtitle:"لاجورد، فیروزه و طلای ایرانی", image:"https://images.unsplash.com/photo-1561214115-f2f134cc4912?auto=format&fit=crop&w=900&q=72", loader:"https://images.unsplash.com/photo-1561214115-f2f134cc4912?auto=format&fit=crop&w=1600&q=78", colors:["#101A32","#2CB7A5","#4263EB","#D6AD60"] },
+    "moonlight": { name:"Moonlight", fa:"مهتاب", subtitle:"روشن، مینیمال و آرام", image:"https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=900&q=72", loader:"https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1600&q=78", colors:["#F7F8FC","#6366F1","#38BDF8","#8B5CF6"] }
+  };
+  const root = document.documentElement;
+  const safeRead = () => { try { const value = localStorage.getItem(STORAGE_KEY); return themes[value] ? value : DEFAULT_THEME; } catch (_) { return DEFAULT_THEME; } };
+  let currentTheme = safeRead();
+  let progress = 4;
+  let catalogReady = false;
+  let fontsReady = false;
+  let loaderDone = false;
+  const loader = () => document.getElementById("nc-entry-loader");
+  function setProgress(value, status) {
+    progress = Math.max(progress, Math.min(100, Math.round(value)));
+    const fill = document.getElementById("nc-entry-progress-fill");
+    const track = document.querySelector("#nc-entry-loader .nc-entry-track");
+    const percent = document.getElementById("nc-entry-percent");
+    const statusNode = document.getElementById("nc-entry-status");
+    if (fill) fill.style.width = progress + "%";
+    if (track) track.setAttribute("aria-valuenow", String(progress));
+    if (percent) percent.textContent = progress.toLocaleString("fa-IR") + "٪";
+    if (statusNode && status) statusNode.firstChild ? statusNode.firstChild.textContent = status + " " : statusNode.textContent = status;
+  }
+  function applyTheme(id, persist = true) {
+    const key = themes[id] ? id : DEFAULT_THEME;
+    const theme = themes[key];
+    currentTheme = key;
+    root.dataset.theme = key;
+    root.style.colorScheme = key === "moonlight" ? "light" : "dark";
+    document.querySelectorAll('meta[name="theme-color"]').forEach(meta => meta.setAttribute("content", theme.colors[0]));
+    const activeLoader = loader();
+    if (activeLoader) {
+      activeLoader.dataset.theme = key;
+      activeLoader.style.setProperty("--nc-loader-image", 'url("' + theme.loader + '")');
+    }
+    document.querySelectorAll("[data-theme-choice]").forEach(button => {
+      const selected = button.dataset.themeChoice === key;
+      button.setAttribute("aria-pressed", selected ? "true" : "false");
+      const selectedLabel = button.querySelector(".nc-theme-selected");
+      if (selectedLabel) selectedLabel.setAttribute("aria-hidden", selected ? "false" : "true");
+    });
+    const current = document.getElementById("ncThemeCurrentName");
+    if (current) current.textContent = theme.fa;
+    const profileButton = document.getElementById("profileSettingsBtn");
+    if (profileButton) {
+      const small = profileButton.querySelector("small");
+      if (small) small.textContent = "تم فعال: " + theme.fa + " · تغییر ظاهر سایت";
+    }
+    document.dispatchEvent(new CustomEvent("nightcast:themechange", { detail: { id:key, theme } }));
+    if (persist) { try { localStorage.setItem(STORAGE_KEY, key); } catch (_) {} }
+    return key;
+  }
+  function markCatalogReady() {
+    catalogReady = true;
+    setProgress(88, "آرشیو آماده شد؛ در حال نهایی‌سازی تجربه");
+    maybeFinishLoader();
+  }
+  function maybeFinishLoader() {
+    if (loaderDone || !catalogReady) return;
+    if (progress < 92) setProgress(92, "در حال آماده‌سازی رابط کاربری");
+    Promise.resolve(document.fonts && document.fonts.ready).catch(() => undefined).then(() => {
+      fontsReady = true;
+      if (!catalogReady || loaderDone) return;
+      setProgress(97, "تقریباً آماده‌اید");
+      window.setTimeout(() => {
+        if (loaderDone) return;
+        loaderDone = true;
+        setProgress(100, "آماده‌ی شنیدن");
+        const activeLoader = loader();
+        if (activeLoader) {
+          activeLoader.classList.add("is-hidden");
+          window.setTimeout(() => activeLoader.remove(), 480);
+        }
+        document.body.removeAttribute("aria-busy");
+        window.dispatchEvent(new CustomEvent("nightcast:loader-complete"));
+      }, 140);
+    });
+  }
+  function initSelector() {
+    const settingsButton = document.getElementById("profileSettingsBtn");
+    const profileLogged = document.getElementById("profileLogged");
+    const settingsPanel = document.getElementById("profileThemeSettings");
+    const backButton = document.getElementById("ncThemeBack");
+    if (settingsButton && profileLogged && settingsPanel && !settingsButton.dataset.themeBound) {
+      settingsButton.dataset.themeBound = "true";
+      settingsButton.addEventListener("click", () => {
+        profileLogged.hidden = true;
+        settingsPanel.hidden = false;
+        applyTheme(currentTheme, false);
+        const first = settingsPanel.querySelector("[data-theme-choice]");
+        if (first) window.setTimeout(() => first.focus({ preventScroll:true }), 30);
+      });
+    }
+    if (backButton && profileLogged && settingsPanel) backButton.addEventListener("click", () => {
+      settingsPanel.hidden = true;
+      profileLogged.hidden = false;
+      settingsButton && settingsButton.focus({ preventScroll:true });
+    });
+    document.querySelectorAll("[data-theme-choice]").forEach(button => {
+      if (button.dataset.themeBound) return;
+      button.dataset.themeBound = "true";
+      button.addEventListener("click", () => {
+        applyTheme(button.dataset.themeChoice);
+        const status = document.getElementById("ncThemeSelectionStatus");
+        const theme = themes[currentTheme];
+        if (status) status.textContent = "تم " + theme.fa + " فعال شد.";
+        button.classList.remove("nc-theme-just-selected");
+        void button.offsetWidth;
+        button.classList.add("nc-theme-just-selected");
+      });
+    });
+  }
+  function initLoader() {
+    const el = loader();
+    if (!el) return;
+    el.dataset.theme = currentTheme;
+    el.style.setProperty("--nc-loader-image", 'url("' + themes[currentTheme].loader + '")');
+    setProgress(8, "در حال راه‌اندازی NightCast");
+    const resources = performance.getEntriesByType("resource");
+    const count = Math.max(1, resources.length);
+    setProgress(Math.min(30, 10 + Math.round(count * .45)), "در حال آماده‌سازی فایل‌های سایت");
+    if ("PerformanceObserver" in window) {
+      try {
+        const observer = new PerformanceObserver(list => {
+          const seen = list.getEntries().length;
+          setProgress(Math.min(55, progress + Math.max(1, Math.round(seen * .35))), "فایل‌های اصلی دریافت شدند");
+        });
+        observer.observe({ type:"resource", buffered:true });
+      } catch (_) {}
+    }
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { fontsReady = true; setProgress(Math.max(progress, 62), "آماده‌سازی قلم و رابط کاربری"); }).catch(() => {});
+    window.addEventListener("nightcast:catalog-ready", markCatalogReady, { once:true });
+    // If the app fails before initialization, release the screen with an honest fallback state.
+    window.setTimeout(() => {
+      if (catalogReady || loaderDone) return;
+      setProgress(Math.max(progress, 72), "اتصال کامل نشد؛ نمایش نسخه در دسترس");
+      catalogReady = true;
+      maybeFinishLoader();
+    }, 12000);
+  }
+  function init() {
+    applyTheme(currentTheme, false);
+    initSelector();
+    initLoader();
+  }
+  window.NightCastThemes = Object.freeze({ list:() => Object.entries(themes).map(([id, value]) => ({id, ...value})), getCurrent:() => currentTheme, apply:applyTheme });
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once:true }); else init();
+})();

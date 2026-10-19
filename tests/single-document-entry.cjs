@@ -61,25 +61,25 @@ check('Legacy /podcasts page redirects immediately and preserves query/hash', ()
   assert.match(redirects, /^\/podcasts\/\s+\/\s+301$/m);
 });
 check('About and contact routes serve their route-specific documents', () => {
-  assert.match(redirects, /^\\/about\\s+\\/about\\/index\\.html\\s+200$/m);
-  assert.match(redirects, /^\\/contact\\s+\\/contact\\/index\\.html\\s+200$/m);
-  assert.doesNotMatch(redirects, /^\\/(?:about|contact)\\s+\\/users\\/index\\.html\\s+200$/m);
+  assert.match(redirects, /^\/about\s+\/about\/index\.html\s+200$/m);
+  assert.match(redirects, /^\/contact\s+\/contact\/index\.html\s+200$/m);
+  assert.doesNotMatch(redirects, /^\/(?:about|contact)\s+\/users\/index\.html\s+200$/m);
 
   const about = fs.readFileSync('about/index.html', 'utf8');
   const contact = fs.readFileSync('contact/index.html', 'utf8');
-  assert.match(about, /<link rel="canonical" href="https:\\/\\/nightcast\\.ir\\/about">/i);
-  assert.match(about, /<meta property="og:url" content="https:\\/\\/nightcast\\.ir\\/about">/i);
-  assert.match(about, /<title>درباره NightCast \\| رادیوی فرهنگی نایت‌کست<\\/title>/i);
-  assert.match(contact, /<link rel="canonical" href="https:\\/\\/nightcast\\.ir\\/contact">/i);
-  assert.match(contact, /<meta property="og:url" content="https:\\/\\/nightcast\\.ir\\/contact">/i);
-  assert.match(contact, /<title>تماس با NightCast \\| ارتباط با نایت‌کست<\\/title>/i);
+  assert.match(about, /<link rel="canonical" href="https:\/\/nightcast\.ir\/about">/i);
+  assert.match(about, /<meta property="og:url" content="https:\/\/nightcast\.ir\/about">/i);
+  assert.match(about, /<title>درباره NightCast \| رادیوی فرهنگی نایت‌کست<\/title>/i);
+  assert.match(contact, /<link rel="canonical" href="https:\/\/nightcast\.ir\/contact">/i);
+  assert.match(contact, /<meta property="og:url" content="https:\/\/nightcast\.ir\/contact">/i);
+  assert.match(contact, /<title>تماس با NightCast \| ارتباط با نایت‌کست<\/title>/i);
 });
 check('Sitemap lists canonical public pages only', () => {
   const sitemap = fs.readFileSync('sitemap.xml', 'utf8');
-  assert.match(sitemap, /<loc>https:\\/\\/nightcast\\.ir\\/<\\/loc>/);
-  assert.match(sitemap, /<loc>https:\\/\\/nightcast\\.ir\\/about<\\/loc>/);
-  assert.match(sitemap, /<loc>https:\\/\\/nightcast\\.ir\\/contact<\\/loc>/);
-  assert.doesNotMatch(sitemap, /<loc>https:\\/\\/nightcast\\.ir\\/podcasts<\\/loc>/);
+  assert.match(sitemap, /<loc>https:\/\/nightcast\.ir\/<\/loc>/);
+  assert.match(sitemap, /<loc>https:\/\/nightcast\.ir\/about<\/loc>/);
+  assert.match(sitemap, /<loc>https:\/\/nightcast\.ir\/contact<\/loc>/);
+  assert.doesNotMatch(sitemap, /<loc>https:\/\/nightcast\.ir\/podcasts<\/loc>/);
 });
 
 check('Canonical archive remains Persian RTL and responsive', () => {

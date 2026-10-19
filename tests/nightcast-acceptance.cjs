@@ -194,8 +194,8 @@ function silentWavDataUri() {
     const archiveHtml = fs.readFileSync('index.html', 'utf8');
     const redirects = fs.readFileSync('_redirects', 'utf8');
     const routeScript = fs.readFileSync('js/clean-routes.js', 'utf8');
-    if (/<a\\b[^>]*\\bhref=["']#(?:podcasts|about|contact)["']/i.test(archiveHtml)) {
     if (/<a\b[^>]*\bhref=["']#(?:podcasts|about|contact)["']/i.test(archiveHtml)) {
+      cleanRouteFailures.push('archive navigation still links to section fragments');
     }
     if (!redirects.includes('/about /index.html 200') || !redirects.includes('/contact /index.html 200')) {
       cleanRouteFailures.push('About/Contact must rewrite to the shared document while retaining clean paths');

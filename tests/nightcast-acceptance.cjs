@@ -190,6 +190,23 @@ function silentWavDataUri() {
       routeAliasFailures.length === 0,
       routeAliasFailures.join(' || ') || 'Three compatibility documents preserve query parameters and use clean section URLs');
 
+    const cleanRouteFailures = [];
+    const archiveHtml = fs.readFileSync('index.html', 'utf8');
+    const redirects = fs.readFileSync('_redirects', 'utf8');
+    const routeScript = fs.readFileSync('js/clean-routes.js', 'utf8');
+    if (/<a\\b[^>]*\\bhref=["']#(?:podcasts|about|contact)["']/i.test(archiveHtml)) {
+      cleanRouteFailures.push('archive navigation still links to section fragments');
+    }
+    if (!redirects.includes('/about /index.html 200') || !redirects.includes('/contact /index.html 200')) {
+      cleanRouteFailures.push('About/Contact must rewrite to the shared document while retaining clean paths');
+    }
+    if (!routeScript.includes('history.replaceState') || !routeScript.includes('sectionPaths')) {
+      cleanRouteFailures.push('clean route resolver or legacy hash migration is missing');
+    }
+    report('0.8. Navigation uses clean paths and does not generate section hashes',
+      cleanRouteFailures.length === 0,
+      cleanRouteFailures.join(' || ') || 'Navigation uses /, /about, and /contact; legacy fragments are migrated away');
+
     // Activity 2: validate the actual public API, independently of browser mocks.
     try {
       const response = await fetch('https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=5', {

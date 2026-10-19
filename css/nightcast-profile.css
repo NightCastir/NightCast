@@ -419,3 +419,13 @@ body.nc-comments-open{overflow:hidden}
 
                 @media (prefers-reduced-motion: reduce) { .podcast-card, .podcast-cover img, .nc-podcast-detail, .nc-detail-dialog { transition: none !important; } }
 
+
+
+/* Profile settings shortcut */
+.profile-settings-button{width:100%;display:flex;align-items:center;gap:12px;padding:14px 16px;margin:0 0 18px;border:1px solid rgba(151,190,255,.18);border-radius:14px;background:rgba(255,255,255,.035);color:inherit;text-align:right;font:inherit;cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
+.profile-settings-button:hover,.profile-settings-button:focus-visible{background:rgba(113,170,255,.09);border-color:rgba(151,190,255,.42);outline:none}
+.profile-settings-button>i:first-child{width:40px;height:40px;display:grid;place-items:center;flex:0 0 40px;border-radius:12px;background:rgba(105,166,255,.13);color:#9dcaff}
+.profile-settings-button span{display:flex;flex:1;min-width:0;flex-direction:column;gap:4px}
+.profile-settings-button strong{font-size:.94rem}
+.profile-settings-button small{font-size:.76rem;line-height:1.6;opacity:.72}
+.profile-settings-button>i:last-child{opacity:.65}

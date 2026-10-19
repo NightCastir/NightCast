@@ -101,7 +101,6 @@ const assert = require('node:assert/strict');
       check('podcast card surface and border are theme-bound for ' + themeId, cardAppearance.bg.includes('linear-gradient') && !!cardAppearance.border && !!cardAppearance.color);
     }
     check('podcast card appearance changes across theme palettes', observedCardSurfaces.size >= 7);
-    }
     await page.evaluate(() => window.NightCastThemes.apply('aurora', false));
 
     const loginResponse = await page.goto('http://127.0.0.1:4173/users/login.html', { waitUntil: 'domcontentloaded', timeout: 30000 });

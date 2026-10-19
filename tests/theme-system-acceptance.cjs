@@ -49,7 +49,7 @@ const assert = require('node:assert/strict');
     check('persisted theme is marked selected', await page.locator('[data-theme-choice="aurora"]').getAttribute('aria-pressed') === 'true');
 
     await page.setViewportSize({ width: 360, height: 800 });
-    const panel = await page.locator('.profile-overlay > .profile-panel').boundingBox();
+    const panel = await page.locator('#profileOverlay > .profile-panel').boundingBox();
     const grid = await page.locator('#profileThemeSettings .nc-theme-grid').boundingBox();
     check('profile panel fits narrow mobile viewport', !!panel && panel.x >= 0 && panel.x + panel.width <= 360.5);
 

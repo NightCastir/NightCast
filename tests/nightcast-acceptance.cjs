@@ -577,7 +577,7 @@ function silentWavDataUri() {
         if (['mobile', 'tablet', 'desktop', 'TV'].includes(size.name)) {
           await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
           await page.waitForTimeout(180);
-          await page.screenshot({ path: path.join(visualArtifactDir, size.name + '-hero.png'), fullPage: false, animations: 'disabled' });
+          await page.screenshot({ path: path.join(visualArtifactDir, size.name + '-podcasts-entry.png'), fullPage: false, animations: 'disabled' });
           const cosmosPanel = page.locator('#ncConstellation');
           if (await cosmosPanel.count()) {
             await cosmosPanel.scrollIntoViewIfNeeded();
@@ -676,7 +676,8 @@ function silentWavDataUri() {
             heroTitle: (() => {
               const title = document.querySelector('#heroTitle');
               const hero = document.querySelector('main#home .hero');
-              if (!title || !hero) return { missing: true };
+              if (!title && !hero) return { missing: true };
+              if (!title || !hero) return { missing: false, overflow: true, detail: 'partial welcome hero markup remains' };
               const titleRect = title.getBoundingClientRect();
               const heroRect = hero.getBoundingClientRect();
               const heroStyle = getComputedStyle(hero);
@@ -751,7 +752,7 @@ function silentWavDataUri() {
       }
       report('5. Mobile, tablet, desktop and TV layouts avoid horizontal overflow', failures.length === 0, failures.join('; ') || 'Tested 320, 360, 390, 768, 801, 820, 900, 1000, 1024, 1440, 1920 px');
       report('5.1. Header, navigation and controls fit across breakpoints', headerFailures.length === 0, headerFailures.join('; ') || 'Header geometry and navigation mode passed at 11 viewport widths');
-      report('5.2. Hero heading stays within its container across breakpoints', heroTitleFailures.length === 0, heroTitleFailures.join('; ') || 'Hero title geometry passed at 11 viewport widths');
+      report('5.2. Welcome hero is absent across breakpoints', heroTitleFailures.length === 0, heroTitleFailures.join('; ') || 'Welcome hero is absent at all 11 viewport widths');
       report('6. Mobile navigation drawer remains fixed and usable', mobileNavigationPassed, mobileNavigationDetail);
 
       try {

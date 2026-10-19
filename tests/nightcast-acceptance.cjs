@@ -267,7 +267,7 @@ function silentWavDataUri() {
       await page.waitForSelector('#podcastGrid', { state: 'attached', timeout: 5000 });
       assert(new URL(page.url()).pathname === '/', 'Root route navigated away from the canonical document');
       assert(await page.locator('#nc-entry-loader').count() === 1, 'Galaxy loader is missing from the root archive document');
-      await page.waitForFunction(() => { const loader = document.getElementById('nc-entry-loader'); return !loader || loader.classList.contains('is-hidden'); }, { timeout: 15000 });
+      await page.waitForFunction(() => { const loader = document.getElementById('nc-entry-loader'); return !loader || loader.classList.contains('is-hidden'); }, null, { timeout: 15000 });
       assert(await page.locator('#podcastGrid .podcast-card').count() > 0, 'Loader disappeared before podcast cards were rendered');
       splashOk = true;
       report('1. Root route is the single canonical podcast document', true, new URL(page.url()).pathname + '; loader dismissed after podcast cards rendered');

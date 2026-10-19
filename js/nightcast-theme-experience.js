@@ -13,7 +13,7 @@
     ["moonlight","مهتاب","روشن، مینیمال و آرام",["#F7F8FC","#6366F1","#38BDF8","#8B5CF6"]]
   ];
   const ANIMALS = [["1F431","گربه"],["1F436","سگ"],["1F43C","پاندا"],["1F981","شیر"],["1F98A","روباه"],["1F43A","گرگ"],["1F42F","ببر"],["1F430","خرگوش"],["1F43B","خرس"],["1F418","فیل"],["1F433","نهنگ"],["1F42C","دلفین"],["1F989","جغد"],["1F985","عقاب"],["1F98B","پروانه"],["1F984","اسب تک‌شاخ"],["1F42E","گاو"],["1F437","خوک"],["1F438","قورباغه"],["1F427","پنگوئن"]];
-  const openMoji = code => "https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji@latest/color/svg/" + code + ".svg";
+  const openMoji = code => "https://cdn.jsdelivr.net/npm/openmoji@17.0.0/color/svg/" + code + ".svg";
   const readUser = () => { try { const raw=localStorage.getItem(USER_KEY)||sessionStorage.getItem(USER_KEY); return raw?JSON.parse(raw):null; } catch (_) { return null; } };
   const getPhoto = u => u&&(u.picture||u.avatar||u.avatar_url||u.avatarUrl||u.photoURL||u.photoUrl||u.photo||u.profile_picture||u.profilePicture||u.image||u.image_url||u.imageUrl||u.picture_url||u.pictureUrl)||"";
   const getEmail = u => u&&(u.email||u.mail||u.emailAddress)||"";

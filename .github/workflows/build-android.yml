@@ -120,6 +120,8 @@ jobs:
           const googleLoginScript = fs.readFileSync('users/js/login.js', 'utf8');
           const legacyAuthPage = fs.readFileSync('auth/login.html', 'utf8');
           const legacyWelcomePage = fs.readFileSync('users/auth.html', 'utf8');
+          const legacySmsPage = fs.readFileSync('users/loginnew.html', 'utf8');
+          const legacySmsScript = fs.readFileSync('users/js/loginnew.js', 'utf8');
           if (!authPageScript.includes('"/login"')) {
             throw new Error('Legacy auth entry must redirect to the canonical Google-only /login page.');
           }
@@ -131,8 +133,13 @@ jobs:
               !googleLoginScript.includes('NightCastGoogleAuth')) {
             throw new Error('Canonical login must use Google sign-in and exchange the Google ID token with the NightCast API.');
           }
-          if (/passwordForm|smsRequestForm|smsVerifyForm|oidcButton|guestButton/.test(legacyAuthPage + legacyWelcomePage)) {
-            throw new Error('Legacy password, SMS, generic OpenID, or guest login UI must not ship.');
+          if (!legacySmsPage.includes('url=/login') ||
+              !legacySmsScript.includes('new URL("/login"')) {
+            throw new Error('Legacy SMS login page and script must redirect to the canonical Google-only /login page.');
+          }
+          if (googleLoginScript.includes('guestLogin') ||
+              /passwordForm|smsRequestForm|smsVerifyForm|oidcButton|guestButton/.test(legacyAuthPage + legacyWelcomePage + legacySmsPage + legacySmsScript)) {
+            throw new Error('Guest, password, SMS, or generic OpenID login paths must not be exposed by login pages.');
           }
           for (const ref of ['../css/cosmic-experience.css', '../css/nightcast-cosmos.css', '../js/nightcast-cosmos.js']) {
             if (!archive.includes(ref)) throw new Error('Archive page is missing reference: ' + ref);

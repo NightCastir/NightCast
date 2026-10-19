@@ -1,0 +1,51 @@
+name: NightCast Statistic Panel Removal Acceptance
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'podcasts/index.html'
+      - 'users/index.html'
+      - '.github/workflows/remove-stat-cards-acceptance.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'podcasts/index.html'
+      - 'users/index.html'
+      - '.github/workflows/remove-stat-cards-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  stats-removal-check:
+    name: Verify count panels are absent and scripts stay safe
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check removed counters and null-safe updates
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const files = ['podcasts/index.html', 'users/index.html'];
+          let failed = false;
+          for (const file of files) {
+            const html = fs.readFileSync(file, 'utf8');
+            const checks = [
+              ['top podcast counter markup removed', !/\bid=["']podcastCount["']/.test(html)],
+              ['top book counter markup removed', !/\bid=["']bookCount["']/.test(html)],
+              ['top favorite counter markup removed', !/\bid=["']favoriteCount["']/.test(html)],
+              ['profile counter markup removed', !/\bid=["']profile(?:Podcast|Book|Favorite)Count["']/.test(html)],
+              ['profile statistic cards absent from HTML', !/class=["'][^"']*\bprofile-stats\b/.test(html)],
+              ['counter updates guard missing elements', /if \(els\.count\)/.test(html) && /if \(els\.books\)/.test(html) && /if \(els\.favCount\)/.test(html)],
+              ['podcast feed update function remains', /function updateStats\s*\(/.test(html) && /function loadPodcasts\s*\(/.test(html)]
+            ];
+            for (const [name, ok] of checks) {
+              console.log(`${ok ? 'PASS' : 'FAIL'} | ${file} | ${name}`);
+              if (!ok) failed = true;
+            }
+          }
+          if (failed) process.exit(1);
+          NODE

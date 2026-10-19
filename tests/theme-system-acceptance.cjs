@@ -15,7 +15,7 @@ const assert = require('node:assert/strict');
     const response = await page.goto('http://127.0.0.1:4173/', { waitUntil: 'domcontentloaded', timeout: 30000 });
     check('homepage loads successfully', !!response && response.ok());
     check('theme stylesheet is requested', (await page.request.get('http://127.0.0.1:4173/css/nightcast-themes.css?v=3')).ok());
-    check('theme controller is requested', (await page.request.get('http://127.0.0.1:4173/js/nightcast-theme.js?v=1')).ok());
+    check('theme controller is requested', (await page.request.get('http://127.0.0.1:4173/js/nightcast-theme.js?v=2')).ok());
 
     await page.waitForFunction(() => !!window.NightCastThemes, null, { timeout: 10000 });
     check('theme controller exposes the eight themes', (await page.evaluate(() => window.NightCastThemes.list().length)) === 8);
@@ -29,6 +29,9 @@ const assert = require('node:assert/strict');
     check('global theme ribbon opens from the page edge', await page.locator('#ncThemeRibbon.is-open').count() === 1);
     check('ribbon contains eight distinct theme options', await page.locator('[data-ribbon-theme-choice]').count() === 8);
     await page.locator('[data-ribbon-theme-choice="aurora"]').click();
+    check('theme transition shows a blocking progress overlay', await page.locator('#nc-theme-transition.is-active').count() === 1);
+    await page.waitForFunction(() => window.NightCastThemes && !window.NightCastThemes.isTransitioning(), null, { timeout: 30000 });
+    check('theme transition finishes at 100 percent', await page.locator('#nc-theme-transition .nct-track[role="progressbar"]').getAttribute('aria-valuenow') === '100');
     check('selecting Aurora updates the document theme', await page.locator('html').getAttribute('data-theme') === 'aurora');
     check('selecting Aurora updates global CSS variables', await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--nc-theme-primary').trim().toLowerCase()) === '#34d399');
     check('theme texture token is configured', await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--nc-theme-texture').includes('unsplash.com')));
@@ -43,6 +46,7 @@ const assert = require('node:assert/strict');
     check('theme ribbon opens from the page edge', await page.locator('#ncThemeRibbon.is-open').count() === 1);
     check('ribbon contains eight distinct theme options', await page.locator('[data-ribbon-theme-choice]').count() === 8);
     await page.locator('[data-ribbon-theme-choice="aurora"]').click();
+    await page.waitForFunction(() => window.NightCastThemes && !window.NightCastThemes.isTransitioning(), null, { timeout: 30000 });
     check('ribbon selection applies the central theme', await page.locator('html').getAttribute('data-theme') === 'aurora');
     check('ribbon selection closes after choosing', await page.locator('#ncThemeRibbon.is-open').count() === 0);
 

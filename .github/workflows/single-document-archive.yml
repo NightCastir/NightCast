@@ -51,6 +51,9 @@ jobs:
         run: node -e "require('yaml').parse(require('fs').readFileSync('.github/workflows/single-document-archive.yml','utf8'),{uniqueKeys:true}); console.log('Workflow YAML valid')"
       - name: Run full NightCast browser and API regression checks
         run: node tests/nightcast-acceptance.cjs
+      - name: Verify live www catalogue readiness in a real browser
+        if: github.ref == 'refs/heads/main'
+        run: node tests/live-entry-browser.cjs
       - name: Upload browser visual evidence
         if: always()
         uses: actions/upload-artifact@v4

@@ -1,0 +1,77 @@
+name: NightCast Theme System Acceptance
+on:
+  push:
+    branches: [main, 'feat/theme-system-and-adaptive-loader']
+    paths:
+      - 'index.html'
+      - 'js/nightcast-app.js'
+      - 'js/nightcast-theme.js'
+      - 'css/nightcast-profile.css'
+      - 'css/nightcast-themes.css'
+      - 'tests/theme-system-acceptance.cjs'
+      - '.github/workflows/theme-system-acceptance.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'js/nightcast-app.js'
+      - 'js/nightcast-theme.js'
+      - 'css/nightcast-profile.css'
+      - 'css/nightcast-themes.css'
+      - 'tests/theme-system-acceptance.cjs'
+      - '.github/workflows/theme-system-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  theme-browser-acceptance:
+    name: Theme selection, persistence, loader and responsive checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Start local static server
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/nightcast-theme-http.log 2>&1 &
+          for _ in $(seq 1 40); do
+            if curl --silent --fail http://127.0.0.1:4173/index.html >/dev/null; then exit 0; fi
+            sleep 0.25
+          done
+          cat /tmp/nightcast-theme-http.log
+          exit 1
+      - name: Run theme browser acceptance
+        run: node tests/theme-system-acceptance.cjs
+      - name: Validate theme metadata, CSS and loader wiring
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('index.html', 'utf8');
+          const js = fs.readFileSync('js/nightcast-theme.js', 'utf8');
+          const css = fs.readFileSync('css/nightcast-themes.css', 'utf8');
+          const app = fs.readFileSync('js/nightcast-app.js', 'utf8');
+          const checks = [
+            ['all eight theme IDs are implemented', ['midnight-cosmos','aurora','studio-noir','deep-ocean','royal-gold','neon-city','persian-heritage','moonlight'].every(id => js.includes('"'+id+'"'))],
+            ['profile settings has all eight image previews', (html.match(/data-theme-choice=/g) || []).length === 8],
+            ['theme CSS is loaded from the canonical stylesheet', html.includes('/css/nightcast-themes.css?v=1')],
+            ['theme controller is loaded before the app', html.indexOf('/js/nightcast-theme.js?v=1') < html.indexOf('/js/nightcast-app.js?v=1')],
+            ['loader progress is determinate and accessible', /role="progressbar"[^>]*aria-valuemin="0"[^>]*aria-valuemax="100"/.test(html) && html.includes('nc-entry-progress-fill')],
+            ['progress is connected to archive readiness', app.includes('nightcast:catalog-ready') && js.includes('nightcast:catalog-ready')],
+            ['global CSS variables include theme surfaces and accents', css.includes('--nc-theme-surface') && css.includes('--nc-theme-primary') && css.includes('--nc-theme-text')],
+            ['theme preference persists in local storage', js.includes('localStorage.setItem(STORAGE_KEY, key)')],
+            ['reduced motion preference is respected', css.includes('prefers-reduced-motion:reduce')]
+          ];
+          let failed = false;
+          for (const [name, ok] of checks) { console.log((ok ? 'PASS' : 'FAIL') + ' | ' + name); if (!ok) failed = true; }
+          if (failed) process.exit(1);
+          NODE

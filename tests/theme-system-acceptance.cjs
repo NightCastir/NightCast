@@ -11,7 +11,7 @@ const assert = require('node:assert/strict');
   try {
     const context = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
     const page = await context.newPage();
-    page.on('pageerror', error => { if (/nightcast-theme\.js|NightCast Theme System/i.test(error.stack || error.message)) failures.push('theme controller browser error: ' + error.message); });
+    page.on('pageerror', error => { if (/nightcast-theme(?:-experience)?\.js|NightCast Theme System/i.test(error.stack || error.message)) failures.push('theme controller browser error: ' + error.message); });
     const response = await page.goto('http://127.0.0.1:4173/', { waitUntil: 'domcontentloaded', timeout: 30000 });
     check('homepage loads successfully', !!response && response.ok());
     check('theme stylesheet is requested', (await page.request.get('http://127.0.0.1:4173/css/nightcast-themes.css?v=1')).ok());
@@ -40,6 +40,41 @@ const assert = require('node:assert/strict');
 
     await page.reload({ waitUntil: 'domcontentloaded' });
     check('saved theme survives a reload', await page.locator('html').getAttribute('data-theme') === 'aurora');
+
+    check('homepage exposes floating theme launcher', await page.locator('#ncThemeLauncher').count() === 1);
+    await page.locator('#ncThemeLauncher').click();
+    check('theme ribbon opens from the page edge', await page.locator('#ncThemeRibbon.is-open').count() === 1);
+    check('ribbon contains eight distinct theme options', await page.locator('[data-ribbon-theme-choice]').count() === 8);
+    await page.locator('[data-ribbon-theme-choice="aurora"]').click();
+    check('ribbon selection applies the central theme', await page.locator('html').getAttribute('data-theme') === 'aurora');
+    check('ribbon selection closes after choosing', await page.locator('#ncThemeRibbon.is-open').count() === 0);
+
+    await page.evaluate(() => {
+      localStorage.setItem('NightCastUser', JSON.stringify({
+        name: 'NightCast Test User', email: 'tester@example.com', picture: 'https://example.com/google-photo.png',
+        email_verified: true, given_name: 'NightCast', family_name: 'Tester', locale: 'fa'
+      }));
+      document.getElementById('profileOverlay').classList.add('show');
+      document.getElementById('profileGuest').hidden = true;
+      document.getElementById('profileLogged').hidden = false;
+    });
+    await page.waitForSelector('#ncAvatarChoiceSection');
+    check('profile shows the signed-in email below the avatar', await page.evaluate(() => {
+      const avatar = document.querySelector('.profile-avatar-wrap').getBoundingClientRect();
+      const email = document.getElementById('profileEmail').getBoundingClientRect();
+      return email.top >= avatar.bottom - 1 && document.getElementById('profileEmail').textContent === 'tester@example.com';
+    }));
+    check('profile shows Google claims when available', await page.locator('#ncGoogleDetails').innerText().then(text => text.includes('ایمیل تأیید شده') && text.includes('نام خانوادگی')));
+    check('animal avatar gallery exposes 20 SVG choices', await page.locator('#ncAvatarGrid [data-avatar-code]').count() === 20);
+    await page.locator('#ncAvatarGrid [data-avatar-code="1F431"]').click();
+    check('chosen SVG avatar is saved locally', await page.evaluate(() => localStorage.getItem('nightcast-custom-avatar')?.endsWith('/1F431.svg')) === true);
+    check('chosen avatar is synchronized in profile and header', await page.evaluate(() => {
+      const profile = document.getElementById('profileAvatar').getAttribute('src');
+      const header = document.getElementById('userAvatar').getAttribute('src');
+      return !!profile && profile === header && profile.endsWith('/1F431.svg');
+    }));
+    await page.locator('#ncAvatarReset').click();
+    check('user can restore the Google profile photo', await page.locator('#profileAvatar').getAttribute('src') === 'https://example.com/google-photo.png');
     await page.evaluate(() => {
       document.getElementById('profileOverlay').classList.add('show');
       document.getElementById('profileGuest').hidden = true;

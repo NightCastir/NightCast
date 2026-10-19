@@ -107,13 +107,12 @@ jobs:
           const root = fs.readFileSync('index.html', 'utf8');
           const archive = fs.readFileSync('users/index.html', 'utf8');
 
-          // The root page is intentionally a lightweight, standalone splash/redirect.
-          // App assets belong to the archive page; do not require them on this splash page.
-          if (!root.includes('class="nc-splash"') || !root.includes('window.location.replace(target)') || !root.includes('"/podcasts"')) {
-            throw new Error('Root splash page is missing its splash markup or /podcasts redirect');
+          // The root document is the canonical podcast archive and contains its own readiness loader.
+          if (!root.includes('id="podcastGrid"') || !root.includes('id="nc-entry-loader"') || !root.includes('function loadPodcasts')) {
+            throw new Error('Root document is missing the podcast archive or its integrated readiness loader.');
           }
-          if (!root.includes('/users/index.html#podcasts') || !root.includes('window.location.hostname === "localhost"')) {
-            throw new Error('Root splash page is missing the native Android archive route; this can cause a splash redirect loop in Capacitor.');
+          if (!root.includes('Promise.allSettled([loadPodcasts(), loadFavorites()])') || !root.includes('dismissArchiveLoader')) {
+            throw new Error('Root archive loader must wait for podcast data and favorites before dismissing.');
           }
           const authPageScript = fs.readFileSync('users/js/auth-page.js', 'utf8');
           const googleLoginPage = fs.readFileSync('users/login.html', 'utf8');
@@ -125,7 +124,7 @@ jobs:
           if (!authPageScript.includes('"/login"')) {
             throw new Error('Legacy auth entry must redirect to the canonical Google-only /login page.');
           }
-          if (!/LOGIN_PAGE:\s*"\/login"/.test(archive) || archive.includes('/auth/login.html')) {
+          if (!/LOGIN_PAGE:\s*"\/login"/.test(root) || root.includes('/auth/login.html')) {
             throw new Error('Every archive login entry must use the canonical Google-only /login route.');
           }
           if (!googleLoginPage.includes('id="googleLoginButton"') ||
@@ -141,13 +140,13 @@ jobs:
               /passwordForm|smsRequestForm|smsVerifyForm|oidcButton|guestButton/.test(legacyAuthPage + legacyWelcomePage + legacySmsPage + legacySmsScript)) {
             throw new Error('Guest, password, SMS, or generic OpenID login paths must not be exposed by login pages.');
           }
-          for (const ref of ['../css/cosmic-experience.css', '../css/nightcast-cosmos.css', '../js/nightcast-cosmos.js']) {
+          for (const ref of ['/css/cosmic-experience.css', '/css/nightcast-cosmos.css', '/js/nightcast-cosmos.js']) {
             if (!archive.includes(ref)) throw new Error('Archive page is missing reference: ' + ref);
           }
           // Validate asset paths independently from cache-busting versions (?v=1, ?v=2, ?v=3, ...).
           // A CSS release can advance before its paired JavaScript release; CI must not require a stale query string.
           const hasVersionedAsset = (html, attribute, expectedPath) => {
-            const expected = new URL(expectedPath, 'https://nightcast.invalid/users/');
+            const expected = new URL(expectedPath, 'https://nightcast.invalid/');
             const attrs = [...html.matchAll(/\b(href|src)\s*=\s*["']([^"']+)["']/gi)];
             return attrs.some(match => {
               if (match[1].toLowerCase() !== attribute) return false;
@@ -159,10 +158,10 @@ jobs:
               }
             });
           };
-          if (!hasVersionedAsset(archive, 'href', '../css/nightcast-cosmos.css')) {
+          if (!hasVersionedAsset(root, 'href', '/css/nightcast-cosmos.css')) {
             throw new Error('Archive page is missing a versioned NightCast Cosmos CSS reference');
           }
-          if (!hasVersionedAsset(archive, 'src', '../js/nightcast-cosmos.js')) {
+          if (!hasVersionedAsset(root, 'src', '/js/nightcast-cosmos.js')) {
             throw new Error('Archive page is missing a versioned NightCast Cosmos JavaScript reference');
           }
           NODE
@@ -544,10 +543,9 @@ jobs:
               '<script src="app-version.js"></script>'
           )
 
-          # The root entry point is a standalone splash/redirect and intentionally
-          # does not load the update checker. Inject the version script only on
-          # pages that actually include the checker; do not fail APK preparation
-          # just because the lightweight splash page omits it.
+          # The root entry point is now the podcast archive. Inject the version
+          # script only when the page includes the update checker; do not assume
+          # every standalone entry document needs that checker.
           if checker_tag in index and version_tag not in index:
               index = index.replace(
                   checker_tag,
@@ -557,7 +555,7 @@ jobs:
                   1
               )
           elif checker_tag not in index:
-              print("Standalone splash has no update-checker script; version label injection skipped.")
+              print("Root entry has no update-checker script; version label injection skipped.")
 
           index_file.write_text(
               index,

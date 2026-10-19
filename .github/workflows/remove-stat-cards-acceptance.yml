@@ -41,8 +41,8 @@ jobs:
               ['top favorite counter markup removed', !/\bid=["']favoriteCount["']/.test(html)],
               ['profile counter markup removed', !/\bid=["']profile(?:Podcast|Book|Favorite)Count["']/.test(html)],
               ['profile statistic cards absent from HTML', !/class=["'][^"']*\bprofile-stats\b/.test(html)],
-              ['counter updates guard missing elements', /if \(els\.count\)/.test(html) && /if \(els\.books\)/.test(html) && /if \(els\.favCount\)/.test(html)],
-              ['podcast feed update function remains', /function updateStats\s*\(/.test(html) && /function loadPodcasts\s*\(/.test(html)]
+              ['counter updates guard missing elements', /if \(els\.count\)/.test(source) && /if \(els\.books\)/.test(source) && /if \(els\.favCount\)/.test(source)],
+              ['podcast feed update function remains', /function updateStats\s*\(/.test(source) && /function loadPodcasts\s*\(/.test(source)]
             ];
             for (const [name, ok] of checks) {
               console.log(`${ok ? 'PASS' : 'FAIL'} | ${file} | ${name}`);

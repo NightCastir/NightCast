@@ -211,15 +211,19 @@ function silentWavDataUri() {
       cleanRouteFailures.length === 0,
       cleanRouteFailures.join(' || ') || 'Navigation uses /, /about, and /contact; legacy fragments are migrated away');
 
-    // Activity 2: validate the actual public API, independently of browser mocks.
+    // Activity 2: validate the real public API and record its response latency.
     try {
+      const apiStartedAt = Date.now();
       const response = await fetch('https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=5', {
         headers: { Accept: 'application/json' },
         signal: AbortSignal.timeout(12000)
       });
+      const apiFirstPageMs = Date.now() - apiStartedAt;
       const payload = await response.json();
       const ok = response.ok && payload?.success === true && Array.isArray(payload.podcasts) && payload.podcasts.length > 0;
-      report('2. Real podcast API returns live records', ok, 'HTTP ' + response.status + ', records=' + (payload?.podcasts?.length ?? 'n/a'));
+      report('2. Real podcast API returns live records', ok,
+        'HTTP ' + response.status + ', first-page=' + apiFirstPageMs + 'ms, records=' + (payload?.podcasts?.length ?? 'n/a') +
+        ', reported-total=' + (payload?.total ?? 'n/a'));
     } catch (error) {
       report('2. Real podcast API returns live records', false, String(error.message || error));
     }
@@ -338,6 +342,28 @@ function silentWavDataUri() {
       assert(await page.locator('#nc-entry-loader').count() === 1, 'Galaxy loader is missing from the root archive document');
       await page.waitForFunction(() => { const loader = document.getElementById('nc-entry-loader'); return !loader || loader.classList.contains('is-hidden'); }, null, { timeout: 15000 });
       assert(await page.locator('#podcastGrid .podcast-card').count() > 0, 'Loader disappeared before podcast cards were rendered');
+      const startupMetrics = await page.evaluate(() => {
+        const nav = performance.getEntriesByType('navigation')[0];
+        const paints = performance.getEntriesByType('paint');
+        const resources = performance.getEntriesByType('resource');
+        const localResources = resources.filter(item => new URL(item.name).origin === location.origin);
+        const cssResources = localResources.filter(item => /\.css(?:\?|$)/i.test(item.name));
+        const jsResources = localResources.filter(item => /\.js(?:\?|$)/i.test(item.name));
+        const leafLetRequests = resources.filter(item => /unpkg\.com\/leaflet\//i.test(item.name));
+        return {
+          domContentLoadedMs: nav ? Math.round(nav.domContentLoadedEventEnd) : null,
+          loadEventMs: nav ? Math.round(nav.loadEventEnd) : null,
+          firstContentfulPaintMs: Math.round(paints.find(item => item.name === 'first-contentful-paint')?.startTime || 0),
+          localCssRequests: cssResources.length,
+          localCssTransferBytes: cssResources.reduce((sum, item) => sum + (item.transferSize || 0), 0),
+          localJsRequests: jsResources.length,
+          localJsTransferBytes: jsResources.reduce((sum, item) => sum + (item.transferSize || 0), 0),
+          initialLeafletRequests: leafLetRequests.length
+        };
+      });
+      report('1.4. Initial-load performance telemetry and lazy map assets',
+        startupMetrics.domContentLoadedMs !== null && startupMetrics.initialLeafletRequests === 0,
+        JSON.stringify(startupMetrics));
       splashOk = true;
       report('1. Root route is the single canonical podcast document', true, new URL(page.url()).pathname + '; loader dismissed after podcast cards rendered');
       await page.goto('http://127.0.0.1:4173/podcasts/?legacy=1#podcasts', { waitUntil: 'domcontentloaded', timeout: 10000 });

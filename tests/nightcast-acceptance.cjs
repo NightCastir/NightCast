@@ -137,12 +137,16 @@ function silentWavDataUri() {
     for (const file of htmlFilesToValidate) {
       const html = fs.readFileSync(file, 'utf8');
       const hasIcons = /\bfa-(?:solid|regular|brands)\b/.test(html);
-      if (hasIcons && !html.includes('fontawesome-free@6.7.2')) {
-        iconCdnFailures.push(file + ' is missing the secondary Font Awesome CDN stylesheet');
+      if (!hasIcons) continue;
+      const hasPrimaryCdn = /href=["']https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome\/6\.7\.2\/css\/all\.min\.css["']/i.test(html);
+      const hasOnDemandFallback = /onerror=["'][^"']*cdn\.jsdelivr\.net\/npm\/@fortawesome\/fontawesome-free@6\.7\.2\/css\/all\.min\.css/i.test(html);
+      const hasUnconditionalFallback = /<link\b(?=[^>]*\brel=["']stylesheet["'])(?=[^>]*\bhref=["']https:\/\/cdn\.jsdelivr\.net\/npm\/@fortawesome\/fontawesome-free@6\.7\.2\/css\/all\.min\.css["'])[^>]*>/i.test(html);
+      if (!hasPrimaryCdn || !hasOnDemandFallback || hasUnconditionalFallback) {
+        iconCdnFailures.push(file + ' must use the primary Font Awesome CDN with an on-demand fallback only');
       }
     }
-    report('0.5. Font Awesome CDN fallback is configured on icon pages', iconCdnFailures.length === 0,
-      iconCdnFailures.join(', ') || 'All icon-bearing pages have a secondary CDN stylesheet');
+    report('0.5. Font Awesome fallback loads only if the primary CDN fails', iconCdnFailures.length === 0,
+      iconCdnFailures.join(', ') || 'Icon-bearing documents use a primary stylesheet and no unconditional duplicate request');
 
     // Only the root document is indexable; legacy paths are small aliases into its sections.
     const routeMetadataExpectations = [

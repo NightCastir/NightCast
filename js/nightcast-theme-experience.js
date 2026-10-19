@@ -16,7 +16,7 @@
   const openMoji = code => "https://cdn.jsdelivr.net/npm/openmoji@17.0.0/color/svg/" + code + ".svg";
   const readUser = () => { try { const raw=localStorage.getItem(USER_KEY)||sessionStorage.getItem(USER_KEY); return raw?JSON.parse(raw):null; } catch (_) { return null; } };
   const getPhoto = u => u&&(u.picture||u.avatar||u.avatar_url||u.avatarUrl||u.photoURL||u.photoUrl||u.photo||u.profile_picture||u.profilePicture||u.image||u.image_url||u.imageUrl||u.picture_url||u.pictureUrl)||"";
-  const getEmail = u => u&&(u.email||u.mail||u.emailAddress)||"";
+  const getEmail = u => u&&(u.email||u.mail||u.emailAddress||(typeof u.username==="string"&&u.username.includes("@")?u.username:""))||"";
   const getName = u => u&&(u.name||u.full_name||u.fullName||u.displayName||u.username||[u.given_name,u.family_name].filter(Boolean).join(" "))||"حساب کاربری";
   function store(key,value){try{if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value);}catch(_){}}
   function button(cls,label,icon){const b=document.createElement("button");b.type="button";b.className=cls;b.setAttribute("aria-label",label);b.title=label;b.innerHTML='<i class="'+icon+'" aria-hidden="true"></i>';return b;}

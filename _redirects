@@ -6,8 +6,8 @@
 /login /users/login.html 200
 /login/ /users/login.html 200
 /about /index.html 200
-/about/ /index.html 200
+/about/ /about 301
 /about/index.html /about 301
 /contact /index.html 200
-/contact/ /index.html 200
+/contact/ /contact 301
 /contact/index.html /contact 301

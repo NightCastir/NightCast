@@ -1,0 +1,82 @@
+name: NightCast Podcast Player Live Verification
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'podcasts/index.html'
+      - '.github/workflows/podcast-player-live-verify.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'podcasts/index.html'
+      - '.github/workflows/podcast-player-live-verify.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightcast-player-live-verification
+  cancel-in-progress: false
+
+jobs:
+  source-check:
+    name: Verify committed player implementation
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Check visualizer and artwork details wiring
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('podcasts/index.html', 'utf8');
+          const checks = [
+            ['visualizer canvas', /id=["']ncAudioVisualizer["']/.test(html)],
+            ['real frequency analyser', /getByteFrequencyData/.test(html)],
+            ['audio analyser connection', /createAnalyser\s*\(/.test(html)],
+            ['clickable player artwork', /id=["']playerCover["'][^>]*nc-player-cover-clickable/.test(html) || /class=["'][^"']*nc-player-cover-clickable[^"']*["'][^>]*id=["']playerCover["']/.test(html)],
+            ['keyboard activation', /playerCover\?\.addEventListener\(['"]keydown['"]/.test(html)],
+            ['responsive visualizer styles', /\.nc-audio-visualizer-wrap/.test(html)]
+          ];
+          for (const [name, ok] of checks) console.log(`${ok ? 'PASS' : 'FAIL'} ${name}`);
+          if (checks.some(([, ok]) => !ok)) process.exit(1);
+          NODE
+
+  live-site-check:
+    name: Verify feature is actually visible on production
+    if: github.event_name != 'pull_request'
+    needs: source-check
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Wait for production host to publish this commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          urls=(
+            "https://nightcast.ir/podcasts/?nc_live_check=${GITHUB_SHA}"
+            "https://nightcast.ir/podcasts/index.html?nc_live_check=${GITHUB_SHA}"
+            "https://www.nightcast.ir/podcasts/?nc_live_check=${GITHUB_SHA}"
+            "https://www.nightcast.ir/podcasts/index.html?nc_live_check=${GITHUB_SHA}"
+          )
+          deadline=$((SECONDS + 900))
+          while (( SECONDS < deadline )); do
+            for url in "${urls[@]}"; do
+              echo "Checking ${url}"
+              body="$(curl --location --silent --show-error --max-time 20 --user-agent 'NightCast-Live-Verification/1.0' "${url}" 2>/dev/null || true)"
+              if [[ "${body}" == *'ncAudioVisualizer'* && "${body}" == *'getByteFrequencyData'* && "${body}" == *'nc-player-cover-clickable'* ]]; then
+                echo "PASS: production HTML contains the live visualizer and clickable artwork."
+                exit 0
+              fi
+            done
+            echo "Feature not visible yet; retrying in 30 seconds."
+            sleep 30
+          done
+          echo "::error::Production site did not expose the podcast visualizer/artwork feature within 15 minutes. Check the actual web-host deployment connection, production branch, CDN/origin cache, and route serving /podcasts/index.html."
+          exit 1

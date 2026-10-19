@@ -2,6 +2,16 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="utf-8">
+    <!-- Keep every clean route at the top on entry; prevent browser scroll restoration from reopening at the previous page's position. -->
+    <script>
+      (() => {
+        if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+        const resetScroll = () => window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+        resetScroll();
+        window.addEventListener("pageshow", resetScroll, { once: true });
+      })();
+    </script>
+
 
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
     <title>پادکست فارسی کتاب و اندیشه | خلاصه و بررسی کتاب — نایت‌کست</title>

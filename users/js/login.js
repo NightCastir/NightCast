@@ -1167,69 +1167,11 @@ const Login = {
 
     },
 
-
-    /* ==================================================
-       GUEST LOGIN
-    ================================================== */
-
-    async guestLogin(){
-
-        try{
-
-            this.showLoader();
-
-
-            /*
-            ==========================================
-            GUEST USER
-            ==========================================
-
-            مهمان کاربر لاگین‌شده نیست.
-            بنابراین هیچ Token یا User Session
-            برای او ذخیره نمی‌کنیم.
-            */
-
-            localStorage.removeItem(
-                "NightCastToken"
-            );
-
-
-            localStorage.removeItem(
-                "NightCastUser"
-            );
-
-
-            /*
-            ==========================================
-            GO TO INDEX
-            ==========================================
-            */
-
-            window.location.replace(
-                this.getPostLoginDestination()
-            );
-
-        }
-
-        catch(error){
-
-            this.hideLoader();
-
-
-            this.showError(
-                error.message
-            );
-
-        }
-
-    },
-
-
     /* ==================================================
        SESSION
     ================================================== */
 
-    saveSession(token,user){
+saveSession(token,user){
 
         if(!token){
 

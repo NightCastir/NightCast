@@ -75,7 +75,7 @@ jobs:
           const test = fs.readFileSync('tests/theme-system-acceptance.cjs', 'utf8');
           const themeIds = ['midnight-cosmos','aurora','studio-noir','deep-ocean','royal-gold','neon-city','persian-heritage','moonlight'];
           const checks = [
-          ['desktop viewport checks exist for all eight themes', test.includes("for (const themeId of themeIds)") && test.includes("'podcast card surface and border are theme-bound for ' + themeId") && test.includes('width: 1440') && test.includes('no horizontal overflow on desktop for ' + themeId)],
+          ['desktop viewport checks exist for all eight themes', test.includes("for (const themeId of themeIds)") && test.includes("'podcast card surface and border are theme-bound for ' + themeId") && test.includes('width: 1440') && test.includes("no horizontal overflow on desktop for ' + themeId")],
           ['theme card grid is defined', /\.nc-theme-grid\s*\{/.test(css)],
           ['desktop bounds are checked against viewport width', test.includes('no horizontal overflow on desktop for ' + themeId)]
           ];

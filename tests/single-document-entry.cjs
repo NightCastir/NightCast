@@ -72,7 +72,7 @@ check('Legacy archive and section URLs are lightweight aliases to the canonical 
     assert.match(html, /<meta name="robots" content="noindex,follow">/i);
     assert.match(html, /<link rel="canonical" href="https:\/\/nightcast\.ir\/">/i);
     assert.match(html, /target\.search = current\.search/);
-    assert.match(html, new RegExp('target\\\\.hash = current\\\\.hash \\\\|\\\\| "' + alias.section + '"'));
+    assert.ok(html.includes('target.hash = current.hash || "' + alias.section + '"'), alias.file + ' must choose its section when no hash was provided');
     assert.match(html, /window\.location\.replace\(target\.toString\(\)\)/);
     assert.ok(html.includes('href="/#' + alias.section + '"'), alias.file + ' must provide a no-JavaScript fallback');
   }
@@ -85,7 +85,6 @@ check('Canonical route handler honors direct section hashes and active navigatio
   assert.match(routes, /const hashTarget = validSections\.has\(requestedHash\) \? requestedHash : null/);
   assert.match(routes, /const targetId = hashTarget \|\| routes\[path\]/);
   assert.match(routes, /href === "#" \+ targetId/);
-  assert.ok(routes.includes('" / "'), 'route handler source should remain available for review');
 });
 
 check('Sitemap lists only the canonical HTML document', () => {

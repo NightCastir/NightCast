@@ -23,6 +23,10 @@ const assert = require('node:assert/strict');
     check('profile retains Logout', await page.locator('#profileLogout').count() === 1);
     check('request modal and form are retained', await page.locator('#bookSummaryRequestModal #bookSummaryRequestForm').count() === 1);
 
+    await page.evaluate(() => {
+      localStorage.setItem('NightCastToken', 'ci-test-token');
+      localStorage.setItem('NightCastUser', JSON.stringify({ id: 1, name: 'CI Test' }));
+    });
     await page.locator('#requestBookSummaryBtn').click();
     await page.locator('#bookSummaryRequestModal').waitFor({ state: 'visible', timeout: 5000 });
     check('desktop button opens the existing suggestion modal', await page.locator('#bookSummaryRequestModal').isVisible());

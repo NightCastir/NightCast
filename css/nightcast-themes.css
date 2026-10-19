@@ -120,3 +120,15 @@ footer,.site-footer{background:var(--nc-theme-surface)!important;color:var(--nc-
 :root[data-theme="moonlight"] #nc-entry-loader .nc-entry-track{background:rgba(255,255,255,.22)!important}
 @media(max-width:430px){.nc-theme-grid{gap:9px}.nc-theme-option-copy{padding:9px}.nc-theme-option-name{font-size:.8rem}.nc-theme-option-subtitle{font-size:.66rem}.nc-theme-image{aspect-ratio:16/9}.nc-theme-swatches span{width:12px;height:12px}}
 @media(prefers-reduced-motion:reduce){.nc-theme-option,.nc-theme-image img,#nc-entry-loader .nc-entry-progress-fill{transition:none!important}.nc-theme-option:hover{transform:none}}
+
+
+/* Keep the Google sign-in page in the same chosen visual system. */
+:root[data-theme] body.cosmic-login{background:radial-gradient(ellipse at 18% 15%,var(--nc-theme-glow),transparent 42%),radial-gradient(ellipse at 82% 82%,color-mix(in srgb,var(--nc-theme-secondary) 12%,transparent),transparent 45%),var(--nc-theme-bg)!important;color:var(--nc-theme-text)!important}
+:root[data-theme] body.cosmic-login .login-card{background:linear-gradient(145deg,color-mix(in srgb,var(--nc-theme-surface) 94%,var(--nc-theme-primary) 6%),var(--nc-theme-bg))!important;border-color:var(--nc-theme-border)!important;color:var(--nc-theme-text)!important;box-shadow:0 30px 90px color-mix(in srgb,var(--nc-theme-bg) 72%,transparent),0 0 0 1px var(--nc-theme-border)!important}
+:root[data-theme] body.cosmic-login .login-card h1,:root[data-theme] body.cosmic-login .login-card h2,:root[data-theme] body.cosmic-login .login-card h3,:root[data-theme] body.cosmic-login .login-card strong{color:var(--nc-theme-text)!important}
+:root[data-theme] body.cosmic-login .login-card p,:root[data-theme] body.cosmic-login .login-card small{color:var(--nc-theme-muted)!important}
+:root[data-theme] body.cosmic-login .login-card input,:root[data-theme] body.cosmic-login .login-card button{border-color:var(--nc-theme-border)!important}
+:root[data-theme] body.cosmic-login .login-card button:not([disabled]){background:linear-gradient(135deg,var(--nc-theme-primary),var(--nc-theme-secondary))!important;color:#fff!important}
+:root[data-theme] body.cosmic-login .cosmos-nebula{opacity:.28}
+:root[data-theme] body.cosmic-login .cosmos-horizon{border-color:var(--nc-theme-border)!important;box-shadow:0 0 40px var(--nc-theme-glow)!important}
+:root[data-theme] body.cosmic-login .auth-loader .loader-box{background:var(--nc-theme-surface)!important;border-color:var(--nc-theme-border)!important;color:var(--nc-theme-text)!important}

@@ -39,8 +39,9 @@ check('Former archive-relative assets resolve from root', () => {
 });
 check('Root entry keeps the previous podcast-section landing behavior', () => {
   const routes = fs.readFileSync('js/clean-routes.js', 'utf8');
-  assert.match(routes, /["']\\/["']\\s*:\\s*["']podcasts["']/);
-  assert.match(routes, /path === ["']\\/["'][^;]*#podcasts/);
+  assert.ok(routes.includes('"/": "podcasts"'), 'Root path must target the podcast section');
+  assert.ok(routes.includes('"/index.html": "podcasts"'), 'Bundled index.html must target the podcast section');
+  assert.ok(routes.includes('link.getAttribute("href") === "#podcasts"'), 'Podcast navigation active state must be preserved');
 });
 check('Legacy /podcasts page redirects immediately and preserves query/hash', () => {
   assert.match(legacy, /window\.location\.replace\(target\)/);

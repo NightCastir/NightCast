@@ -5,12 +5,14 @@ on:
     paths:
       - 'index.html'
       - 'users/index.html'
+      - 'js/nightcast-app.js'
       - '.github/workflows/profile-podcast-suggestion-acceptance.yml'
   pull_request:
     branches: [main]
     paths:
       - 'index.html'
       - 'users/index.html'
+      - 'js/nightcast-app.js'
       - '.github/workflows/profile-podcast-suggestion-acceptance.yml'
   workflow_dispatch:
 
@@ -33,6 +35,8 @@ jobs:
           let failed = false;
           for (const file of files) {
             const html = fs.readFileSync(file, 'utf8');
+            const app = fs.readFileSync('js/nightcast-app.js', 'utf8');
+            const source = html + '\n' + app;
             const buttonIndex = html.indexOf('id="requestBookSummaryBtn"');
             const button = buttonIndex < 0 ? '' : html.slice(buttonIndex, buttonIndex + 450);
             const modalIndex = html.indexOf('id="bookSummaryRequestModal"');
@@ -43,7 +47,7 @@ jobs:
               ['button uses audio-oriented icon', /fa-headphones/.test(button)],
               ['modal describes podcast production', /پیشنهاد کتاب برای ساخت پادکست/.test(html)],
               ['request form keeps stable ID', /id="bookSummaryRequestForm"/.test(html)],
-              ['request API route remains connected', /\/book-summary-requests/.test(html)],
+              ['request API route remains connected', /\/book-summary-requests/.test(source)],
               ['no old visible button wording remains', !/id="requestBookSummaryBtn"[\s\S]{0,450}درخواست خلاصه کتاب/.test(html)]
             ];
             for (const [name, ok] of checks) {

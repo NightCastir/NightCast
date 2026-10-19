@@ -5,12 +5,14 @@ on:
     paths:
       - 'index.html'
       - 'users/index.html'
+      - 'js/nightcast-app.js'
       - '.github/workflows/remove-stat-cards-acceptance.yml'
   pull_request:
     branches: [main]
     paths:
       - 'index.html'
       - 'users/index.html'
+      - 'js/nightcast-app.js'
       - '.github/workflows/remove-stat-cards-acceptance.yml'
   workflow_dispatch:
 
@@ -33,14 +35,16 @@ jobs:
           let failed = false;
           for (const file of files) {
             const html = fs.readFileSync(file, 'utf8');
+            const app = fs.readFileSync('js/nightcast-app.js', 'utf8');
+            const source = html + '\n' + app;
             const checks = [
               ['top podcast counter markup removed', !/\bid=["']podcastCount["']/.test(html)],
               ['top book counter markup removed', !/\bid=["']bookCount["']/.test(html)],
               ['top favorite counter markup removed', !/\bid=["']favoriteCount["']/.test(html)],
               ['profile counter markup removed', !/\bid=["']profile(?:Podcast|Book|Favorite)Count["']/.test(html)],
               ['profile statistic cards absent from HTML', !/class=["'][^"']*\bprofile-stats\b/.test(html)],
-              ['counter updates guard missing elements', /if \(els\.count\)/.test(html) && /if \(els\.books\)/.test(html) && /if \(els\.favCount\)/.test(html)],
-              ['podcast feed update function remains', /function updateStats\s*\(/.test(html) && /function loadPodcasts\s*\(/.test(html)]
+              ['counter updates guard missing elements', /if \(els\.count\)/.test(source) && /if \(els\.books\)/.test(source) && /if \(els\.favCount\)/.test(source)],
+              ['podcast feed update function remains', /function updateStats\s*\(/.test(source) && /function loadPodcasts\s*\(/.test(source)]
             ];
             for (const [name, ok] of checks) {
               console.log(`${ok ? 'PASS' : 'FAIL'} | ${file} | ${name}`);

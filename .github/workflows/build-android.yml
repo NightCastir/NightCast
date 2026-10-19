@@ -105,19 +105,26 @@ jobs:
             'users/js/auth-page.js',
             'auth/login.html',
             'css/nightcast-cosmos.css',
+            'css/nightcast-base.css',
+            'css/nightcast-performance.css',
+            'css/nightcast-profile.css',
+            'js/nightcast-app.js',
+            'js/nightcast-player.js',
             'js/nightcast-cosmos.js'
           ];
           for (const file of critical) {
             if (!fs.existsSync(file)) throw new Error('Missing critical asset: ' + file);
           }
           const root = fs.readFileSync('index.html', 'utf8');
+          const rootApp = fs.readFileSync('js/nightcast-app.js', 'utf8');
+          const rootSource = root + '\n' + rootApp;
           const archive = fs.readFileSync('users/index.html', 'utf8');
 
           // The root document is the canonical podcast archive and contains its own readiness loader.
-          if (!root.includes('id="podcastGrid"') || !root.includes('id="nc-entry-loader"') || !root.includes('function loadPodcasts')) {
+          if (!root.includes('id="podcastGrid"') || !root.includes('id="nc-entry-loader"') || !rootSource.includes('function loadPodcasts')) {
             throw new Error('Root document is missing the podcast archive or its integrated readiness loader.');
           }
-          if (!root.includes('Promise.allSettled([loadPodcasts(), loadFavorites()])') || !root.includes('dismissArchiveLoader')) {
+          if (!rootSource.includes('Promise.allSettled([loadPodcasts(), loadFavorites()])') || !rootSource.includes('dismissArchiveLoader')) {
             throw new Error('Root archive loader must wait for podcast data and favorites before dismissing.');
           }
           const authPageScript = fs.readFileSync('users/js/auth-page.js', 'utf8');
@@ -130,7 +137,7 @@ jobs:
           if (!authPageScript.includes('"/login"')) {
             throw new Error('Legacy auth entry must redirect to the canonical Google-only /login page.');
           }
-          if (!/LOGIN_PAGE:\s*"\/login"/.test(root) || root.includes('/auth/login.html')) {
+          if (!/LOGIN_PAGE:\s*"\/login"/.test(rootSource) || rootSource.includes('/auth/login.html')) {
             throw new Error('Every archive login entry must use the canonical Google-only /login route.');
           }
           if (!googleLoginPage.includes('id="googleLoginButton"') ||

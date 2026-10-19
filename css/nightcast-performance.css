@@ -1,0 +1,37 @@
+/* NightCast performance layer: preserve the visual direction while reducing repeated card paint cost. */
+#podcasts .podcast-grid > *,
+#podcasts .podcast-card {
+  transition: transform .18s ease, border-color .18s ease !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .18) !important;
+}
+#podcasts .podcast-grid > *:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .22) !important;
+}
+#podcasts .podcast-grid > *::after {
+  transition: none !important;
+}
+@media (max-width: 767px) {
+  #podcasts .podcast-grid > *,
+  #podcasts .podcast-card {
+    box-shadow: 0 5px 16px rgba(0, 0, 0, .16) !important;
+    transition: border-color .16s ease !important;
+  }
+  #podcasts .podcast-grid > *:hover {
+    transform: none !important;
+    box-shadow: 0 5px 16px rgba(0, 0, 0, .16) !important;
+  }
+  #podcasts .podcast-grid > *::after {
+    display: none !important;
+  }
+  #podcasts .podcast-grid img,
+  #podcasts .podcast-card img {
+    box-shadow: none !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #podcasts .podcast-grid > *,
+  #podcasts .podcast-card {
+    transition: none !important;
+  }
+}

@@ -21,7 +21,17 @@
     <title>NightCast | آرشیو پادکست‌های صوتی، خلاصه و تحلیل کتاب</title>
 
     <meta name="theme-color" content="#090F19">
-    <meta name="color-scheme" content="dark">
+    <meta name="color-scheme" content="dark light">
+    <script>
+      (() => {
+        try {
+          const allowed = ["midnight-cosmos","aurora","studio-noir","deep-ocean","royal-gold","neon-city","persian-heritage","moonlight"];
+          const saved = localStorage.getItem("nightcast-theme");
+          document.documentElement.dataset.theme = allowed.includes(saved) ? saved : "midnight-cosmos";
+        } catch (_) { document.documentElement.dataset.theme = "midnight-cosmos"; }
+      })();
+    </script>
+
 
     <meta name="description" content="آرشیو پادکست‌های NightCast؛ خلاصه و تحلیل کتاب، روان‌شناسی، رشد فردی، مدیریت و دانش کاربردی با توضیحات کامل و پخش آنلاین.">
 
@@ -135,7 +145,8 @@
 
 <link rel="stylesheet" href="/css/nightcast-global-polish.css?v=2">
     <link rel="stylesheet" href="/css/nightcast-performance.css?v=1">
-    <link rel="stylesheet" href="/css/nightcast-profile.css?v=1">
+    <link rel="stylesheet" href="/css/nightcast-profile.css?v=2">
+    <link rel="stylesheet" href="/css/nightcast-themes.css?v=1">
 
 
 <style id="nc-entry-loader-styles">
@@ -164,7 +175,7 @@
 </head>
 
 <body aria-busy="true">
-<div id="nc-entry-loader" role="status" aria-live="polite" aria-label="در حال آماده‌سازی آرشیو پادکست‌های NightCast"><div class="nc-entry-stars" aria-hidden="true"></div><div class="nc-entry-center"><div class="nc-entry-orbit" aria-hidden="true"><span class="nc-entry-core"></span></div><div class="nc-entry-brand">NIGHTCAST</div><div class="nc-entry-tagline">در حال آماده‌سازی تجربه شنیداری شما</div><div class="nc-entry-track" aria-hidden="true"></div><div class="nc-entry-status" id="nc-entry-status">در حال دریافت و آماده‌سازی پادکست‌ها…</div></div></div>
+<div id="nc-entry-loader" role="status" aria-live="polite" aria-label="در حال آماده‌سازی آرشیو پادکست‌های NightCast"><div class="nc-entry-stars" aria-hidden="true"></div><div class="nc-entry-center"><div class="nc-entry-orbit" aria-hidden="true"><span class="nc-entry-core"></span></div><div class="nc-entry-brand">NIGHTCAST</div><div class="nc-entry-tagline">در حال آماده‌سازی تجربه شنیداری شما</div><div class="nc-entry-track" id="nc-entry-track" role="progressbar" aria-label="پیشرفت آماده‌سازی NightCast" aria-valuemin="0" aria-valuemax="100" aria-valuenow="4"><span class="nc-entry-progress-fill" id="nc-entry-progress-fill"></span></div><div class="nc-entry-status" id="nc-entry-status" aria-live="polite">در حال راه‌اندازی NightCast <span class="nc-entry-percent" id="nc-entry-percent">۴٪</span></div></div></div>
 <noscript><style>#nc-entry-loader{display:none!important}</style></noscript>
 
 
@@ -1207,6 +1218,7 @@
     </audio>
 
 
+    <script src="/js/nightcast-theme.js?v=1" defer></script>
     <script src="/js/nightcast-app.js?v=1" defer></script>
 
     <div id="profileOverlay" class="profile-overlay">
@@ -1314,6 +1326,52 @@
                 </button>
 
             </div>
+
+            <section id="profileThemeSettings" class="nc-theme-settings" hidden aria-labelledby="ncThemeSettingsTitle">
+                <div class="nc-theme-settings-head">
+                    <button type="button" id="ncThemeBack" class="nc-theme-back" aria-label="بازگشت به پروفایل"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+                    <div class="nc-theme-heading">
+                        <h3 id="ncThemeSettingsTitle">ظاهر و تم NightCast</h3>
+                        <p>فضای شنیداری دلخواهت را انتخاب کن؛ رنگ‌ها، پنل‌ها و صفحه بارگذاری هم‌زمان تغییر می‌کنند.</p>
+                    </div>
+                </div>
+                <div class="nc-theme-current"><span class="nc-theme-current-dot" aria-hidden="true"></span> تم فعال: <strong id="ncThemeCurrentName">کیهان نیمه‌شب</strong></div>
+                <div class="nc-theme-grid" role="group" aria-label="انتخاب تم NightCast">
+                    <button type="button" class="nc-theme-option" data-theme-choice="midnight-cosmos" aria-pressed="true">
+                        <span class="nc-theme-image"><img src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&amp;fit=crop&amp;w=600&amp;q=68" alt="نمایی از سحابی و کهکشان" loading="lazy" decoding="async"><span class="nc-theme-selected" aria-hidden="true"><i class="fa-solid fa-check"></i></span></span>
+                        <span class="nc-theme-option-copy"><span class="nc-theme-option-name">Midnight Cosmos</span><span class="nc-theme-option-subtitle">کیهان نیمه‌شب · عمیق و ستاره‌ای</span><span class="nc-theme-swatches" aria-hidden="true"><span style="background:#050816"></span><span style="background:#8B5CF6"></span><span style="background:#38BDF8"></span><span style="background:#67E8F9"></span></span></span>
+                    </button>
+                    <button type="button" class="nc-theme-option" data-theme-choice="aurora" aria-pressed="false">
+                        <span class="nc-theme-image"><img src="https://images.unsplash.com/photo-1531366936337-7c912a4589a7?auto=format&amp;fit=crop&amp;w=600&amp;q=68" alt="شفق قطبی سبز و فیروزه‌ای" loading="lazy" decoding="async"><span class="nc-theme-selected" aria-hidden="true"><i class="fa-solid fa-check"></i></span></span>
+                        <span class="nc-theme-option-copy"><span class="nc-theme-option-name">Aurora</span><span class="nc-theme-option-subtitle">شفق قطبی · نورهای سبز و بنفش</span><span class="nc-theme-swatches" aria-hidden="true"><span style="background:#071410"></span><span style="background:#34D399"></span><span style="background:#2DD4BF"></span><span style="background:#A78BFA"></span></span></span>
+                    </button>
+                    <button type="button" class="nc-theme-option" data-theme-choice="studio-noir" aria-pressed="false">
+                        <span class="nc-theme-image"><img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&amp;fit=crop&amp;w=600&amp;q=68" alt="استودیوی حرفه‌ای ضبط صدا" loading="lazy" decoding="async"><span class="nc-theme-selected" aria-hidden="true"><i class="fa-solid fa-check"></i></span></span>
+                        <span class="nc-theme-option-copy"><span class="nc-theme-option-name">Studio Noir</span><span class="nc-theme-option-subtitle">استودیوی سیاه · کهربایی و حرفه‌ای</span><span class="nc-theme-swatches" aria-hidden="true"><span style="background:#101112"></span><span style="background:#F59E0B"></span><span style="background:#FBBF24"></span><span style="background:#4ADE80"></span></span></span>
+                    </button>
+                    <button type="button" class="nc-theme-option" data-theme-choice="deep-ocean" aria-pressed="false">
+                        <span class="nc-theme-image"><img src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&amp;fit=crop&amp;w=600&amp;q=68" alt="موج‌های اقیانوس آبی" loading="lazy" decoding="async"><span class="nc-theme-selected" aria-hidden="true"><i class="fa-solid fa-check"></i></span></span>
+                        <span class="nc-theme-option-copy"><span class="nc-theme-option-name">Deep Ocean</span><span class="nc-theme-option-subtitle">اقیانوس عمیق · آبی و آرام</span><span class="nc-theme-swatches" aria-hidden="true"><span style="background:#061826"></span><span style="background:#0EA5E9"></span><span style="background:#22D3EE"></span><span style="background:#2DD4BF"></span></span></span>
+                    </button>
+                    <button type="button" class="nc-theme-option" data-theme-choice="royal-gold" aria-pressed="false">
+                        <span class="nc-theme-image"><img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&amp;fit=crop&amp;w=600&amp;q=68" alt="آسمان شب با نورهای طلایی" loading="lazy" decoding="async"><span class="nc-theme-selected" aria-hidden="true"><i class="fa-solid fa-check"></i></span></span>
+                        <span class="nc-theme-option-copy"><span class="nc-theme-option-name">Royal Gold</span><span class="nc-theme-option-subtitle">طلایی سلطنتی · لوکس و ظریف</span><span class="nc-theme-swatches" aria-hidden="true"><span style="background:#0B0B0D"></span><span style="background:#D4AF37"></span><span style="background:#F3D98B"></span><span style="background:#A67C36"></span></span></span>
+                    </button>
+                    <button type="button" class="nc-theme-option" data-theme-choice="neon-city" aria-pressed="false">
+                        <span class="nc-theme-image"><img src="https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&amp;fit=crop&amp;w=600&amp;q=68" alt="منظره شبانه با نورهای رنگی" loading="lazy" decoding="async"><span class="nc-theme-selected" aria-hidden="true"><i class="fa-solid fa-check"></i></span></span>
+                        <span class="nc-theme-option-copy"><span class="nc-theme-option-name">Neon City</span><span class="nc-theme-option-subtitle">شهر نئون · صورتی و فیروزه‌ای</span><span class="nc-theme-swatches" aria-hidden="true"><span style="background:#100817"></span><span style="background:#F472B6"></span><span style="background:#22D3EE"></span><span style="background:#C084FC"></span></span></span>
+                    </button>
+                    <button type="button" class="nc-theme-option" data-theme-choice="persian-heritage" aria-pressed="false">
+                        <span class="nc-theme-image"><img src="https://images.unsplash.com/photo-1561214115-f2f134cc4912?auto=format&amp;fit=crop&amp;w=600&amp;q=68" alt="اثر هنری با رنگ‌های الهام‌گرفته از هنر ایرانی" loading="lazy" decoding="async"><span class="nc-theme-selected" aria-hidden="true"><i class="fa-solid fa-check"></i></span></span>
+                        <span class="nc-theme-option-copy"><span class="nc-theme-option-name">Persian Heritage</span><span class="nc-theme-option-subtitle">میراث ایرانی · لاجورد و فیروزه</span><span class="nc-theme-swatches" aria-hidden="true"><span style="background:#101A32"></span><span style="background:#2CB7A5"></span><span style="background:#4263EB"></span><span style="background:#D6AD60"></span></span></span>
+                    </button>
+                    <button type="button" class="nc-theme-option" data-theme-choice="moonlight" aria-pressed="false">
+                        <span class="nc-theme-image"><img src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&amp;fit=crop&amp;w=600&amp;q=68" alt="منظره روشن و آرام در نور مهتاب" loading="lazy" decoding="async"><span class="nc-theme-selected" aria-hidden="true"><i class="fa-solid fa-check"></i></span></span>
+                        <span class="nc-theme-option-copy"><span class="nc-theme-option-name">Moonlight</span><span class="nc-theme-option-subtitle">مهتاب · روشن و مینیمال</span><span class="nc-theme-swatches" aria-hidden="true"><span style="background:#F7F8FC"></span><span style="background:#6366F1"></span><span style="background:#38BDF8"></span><span style="background:#8B5CF6"></span></span></span>
+                    </button>
+                </div>
+                <p id="ncThemeSelectionStatus" class="nc-theme-save-note" role="status" aria-live="polite"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> انتخاب تم به‌صورت خودکار در این مرورگر ذخیره می‌شود.</p>
+            </section>
 
         </div>
 

@@ -1,0 +1,85 @@
+name: NightCast Theme Functionality
+on:
+  push:
+    branches: [main, 'feat/theme-system-and-adaptive-loader']
+    paths:
+      - 'index.html'
+      - 'users/login.html'
+      - 'js/nightcast-app.js'
+      - 'js/nightcast-theme.js'
+      - 'css/nightcast-profile.css'
+      - 'css/nightcast-themes.css'
+      - 'tests/theme-system-acceptance.cjs'
+      - '.github/workflows/theme-functionality.yml'
+      - '.github/workflows/theme-mobile-layout.yml'
+      - '.github/workflows/theme-desktop-layout.yml'
+      - '.github/workflows/theme-loader-accessibility.yml'
+      - '.github/workflows/theme-release-readiness.yml'
+      - '.github/workflows/theme-system-acceptance.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'users/login.html'
+      - 'js/nightcast-app.js'
+      - 'js/nightcast-theme.js'
+      - 'css/nightcast-profile.css'
+      - 'css/nightcast-themes.css'
+      - 'tests/theme-system-acceptance.cjs'
+      - '.github/workflows/theme-functionality.yml'
+      - '.github/workflows/theme-mobile-layout.yml'
+      - '.github/workflows/theme-desktop-layout.yml'
+      - '.github/workflows/theme-loader-accessibility.yml'
+      - '.github/workflows/theme-release-readiness.yml'
+      - '.github/workflows/theme-system-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance:
+    name: Theme switching, CSS tokens and persistence
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Start local static server
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/nightcast-theme-http.log 2>&1 &
+          for _ in $(seq 1 40); do
+            if curl --silent --fail http://127.0.0.1:4173/index.html >/dev/null; then exit 0; fi
+            sleep 0.25
+          done
+          cat /tmp/nightcast-theme-http.log
+          exit 1
+      - name: Run end-to-end browser regression
+        run: node tests/theme-system-acceptance.cjs
+      - name: Run functionality focused release gate
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('index.html', 'utf8');
+          const login = fs.readFileSync('users/login.html', 'utf8');
+          const js = fs.readFileSync('js/nightcast-theme.js', 'utf8');
+          const css = fs.readFileSync('css/nightcast-themes.css', 'utf8');
+          const test = fs.readFileSync('tests/theme-system-acceptance.cjs', 'utf8');
+          const themeIds = ['midnight-cosmos','aurora','studio-noir','deep-ocean','royal-gold','neon-city','persian-heritage','moonlight'];
+          const checks = [
+          ['eight themes are registered', ['midnight-cosmos','aurora','studio-noir','deep-ocean','royal-gold','neon-city','persian-heritage','moonlight'].every(id => js.includes('"'+id+'"'))],
+          ['selection is persisted', js.includes('localStorage.setItem(STORAGE_KEY, key)')],
+          ['login page loads shared theme assets', login.includes('/css/nightcast-themes.css') && login.includes('/js/nightcast-theme.js')]
+          ];
+          let failed = false;
+          for (const [label, ok] of checks) { console.log((ok ? 'PASS' : 'FAIL') + ' | ' + label); if (!ok) failed = true; }
+          if (failed) process.exit(1);
+          NODE

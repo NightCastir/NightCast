@@ -1,0 +1,85 @@
+name: NightCast Theme Desktop Layout
+on:
+  push:
+    branches: [main, 'feat/theme-system-and-adaptive-loader']
+    paths:
+      - 'index.html'
+      - 'users/login.html'
+      - 'js/nightcast-app.js'
+      - 'js/nightcast-theme.js'
+      - 'css/nightcast-profile.css'
+      - 'css/nightcast-themes.css'
+      - 'tests/theme-system-acceptance.cjs'
+      - '.github/workflows/theme-functionality.yml'
+      - '.github/workflows/theme-mobile-layout.yml'
+      - '.github/workflows/theme-desktop-layout.yml'
+      - '.github/workflows/theme-loader-accessibility.yml'
+      - '.github/workflows/theme-release-readiness.yml'
+      - '.github/workflows/theme-system-acceptance.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'users/login.html'
+      - 'js/nightcast-app.js'
+      - 'js/nightcast-theme.js'
+      - 'css/nightcast-profile.css'
+      - 'css/nightcast-themes.css'
+      - 'tests/theme-system-acceptance.cjs'
+      - '.github/workflows/theme-functionality.yml'
+      - '.github/workflows/theme-mobile-layout.yml'
+      - '.github/workflows/theme-desktop-layout.yml'
+      - '.github/workflows/theme-loader-accessibility.yml'
+      - '.github/workflows/theme-release-readiness.yml'
+      - '.github/workflows/theme-system-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance:
+    name: All eight themes at 1440px desktop viewport
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Start local static server
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/nightcast-theme-http.log 2>&1 &
+          for _ in $(seq 1 40); do
+            if curl --silent --fail http://127.0.0.1:4173/index.html >/dev/null; then exit 0; fi
+            sleep 0.25
+          done
+          cat /tmp/nightcast-theme-http.log
+          exit 1
+      - name: Run end-to-end browser regression
+        run: node tests/theme-system-acceptance.cjs
+      - name: Run desktop focused release gate
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('index.html', 'utf8');
+          const login = fs.readFileSync('users/login.html', 'utf8');
+          const js = fs.readFileSync('js/nightcast-theme.js', 'utf8');
+          const css = fs.readFileSync('css/nightcast-themes.css', 'utf8');
+          const test = fs.readFileSync('tests/theme-system-acceptance.cjs', 'utf8');
+          const themeIds = ['midnight-cosmos','aurora','studio-noir','deep-ocean','royal-gold','neon-city','persian-heritage','moonlight'];
+          const checks = [
+          ['desktop viewport checks exist for all eight themes', test.includes('theme grid stays within desktop viewport for ' + themeId) && test.includes('width: 1440')],
+          ['theme card grid is defined', /\.nc-theme-grid\s*\{/.test(css)],
+          ['desktop bounds are checked against viewport width', test.includes('desktopGrid.x + desktopGrid.width <= 1440.5')]
+          ];
+          let failed = false;
+          for (const [label, ok] of checks) { console.log((ok ? 'PASS' : 'FAIL') + ' | ' + label); if (!ok) failed = true; }
+          if (failed) process.exit(1);
+          NODE

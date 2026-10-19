@@ -3287,20 +3287,8 @@ document.addEventListener(
                       PROFILE SETTINGS SHORTCUT
                  ----------------------------------------------------- */
 
-                const profileSettingsBtn = document.getElementById("profileSettingsBtn");
-                if (profileSettingsBtn) {
-                    profileSettingsBtn.addEventListener("click", () => {
-                        closeProfileOverlay();
-                        const viewSettings = document.querySelector(".nc-view-settings");
-                        if (viewSettings) {
-                            window.setTimeout(() => {
-                                viewSettings.scrollIntoView({ behavior: "smooth", block: "center" });
-                                viewSettings.setAttribute("tabindex", "-1");
-                                viewSettings.focus({ preventScroll: true });
-                            }, 220);
-                        }
-                    });
-                }
+                // Theme selection is bound by /js/nightcast-theme.js.
+                // Keep this shortcut inside the profile overlay; do not scroll away or close the profile.
 
 
             /* -----------------------------------------------------
@@ -3579,11 +3567,18 @@ document.addEventListener(
                 const dismissArchiveLoader = () => {
                     if (loaderDismissed) return;
                     loaderDismissed = true;
+                    // The theme controller owns the visual progress and final fade-out.
+                    window.dispatchEvent(new CustomEvent("nightcast:catalog-ready"));
                     const loader = document.getElementById("nc-entry-loader");
                     document.body.removeAttribute("aria-busy");
                     if (!loader) return;
-                    loader.classList.add("is-hidden");
-                    window.setTimeout(() => loader.remove(), 500);
+                    // Defensive fallback if the theme controller is unavailable.
+                    window.setTimeout(() => {
+                        const activeLoader = document.getElementById("nc-entry-loader");
+                        if (!activeLoader || activeLoader.classList.contains("is-hidden")) return;
+                        activeLoader.classList.add("is-hidden");
+                        window.setTimeout(() => activeLoader.remove(), 500);
+                    }, 1800);
                 };
                 // The cached catalogue has already been rendered synchronously. Reveal it after
                 // the first paint while the live API refresh continues in the background.

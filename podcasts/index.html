@@ -4291,7 +4291,7 @@
 
             <div class="track">
 
-                <img class="track-cover" id="playerCover" src="../logo.png" alt="جلد پادکست" loading="lazy">
+                <img class="track-cover nc-player-cover-clickable" id="playerCover" src="../logo.png" alt="مشاهده جزئیات پادکست" loading="lazy" role="button" tabindex="0" aria-haspopup="dialog" title="برای مشاهده جزئیات کلیک کنید">
                 <button type="button" class="nc-like-button nc-player-like" id="ncPlayerLike" data-like-surface="player" aria-label="افزودن به علاقه‌مندی‌ها" aria-pressed="false" hidden><i class="fa-regular fa-heart" aria-hidden="true"></i></button>
 
                 <div class="track-text">
@@ -4314,6 +4314,11 @@
 
             </div>
 
+
+            <div class="nc-audio-visualizer-wrap" aria-label="نمایش زنده فرکانس صدا">
+                <canvas id="ncAudioVisualizer" class="nc-audio-visualizer" width="320" height="64" role="img" aria-label="نمایشگر زنده فرکانس صوت"></canvas>
+                <span class="nc-visualizer-status" id="ncVisualizerStatus" aria-live="polite">نمایش زنده صدا</span>
+            </div>
 
             <div class="controls">
 
@@ -6334,6 +6339,132 @@ LOGOUT
                PLAYER
             ========================================================= */
 
+            /* Frequency-domain visualizer: driven by the currently playing media element. */
+            let ncAudioContext = null;
+            let ncAnalyser = null;
+            let ncFrequencyData = null;
+            let ncVisualizerFrame = 0;
+            let ncVisualizerUnavailable = false;
+
+            function prepareAudioVisualizer() {
+                const canvas = document.getElementById("ncAudioVisualizer");
+                const status = document.getElementById("ncVisualizerStatus");
+                if (!canvas) return;
+                if (ncVisualizerUnavailable) {
+                    if (status) status.textContent = "نمایش فرکانس در این منبع پشتیبانی نمی‌شود";
+                    return;
+                }
+                try {
+                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                    if (!AudioContextClass) throw new Error("Web Audio unavailable");
+                    if (!ncAudioContext) {
+                        ncAudioContext = new AudioContextClass();
+                        ncAnalyser = ncAudioContext.createAnalyser();
+                        ncAnalyser.fftSize = 128;
+                        ncAnalyser.minDecibels = -90;
+                        ncAnalyser.maxDecibels = -18;
+                        ncAnalyser.smoothingTimeConstant = 0.78;
+                        ncFrequencyData = new Uint8Array(ncAnalyser.frequencyBinCount);
+                        const source = ncAudioContext.createMediaElementSource(els.audio);
+                        source.connect(ncAnalyser);
+                        ncAnalyser.connect(ncAudioContext.destination);
+                    }
+                    if (ncAudioContext.state === "suspended") ncAudioContext.resume().catch(() => {});
+                    if (status) status.textContent = "تحلیل زنده فرکانس";
+                    drawAudioVisualizer();
+                } catch (error) {
+                    ncVisualizerUnavailable = true;
+                    if (status) status.textContent = "نمایش فرکانس در دسترس نیست";
+                    console.warn("NightCast visualizer unavailable:", error);
+                }
+            }
+
+            function drawAudioVisualizer() {
+                cancelAnimationFrame(ncVisualizerFrame);
+                const canvas = document.getElementById("ncAudioVisualizer");
+                const context = canvas?.getContext("2d");
+                if (!canvas || !context || !ncAnalyser || !ncFrequencyData) return;
+                const render = () => {
+                    const width = canvas.clientWidth || 280;
+                    const height = canvas.clientHeight || 42;
+                    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                    if (canvas.width !== Math.round(width * dpr) || canvas.height !== Math.round(height * dpr)) {
+                        canvas.width = Math.round(width * dpr);
+                        canvas.height = Math.round(height * dpr);
+                    }
+                    context.setTransform(dpr, 0, 0, dpr, 0, 0);
+                    context.clearRect(0, 0, width, height);
+                    ncAnalyser.getByteFrequencyData(ncFrequencyData);
+                    const bars = Math.min(48, ncFrequencyData.length);
+                    const gap = Math.max(1.5, width / (bars * 4.5));
+                    const barWidth = Math.max(1.5, (width - gap * (bars - 1)) / bars);
+                    const mid = height / 2;
+                    for (let i = 0; i < bars; i++) {
+                        const value = ncFrequencyData[Math.floor(i * ncFrequencyData.length / bars)] / 255;
+                        const barHeight = Math.max(2, Math.pow(value, 0.78) * (height - 5));
+                        const x = i * (barWidth + gap);
+                        const gradient = context.createLinearGradient(0, mid - barHeight / 2, 0, mid + barHeight / 2);
+                        gradient.addColorStop(0, "#a9f4ff");
+                        gradient.addColorStop(.48, "#43bfff");
+                        gradient.addColorStop(1, "#8d79ff");
+                        context.fillStyle = gradient;
+                        const radius = Math.min(barWidth / 2, 3);
+                        context.beginPath();
+                        if (typeof context.roundRect === "function") context.roundRect(x, mid - barHeight / 2, barWidth, barHeight, radius);
+                        else context.rect(x, mid - barHeight / 2, barWidth, barHeight);
+                        context.fill();
+                    }
+                    if (!els.audio.paused && !els.audio.ended) ncVisualizerFrame = requestAnimationFrame(render);
+                    else ncVisualizerFrame = 0;
+                };
+                render();
+            }
+
+            els.audio.addEventListener("play", () => {
+                if (ncAudioContext?.state === "suspended") ncAudioContext.resume().catch(() => {});
+                drawAudioVisualizer();
+            });
+            els.audio.addEventListener("pause", () => {
+                cancelAnimationFrame(ncVisualizerFrame);
+                drawAudioVisualizer();
+            });
+            els.audio.addEventListener("ended", () => {
+                cancelAnimationFrame(ncVisualizerFrame);
+                drawAudioVisualizer();
+            });
+            els.audio.addEventListener("error", () => {
+                /* If a cross-origin source rejects CORS mode, retry ordinary playback without breaking the player. */
+                if (els.audio.dataset.ncCorsFallback === "1" || !state.current || els.audio.crossOrigin !== "anonymous") return;
+                els.audio.dataset.ncCorsFallback = "1";
+                ncVisualizerUnavailable = true;
+                const status = document.getElementById("ncVisualizerStatus");
+                if (status) status.textContent = "پخش فعال است؛ تحلیل فرکانس این منبع محدود است";
+                els.audio.removeAttribute("crossorigin");
+                els.audio.src = state.current.audio_url;
+                els.audio.load();
+                els.audio.play().catch(() => toast("امکان پخش فایل صوتی وجود ندارد."));
+            });
+
+            function openDetailsForCurrentArtwork() {
+                if (!state.current) {
+                    toast("ابتدا یک پادکست انتخاب کنید.");
+                    return;
+                }
+                const card = [...document.querySelectorAll(".podcast-card[data-id]")].find(item =>
+                    Number(item.dataset.id) === Number(state.current.id));
+                const detailButton = card?.querySelector('[data-action="details"]');
+                if (detailButton) detailButton.click();
+                else openPodcastDetails(state.current.id);
+            }
+
+            els.playerCover?.addEventListener("click", openDetailsForCurrentArtwork);
+            els.playerCover?.addEventListener("keydown", event => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    openDetailsForCurrentArtwork();
+                }
+            });
+
             function playPodcast(id) {
 
                 const p =
@@ -6404,6 +6535,10 @@ LOGOUT
                 els.audio.pause();
 
 
+                /* CORS is needed for the analyser to read actual frequency bins. */
+                els.audio.dataset.ncCorsFallback = "0";
+                els.audio.crossOrigin = "anonymous";
+                prepareAudioVisualizer();
                 els.audio.src =
                     p.audio_url;
 

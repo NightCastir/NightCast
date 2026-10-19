@@ -154,10 +154,10 @@ function silentWavDataUri() {
     const routeMetadataFailures = [];
     for (const route of routeMetadataExpectations) {
       const html = fs.readFileSync(route.file, 'utf8');
-      const canonical = html.match(/<link\\s+rel="canonical"\\s+href="([^"]+)"/i)?.[1];
-      const title = html.match(/<title>([\\s\\S]*?)<\\/title>/i)?.[1]?.trim();
-      const ogUrl = html.match(/<meta\\s+property="og:url"\\s+content="([^"]+)"/i)?.[1];
-      const rssUrl = html.match(/<link\\s+rel="alternate"\\s+type="application\\/rss\\+xml"[^>]*href="([^"]+)"/i)?.[1];
+      const canonical = html.match(/<link\s+rel="canonical"\s+href="([^"]+)"/i)?.[1];
+      const title = html.match(/<title>([\s\S]*?)<\/title>/i)?.[1]?.trim();
+      const ogUrl = html.match(/<meta\s+property="og:url"\s+content="([^"]+)"/i)?.[1];
+      const rssUrl = html.match(/<link\s+rel="alternate"\s+type="application\/rss\+xml"[^>]*href="([^"]+)"/i)?.[1];
       if (canonical !== route.canonical) routeMetadataFailures.push(route.file + ' canonical=' + canonical);
       if (title !== route.title) routeMetadataFailures.push(route.file + ' title=' + title);
       if (ogUrl !== route.canonical) routeMetadataFailures.push(route.file + ' og:url=' + ogUrl);

@@ -50,7 +50,8 @@ check('Root entry keeps the previous podcast-section landing behavior', () => {
   const routes = fs.readFileSync('js/clean-routes.js', 'utf8');
   assert.ok(routes.includes('"/": "podcasts"'), 'Root path must target the podcast section');
   assert.ok(routes.includes('"/index.html": "podcasts"'), 'Bundled index.html must target the podcast section');
-  assert.ok(routes.includes('link.getAttribute("href") === "#podcasts"'), 'Podcast navigation active state must be preserved');
+  assert.ok(routes.includes('href === "#" + targetId'), 'Active navigation must follow the selected section');
+  assert.ok(routes.includes('const targetId = hashTarget || routes[path]'), 'Direct section hashes must override the default podcast landing section');
 });
 check('Legacy /podcasts page redirects immediately and preserves query/hash', () => {
   assert.match(legacy, /window\.location\.replace\(target\)/);

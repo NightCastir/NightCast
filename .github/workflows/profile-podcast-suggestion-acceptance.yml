@@ -1,0 +1,55 @@
+name: NightCast Profile Podcast Suggestion Acceptance
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'podcasts/index.html'
+      - 'users/index.html'
+      - '.github/workflows/profile-podcast-suggestion-acceptance.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'podcasts/index.html'
+      - 'users/index.html'
+      - '.github/workflows/profile-podcast-suggestion-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  profile-cta-check:
+    name: Verify profile copy and request form wiring
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check both profile implementations
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const files = ['podcasts/index.html', 'users/index.html'];
+          let failed = false;
+          for (const file of files) {
+            const html = fs.readFileSync(file, 'utf8');
+            const buttonIndex = html.indexOf('id="requestBookSummaryBtn"');
+            const button = buttonIndex < 0 ? '' : html.slice(buttonIndex, buttonIndex + 450);
+            const modalIndex = html.indexOf('id="bookSummaryRequestModal"');
+            const modal = modalIndex < 0 ? '' : html.slice(modalIndex, modalIndex + 1800);
+            const checks = [
+              ['profile CTA has inviting heading', /پادکست دلخواهت را پیشنهاد بده/.test(html)],
+              ['button clearly offers podcast suggestion', /پیشنهاد پادکست دلخواه/.test(button)],
+              ['button uses audio-oriented icon', /fa-headphones/.test(button)],
+              ['modal describes podcast production', /پیشنهاد کتاب برای ساخت پادکست/.test(html)],
+              ['request form keeps stable ID', /id="bookSummaryRequestForm"/.test(html)],
+              ['request API route remains connected', /\/book-summary-requests/.test(html)],
+              ['no old visible button wording remains', !/id="requestBookSummaryBtn"[\s\S]{0,450}درخواست خلاصه کتاب/.test(html)]
+            ];
+            for (const [name, ok] of checks) {
+              console.log(`${ok ? 'PASS' : 'FAIL'} | ${file} | ${name}`);
+              if (!ok) failed = true;
+            }
+          }
+          if (failed) process.exit(1);
+          NODE

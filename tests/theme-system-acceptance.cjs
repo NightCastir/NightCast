@@ -23,14 +23,16 @@ const assert = require('node:assert/strict');
     check('loader has a semantic progress bar and numeric value', await page.locator('#nc-entry-track[role="progressbar"][aria-valuemin="0"][aria-valuemax="100"]').count() === 1);
     check('loader uses a determinate fill element', await page.locator('#nc-entry-progress-fill').count() === 1);
 
-    await page.evaluate(() => {
-      document.getElementById('profileOverlay').classList.add('show');
-      document.getElementById('profileGuest').hidden = true;
-      document.getElementById('profileLogged').hidden = false;
-    });
-    await page.locator('#profileSettingsBtn').click();
-    check('profile Settings opens theme selection in-place', await page.locator('#profileThemeSettings').isVisible());
-    check('theme cards show a preview image', await page.locator('[data-theme-choice="aurora"] .nc-theme-image img').count() === 1);
+    check('profile no longer duplicates the global theme picker', await page.locator('#profileThemeSettings, [data-theme-choice]').count() === 0);
+    await page.locator('#ncThemeLauncher').click();
+    check('global theme ribbon opens from the page edge', await page.locator('#ncThemeRibbon.is-open').count() === 1);
+    check('ribbon contains eight distinct theme options', await page.locator('[data-ribbon-theme-choice]').count() === 8);
+    await page.locator('[data-ribbon-theme-choice="aurora"]').click();
+    check('selecting Aurora updates the document theme', await page.locator('html').getAttribute('data-theme') === 'aurora');
+    check('selecting Aurora updates global CSS variables', await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--nc-theme-primary').trim().toLowerCase()) === '#34d399');
+    check('theme texture token is configured', await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--nc-theme-texture').includes('unsplash.com')));
+    check('selected theme is persisted locally', await page.evaluate(() => localStorage.getItem('nightcast-theme')) === 'aurora');
+    check('theme button is available globally rather than in profile settings', await page.locator('#ncThemeLauncher').count() === 1);
 
     await page.locator('[data-theme-choice="aurora"]').click();
     check('selecting Aurora updates the document theme', await page.locator('html').getAttribute('data-theme') === 'aurora');
@@ -80,15 +82,8 @@ const assert = require('node:assert/strict');
       document.getElementById('profileGuest').hidden = true;
       document.getElementById('profileLogged').hidden = false;
     });
-    await page.locator('#profileSettingsBtn').click();
-    check('persisted theme is marked selected', await page.locator('[data-theme-choice="aurora"]').getAttribute('aria-pressed') === 'true');
-
-    await page.setViewportSize({ width: 360, height: 800 });
-    const panel = await page.locator('#profileOverlay > .profile-panel').boundingBox();
-    const grid = await page.locator('#profileThemeSettings .nc-theme-grid').boundingBox();
-    check('profile panel fits narrow mobile viewport', !!panel && panel.x >= 0 && panel.x + panel.width <= 360.5);
-
-    check('theme grid fits inside the profile panel', !!panel && !!grid && grid.x >= panel.x - 1 && grid.x + grid.width <= panel.x + panel.width + 1);
+    check('profile has no duplicate theme settings panel', await page.locator('#profileThemeSettings, #profileSettingsBtn').count() === 0);
+    check('global theme ribbon reflects the persisted selection', await page.locator('[data-ribbon-theme-choice="aurora"]').getAttribute('aria-pressed') === 'true');
 
     const themeIds = ['midnight-cosmos','aurora','studio-noir','deep-ocean','royal-gold','neon-city','persian-heritage','moonlight'];
     for (const themeId of themeIds) {
@@ -97,15 +92,14 @@ const assert = require('node:assert/strict');
         id: document.documentElement.dataset.theme,
         primary: getComputedStyle(document.documentElement).getPropertyValue('--nc-theme-primary').trim(),
         surface: getComputedStyle(document.documentElement).getPropertyValue('--nc-theme-surface').trim(),
-        bodyBackground: getComputedStyle(document.body).backgroundColor
+        texture: getComputedStyle(document.documentElement).getPropertyValue('--nc-theme-texture').trim()
       }));
-      check('theme tokens resolve for ' + themeId, appearance.id === themeId && !!appearance.primary && !!appearance.surface);
-      await page.setViewportSize({ width: 1440, height: 900 });
-      const desktopGrid = await page.locator('#profileThemeSettings .nc-theme-grid').boundingBox();
-      check('theme grid stays within desktop viewport for ' + themeId, !!desktopGrid && desktopGrid.x >= 0 && desktopGrid.x + desktopGrid.width <= 1440.5);
-      await page.setViewportSize({ width: 360, height: 800 });
-      const mobileGrid = await page.locator('#profileThemeSettings .nc-theme-grid').boundingBox();
-      check('theme grid stays within mobile viewport for ' + themeId, !!mobileGrid && mobileGrid.x >= 0 && mobileGrid.x + mobileGrid.width <= 360.5);
+      check('theme tokens and distinct texture resolve for ' + themeId, appearance.id === themeId && !!appearance.primary && !!appearance.surface && appearance.texture.includes('unsplash.com'));
+      const card = page.locator('#podcastGrid .podcast-card').first();
+      if (await card.count()) {
+        const cardAppearance = await card.evaluate(el => ({bg:getComputedStyle(el).backgroundImage,border:getComputedStyle(el).borderColor,color:getComputedStyle(el).color}));
+        check('podcast card surface and border are theme-bound for ' + themeId, cardAppearance.bg.includes('linear-gradient') && !!cardAppearance.border && !!cardAppearance.color);
+      }
     }
     await page.evaluate(() => window.NightCastThemes.apply('aurora', false));
 

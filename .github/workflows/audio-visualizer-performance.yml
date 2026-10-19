@@ -3,12 +3,12 @@ on:
   push:
     branches: [main]
     paths:
-      - 'podcasts/index.html'
+      - 'index.html'
       - '.github/workflows/audio-visualizer-performance.yml'
   pull_request:
     branches: [main]
     paths:
-      - 'podcasts/index.html'
+      - 'index.html'
       - '.github/workflows/audio-visualizer-performance.yml'
   workflow_dispatch:
 
@@ -27,7 +27,7 @@ jobs:
         run: |
           node <<'NODE'
           const fs = require('node:fs');
-          const html = fs.readFileSync('podcasts/index.html', 'utf8');
+          const html = fs.readFileSync('index.html', 'utf8');
           const checks = [
             ['visualizer canvas exists', /id=["']ncAudioVisualizer["']/.test(html)],
             ['frequency-domain analysis is real', /getByteFrequencyData\s*\(/.test(html) && /createAnalyser\s*\(/.test(html)],

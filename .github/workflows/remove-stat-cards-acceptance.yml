@@ -3,13 +3,13 @@ on:
   push:
     branches: [main]
     paths:
-      - 'podcasts/index.html'
+      - 'index.html'
       - 'users/index.html'
       - '.github/workflows/remove-stat-cards-acceptance.yml'
   pull_request:
     branches: [main]
     paths:
-      - 'podcasts/index.html'
+      - 'index.html'
       - 'users/index.html'
       - '.github/workflows/remove-stat-cards-acceptance.yml'
   workflow_dispatch:
@@ -29,7 +29,7 @@ jobs:
         run: |
           node <<'NODE'
           const fs = require('node:fs');
-          const files = ['podcasts/index.html', 'users/index.html'];
+          const files = ['index.html', 'users/index.html'];
           let failed = false;
           for (const file of files) {
             const html = fs.readFileSync(file, 'utf8');

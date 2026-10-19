@@ -260,16 +260,23 @@ function silentWavDataUri() {
     await page.route('https://www.nightcast.ir/version.json**', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ version: '5.2.3' }) }));
     await page.route(/https:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|cdnjs\.cloudflare\.com|unpkg\.com)\//, route => route.abort());
 
-    // Activity 1: the root route should navigate directly to the podcast archive.
+    // Activity 1: root is the canonical podcast document; no timed redirect or second HTML navigation.
     let splashOk = false;
     try {
-      await page.goto('http://127.0.0.1:4173/index.html', { waitUntil: 'domcontentloaded', timeout: 10000 });
-      await page.waitForURL(url => url.pathname.includes('/podcasts') || url.pathname.endsWith('/users/index.html'), { timeout: 10000 });
+      await page.goto('http://127.0.0.1:4173/', { waitUntil: 'domcontentloaded', timeout: 10000 });
       await page.waitForSelector('#podcastGrid', { state: 'attached', timeout: 5000 });
+      assert(new URL(page.url()).pathname === '/', 'Root route navigated away from the canonical document');
+      assert(await page.locator('#nc-entry-loader').count() === 1, 'Galaxy loader is missing from the root archive document');
+      await page.waitForFunction(() => { const loader = document.getElementById('nc-entry-loader'); return !loader || loader.classList.contains('is-hidden'); }, null, { timeout: 15000 });
+      assert(await page.locator('#podcastGrid .podcast-card').count() > 0, 'Loader disappeared before podcast cards were rendered');
       splashOk = true;
-      report('1. Root route opens the podcast archive directly', true, new URL(page.url()).pathname + '; no blocking legacy splash required');
+      report('1. Root route is the single canonical podcast document', true, new URL(page.url()).pathname + '; loader dismissed after podcast cards rendered');
+      await page.goto('http://127.0.0.1:4173/podcasts/?legacy=1#podcasts', { waitUntil: 'domcontentloaded', timeout: 10000 });
+      await page.waitForURL(url => url.pathname === '/' && url.search === '?legacy=1' && url.hash === '#podcasts', { timeout: 5000 });
+      await page.waitForSelector('#podcastGrid', { state: 'attached', timeout: 5000 });
+      report('1.2. Legacy /podcasts links redirect to root and preserve query/hash', true, page.url());
     } catch (error) {
-      report('1. Root route opens the podcast archive directly', false, String(error.message || error));
+      report('1. Root route is the single canonical podcast document', false, String(error.message || error));
     }
 
     // Verify sticky header geometry, desktop navigation fit, and an actual CDN icon glyph.

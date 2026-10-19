@@ -80,8 +80,8 @@ jobs:
             if curl --fail --silent --show-error --location --max-time 25 "$SITE_URL/?nc_smoke=${GITHUB_SHA}-${attempt}" -o /tmp/nightcast-root.html; then
               root_grid=false
               root_loader=false
-              grep -qi 'id="podcastGrid"' /tmp/nightcast-root.html && root_grid=true || true
-              grep -qi 'id="nc-entry-loader"' /tmp/nightcast-root.html && root_loader=true || true
+              if grep -qi 'id="podcastGrid"' /tmp/nightcast-root.html; then root_grid=true; fi
+              if grep -qi 'id="nc-entry-loader"' /tmp/nightcast-root.html; then root_loader=true; fi
               echo "www root markers: podcastGrid=${root_grid}, galaxyLoader=${root_loader}"
               if [[ "${root_grid}" == true && "${root_loader}" == true ]]; then
                 if curl --fail --silent --show-error --location --max-time 25 "$SITE_URL/podcasts?nc_smoke=${GITHUB_SHA}-${attempt}" -o /tmp/nightcast-legacy.html; then

@@ -51,8 +51,8 @@ const assert = require('node:assert/strict');
 
     await page.evaluate(() => {
       localStorage.setItem('NightCastUser', JSON.stringify({
-        name: 'NightCast Test User', email: 'tester@example.com', picture: 'https://example.com/google-photo.png',
-        email_verified: true, given_name: 'NightCast', family_name: 'Tester', locale: 'fa'
+        name: 'NightCast Test User', username: 'tester@example.com', picture: 'https://example.com/google-photo.png',
+        email_verified: true, given_name: 'NightCast', family_name: 'Tester', locale: 'fa', google_sub: 'google-subject-123456'
       }));
       document.getElementById('profileOverlay').classList.add('show');
       document.getElementById('profileGuest').hidden = true;
@@ -64,7 +64,7 @@ const assert = require('node:assert/strict');
       const email = document.getElementById('profileEmail').getBoundingClientRect();
       return email.top >= avatar.bottom - 1 && document.getElementById('profileEmail').textContent === 'tester@example.com';
     }));
-    check('profile shows Google claims when available', await page.locator('#ncGoogleDetails').innerText().then(text => text.includes('ایمیل تأیید شده') && text.includes('نام خانوادگی')));
+    check('profile shows Google claims when available', await page.locator('#ncGoogleDetails').innerText().then(text => text.includes('ایمیل تأیید شده') && text.includes('نام خانوادگی') && text.includes('شناسه Google')));
     check('animal avatar gallery exposes 20 SVG choices', await page.locator('#ncAvatarGrid [data-avatar-code]').count() === 20);
     await page.locator('#ncAvatarGrid [data-avatar-code="1F431"]').click();
     check('chosen SVG avatar is saved locally', await page.evaluate(() => localStorage.getItem('nightcast-custom-avatar')?.endsWith('/1F431.svg')) === true);

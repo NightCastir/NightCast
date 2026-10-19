@@ -61,8 +61,8 @@ jobs:
           node <<'NODE'
           const fs = require('node:fs');
           const html = fs.readFileSync('index.html', 'utf8');
-          const js = fs.readFileSync('js/nightcast-theme.js',
-      - 'js/nightcast-theme-experience.js', 'utf8');
+          const js = fs.readFileSync('js/nightcast-theme.js', 'utf8');
+          const experience = fs.readFileSync('js/nightcast-theme-experience.js', 'utf8');
           const css = fs.readFileSync('css/nightcast-themes.css', 'utf8');
           const app = fs.readFileSync('js/nightcast-app.js', 'utf8');
           const test = fs.readFileSync('tests/theme-system-acceptance.cjs', 'utf8');
@@ -71,6 +71,7 @@ jobs:
             ['theme picker exists globally and is absent from profile settings', (html.match(/data-theme-choice=/g) || []).length === 0 && test.includes('homepage exposes floating theme launcher')],
             ['theme CSS is loaded from the canonical stylesheet', html.includes('/css/nightcast-themes.css?v=3')],
             ['theme controller is loaded before the app', html.indexOf('/js/nightcast-theme.js?v=2') < html.indexOf('/js/nightcast-app.js?v=1')],
+            ['theme picker waits for transition completion', experience.includes('NightCastThemes.transition(id)') && experience.includes('closeRibbon();')],
             ['loader progress is determinate and accessible', /role="progressbar"[^>]*aria-valuemin="0"[^>]*aria-valuemax="100"/.test(html) && html.includes('nc-entry-progress-fill')],
             ['progress is connected to archive readiness', app.includes('nightcast:catalog-ready') && js.includes('nightcast:catalog-ready')],
             ['global CSS variables include theme surfaces and accents', css.includes('--nc-theme-surface') && css.includes('--nc-theme-primary') && css.includes('--nc-theme-text')],

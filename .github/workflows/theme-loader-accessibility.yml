@@ -10,12 +10,12 @@ on:
       - 'css/nightcast-profile.css'
       - 'css/nightcast-themes.css'
       - 'tests/theme-system-acceptance.cjs'
-      - '.github/workflows/theme-system-acceptance.yml'
       - '.github/workflows/theme-functionality.yml'
       - '.github/workflows/theme-mobile-layout.yml'
       - '.github/workflows/theme-desktop-layout.yml'
       - '.github/workflows/theme-loader-accessibility.yml'
       - '.github/workflows/theme-release-readiness.yml'
+      - '.github/workflows/theme-system-acceptance.yml'
   pull_request:
     branches: [main]
     paths:
@@ -26,12 +26,12 @@ on:
       - 'css/nightcast-profile.css'
       - 'css/nightcast-themes.css'
       - 'tests/theme-system-acceptance.cjs'
-      - '.github/workflows/theme-system-acceptance.yml'
       - '.github/workflows/theme-functionality.yml'
       - '.github/workflows/theme-mobile-layout.yml'
       - '.github/workflows/theme-desktop-layout.yml'
       - '.github/workflows/theme-loader-accessibility.yml'
       - '.github/workflows/theme-release-readiness.yml'
+      - '.github/workflows/theme-system-acceptance.yml'
   workflow_dispatch:
 
 permissions:
@@ -75,10 +75,10 @@ jobs:
           const test = fs.readFileSync('tests/theme-system-acceptance.cjs', 'utf8');
           const themeIds = ['midnight-cosmos','aurora','studio-noir','deep-ocean','royal-gold','neon-city','persian-heritage','moonlight'];
           const checks = [
-  ['loader has semantic progressbar', /role="progressbar"[^>]*aria-valuemin="0"[^>]*aria-valuemax="100"/.test(html)],
-  ['loader has determinate fill', html.includes('nc-entry-progress-fill')],
-  ['theme selection has accessible announcement', html.includes('ncThemeSelectionStatus') && test.includes('selected theme is announced accessibly')],
-  ['reduced motion is respected', css.includes('prefers-reduced-motion:reduce')]
+          ['loader has semantic progressbar', /role="progressbar"[^>]*aria-valuemin="0"[^>]*aria-valuemax="100"/.test(html)],
+          ['loader has determinate fill', html.includes('nc-entry-progress-fill')],
+          ['theme selection has accessible announcement', html.includes('ncThemeSelectionStatus') && test.includes('selected theme is announced accessibly')],
+          ['reduced motion is respected', css.includes('prefers-reduced-motion:reduce')]
           ];
           let failed = false;
           for (const [label, ok] of checks) { console.log((ok ? 'PASS' : 'FAIL') + ' | ' + label); if (!ok) failed = true; }

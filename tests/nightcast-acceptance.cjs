@@ -709,7 +709,7 @@ function silentWavDataUri() {
           };
         });
         if (dims.content > dims.viewport + 3) failures.push(size.name + ': ' + dims.content + 'px > ' + dims.viewport + 'px; elements=' + JSON.stringify(dims.offenders));
-        if (dims.heroTitle.missing || dims.heroTitle.overflow) heroTitleFailures.push(size.name + ': ' + JSON.stringify(dims.heroTitle));
+        if (!dims.heroTitle.missing || dims.heroTitle.overflow) heroTitleFailures.push(size.name + ': ' + JSON.stringify(dims.heroTitle));
 
         const headerState = await page.evaluate(() => {
           const header = document.querySelector('.nc-header');

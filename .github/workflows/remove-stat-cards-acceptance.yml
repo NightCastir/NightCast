@@ -33,6 +33,8 @@ jobs:
           let failed = false;
           for (const file of files) {
             const html = fs.readFileSync(file, 'utf8');
+            const app = fs.readFileSync('js/nightcast-app.js', 'utf8');
+            const source = html + '\n' + app;
             const checks = [
               ['top podcast counter markup removed', !/\bid=["']podcastCount["']/.test(html)],
               ['top book counter markup removed', !/\bid=["']bookCount["']/.test(html)],

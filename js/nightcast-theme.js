@@ -165,7 +165,7 @@
     // Collect actual CSS background images after the new theme tokens have been applied.
     document.querySelectorAll("body,main,header,footer,section,article,aside,button,[class*='card'],[class*='panel'],[class*='planet']").forEach(node => {
       const bg = getComputedStyle(node).backgroundImage || "";
-      for (const match of bg.matchAll(/url\\(["']?(.*?)["']?\\)/g)) {
+      for (const match of bg.matchAll(/url\(["']?(.*?)["']?\)/g)) {
         try { urls.add(new URL(match[1], location.href).href); } catch (_) {}
       }
     });

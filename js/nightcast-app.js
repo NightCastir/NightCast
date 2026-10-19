@@ -1727,7 +1727,7 @@ LOGOUT
                     }
 
                     if (!freshItems.length) {
-                        throw feedError || new Error("No podcasts were returned by the feed or API.");
+                        throw new Error("No podcasts were returned by the API or fallback feed.");
                     }
 
                     freshItems = freshItems.map(normalizePodcastRecord);

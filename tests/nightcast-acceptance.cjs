@@ -263,12 +263,18 @@ function silentWavDataUri() {
     // Activity 1: root is the canonical podcast document; no timed redirect or second HTML navigation.
     let splashOk = false;
     try {
-      await page.goto('http://127.0.0.1:4173/index.html', { waitUntil: 'domcontentloaded', timeout: 10000 });
+      await page.goto('http://127.0.0.1:4173/', { waitUntil: 'domcontentloaded', timeout: 10000 });
       await page.waitForSelector('#podcastGrid', { state: 'attached', timeout: 5000 });
-      assert(new URL(page.url()).pathname === '/index.html', 'Root route navigated away from the canonical document');
+      assert(new URL(page.url()).pathname === '/', 'Root route navigated away from the canonical document');
       assert(await page.locator('#nc-entry-loader').count() === 1, 'Galaxy loader is missing from the root archive document');
+      await page.waitForFunction(() => { const loader = document.getElementById('nc-entry-loader'); return !loader || loader.classList.contains('is-hidden'); }, { timeout: 15000 });
+      assert(await page.locator('#podcastGrid .podcast-card').count() > 0, 'Loader disappeared before podcast cards were rendered');
       splashOk = true;
-      report('1. Root route is the single canonical podcast document', true, new URL(page.url()).pathname + '; archive is present without a timed redirect');
+      report('1. Root route is the single canonical podcast document', true, new URL(page.url()).pathname + '; loader dismissed after podcast cards rendered');
+      await page.goto('http://127.0.0.1:4173/podcasts/?legacy=1#podcasts', { waitUntil: 'domcontentloaded', timeout: 10000 });
+      await page.waitForURL(url => url.pathname === '/' && url.search === '?legacy=1' && url.hash === '#podcasts', { timeout: 5000 });
+      await page.waitForSelector('#podcastGrid', { state: 'attached', timeout: 5000 });
+      report('1.2. Legacy /podcasts links redirect to root and preserve query/hash', true, page.url());
     } catch (error) {
       report('1. Root route is the single canonical podcast document', false, String(error.message || error));
     }

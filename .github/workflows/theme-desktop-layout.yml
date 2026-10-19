@@ -77,7 +77,7 @@ jobs:
           const checks = [
           ['desktop viewport checks exist for all eight themes', test.includes("for (const themeId of themeIds)") && test.includes("'podcast card surface and border are theme-bound for ' + themeId") && test.includes('width: 1440') && test.includes("no horizontal overflow on desktop for ' + themeId")],
           ['theme card grid is defined', /\.nc-theme-grid\s*\{/.test(css)],
-          ['desktop bounds are checked against viewport width', test.includes('no horizontal overflow on desktop for ' + themeId)]
+          ['desktop bounds are checked against viewport width', test.includes("no horizontal overflow on desktop for ' + themeId")]
           ];
           let failed = false;
           for (const [label, ok] of checks) { console.log((ok ? 'PASS' : 'FAIL') + ' | ' + label); if (!ok) failed = true; }

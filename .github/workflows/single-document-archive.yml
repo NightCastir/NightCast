@@ -1,0 +1,80 @@
+name: NightCast Single-Document Archive Acceptance
+
+on:
+  push:
+    branches:
+      - feat/single-document-podcast-entry
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: single-document-archive-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-architecture:
+    name: Source, route and asset integrity
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify one-document architecture and compatibility routes
+        run: node tests/single-document-entry.cjs
+
+  browser-regression:
+    name: Browser, API and responsive regression suite
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser test dependencies
+        run: npm install --no-save playwright lightningcss yaml
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Validate workflow YAML
+        run: node -e "require('yaml').parse(require('fs').readFileSync('.github/workflows/single-document-archive.yml','utf8'),{uniqueKeys:true}); console.log('Workflow YAML valid')"
+      - name: Run full NightCast browser and API regression checks
+        run: node tests/nightcast-acceptance.cjs
+      - name: Upload browser visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: single-document-archive-visual-audit-${{ github.run_number }}
+          path: artifacts/visual/*.png
+          if-no-files-found: warn
+          retention-days: 14
+
+  live-smoke-after-main:
+    name: Public deployment smoke test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [source-architecture, browser-regression]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify public root and legacy route
+        env:
+          SITE_URL: https://www.nightcast.ir
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --max-time 25 "$SITE_URL/" -o /tmp/nightcast-root.html
+          grep -qi 'id="podcastGrid"' /tmp/nightcast-root.html
+          grep -qi 'id="nc-entry-loader"' /tmp/nightcast-root.html
+          curl --fail --silent --show-error --location --max-time 25 "$SITE_URL/podcasts" -o /tmp/nightcast-legacy.html
+          grep -qi 'id="podcastGrid"' /tmp/nightcast-legacy.html
+          echo "Public root and legacy /podcasts route both resolve to the canonical archive."

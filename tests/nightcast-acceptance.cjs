@@ -144,6 +144,29 @@ function silentWavDataUri() {
     report('0.5. Font Awesome CDN fallback is configured on icon pages', iconCdnFailures.length === 0,
       iconCdnFailures.join(', ') || 'All icon-bearing pages have a secondary CDN stylesheet');
 
+    // Route metadata must match the clean URL, and every archive copy must publish the real RSS path.
+    const routeMetadataExpectations = [
+      { file: 'index.html', canonical: 'https://nightcast.ir/', title: 'NightCast | آرشیو پادکست‌های صوتی، خلاصه و تحلیل کتاب' },
+      { file: 'users/index.html', canonical: 'https://nightcast.ir/podcasts', title: 'پادکست فارسی کتاب و اندیشه | خلاصه و بررسی کتاب — نایت‌کست' },
+      { file: 'about/index.html', canonical: 'https://nightcast.ir/about', title: 'درباره NightCast | رادیوی فرهنگی نایت‌کست' },
+      { file: 'contact/index.html', canonical: 'https://nightcast.ir/contact', title: 'تماس با NightCast | ارتباط با نایت‌کست' }
+    ];
+    const routeMetadataFailures = [];
+    for (const route of routeMetadataExpectations) {
+      const html = fs.readFileSync(route.file, 'utf8');
+      const canonical = html.match(/<link\\s+rel="canonical"\\s+href="([^"]+)"/i)?.[1];
+      const title = html.match(/<title>([\\s\\S]*?)<\\/title>/i)?.[1]?.trim();
+      const ogUrl = html.match(/<meta\\s+property="og:url"\\s+content="([^"]+)"/i)?.[1];
+      const rssUrl = html.match(/<link\\s+rel="alternate"\\s+type="application\\/rss\\+xml"[^>]*href="([^"]+)"/i)?.[1];
+      if (canonical !== route.canonical) routeMetadataFailures.push(route.file + ' canonical=' + canonical);
+      if (title !== route.title) routeMetadataFailures.push(route.file + ' title=' + title);
+      if (ogUrl !== route.canonical) routeMetadataFailures.push(route.file + ' og:url=' + ogUrl);
+      if (rssUrl !== 'https://nightcast.ir/data/podcasts.xml') routeMetadataFailures.push(route.file + ' RSS=' + rssUrl);
+    }
+    report('0.6. Clean-route canonical/social metadata and RSS URLs are correct',
+      routeMetadataFailures.length === 0,
+      routeMetadataFailures.join(' || ') || 'Four entry documents match their canonical routes and use the canonical RSS feed');
+
     // Activity 2: validate the actual public API, independently of browser mocks.
     try {
       const response = await fetch('https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=5', {

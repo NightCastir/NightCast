@@ -101,6 +101,12 @@ const assert = require('node:assert/strict');
       check('no horizontal overflow on desktop for ' + themeId, await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1));
       const card = page.locator('#podcastGrid .podcast-card').first();
       const cardAppearance = await card.evaluate(el => ({bg:getComputedStyle(el).backgroundImage,border:getComputedStyle(el).borderColor,color:getComputedStyle(el).color}));
+      const textureVisibility = await page.evaluate(() => ({
+        page: getComputedStyle(document.body).backgroundImage,
+        card: getComputedStyle(document.querySelector('#podcastGrid .podcast-card')).backgroundImage
+      }));
+      check('selected Unsplash texture is actually applied to page for ' + themeId, textureVisibility.page.includes('images.unsplash.com'));
+      check('selected Unsplash texture is actually applied to podcast card for ' + themeId, textureVisibility.card.includes('images.unsplash.com'));
       observedCardSurfaces.add(cardAppearance.bg + '|' + cardAppearance.border + '|' + cardAppearance.color);
       check('podcast card surface and border are theme-bound for ' + themeId, cardAppearance.bg.includes('linear-gradient') && !!cardAppearance.border && !!cardAppearance.color);
     }

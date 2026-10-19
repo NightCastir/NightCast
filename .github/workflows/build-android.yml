@@ -34,11 +34,6 @@ jobs:
         uses: actions/checkout@v4
 
 
-      - name: Verify canonical Android source structure
-        run: |
-          set -euo pipefail
-          node tests/android-source-structure.cjs
-
       # ============================================================
       # 2. Node.js
       # ============================================================
@@ -46,6 +41,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+
+      - name: Verify canonical Android source structure
+        run: |
+          set -euo pipefail
+          node tests/android-source-structure.cjs
+
 
       # ============================================================
       # 3. Java 17

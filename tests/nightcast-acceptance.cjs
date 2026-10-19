@@ -140,7 +140,11 @@ function silentWavDataUri() {
       if (!hasIcons) continue;
       const hasPrimaryCdn = /href=["']https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome\/6\.7\.2\/css\/all\.min\.css["']/i.test(html);
       const hasOnDemandFallback = /onerror="[^"]*cdn\.jsdelivr\.net\/npm\/@fortawesome\/fontawesome-free@6\.7\.2\/css\/all\.min\.css/i.test(html);
-      const hasUnconditionalFallback = /<link\b(?=[^>]*\brel=["']stylesheet["'])(?=[^>]*\bhref=["']https:\/\/cdn\.jsdelivr\.net\/npm\/@fortawesome\/fontawesome-free@6\.7\.2\/css\/all\.min\.css["'])[^>]*>/i.test(html);
+      const hasUnconditionalFallback = [...html.matchAll(/<link\b[^>]*>/gi)].some(match => {
+        const tagAttributes = match[0].split(/\s+onerror\s*=/i, 1)[0];
+        return /\brel=["']stylesheet["']/i.test(tagAttributes) &&
+          /\bhref=["']https:\/\/cdn\.jsdelivr\.net\/npm\/@fortawesome\/fontawesome-free@6\.7\.2\/css\/all\.min\.css["']/i.test(tagAttributes);
+      });
       if (!hasPrimaryCdn || !hasOnDemandFallback || hasUnconditionalFallback) {
         iconCdnFailures.push(file + ' must use the primary Font Awesome CDN with an on-demand fallback only');
       }

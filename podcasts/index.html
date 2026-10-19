@@ -13,7 +13,7 @@
       // Compatibility route for bookmarks and existing inbound links.
       // Keep query parameters and the requested fragment when returning to the canonical archive.
       var target = "/" + window.location.search + window.location.hash;
-      if (window.location.pathname === "/podcasts/" || window.location.pathname === "/podcasts") {
+      if (/^\\/podcasts(?:\\/index\\.html)?\\/?$/.test(window.location.pathname)) {
         window.location.replace(target);
       }
     })();

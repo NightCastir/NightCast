@@ -222,11 +222,11 @@ function silentWavDataUri() {
       const apiUrl = 'https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=5';
       const apiResult = spawnSync('curl', [
         '--silent', '--show-error', '--fail', '--max-time', '12',
-        '--write-out', '\\n%{http_code}', '-H', 'Accept: application/json', apiUrl
+        '--write-out', '__HTTP_STATUS__%{http_code}', '-H', 'Accept: application/json', apiUrl
       ], { encoding: 'utf8', timeout: 13000, maxBuffer: 2 * 1024 * 1024 });
       if (apiResult.error) throw apiResult.error;
       if (apiResult.status !== 0) throw new Error((apiResult.stderr || 'curl failed').trim() + ' (exit ' + apiResult.status + ')');
-      const statusSeparator = apiResult.stdout.lastIndexOf('\\n');
+      const statusSeparator = apiResult.stdout.lastIndexOf('__HTTP_STATUS__');
       if (statusSeparator < 0) throw new Error('API response did not include an HTTP status');
       const responseBody = apiResult.stdout.slice(0, statusSeparator);
       const status = Number(apiResult.stdout.slice(statusSeparator + 1).trim());

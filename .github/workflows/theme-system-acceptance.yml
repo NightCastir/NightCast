@@ -9,6 +9,8 @@ on:
       - 'js/nightcast-theme.js'
       - 'css/nightcast-profile.css'
       - 'css/nightcast-themes.css'
+      - 'css/nightcast-cosmos.css'
+      - 'css/nightcast-cosmos.css'
       - 'tests/theme-system-acceptance.cjs'
       - '.github/workflows/theme-system-acceptance.yml'
   pull_request:

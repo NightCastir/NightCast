@@ -181,3 +181,8 @@ html[data-theme] .podcast-card .podcast-cover-label,html[data-theme] .podcast-ca
 html[data-theme] button,html[data-theme] input,html[data-theme] select,html[data-theme] textarea{accent-color:var(--nc-theme-primary)}
 html[data-theme="moonlight"] .podcast-card .play-card,html[data-theme="moonlight"] .btn-primary,html[data-theme="moonlight"] .latest-play{color:#fff!important}
 @media(prefers-reduced-motion:reduce){html[data-theme] body,html[data-theme] .podcast-card{transition:none!important}}
+
+
+/* Carry the selected art direction into the sign-in view and major secondary panels. */
+html[data-theme] body.cosmic-login{background-image:linear-gradient(135deg,color-mix(in srgb,var(--nc-theme-bg) 91%,transparent),color-mix(in srgb,var(--nc-theme-bg) 87%,var(--nc-theme-primary) 13%)),var(--nc-theme-texture)!important;background-size:cover,cover!important;background-position:center,center!important;background-attachment:fixed,fixed!important}
+html[data-theme] .profile-panel,html[data-theme] .nc-comments-card,html[data-theme] .nc-detail-dialog,html[data-theme] .hero-card,html[data-theme] .nc-about-hero,html[data-theme] .nc-contact-card{background-image:linear-gradient(145deg,color-mix(in srgb,var(--nc-theme-surface) 96%,transparent),color-mix(in srgb,var(--nc-theme-bg) 92%,var(--nc-theme-primary) 8%)),var(--nc-theme-texture)!important;background-size:cover,cover!important;background-position:center,center!important}

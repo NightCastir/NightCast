@@ -75,7 +75,7 @@ jobs:
           const test = fs.readFileSync('tests/theme-system-acceptance.cjs', 'utf8');
           const themeIds = ['midnight-cosmos','aurora','studio-noir','deep-ocean','royal-gold','neon-city','persian-heritage','moonlight'];
           const checks = [
-          ['mobile viewport checks exist for all eight themes', test.includes("for (const themeId of themeIds)") && test.includes("'podcast card surface and border are theme-bound for ' + themeId") && test.includes('width: 360') && test.includes('no horizontal overflow on mobile for ' + themeId)],
+          ['mobile viewport checks exist for all eight themes', test.includes("for (const themeId of themeIds)") && test.includes("'podcast card surface and border are theme-bound for ' + themeId") && test.includes('width: 360') && test.includes("no horizontal overflow on mobile for ' + themeId")],
           ['theme grid has responsive CSS', /\.nc-theme-grid\s*\{/.test(css) && css.replace(/\s+/g, '').includes('minmax(0,1fr)')],
           ['mobile viewport overflow assertion exists', test.includes('profile no longer contains duplicate theme cards') && test.includes('no horizontal overflow on mobile for ' + themeId)]
           ];

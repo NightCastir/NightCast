@@ -3,6 +3,7 @@
   "use strict";
   const routes = {
     "/": "podcasts",
+    "/index.html": "podcasts",
     "/podcasts": "podcasts",
     "/about": "about",
     "/contact": "contact"
@@ -15,7 +16,7 @@
     const target = document.getElementById(targetId);
     if (!target) return false;
     document.querySelectorAll(".nav-link").forEach(link => {
-      const active = link.getAttribute("href") === path || (path === "/" && link.getAttribute("href") === "#podcasts");
+      const active = link.getAttribute("href") === path || ((path === "/" || path === "/index.html") && link.getAttribute("href") === "#podcasts");
       link.classList.toggle("active", active);
       if (active) link.setAttribute("aria-current", "page");
       else link.removeAttribute("aria-current");

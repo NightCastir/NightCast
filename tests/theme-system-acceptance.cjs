@@ -14,7 +14,7 @@ const assert = require('node:assert/strict');
     page.on('pageerror', error => { if (/nightcast-theme(?:-experience)?\.js|NightCast Theme System/i.test(error.stack || error.message)) failures.push('theme controller browser error: ' + error.message); });
     const response = await page.goto('http://127.0.0.1:4173/', { waitUntil: 'domcontentloaded', timeout: 30000 });
     check('homepage loads successfully', !!response && response.ok());
-    check('theme stylesheet is requested', (await page.request.get('http://127.0.0.1:4173/css/nightcast-themes.css?v=2')).ok());
+    check('theme stylesheet is requested', (await page.request.get('http://127.0.0.1:4173/css/nightcast-themes.css?v=3')).ok());
     check('theme controller is requested', (await page.request.get('http://127.0.0.1:4173/js/nightcast-theme.js?v=1')).ok());
 
     await page.waitForFunction(() => !!window.NightCastThemes, null, { timeout: 10000 });
@@ -95,6 +95,17 @@ const assert = require('node:assert/strict');
         texture: getComputedStyle(document.documentElement).getPropertyValue('--nc-theme-texture').trim()
       }));
       check('theme tokens and distinct texture resolve for ' + themeId, appearance.id === themeId && !!appearance.primary && !!appearance.surface && appearance.texture.includes('unsplash.com'));
+      const themeImageUrl = await page.evaluate(id => window.NightCastThemes.list().find(theme => theme.id === id).image, themeId);
+      const cdnImageLoaded = await page.evaluate(url => new Promise(resolve => {
+        const image = new Image();
+        let settled = false;
+        const finish = ok => { if (settled) return; settled = true; clearTimeout(timer); resolve(ok); };
+        const timer = setTimeout(() => finish(false), 10000);
+        image.onload = () => finish(image.naturalWidth > 0);
+        image.onerror = () => finish(false);
+        image.src = url;
+      }), themeImageUrl);
+      check('Unsplash CDN image downloads successfully for ' + themeId, cdnImageLoaded);
       await page.setViewportSize({ width: 360, height: 800 });
       check('no horizontal overflow on mobile for ' + themeId, await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1));
       await page.setViewportSize({ width: 1440, height: 900 });

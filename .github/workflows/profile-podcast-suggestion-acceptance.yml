@@ -17,6 +17,7 @@ on:
       - 'js/nightcast-app.js'
       - 'css/nightcast-base.css'
       - 'css/nightcast-profile.css'
+      - 'tests/profile-podcast-menu-acceptance.cjs'
       - '.github/workflows/profile-podcast-suggestion-acceptance.yml'
   workflow_dispatch:
 
@@ -30,6 +31,23 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+      - name: Install browser test dependencies
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Start local static server
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/nightcast-profile-http.log 2>&1 &
+          for attempt in $(seq 1 40); do
+            if curl --silent --fail http://127.0.0.1:4173/index.html >/dev/null; then
+              exit 0
+            fi
+            sleep 0.25
+          done
+          cat /tmp/nightcast-profile-http.log
+          exit 1
+      - name: Run desktop/mobile browser acceptance
+        run: node tests/profile-podcast-menu-acceptance.cjs
       - name: Check canonical profile CTA and legacy route alias
         shell: bash
         run: |

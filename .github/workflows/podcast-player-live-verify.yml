@@ -123,7 +123,7 @@ jobs:
                 asset_origin="$(printf '%s' "${url}" | sed -E 's#^(https?://[^/]+).*#\1#')"
                 app_js="$(curl --location --silent --show-error --max-time 20 --user-agent 'NightCast-Live-Verification/1.0' "${asset_origin}/js/nightcast-app.js?v=1" 2>/dev/null || true)"
                 player_js="$(curl --location --silent --show-error --max-time 20 --user-agent 'NightCast-Live-Verification/1.0' "${asset_origin}/js/nightcast-player.js?v=1" 2>/dev/null || true)"
-                if [[ "${app_js}" == *'getByteFrequencyData'* && "${app_js}" == *'createAnalyser('* && "${player_js}" == *'playerCover' ]]; then
+                if [[ "${app_js}" == *'getByteFrequencyData'* && "${app_js}" == *'createAnalyser('* && "${app_js}" == *'playerCover'* && "${player_js}" == *'NightCastPodcastBridge'* ]]; then
                   echo "PASS: production HTML references the external app/player scripts and the published scripts contain the visualizer/player implementation."
                   exit 0
                 fi

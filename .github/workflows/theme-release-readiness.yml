@@ -1,0 +1,86 @@
+name: NightCast Theme Release Readiness
+on:
+  push:
+    branches: [main, 'feat/theme-system-and-adaptive-loader']
+    paths:
+      - 'index.html'
+      - 'users/login.html'
+      - 'js/nightcast-app.js'
+      - 'js/nightcast-theme.js'
+      - 'css/nightcast-profile.css'
+      - 'css/nightcast-themes.css'
+      - 'tests/theme-system-acceptance.cjs'
+      - '.github/workflows/theme-system-acceptance.yml'
+      - '.github/workflows/theme-functionality.yml'
+      - '.github/workflows/theme-mobile-layout.yml'
+      - '.github/workflows/theme-desktop-layout.yml'
+      - '.github/workflows/theme-loader-accessibility.yml'
+      - '.github/workflows/theme-release-readiness.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'users/login.html'
+      - 'js/nightcast-app.js'
+      - 'js/nightcast-theme.js'
+      - 'css/nightcast-profile.css'
+      - 'css/nightcast-themes.css'
+      - 'tests/theme-system-acceptance.cjs'
+      - '.github/workflows/theme-system-acceptance.yml'
+      - '.github/workflows/theme-functionality.yml'
+      - '.github/workflows/theme-mobile-layout.yml'
+      - '.github/workflows/theme-desktop-layout.yml'
+      - '.github/workflows/theme-loader-accessibility.yml'
+      - '.github/workflows/theme-release-readiness.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance:
+    name: Full browser regression and release static checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Start local static server
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/nightcast-theme-http.log 2>&1 &
+          for _ in $(seq 1 40); do
+            if curl --silent --fail http://127.0.0.1:4173/index.html >/dev/null; then exit 0; fi
+            sleep 0.25
+          done
+          cat /tmp/nightcast-theme-http.log
+          exit 1
+      - name: Run end-to-end browser regression
+        run: node tests/theme-system-acceptance.cjs
+      - name: Run release focused release gate
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('index.html', 'utf8');
+          const login = fs.readFileSync('users/login.html', 'utf8');
+          const js = fs.readFileSync('js/nightcast-theme.js', 'utf8');
+          const css = fs.readFileSync('css/nightcast-themes.css', 'utf8');
+          const test = fs.readFileSync('tests/theme-system-acceptance.cjs', 'utf8');
+          const themeIds = ['midnight-cosmos','aurora','studio-noir','deep-ocean','royal-gold','neon-city','persian-heritage','moonlight'];
+          const checks = [
+  ['homepage loads theme assets in correct order', html.indexOf('/css/nightcast-themes.css?v=1') >= 0 && html.indexOf('/js/nightcast-theme.js?v=1') < html.indexOf('/js/nightcast-app.js?v=1')],
+  ['login page shares theme controller', login.includes('/js/nightcast-theme.js?v=1')],
+  ['no placeholder theme identifiers', !/data-theme-choice="(?:TODO|placeholder)"/i.test(html)],
+  ['theme acceptance suite covers login page', test.includes('Google sign-in page loads successfully')]
+          ];
+          let failed = false;
+          for (const [label, ok] of checks) { console.log((ok ? 'PASS' : 'FAIL') + ' | ' + label); if (!ok) failed = true; }
+          if (failed) process.exit(1);
+          NODE

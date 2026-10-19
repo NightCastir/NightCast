@@ -54,6 +54,12 @@ const assert = require('node:assert/strict');
     check('profile panel fits narrow mobile viewport', !!panel && panel.x >= 0 && panel.x + panel.width <= 360.5);
     check('theme grid fits inside the profile panel', !!panel && !!grid && grid.x >= panel.x - 1 && grid.x + grid.width <= panel.x + panel.width + 1);
 
+    const loginResponse = await page.goto('http://127.0.0.1:4173/users/login.html', { waitUntil: 'domcontentloaded', timeout: 30000 });
+    check('Google sign-in page loads successfully', !!loginResponse && loginResponse.ok());
+    await page.waitForFunction(() => !!window.NightCastThemes, null, { timeout: 10000 });
+    check('saved theme is also applied on sign-in page', await page.locator('html').getAttribute('data-theme') === 'aurora');
+    check('sign-in page includes shared theme stylesheet', await page.locator('link[href*="nightcast-themes.css"]').count() === 1);
+
     await context.close();
   } catch (error) {
     failures.push(error.stack || error.message);

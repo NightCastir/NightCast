@@ -3299,7 +3299,6 @@
 <link rel="stylesheet" href="/css/nightcast-global-polish.css?v=2">
 
 
-
 <style id="nc-entry-loader-styles">
     /* First-visit galaxy loader: remains visible until the archive data and essential UI settle. */
     #nc-entry-loader{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;overflow:hidden;background:radial-gradient(ellipse at 50% 42%,rgba(34,67,140,.30),transparent 36%),radial-gradient(ellipse at 15% 85%,rgba(83,47,145,.17),transparent 38%),linear-gradient(145deg,#030510,#080f28 55%,#030510);color:#f4f7ff;opacity:1;visibility:visible;transition:opacity .42s ease,visibility .42s ease}
@@ -3458,107 +3457,7 @@
     <main id="home">
 
 
-        <!-- =========================================================
-             HERO
-        ========================================================= -->
-
-        <section class="hero"
-                 aria-labelledby="heroTitle">
-
-            <div>
-
-                <div class="eyebrow">
-
-                    <i class="fa-solid fa-circle"></i>
-
-                    RADIO NIGHTCAST
-
-                </div>
-
-
-                <h1 id="heroTitle">
-
-                    اندیشه های بزرگ ،
-
-                    <br>
-
-                    <span>
-                        روایت های ماندگار
-                    </span>
-
-                </h1>
-
-
-                <p>
-                    پادکست‌های خلاصه و تحلیل کاربردی کتاب‌ها؛
-                    ایده‌های مهم را بشنو، درک کن و در زندگی و کار به‌کار بگیر.
-                </p>
-
-
-                <div class="hero-actions">
-
-                    <a class="btn btn-primary"
-                       href="#podcasts">
-
-                        <i class="fa-solid fa-headphones"></i>
-
-                        شنیدن پادکست‌ها
-
-                    </a>
-
-
-                    <button class="btn btn-secondary"
-                            id="latestCta">
-
-                        <i class="fa-solid fa-shuffle" aria-hidden="true"></i>
-
-                        پادکست ویژه
-
-                    </button>
-                    <button type="button"
-                            id="homeBookSummaryRequestBtn"
-                            class="btn btn-secondary">
-                        <i class="fa-solid fa-book-open"></i>
-                        درخواست خلاصه کتاب
-                    </button>
-                </div>
-
-            </div>
-
-
-            <article class="hero-card nc-featured-podcast"
-                     aria-live="polite"
-                     aria-labelledby="latestPodcastTitle">
-
-                <span class="latest-label">
-
-                    <i class="fa-solid fa-sparkles" aria-hidden="true"></i>
-
-                    پیشنهاد تصادفی NightCast
-
-                </span>
-
-
-                <div class="latest-title"
-                     id="latestPodcastTitle">
-
-                    در حال انتخاب پادکست ویژه...
-
-                </div>
-
-
-                <button class="latest-play"
-                        id="latestPodcastPlay"
-                        type="button"
-                        aria-label="پخش پادکست ویژه">
-
-                    <i class="fa-solid fa-play" aria-hidden="true"></i>
-
-                </button>
-
-            </article>
-
-        </section>
+        
 
 
         <!-- =========================================================
@@ -3609,7 +3508,6 @@
                     </button>
 
                 </div>
-
 
 
             </div>
@@ -5599,8 +5497,6 @@ LOGOUT
             ========================================================= */
 
 
-
-
             function updateStats() {
                 // These counters are optional UI. The catalogue and favorites must
                 // continue working when the count panels are intentionally absent.
@@ -6297,6 +6193,9 @@ LOGOUT
             let featuredPodcastId = null;
 
             function updateLatest(items) {
+                // The canonical archive no longer includes the welcome/featured hero.
+                // Keep shared data-loading code safe on pages where these optional controls do not exist.
+                if (!els.latestTitle || !els.latestPlay || !els.latestCta) return;
                 const eligible = Array.isArray(items) ? items.filter(item => item && item.id != null) : [];
                 if (!eligible.length) {
                     els.latestTitle.textContent = "هنوز پادکستی برای پیشنهاد وجود ندارد.";
@@ -7639,8 +7538,6 @@ if (bookSummaryRequestForm) {
     '<i class="fa-solid fa-spinner fa-spin"></i> در حال ثبت...';
 
 
-
-
                     bookSummaryRequestMessage.hidden =
                         true;
 
@@ -8755,7 +8652,6 @@ body.nc-comments-open{overflow:hidden}
                 @media (prefers-reduced-motion: reduce) { .podcast-card, .podcast-cover img, .nc-podcast-detail, .nc-detail-dialog { transition: none !important; } }
 
 </style>
-
 
 
     <!-- =============================================================

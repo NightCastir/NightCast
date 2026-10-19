@@ -266,6 +266,8 @@ function silentWavDataUri() {
       await page.goto('http://127.0.0.1:4173/', { waitUntil: 'domcontentloaded', timeout: 10000 });
       await page.waitForSelector('#podcastGrid', { state: 'attached', timeout: 5000 });
       assert(new URL(page.url()).pathname === '/', 'Root route navigated away from the canonical document');
+      assert(await page.locator('#heroTitle, main .hero').count() === 0, 'Welcome hero must not be present on the canonical podcast entry');
+      assert(await page.locator('main > #podcasts').count() === 1, 'Podcast archive must be the first main content section');
       assert(await page.locator('#nc-entry-loader').count() === 1, 'Galaxy loader is missing from the root archive document');
       await page.waitForFunction(() => { const loader = document.getElementById('nc-entry-loader'); return !loader || loader.classList.contains('is-hidden'); }, null, { timeout: 15000 });
       assert(await page.locator('#podcastGrid .podcast-card').count() > 0, 'Loader disappeared before podcast cards were rendered');
@@ -575,7 +577,7 @@ function silentWavDataUri() {
         if (['mobile', 'tablet', 'desktop', 'TV'].includes(size.name)) {
           await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
           await page.waitForTimeout(180);
-          await page.screenshot({ path: path.join(visualArtifactDir, size.name + '-hero.png'), fullPage: false, animations: 'disabled' });
+          await page.screenshot({ path: path.join(visualArtifactDir, size.name + '-podcasts-entry.png'), fullPage: false, animations: 'disabled' });
           const cosmosPanel = page.locator('#ncConstellation');
           if (await cosmosPanel.count()) {
             await cosmosPanel.scrollIntoViewIfNeeded();
@@ -674,7 +676,8 @@ function silentWavDataUri() {
             heroTitle: (() => {
               const title = document.querySelector('#heroTitle');
               const hero = document.querySelector('main#home .hero');
-              if (!title || !hero) return { missing: true };
+              if (!title && !hero) return { missing: true };
+              if (!title || !hero) return { missing: false, overflow: true, detail: 'partial welcome hero markup remains' };
               const titleRect = title.getBoundingClientRect();
               const heroRect = hero.getBoundingClientRect();
               const heroStyle = getComputedStyle(hero);
@@ -706,7 +709,7 @@ function silentWavDataUri() {
           };
         });
         if (dims.content > dims.viewport + 3) failures.push(size.name + ': ' + dims.content + 'px > ' + dims.viewport + 'px; elements=' + JSON.stringify(dims.offenders));
-        if (dims.heroTitle.missing || dims.heroTitle.overflow) heroTitleFailures.push(size.name + ': ' + JSON.stringify(dims.heroTitle));
+        if (!dims.heroTitle.missing || dims.heroTitle.overflow) heroTitleFailures.push(size.name + ': ' + JSON.stringify(dims.heroTitle));
 
         const headerState = await page.evaluate(() => {
           const header = document.querySelector('.nc-header');
@@ -749,7 +752,7 @@ function silentWavDataUri() {
       }
       report('5. Mobile, tablet, desktop and TV layouts avoid horizontal overflow', failures.length === 0, failures.join('; ') || 'Tested 320, 360, 390, 768, 801, 820, 900, 1000, 1024, 1440, 1920 px');
       report('5.1. Header, navigation and controls fit across breakpoints', headerFailures.length === 0, headerFailures.join('; ') || 'Header geometry and navigation mode passed at 11 viewport widths');
-      report('5.2. Hero heading stays within its container across breakpoints', heroTitleFailures.length === 0, heroTitleFailures.join('; ') || 'Hero title geometry passed at 11 viewport widths');
+      report('5.2. Welcome hero is absent across breakpoints', heroTitleFailures.length === 0, heroTitleFailures.join('; ') || 'Welcome hero is absent at all 11 viewport widths');
       report('6. Mobile navigation drawer remains fixed and usable', mobileNavigationPassed, mobileNavigationDetail);
 
       try {

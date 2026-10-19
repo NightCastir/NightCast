@@ -12,6 +12,15 @@ function check(name, fn) {
   catch (error) { console.error('FALSE | ' + name + ' | ' + (error.message || error)); process.exitCode = 1; }
 }
 
+check('Welcome hero is removed from the canonical entry', () => {
+  assert.doesNotMatch(root, /id=["']heroTitle["']/i, 'The welcome heading must not be part of the root document');
+  assert.doesNotMatch(root, /class=["']hero(?:\s|["'])/i, 'The welcome hero section must not exist on the canonical entry');
+  assert.doesNotMatch(root, /اندیشه\s*های\s*بزرگ[\s\S]{0,180}روایت\s*های\s*ماندگار/i, 'The welcome slogan must not be rendered on the root entry');
+  const mainStart = root.indexOf('<main');
+  const podcastStart = root.indexOf('<section', mainStart);
+  assert.ok(mainStart >= 0 && podcastStart >= 0, 'Main content and first section must exist');
+  assert.match(root.slice(podcastStart, podcastStart + 220), /id=["']podcasts["']/i, 'The podcast archive must be the first main section');
+});
 check('Root document contains the real podcast archive', () => {
   assert.match(root, /id=["']podcastGrid["']/i);
   assert.match(root, /id=["']podcasts["']/i);

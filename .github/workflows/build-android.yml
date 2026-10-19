@@ -213,55 +213,32 @@ jobs:
 
 
       # ============================================================
-      # 6. Create clean Capacitor configuration
+      # 6. Validate the single canonical Capacitor configuration
       # ============================================================
-      - name: Create clean capacitor.config.json
+      - name: Validate capacitor.config.ts
         run: |
-          set -e
+          set -euo pipefail
 
-          cat > capacitor.config.json << 'EOF'
-          {
-            "appId": "ir.nightcast.app",
-            "appName": "NightCast",
-            "webDir": "www",
-            "server": {
-              "url": "https://www.nightcast.ir",
-              "cleartext": false,
-              "androidScheme": "https",
-              "allowNavigation": [
-                "www.nightcast.ir",
-                "nightcast.ir"
-              ]
-            },
-            "android": {
-              "allowMixedContent": true,
-              "backgroundColor": "#050a16"
-            },
-            "plugins": {
-              "SplashScreen": {
-                "launchShowDuration": 0,
-                "launchAutoHide": true,
-                "backgroundColor": "#050a16",
-                "splashFullScreen": true,
-                "splashImmersive": true
-              },
-              "StatusBar": {
-                "style": "DARK",
-                "backgroundColor": "#050a16"
-              }
-            }
+          test -s capacitor.config.ts
+          node <<'NODE'
+          const fs = require('node:fs');
+          const source = fs.readFileSync('capacitor.config.ts', 'utf8');
+          const required = [
+            ["appId", /appId:\s*'ir\.nightcast\.app'/],
+            ["appName", /appName:\s*'NightCast'/],
+            ["remote entry URL", /url:\s*'https:\/\/www\.nightcast\.ir'/],
+            ["HTTPS scheme", /androidScheme:\s*'https'/],
+            ["www hostname allowlist", /allowNavigation:\s*\[[^\]]*'www\.nightcast\.ir'/s],
+            ["apex hostname allowlist", /allowNavigation:\s*\[[^\]]*'nightcast\.ir'/s]
+          ];
+          for (const [label, pattern] of required) {
+            if (!pattern.test(source)) throw new Error('capacitor.config.ts missing required setting: ' + label);
+            console.log('TRUE | Canonical Capacitor setting | ' + label);
           }
-          EOF
-
-          # Capacitor prefers capacitor.config.ts over capacitor.config.json when both exist.
-          # This workflow deliberately generates the authoritative JSON config, so remove
-          # the stale TypeScript config before cap add/sync; otherwise server.url is dropped.
-          rm -f capacitor.config.ts capacitor.config.js capacitor.config.mjs
-
-          echo "=== capacitor.config.json ==="
-          cat capacitor.config.json
-          node -e 'const c=require("./capacitor.config.json"); const allowed=c.server?.allowNavigation||[]; if(c.server?.url!=="https://www.nightcast.ir" || c.server?.androidScheme!=="https" || !allowed.includes("www.nightcast.ir") || !allowed.includes("nightcast.ir")) throw new Error("Android must load the canonical NightCast website over HTTPS and keep both canonical hostnames inside the WebView"); console.log("TRUE | Android points to the canonical website URL and allows both canonical hostnames.");'
-
+          if (fs.existsSync('capacitor.config.json')) {
+            throw new Error('Do not maintain a second root Capacitor config; capacitor.config.ts is authoritative.');
+          }
+          NODE
 
       # ============================================================
       # 7. Prepare www
@@ -1172,8 +1149,8 @@ jobs:
         run: |
           set -e
 
-          echo "=== Capacitor configuration ==="
-          cat capacitor.config.json
+          echo "=== Canonical Capacitor configuration ==="
+          cat capacitor.config.ts
 
 
           echo ""

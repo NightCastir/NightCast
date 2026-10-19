@@ -5,7 +5,11 @@ const config: CapacitorConfig = {
   appName: 'NightCast',
   webDir: 'www',
   server: {
-    androidScheme: 'https'
+    // Single source of truth for the Android WebView entry point.
+    url: 'https://www.nightcast.ir',
+    cleartext: false,
+    androidScheme: 'https',
+    allowNavigation: ['www.nightcast.ir', 'nightcast.ir']
   },
   android: {
     allowMixedContent: true,

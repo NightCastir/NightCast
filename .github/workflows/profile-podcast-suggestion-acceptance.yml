@@ -38,7 +38,7 @@ jobs:
       - name: Start local static server
         run: |
           python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/nightcast-profile-http.log 2>&1 &
-          for attempt in $(seq 1 40); do
+          for _ in $(seq 1 40); do
             if curl --silent --fail http://127.0.0.1:4173/index.html >/dev/null; then
               exit 0
             fi

@@ -138,7 +138,7 @@ function silentWavDataUri() {
       const html = fs.readFileSync(file, 'utf8');
       const hasIcons = /\bfa-(?:solid|regular|brands)\b/.test(html);
       if (!hasIcons) continue;
-      const hasPrimaryCdn = /href=["']https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome\/6\.7\.2\/css\/all\.min\.css["']/i.test(html);
+      const hasPrimaryCdn = /href=["']https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome\/[^"']+\/css\/all\.min\.css["']/i.test(html);
       const hasOnDemandFallback = /onerror="[^"]*cdn\.jsdelivr\.net\/npm\/@fortawesome\/fontawesome-free@6\.7\.2\/css\/all\.min\.css/i.test(html);
       const hasUnconditionalFallback = [...html.matchAll(/<link\b[^>]*>/gi)].some(match => {
         const tagAttributes = match[0].split(/\s+onerror\s*=/i, 1)[0];

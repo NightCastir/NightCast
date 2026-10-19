@@ -84,9 +84,12 @@ jobs:
               grep -qi 'id="nc-entry-loader"' /tmp/nightcast-root.html && root_loader=true || true
               echo "www root markers: podcastGrid=${root_grid}, galaxyLoader=${root_loader}"
               if [[ "${root_grid}" == true && "${root_loader}" == true ]]; then
-                if curl --fail --silent --show-error --location --max-time 25 "$SITE_URL/podcasts?nc_smoke=${GITHUB_SHA}-${attempt}" -o /tmp/nightcast-legacy.html && grep -qi 'id="podcastGrid"' /tmp/nightcast-legacy.html; then
-                  echo "PASS: www root serves the canonical archive with its integrated loader; legacy /podcasts resolves to the same archive."
-                  exit 0
+                if curl --fail --silent --show-error --location --max-time 25 "$SITE_URL/podcasts?nc_smoke=${GITHUB_SHA}-${attempt}" -o /tmp/nightcast-legacy.html; then
+                  # curl follows HTTP redirects but does not execute the compatibility page's JS redirect.
+                  if grep -qi 'id="podcastGrid"' /tmp/nightcast-legacy.html || { grep -q 'window.location.replace(target)' /tmp/nightcast-legacy.html && grep -qi 'rel="canonical" href="https://nightcast.ir/"' /tmp/nightcast-legacy.html; }; then
+                    echo "PASS: www root serves the canonical archive with its integrated loader; legacy /podcasts either redirects at HTTP level or provides the immediate compatibility redirect."
+                    exit 0
+                  fi
                 fi
               fi
             fi

@@ -6193,6 +6193,9 @@ LOGOUT
             let featuredPodcastId = null;
 
             function updateLatest(items) {
+                // The canonical archive no longer includes the welcome/featured hero.
+                // Keep shared data-loading code safe on pages where these optional controls do not exist.
+                if (!els.latestTitle || !els.latestPlay || !els.latestCta) return;
                 const eligible = Array.isArray(items) ? items.filter(item => item && item.id != null) : [];
                 if (!eligible.length) {
                     els.latestTitle.textContent = "هنوز پادکستی برای پیشنهاد وجود ندارد.";

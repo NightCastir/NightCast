@@ -50,13 +50,15 @@ check('Root entry keeps the previous podcast-section landing behavior', () => {
   const routes = fs.readFileSync('js/clean-routes.js', 'utf8');
   assert.ok(routes.includes('"/": "podcasts"'), 'Root path must target the podcast section');
   assert.ok(routes.includes('"/index.html": "podcasts"'), 'Bundled index.html must target the podcast section');
-  assert.ok(routes.includes('href === "#" + targetId'), 'Active navigation must follow the selected section');
-  assert.ok(routes.includes('const targetId = hashTarget || routes[path]'), 'Direct section hashes must override the default podcast landing section');
+  assert.ok(routes.includes('href === path'), 'Active navigation must follow the selected clean route');
+  assert.ok(routes.includes('const targetId = legacySection || routes[path]'), 'Clean route paths must select the correct section');
+  assert.ok(routes.includes('sectionPaths'), 'Each section must map to a clean URL path');
 });
-check('Legacy /podcasts page redirects immediately and preserves query/hash', () => {
+check('Legacy /podcasts page redirects immediately without adding a fragment', () => {
   assert.match(legacy, /window\.location\.replace\(target\)/);
   assert.match(legacy, /window\.location\.search/);
-  assert.match(legacy, /window\.location\.hash/);
+  assert.match(legacy, /targetUrl\.searchParams\.set\("__route", "podcasts"\)/);
+  assert.doesNotMatch(legacy, /window\.location\.hash/);
   assert.ok(legacy.includes('index\\.html'), 'Direct /podcasts/index.html bookmarks must also redirect');
   assert.match(redirects, /^\/podcasts\s+\/\s+301$/m);
   assert.match(redirects, /^\/podcasts\/\s+\/\s+301$/m);
@@ -73,19 +75,23 @@ check('Legacy archive and section URLs are lightweight aliases to the canonical 
     assert.match(html, /<meta name="robots" content="noindex,follow">/i);
     assert.match(html, /<link rel="canonical" href="https:\/\/nightcast\.ir\/">/i);
     assert.match(html, /target\.search = current\.search/);
-    assert.ok(html.includes('target.hash = current.hash || "' + alias.section + '"'), alias.file + ' must choose its section when no hash was provided');
+    assert.ok(html.includes('target.hash = "";'), alias.file + ' must not emit a fragment');
+    assert.ok(html.includes('target.searchParams.set("__route", "' + alias.section + '")'), alias.file + ' must choose its clean route');
     assert.match(html, /window\.location\.replace\(target\.toString\(\)\)/);
-    assert.ok(html.includes('href="/#' + alias.section + '"'), alias.file + ' must provide a no-JavaScript fallback');
+    assert.ok(html.includes('href="' + (alias.section === 'podcasts' ? '/' : '/' + alias.section) + '"'), alias.file + ' must provide a clean no-JavaScript fallback');
   }
-  assert.match(redirects, /^\/about\s+\/about\/index\.html\s+200$/m);
-  assert.match(redirects, /^\/contact\s+\/contact\/index\.html\s+200$/m);
+  assert.match(redirects, /^\/about\s+\/index\.html\s+200$/m);
+  assert.match(redirects, /^\/contact\s+\/index\.html\s+200$/m);
+  assert.match(redirects, /^\/about\/\s+\/about\s+301$/m);
+  assert.match(redirects, /^\/contact\/\s+\/contact\s+301$/m);
 });
 
-check('Canonical route handler honors direct section hashes and active navigation', () => {
+check('Canonical route handler uses clean paths and migrates legacy hashes', () => {
   const routes = fs.readFileSync('js/clean-routes.js', 'utf8');
-  assert.match(routes, /const hashTarget = validSections\.has\(requestedHash\) \? requestedHash : null/);
-  assert.match(routes, /const targetId = hashTarget \|\| routes\[path\]/);
-  assert.match(routes, /href === "#" \+ targetId/);
+  assert.match(routes, /const legacySection = validSections\.has\(requestedHash\) \? requestedHash : null/);
+  assert.match(routes, /const targetId = legacySection \|\| routes\[path\]/);
+  assert.match(routes, /href === path/);
+  assert.match(routes, /history\.replaceState/);
 });
 
 check('Sitemap lists only the canonical HTML document', () => {

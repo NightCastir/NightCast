@@ -935,31 +935,22 @@ jobs:
       # 18. Decode release keystore
       # ============================================================
       - name: Decode Keystore
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
-          set -e
+          set -euo pipefail
 
-          if [ -n "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" ]; then
-
-              echo "ANDROID_KEYSTORE_BASE64 detected."
-
-              echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" \
-                | base64 --decode \
-                > nightcast-release.keystore
-
-
-              if [ ! -s nightcast-release.keystore ]; then
-                  echo "ERROR: Decoded keystore is empty."
-                  exit 1
-              fi
-
-
-              echo "Keystore decoded successfully."
-
+          if [ -n "${ANDROID_KEYSTORE_BASE64:-}" ]; then
+            echo "ANDROID_KEYSTORE_BASE64 detected."
+            printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > nightcast-release.keystore
+            test -s nightcast-release.keystore || {
+              echo "ERROR: Decoded keystore is empty."
+              exit 1
+            }
+            echo "Keystore decoded successfully."
           else
-
-              echo "No ANDROID_KEYSTORE_BASE64 secret found."
-              echo "Release APK will be built unsigned."
-
+            echo "No ANDROID_KEYSTORE_BASE64 secret found."
+            echo "Release APK will be built unsigned."
           fi
 
 
@@ -968,35 +959,40 @@ jobs:
       # ============================================================
       - name: Build Release APK
         id: build_release
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          set -e
+          set -euo pipefail
 
           if [ -f "nightcast-release.keystore" ]; then
+            echo "Building signed Release APK..."
 
-              echo "Building signed Release APK..."
+            # A keystore without all matching credentials cannot produce a valid signed release.
+            for secret_name in KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD; do
+              if [ -z "${!secret_name:-}" ]; then
+                echo "ERROR: $secret_name is required when ANDROID_KEYSTORE_BASE64 is configured."
+                exit 1
+              fi
+            done
 
-              cd android
-
-              ./gradlew \
-                :app:assembleRelease \
-                -Pandroid.injected.signing.store.file="$(pwd)/../nightcast-release.keystore" \
-                -Pandroid.injected.signing.store.password="${{ secrets.KEYSTORE_PASSWORD }}" \
-                -Pandroid.injected.signing.key.alias="${{ secrets.KEY_ALIAS }}" \
-                -Pandroid.injected.signing.key.password="${{ secrets.KEY_PASSWORD }}" \
-                --stacktrace \
-                --no-daemon
-
+            cd android
+            ./gradlew \
+              :app:assembleRelease \
+              -Pandroid.injected.signing.store.file="$(pwd)/../nightcast-release.keystore" \
+              -Pandroid.injected.signing.store.password="$KEYSTORE_PASSWORD" \
+              -Pandroid.injected.signing.key.alias="$KEY_ALIAS" \
+              -Pandroid.injected.signing.key.password="$KEY_PASSWORD" \
+              --stacktrace \
+              --no-daemon
           else
-
-              echo "Building unsigned Release APK..."
-
-              cd android
-
-              ./gradlew \
-                :app:assembleRelease \
-                --stacktrace \
-                --no-daemon
-
+            echo "Building unsigned Release APK..."
+            cd android
+            ./gradlew \
+              :app:assembleRelease \
+              --stacktrace \
+              --no-daemon
           fi
 
 

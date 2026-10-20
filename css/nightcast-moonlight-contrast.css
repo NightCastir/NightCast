@@ -396,3 +396,35 @@
 @media(prefers-reduced-motion:reduce){
   :root[data-theme="moonlight"] *{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
+
+
+/* About page: neutralize the remaining green panels only in Moonlight.
+   Keep brand accents on icons/buttons, but use light surfaces and readable gray text. */
+:root[data-theme="moonlight"] #about :is(.nc-stat-card,.nc-vision,.nc-onair-panel,.nc-studio,.nc-studio-copy,.nc-why-mark,.nc-social-card){
+  color:#424B5A!important;
+  background-color:#FFFFFF!important;
+  background-image:linear-gradient(145deg,#FFFFFF 0%,#F6F7FA 100%)!important;
+  border-color:#D9DEE7!important;
+  box-shadow:0 6px 22px rgba(49,59,76,.055)!important;
+}
+:root[data-theme="moonlight"] #about :is(.nc-stat-card,.nc-vision,.nc-onair-panel,.nc-studio,.nc-studio-copy,.nc-social-card) :is(h1,h2,h3,h4,h5,h6,strong,b,.nc-stat-value,.nc-stat-label,.nc-stat-note){
+  color:#424B5A!important;
+  -webkit-text-fill-color:#424B5A!important;
+  text-shadow:none!important;
+}
+:root[data-theme="moonlight"] #about :is(.nc-stat-card,.nc-vision,.nc-onair-panel,.nc-studio,.nc-studio-copy,.nc-social-card) :is(p,span,small,em,.nc-section-text,.nc-stat-note){
+  color:#626D7D!important;
+  -webkit-text-fill-color:#626D7D!important;
+  text-shadow:none!important;
+}
+:root[data-theme="moonlight"] #about .nc-why-mark{
+  background:#EEF1F6!important;
+  background-image:none!important;
+  color:#505A6A!important;
+  border:1px solid #D9DEE7!important;
+  box-shadow:none!important;
+}
+:root[data-theme="moonlight"] #about .nc-onair-dot{
+  background:#8A91A0!important;
+  box-shadow:0 0 0 3px rgba(138,145,160,.14)!important;
+}

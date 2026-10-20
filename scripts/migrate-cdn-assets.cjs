@@ -176,7 +176,7 @@ async function main() {
   for(const file of [...new Set(htmlFiles)]) {
     let html=read(file);
     html=html.replace(/<link\b(?=[^>]*\brel=["']preconnect["'])(?=[^>]*\bhref=["']https:\/\/(?:fonts\.googleapis\.com|fonts\.gstatic\.com|cdnjs\.cloudflare\.com|cdn\.jsdelivr\.net|unpkg\.com)[^"']*["'])[^>]*>\s*/gi,'');
-    html=html.replace(/<link\b(?=[^>]*\bhref=["']https:\/\/fonts\.googleapis\.com\/css\?[^"']*["'])[^>]*>\s*/gi,'');
+    html=html.replace(/<link\b(?=[^>]*\bhref=["']https:\/\/fonts\.googleapis\.com\/css2?\?[^"']*["'])[^>]*>\s*/gi,'');
     html=html.replace(/<link\b(?=[^>]*\bhref=["']https:\/\/(?:cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome\/|cdn\.jsdelivr\.net\/npm\/@fortawesome\/fontawesome-free@)[^"']*["'])[^>]*>\s*/gi,'');
     html=html.replace(/<link\b(?=[^>]*\bhref=["']https:\/\/(?:cdnjs\.cloudflare\.com|cdn\.jsdelivr\.net|unpkg\.com)[^"']*["'])(?=[^>]*\brel=["']stylesheet["'])[^>]*>\s*/gi,'');
     html=html.replace(/\n{3,}/g,'\n\n');

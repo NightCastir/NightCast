@@ -1,5 +1,7 @@
 'use strict';
 const { chromium } = require('playwright');
+const fs = require('node:fs');
+fs.mkdirSync('artifacts', { recursive: true });
 
 const BASE = process.env.NIGHTCAST_BASE_URL || 'https://nightcast.ir';
 const results = [];

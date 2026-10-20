@@ -29,7 +29,10 @@ const server = http.createServer((req, res) => {
   check('direct APK button points to official NightCast download endpoint', /href="https:\/\/www\.nightcast\.ir\/downloadrelease\/NightCast\.apk"[\s\S]{0,120}download="NightCast\.apk"/.test(html));
   check('Cafe Bazaar button uses official Cafe Bazaar domain and safe new-tab attributes', /href="https:\/\/cafebazaar\.ir\/app\/ir\.nightcast\.app"[\s\S]{0,120}target="_blank" rel="noopener noreferrer"/.test(html));
   check('Android and store icons are present', /fa-brands fa-android/.test(html) && /fa-solid fa-store/.test(html));
-  check('theme stylesheet cache version is bumped', /nightcast-themes\.css\?v=10/.test(html));
+  check('theme stylesheet cache version is bumped', /nightcast-themes\.css\?v=12/.test(html));
+  check('global footer gap fix is cache-busted and includes mobile footer behavior', /nightcast-global-polish\.css\?v=4/.test(html) && /nc-footer-viewport-behavior/.test(html));
+  check('now-playing overlay is forced to fixed positioning so it cannot extend document flow', /#ncNowPlaying\.nc-now-playing\s*\{[^}]*position:\s*fixed\s*!important;[^}]*inset:\s*0\s*!important;/s.test(fs.readFileSync(path.join(root, 'css/nightcast-global-polish.css'), 'utf8')));
+  check('footer spacing override removes oversized mobile bottom padding', /padding-bottom: max\(10px, env\(safe-area-inset-bottom\)\) !important/.test(fs.readFileSync(path.join(root, 'css/nightcast-global-polish.css'), 'utf8')));
   check('cosmic CTA has responsive, focus-visible and reduced-motion styles', css.includes('.nc-footer-download::before') && css.includes('.nc-footer-download-button:focus-visible') && css.includes('@media(max-width:760px)') && css.includes('prefers-reduced-motion:reduce'));
   check('direct APK CTA explicitly fixes link, visited, hover, focus and active text colors', ['.nc-footer-download-direct:link','.nc-footer-download-direct:visited','.nc-footer-download-direct:hover','.nc-footer-download-direct:focus','.nc-footer-download-direct:focus-visible','.nc-footer-download-direct:active','-webkit-text-fill-color:#fff'].every(rule => css.includes(rule)));
   check('Moonlight theme has a dedicated light readable CTA palette', /:root\[data-theme="moonlight"\] \.nc-footer-download/.test(css) && css.includes('--nc-download-ink:#242936'));
@@ -92,6 +95,49 @@ const server = http.createServer((req, res) => {
       await page.locator('html').evaluate(el => el.dataset.theme = 'moonlight');
       const moonlight = await panel.evaluate(el => ({ background: getComputedStyle(el).backgroundImage, heading: getComputedStyle(el.querySelector('h2')).color }));
       check(viewport.name + ': Moonlight CTA remains readable', moonlight.heading !== 'rgba(0, 0, 0, 0)' && moonlight.background.includes('gradient'), JSON.stringify(moonlight));
+
+      // Test the reported footer-to-screen gap itself, not only the download card.
+      await page.locator('.nc-footer').scrollIntoViewIfNeeded();
+      await page.waitForTimeout(180); // allow IntersectionObserver to update the mobile navigation state
+      await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+      await page.waitForTimeout(80);
+      const footerGeometry = await page.evaluate(() => {
+        const footer = document.querySelector('.nc-footer');
+        const rect = footer.getBoundingClientRect();
+        const style = getComputedStyle(footer);
+        const mobileNav = document.querySelector('.mobile-nav');
+        const navStyle = mobileNav ? getComputedStyle(mobileNav) : null;
+        return {
+          viewportHeight: innerHeight,
+          documentHeight: document.documentElement.scrollHeight,
+          scrollY: window.scrollY,
+          footerBottomInDocument: rect.bottom + window.scrollY,
+          trailingGap: document.documentElement.scrollHeight - (rect.bottom + window.scrollY),
+          footerPaddingBottom: parseFloat(style.paddingBottom) || 0,
+          footerVisible: rect.bottom > 0 && rect.top < innerHeight,
+          footerInViewClass: document.body.classList.contains('nc-footer-in-view'),
+          mobileNavOpacity: navStyle ? Number(navStyle.opacity) : null,
+          mobileNavTransform: navStyle ? navStyle.transform : 'not-present',
+          trailingFlowElements: Array.from(document.body.querySelectorAll('*')).map(el => {
+            const style = getComputedStyle(el);
+            const rect = el.getBoundingClientRect();
+            let ancestor = el.parentElement;
+            let insideOverlay = false;
+            while (ancestor && ancestor !== document.body) {
+              const p = getComputedStyle(ancestor).position;
+              if (p === 'fixed' || p === 'absolute') { insideOverlay = true; break; }
+              ancestor = ancestor.parentElement;
+            }
+            return { tag: el.tagName, id: el.id || '', className: typeof el.className === 'string' ? el.className.slice(0,90) : '', position: style.position, display: style.display, height: Math.round(rect.height), topInDocument: Math.round(rect.top + window.scrollY), bottomInDocument: Math.round(rect.bottom + window.scrollY), insideOverlay };
+          }).filter(el => !el.insideOverlay && el.display !== 'none' && el.position !== 'fixed' && el.position !== 'absolute' && el.height > 0 && el.bottomInDocument > (rect.bottom + window.scrollY) + 20).slice(0, 12)
+        };
+      });
+      check(viewport.name + ': no document gap after footer', footerGeometry.trailingGap <= 2, JSON.stringify(footerGeometry));
+      check(viewport.name + ': footer is actually visible at page end', footerGeometry.footerVisible, JSON.stringify(footerGeometry));
+      check(viewport.name + ': footer bottom padding is intentional', footerGeometry.footerPaddingBottom <= (viewport.width <= 760 ? 24 : 40), JSON.stringify(footerGeometry));
+      if (viewport.width <= 760) {
+        check(viewport.name + ': mobile navigation yields while footer is in view', footerGeometry.footerInViewClass && footerGeometry.mobileNavOpacity === 0, JSON.stringify(footerGeometry));
+      }
       await page.close();
     }
   } catch (error) {

@@ -2,7 +2,11 @@
 :root{color-scheme:dark}
 html{min-height:100%;margin:0!important;padding:0!important;background:#050817;scroll-behavior:auto}
 body{min-height:100vh;min-height:100svh;margin:0!important;padding-bottom:0!important;display:flex;flex-direction:column;background-color:#050817!important}
-body>main,body>main#home,body>main.login-page{flex:1 0 auto;min-height:0}\nbody>main:has(footer){display:flex;flex-direction:column}\nbody>main:has(footer)>footer,body>main:has(footer) footer{margin-top:auto!important}\n.login-page:has(.login-card footer)>.login-card{flex:1;display:flex;flex-direction:column}\n.login-page .login-card footer{margin-top:auto!important}
+body>main,body>main#home,body>main.login-page{flex:1 0 auto;min-height:0}
+body>main:has(footer){display:flex;flex-direction:column}
+body>main:has(footer)>footer,body>main:has(footer) footer{margin-top:auto!important}
+.login-page:has(.login-card footer)>.login-card{flex:1;display:flex;flex-direction:column}
+.login-page .login-card footer{margin-top:auto!important}
 body>footer,body>main>footer,footer,.nc-footer{margin-bottom:0!important}
 body>footer:last-child{margin-top:auto}
 body::after{content:"";display:block;flex:0 0 0;height:0;min-height:0}
@@ -25,3 +29,26 @@ img,video,iframe{height:auto}
 .nc-reveal{transform:none!important;transition:opacity .24s ease!important;will-change:auto!important}
 .nc-reveal.nc-visible{transform:none!important}
 @media(prefers-reduced-motion:reduce){.nc-reveal{transition:none!important}}
+
+
+/* Eliminate the oversized blank strip below the footer on small screens.
+   The fixed mobile navigation yields while the footer is in view so that
+   the copyright is the final visible footer item instead of leaving a large spacer. */
+@media (max-width: 760px) {
+  body:not(.player-open) .nc-footer,
+  body.player-open .nc-footer {
+    padding-bottom: max(10px, env(safe-area-inset-bottom)) !important;
+  }
+  body.nc-footer-in-view .mobile-nav {
+    transform: translateY(110%) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+}
+
+
+/* The now-playing overlay must never participate in document flow: when its fixed positioning is overridden, its ~800px panel creates the exact blank strip reported below the footer. */
+#ncNowPlaying.nc-now-playing {
+  position: fixed !important;
+  inset: 0 !important;
+}

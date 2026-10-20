@@ -476,7 +476,8 @@ function silentWavDataUri() {
         const header = document.querySelector('.nc-header');
         const nav = header?.querySelector('.nc-nav');
         const links = header?.querySelector('.nav-links');
-        const icon = header?.querySelector('.brand-mark i');
+        const icon = header?.querySelector('.nav-link-button i, .header-actions i');
+        const brandImage = header?.querySelector('.brand-mark img');
         const pseudo = icon ? getComputedStyle(icon, '::before') : null;
         const hr = header?.getBoundingClientRect();
         return {
@@ -492,7 +493,9 @@ function silentWavDataUri() {
           iconFamily: pseudo?.fontFamily || 'missing',
           iconContent: pseudo?.content || 'missing',
           iconFontLoaded: document.fonts.check('900 16px "Font Awesome 6 Free"'),
-          iconCdnFallback: !!document.querySelector('link[href*="fontawesome-free@6.7.2"]')
+          iconCdnFallback: !!document.querySelector('link[href*="fontawesome-free@6.7.2"]'),
+          brandImagePresent: !!brandImage,
+          brandImageLoaded: !!brandImage && brandImage.complete && brandImage.naturalWidth > 0
         };
       });
       const headerAndIconsOk = headerState.position === 'sticky' &&
@@ -503,7 +506,8 @@ function silentWavDataUri() {
         headerState.navLinksDisplay !== 'none' &&
         /Font Awesome/i.test(headerState.iconFamily) &&
         !!headerState.iconContent && headerState.iconContent !== 'none' && headerState.iconContent !== '""' &&
-        headerState.iconFontLoaded && headerState.iconCdnFallback;
+        headerState.iconFontLoaded && headerState.iconCdnFallback &&
+        headerState.brandImagePresent && headerState.brandImageLoaded;
       report('1.1. Desktop header fits viewport and CDN icons render', headerAndIconsOk, JSON.stringify(headerState));
     } catch (error) {
       report('1.1. Desktop header fits viewport and CDN icons render', false, String(error.message || error));

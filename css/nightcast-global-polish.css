@@ -25,3 +25,19 @@ img,video,iframe{height:auto}
 .nc-reveal{transform:none!important;transition:opacity .24s ease!important;will-change:auto!important}
 .nc-reveal.nc-visible{transform:none!important}
 @media(prefers-reduced-motion:reduce){.nc-reveal{transition:none!important}}
+
+
+/* Eliminate the oversized blank strip below the footer on small screens.
+   The fixed mobile navigation yields while the footer is in view so that
+   the copyright is the final visible footer item instead of leaving a large spacer. */
+@media (max-width: 760px) {
+  body:not(.player-open) .nc-footer,
+  body.player-open .nc-footer {
+    padding-bottom: max(10px, env(safe-area-inset-bottom)) !important;
+  }
+  body.nc-footer-in-view .mobile-nav {
+    transform: translateY(110%) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+}

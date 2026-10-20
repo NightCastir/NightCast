@@ -170,6 +170,49 @@ button:hover,.action:hover{border-color:#f4d69c}
     count.innerHTML = 'نمایش ' + visible + ' از ' + data.length + ' پادکست';
     if (!visible) list.innerHTML = '<div class="panel">موردی مطابق جست‌وجو پیدا نشد.</div>';
   }
+  function loadAdditionalPages(page, total, collected) {
+    var request = new XMLHttpRequest();
+    var url = 'https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=' + page + '&limit=5';
+    request.open('GET', url, true);
+    request.timeout = 12000;
+    request.onreadystatechange = function () {
+      if (request.readyState !== 4) return;
+      var records = [];
+      var reported = total;
+      if (request.status >= 200 && request.status < 300) {
+        try {
+          var result = JSON.parse(request.responseText);
+          records = result && Object.prototype.toString.call(result.podcasts) === '[object Array]' ? result.podcasts :
+            (result && Object.prototype.toString.call(result.data) === '[object Array]' ? result.data : []);
+          reported = parseInt(result && result.total, 10) || reported;
+        } catch (e) { records = []; }
+      }
+      if (records.length) collected = collected.concat(records);
+      if (records.length && ((reported && collected.length < reported) || (!reported && records.length >= 5)) && page < 100) {
+        loadAdditionalPages(page + 1, reported, collected);
+        return;
+      }
+      if (collected.length) {
+        data = collected;
+        status.innerHTML = reported && collected.length < reported ?
+          'بخشی از آرشیو بارگذاری شد؛ تعداد دریافت‌شده: ' + collected.length :
+          'آرشیو کامل پادکست‌ها آماده است.';
+        render();
+      } else {
+        loadUrl('/users/data/podcasts.json', '');
+      }
+    };
+    request.onerror = request.ontimeout = function () {
+      if (collected.length) {
+        data = collected;
+        status.innerHTML = 'اتصال ناپایدار بود؛ ' + collected.length + ' پادکست بارگذاری شد.';
+        render();
+      } else {
+        loadUrl('/users/data/podcasts.json', '');
+      }
+    };
+    request.send(null);
+  }
   function loadUrl(url, fallback) {
     var request = new XMLHttpRequest();
     request.open('GET', url, true);
@@ -181,6 +224,13 @@ button:hover,.action:hover{border-color:#f4d69c}
           var result = JSON.parse(request.responseText);
           var records = Object.prototype.toString.call(result) === '[object Array]' ? result : (result.podcasts || result.data || result.items || []);
           if (Object.prototype.toString.call(records) === '[object Array]' && records.length) {
+            if (url.indexOf('nightcast-api.tomasgermany2580.workers.dev') >= 0) {
+              var total = parseInt(result.total, 10) || parseInt(result.pagination && result.pagination.total, 10) || 0;
+              if (total > records.length) {
+                loadAdditionalPages(2, total, records);
+                return;
+              }
+            }
             data = records;
             status.innerHTML = 'آرشیو پادکست‌ها آماده است.';
             render();
@@ -216,7 +266,7 @@ button:hover,.action:hover{border-color:#f4d69c}
   search.oninput = render;
   var match = /(?:\?|&)section=(about|contact)(?:&|$)/.exec(window.location.search);
   setSection(match ? match[1] : 'podcasts');
-  loadUrl('https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=50', '/users/data/podcasts.json');
+  loadUrl('https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=5', '/users/data/podcasts.json');
 })();
 </script>
 </body>

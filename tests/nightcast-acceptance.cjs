@@ -262,7 +262,8 @@ function silentWavDataUri() {
       const samplePodcastId = staticFallback.podcasts?.find(podcast => podcast?.status === 'active')?.id;
       const readOnlyEndpoints = [
         { name: '2.1. Public podcast stats API responds successfully', url: 'https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts/stats', shape: payload => payload?.stats && typeof payload.stats === 'object' },
-        { name: '2.2. Public podcast comments API responds successfully', url: 'https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts/' + encodeURIComponent(samplePodcastId) + '/comments', shape: payload => Array.isArray(payload?.comments) }
+        { name: '2.2. Public podcast comments API responds successfully', url: 'https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts/' + encodeURIComponent(samplePodcastId) + '/comments', shape: payload => Array.isArray(payload?.comments) },
+        { name: '2.3. Public podcast search API responds successfully', url: 'https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts/search?q=' + encodeURIComponent('\u067e\u0646\u062c\u0645\u06cc\u0646'), shape: payload => Array.isArray(payload?.podcasts) && payload.podcasts.length > 0 }
       ];
       for (const endpoint of readOnlyEndpoints) {
         try {

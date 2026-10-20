@@ -76,3 +76,18 @@
  .profile-stats{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 @media(prefers-reduced-motion:reduce){.nc-theme-launcher,.nc-theme-ribbon,.nc-theme-ribbon-scrim,.nc-theme-ribbon-option,.nc-avatar-option{transition:none!important;animation:none!important}}
+
+
+/* Moonlight/Mahtab: the contact-page intro panel must match the light surfaces. */
+:root[data-theme="moonlight"] #contact .nc-contact-hero{
+  background:linear-gradient(145deg,#ffffff 0%,#fbfcff 68%,#f7f9fd 100%)!important;
+  background-image:none!important;
+  border:1px solid rgba(100,116,139,.16)!important;
+  box-shadow:0 12px 32px rgba(30,41,59,.055),inset 0 1px 0 rgba(255,255,255,.95)!important;
+  color:#242b3a!important;
+}
+:root[data-theme="moonlight"] #contact .nc-contact-hero h1,
+:root[data-theme="moonlight"] #contact .nc-contact-hero h2,
+:root[data-theme="moonlight"] #contact .nc-contact-hero strong{color:#242b3a!important}
+:root[data-theme="moonlight"] #contact .nc-contact-hero p{color:#596579!important}
+:root[data-theme="moonlight"] #contact .nc-contact-hero .nc-section-eyebrow{color:#64748b!important}

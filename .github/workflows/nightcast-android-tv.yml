@@ -46,6 +46,11 @@ jobs:
       - name: Test clean About and Contact navigation in a TV viewport
         run: node tests/nightcast-tv-navigation.cjs
 
+      - name: Smoke-test live site at TV, desktop, tablet and mobile viewports
+        env:
+          NIGHTCAST_BASE_URL: https://nightcast.ir
+        run: node tests/nightcast-android-tv.cjs
+
       - name: Verify published routes in Chromium and smoke-test live podcast API
         env:
           NIGHTCAST_BASE_URL: https://nightcast.ir

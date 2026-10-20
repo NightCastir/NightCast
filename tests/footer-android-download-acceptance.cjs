@@ -25,7 +25,19 @@ const server = http.createServer((req, res) => {
 (async () => {
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const css = fs.readFileSync(path.join(root, 'css/nightcast-themes.css'), 'utf8');
-  check('homepage has a labelled Android download feature in footer', /<section class="nc-footer-download"[^>]*aria-labelledby="ncFooterDownloadTitle"/.test(html));
+  const platformCss = fs.readFileSync(path.join(root, 'css/nightcast-platform-download.css'), 'utf8');
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'utf8'));
+  const serviceWorker = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
+  const pwaScript = fs.readFileSync(path.join(root, 'js/nightcast-pwa.js'), 'utf8');
+  check('homepage has an accessible platform-download panel in footer', /<section class="nc-footer-download"[^>]*aria-labelledby="ncFooterDownloadTitle"/.test(html));
+  check('legacy promotional heading and paragraph above the platform choices are removed', !html.includes('nc-footer-download-copy') && !html.includes('NIGHTCAST FOR ANDROID'));
+  check('Android and iOS are separated into labelled sections with their platform icons', html.includes('nc-platform-android') && html.includes('nc-platform-ios') && /fa-brands fa-android/.test(html) && /fa-brands fa-apple/.test(html));
+  check('iOS action is an install/use button, not a fake IPA download link', /id="ncIosPwaButton"/.test(html) && !/href="[^"]+\.ipa"/i.test(html));
+  check('PWA manifest is valid and configured for a Persian standalone RTL app', manifest.start_url === '/' && manifest.scope === '/' && manifest.display === 'standalone' && manifest.lang === 'fa-IR' && manifest.dir === 'rtl' && manifest.icons.some(icon => icon.sizes === '192x192') && manifest.icons.some(icon => icon.sizes === '512x512'));
+  check('homepage includes manifest and iOS Home Screen metadata', html.includes('href="/manifest.json"') && html.includes('apple-mobile-web-app-capable') && html.includes('apple-touch-icon'));
+  check('root service worker avoids API/auth/audio caching and supports offline navigation', serviceWorker.includes("/api|auth|users|login|downloadrelease") && serviceWorker.includes('request.mode === \'navigate\'') && serviceWorker.includes('Offline asset unavailable'));
+  check('PWA script registers root scope and provides iOS Add to Home Screen guidance', pwaScript.includes("register('/sw.js', { scope: '/' })") && pwaScript.includes('Add to Home Screen') && pwaScript.includes('navigator.standalone'));
+  check('platform selector has responsive layout, keyboard focus and reduced-motion rules', platformCss.includes('.nc-platform-download-grid') && platformCss.includes('@media(max-width:760px)') && platformCss.includes(':focus-visible') && platformCss.includes('prefers-reduced-motion:reduce'));
   check('direct APK button points to official NightCast download endpoint', /href="https:\/\/www\.nightcast\.ir\/downloadrelease\/NightCast\.apk"[\s\S]{0,120}download="NightCast\.apk"/.test(html));
   check('Cafe Bazaar button uses official Cafe Bazaar domain and safe new-tab attributes', /href="https:\/\/cafebazaar\.ir\/app\/ir\.nightcast\.app"[\s\S]{0,120}target="_blank" rel="noopener noreferrer"/.test(html));
   check('Android and store icons are present', /fa-brands fa-android/.test(html) && /fa-solid fa-store/.test(html));
@@ -52,7 +64,7 @@ const server = http.createServer((req, res) => {
       const panel = page.locator('.nc-footer-download');
       await panel.scrollIntoViewIfNeeded({ timeout: 15000 });
       check(viewport.name + ': download panel is visible', await panel.isVisible());
-      check(viewport.name + ': both download choices are visible', await page.locator('.nc-footer-download-button').count() === 2 && await page.locator('.nc-footer-download-button').nth(0).isVisible() && await page.locator('.nc-footer-download-button').nth(1).isVisible());
+      check(viewport.name + ': both download choices are visible', await page.locator('.nc-footer-download-actions .nc-footer-download-button').count() === 2 && await page.locator('.nc-footer-download-actions .nc-footer-download-button').nth(0).isVisible() && await page.locator('.nc-footer-download-actions .nc-footer-download-button').nth(1).isVisible() && await page.locator('#ncIosPwaButton').isVisible());
       const directButton = page.locator('.nc-footer-download-direct');
       const colorOf = async state => directButton.evaluate((el, state) => {
         const style = getComputedStyle(el);
@@ -76,7 +88,7 @@ const server = http.createServer((req, res) => {
       await page.mouse.up();
       const layout = await page.evaluate(() => {
         const panel = document.querySelector('.nc-footer-download');
-        const buttons = Array.from(document.querySelectorAll('.nc-footer-download-button'));
+        const buttons = Array.from(document.querySelectorAll('.nc-footer-download-actions .nc-footer-download-button'));
         const rect = panel.getBoundingClientRect();
         const buttonRects = buttons.map(button => button.getBoundingClientRect());
         const style = getComputedStyle(panel);
@@ -140,6 +152,19 @@ const server = http.createServer((req, res) => {
       }
       await page.close();
     }
+    // iOS user-agent simulation verifies the CTA opens real installation guidance rather than a dead download.
+    const iosPage = await browser.newPage({
+      viewport: { width: 390, height: 844 },
+      userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+      reducedMotion: 'reduce'
+    });
+    await iosPage.goto('http://127.0.0.1:4173/', { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await iosPage.locator('#ncIosPwaButton').click();
+    check('iOS CTA opens an accessible install guide', await iosPage.locator('#ncPwaInstallDialog').isVisible() && await iosPage.locator('#ncPwaInstallDialog').getAttribute('aria-hidden') === 'false');
+    check('iOS install guide explains Safari share and Add to Home Screen', (await iosPage.locator('#ncPwaInstallContent').innerText()).includes('Safari') && (await iosPage.locator('#ncPwaInstallContent').innerText()).includes('Add to Home Screen'));
+    await iosPage.locator('[data-pwa-close]').last().click();
+    check('iOS install guide closes and returns focus to its trigger', await iosPage.locator('#ncPwaInstallDialog').isHidden() && await iosPage.locator('#ncIosPwaButton').evaluate(el => document.activeElement === el));
+    await iosPage.close();
   } catch (error) {
     failures.push(error.stack || error.message);
   } finally {

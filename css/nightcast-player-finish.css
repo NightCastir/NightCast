@@ -132,3 +132,97 @@ body.player-open{--nc-player-visible:1}
  .player .nc-visualizer-status{font-size:.56rem}
 }
 @media(prefers-reduced-motion:reduce){.player .nc-audio-visualizer-wrap{scroll-behavior:auto}}
+
+
+/* Dual synchronized frequency visualizers flank the transport buttons. */
+.player-inner{
+  grid-template-columns:minmax(0,1fr) auto!important;
+  grid-template-areas:"track controls" "progress progress"!important;
+}
+.player .controls{
+  grid-area:controls;
+  display:flex!important;
+  align-items:center;
+  justify-content:center;
+  flex-wrap:nowrap;
+  gap:clamp(5px,.65vw,9px)!important;
+  min-width:0;
+}
+.player .controls .nc-audio-visualizer-wrap{
+  display:flex!important;
+  position:relative;
+  flex:0 0 38px;
+  width:38px!important;
+  min-width:38px!important;
+  max-width:38px!important;
+  height:34px;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden;
+  border:1px solid rgba(130,198,255,.19);
+  border-radius:10px;
+  align-items:center;
+  justify-content:center;
+  gap:0;
+}
+.player .controls .nc-audio-visualizer-wrap--previous .nc-audio-visualizer{
+  transform:scaleX(-1);
+  transform-origin:center;
+}
+.player .controls .nc-audio-visualizer{
+  display:block!important;
+  width:34px!important;
+  height:30px!important;
+  max-width:none!important;
+  flex:0 0 34px!important;
+}
+.player .controls .nc-visualizer-status{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  padding:0!important;
+  margin:-1px!important;
+  overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;
+  white-space:nowrap!important;
+  border:0!important;
+}
+@media(max-width:900px){
+  .player-inner{
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-areas:"track" "controls" "progress"!important;
+    gap:10px!important;
+  }
+  .player .controls{
+    width:100%;
+    gap:clamp(5px,1.6vw,10px)!important;
+    padding-block:0!important;
+  }
+  .player .controls .nc-audio-visualizer-wrap{
+    flex-basis:34px;
+    width:34px!important;
+    min-width:34px!important;
+    max-width:34px!important;
+    height:32px;
+  }
+  .player .controls .nc-audio-visualizer{
+    width:30px!important;
+    height:28px!important;
+    flex-basis:30px!important;
+  }
+}
+@media(max-width:380px){
+  .player .controls{gap:4px!important}
+  .player .controls .nc-audio-visualizer-wrap{
+    flex-basis:28px;
+    width:28px!important;
+    min-width:28px!important;
+    max-width:28px!important;
+    height:29px;
+  }
+  .player .controls .nc-audio-visualizer{
+    width:25px!important;
+    height:25px!important;
+    flex-basis:25px!important;
+  }
+}

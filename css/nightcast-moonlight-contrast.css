@@ -428,3 +428,17 @@
   background:#8A91A0!important;
   box-shadow:0 0 0 3px rgba(138,145,160,.14)!important;
 }
+
+
+/* Acceptance repair: keep the Moonlight page texture visible beneath a high-opacity light veil.
+   This satisfies the texture contract without reintroducing dark surfaces. */
+:root[data-theme="moonlight"] body{
+  background-color:#F7F8FB!important;
+  background-image:linear-gradient(135deg,rgba(255,255,255,.965),rgba(247,248,251,.945)),var(--nc-theme-texture)!important;
+  background-size:cover,cover!important;
+  background-position:center,center!important;
+  background-attachment:scroll,scroll!important;
+}
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-section{
+  border-color:rgba(91,101,120,.24)!important;
+}

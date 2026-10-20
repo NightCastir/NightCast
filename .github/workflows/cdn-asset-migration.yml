@@ -17,7 +17,7 @@ jobs:
   migrate:
     name: Download, localize, validate and commit static assets
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 31
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -31,7 +31,7 @@ jobs:
         run: node --check scripts/migrate-cdn-assets.cjs
       - name: Install browser acceptance dependencies
         run: |
-          npm install --no-save playwright
+          npm install --no-save playwright yaml lightningcss
           npx playwright install --with-deps chromium
       - name: Download and localize static CDN assets
         run: node scripts/migrate-cdn-assets.cjs

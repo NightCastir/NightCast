@@ -197,6 +197,10 @@
 
                 renderedCount: 0,
 
+                page: 1,
+
+                pageSize: 6,
+
                 current: null,
 
                 query: "",
@@ -1637,8 +1641,7 @@ LOGOUT
             ========================================================= */
 
             function applyView(options = {}) {
-                // Keep the input as the source of truth so a pending debounced search
-                // cannot leave a stale filter after the clear action.
+                // Search is the source of truth even when its debounce has not fired yet.
                 state.query = els.search ? els.search.value.trim() : state.query;
                 const q = state.query.toLocaleLowerCase("fa");
                 const nextVisible = q
@@ -1648,26 +1651,72 @@ LOGOUT
                     ].filter(Boolean).join(" ").toLocaleLowerCase("fa").includes(q))
                     : state.all;
 
+                state.visible = nextVisible;
+                const pageCount = Math.max(1, Math.ceil(nextVisible.length / state.pageSize));
+                state.page = Math.min(Math.max(1, Number(state.page) || 1), pageCount);
+                const start = (state.page - 1) * state.pageSize;
+                const pageItems = nextVisible.slice(start, start + state.pageSize);
+
                 const existingIds = Array.from(els.grid.querySelectorAll(".podcast-card"))
                     .map(card => String(card.dataset.id || ""));
-                const expectedIds = nextVisible.map(p => String(p.id));
+                const expectedIds = pageItems.map(p => String(p.id));
                 const canKeepDom = options.preserveExisting === true &&
                     existingIds.length === expectedIds.length &&
                     existingIds.length > 0 &&
                     existingIds.every((id, index) => id === expectedIds[index]);
 
-                state.visible = nextVisible;
-                if (canKeepDom) {
-                    state.renderedCount = existingIds.length;
-                    updateStats();
+                if (!canKeepDom) render(pageItems);
+                state.renderedCount = pageItems.length;
+                renderPagination(nextVisible.length);
+                updateStats();
+            }
+
+            function renderPagination(totalItems) {
+                let nav = document.getElementById("ncPodcastPagination");
+                if (!nav) {
+                    nav = document.createElement("nav");
+                    nav.id = "ncPodcastPagination";
+                    nav.className = "nc-podcast-pagination";
+                    nav.setAttribute("aria-label", "صفحه‌بندی پادکست‌ها");
+                    nav.setAttribute("dir", "rtl");
+                    els.grid.insertAdjacentElement("afterend", nav);
+                }
+
+                const totalPages = Math.max(1, Math.ceil(totalItems / state.pageSize));
+                if (totalItems <= state.pageSize) {
+                    nav.hidden = true;
+                    nav.replaceChildren();
                     return;
                 }
 
-                // Commit the entire filtered catalogue at once. Scrolling never adds,
-                // removes, or replaces cards; only an explicit search changes the list.
-                render(state.visible);
-                state.renderedCount = state.visible.length;
-                updateStats();
+                nav.hidden = false;
+                const makeButton = (label, page, options = {}) => {
+                    const active = page === state.page && !options.disabled;
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = "nc-page-btn" + (active ? " is-active" : "") +
+                        (options.kind ? " nc-page-" + options.kind : "");
+                    button.dataset.page = String(page);
+                    button.disabled = Boolean(options.disabled);
+                    button.setAttribute("aria-label", options.ariaLabel || label);
+                    if (active) button.setAttribute("aria-current", "page");
+                    button.textContent = label;
+                    return button;
+                };
+
+                const fragment = document.createDocumentFragment();
+                fragment.appendChild(makeButton("‹", Math.max(1, state.page - 1), {
+                    kind: "edge", disabled: state.page === 1, ariaLabel: "صفحه قبلی"
+                }));
+                for (let page = 1; page <= totalPages; page += 1) {
+                    fragment.appendChild(makeButton(page.toLocaleString("fa-IR"), page, {
+                        ariaLabel: "صفحه " + page.toLocaleString("fa-IR")
+                    }));
+                }
+                fragment.appendChild(makeButton("›", Math.min(totalPages, state.page + 1), {
+                    kind: "edge", disabled: state.page === totalPages, ariaLabel: "صفحه بعدی"
+                }));
+                nav.replaceChildren(fragment);
             }
 
 

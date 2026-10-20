@@ -210,7 +210,7 @@ async function main() {
     'const placeholder = "/assets/icons/icon-512.png";\n            const localizeCover = value => {\n                const raw = String(value || "");\n                try {\n                    const url = new URL(raw, window.location.href);\n                    if (url.hostname === "raw.githubusercontent.com" && url.pathname.startsWith("/NightCastir/NightCast-Media/main/covers/")) {\n                        const filename = decodeURIComponent(url.pathname.split("/").pop());\n                        if (/^[A-Za-z0-9._-]+$/.test(filename)) return "/assets/podcasts/covers/" + filename;\n                    }\n                } catch (_) {}\n                return raw;\n            };');
   app=app.replaceAll('String(podcast.cover_url || placeholder)','(localizeCover(podcast.cover_url) || placeholder)');
   app=app.replaceAll('String(p.cover_url || placeholder)','(localizeCover(p.cover_url) || placeholder)');
-  app=app.replaceAll('p.cover_url || placeholder','localizeCover(p.cover_url) || placeholder');
+  app=app.replace(/p\.cover_url\s*\|\|\s*placeholder/g,'localizeCover(p.cover_url) || placeholder');
   app=app.replaceAll('state.current.cover_url ||','localizeCover(state.current.cover_url) ||');
   app=app.replaceAll('String(p.cover_url || "https://nightcast.ir/logo.png")','(localizeCover(p.cover_url) || placeholder)');
   if(app.includes('https://placehold.co/600x600/11233A/E9BE70')) throw new Error('Remote placeholder image remains in canonical app');
@@ -241,7 +241,7 @@ async function main() {
 `;
   acceptance=acceptance.slice(0,start)+localIconChecks+acceptance.slice(end);
   acceptance=acceptance.replace("report('0.5. Font Awesome fallback loads only if the primary CDN fails'","report('0.5. Font Awesome uses self-hosted assets without CDN fallback'");
-  acceptance=acceptance.replace(/const leafLetRequests = resources\.filter\(item => \/unpkg\\\.com\\\/leaflet\\\//, "const leafLetRequests = resources.filter(item => /assets\\/vendor\\/leaflet\\//");
+  acceptance=acceptance.replace(/const leafLetRequests = resources\.filter\(item => .*?;\n/, "const leafLetRequests = resources.filter(item => /assets\/vendor\/leaflet\//i.test(item.name));\n");
   acceptance=acceptance.replace('iconCdnFallback: !!document.querySelector(\'link[href*="fontawesome-free@6.7.2"]\'),','localIconStylesheet: !!document.querySelector(\'link[href*="/assets/vendor/fontawesome/css/all.min.css"]\'),');
   acceptance=acceptance.replace('headerState.iconFontLoaded && headerState.iconCdnFallback &&','headerState.iconFontLoaded && headerState.localIconStylesheet &&');
   write('tests/nightcast-acceptance.cjs',acceptance);

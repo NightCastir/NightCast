@@ -21,7 +21,7 @@ const assert = require('node:assert/strict');
       check(`${viewport.label}: document uses RTL layout`, await page.locator('html').getAttribute('dir') === 'rtl');
       check(`${viewport.label}: ribbon starts closed and inaccessible`, await panel.getAttribute('aria-hidden') === 'true' && await panel.evaluate(el => el.inert));
       check(`${viewport.label}: closed ribbon is visually hidden`, await panel.evaluate(el => getComputedStyle(el).visibility === 'hidden' && getComputedStyle(el).pointerEvents === 'none'));
-      check(`${viewport.label}: closed ribbon thumbnails cannot be interacted with`, await panel.locator('.nc-theme-ribbon-option').evaluate(el => getComputedStyle(el).pointerEvents === 'none'));
+      check(`${viewport.label}: closed ribbon thumbnails cannot be interacted with`, await panel.locator('.nc-theme-ribbon-option').evaluateAll(els => els.length === 8 && els.every(el => getComputedStyle(el).pointerEvents === 'none')));
       
       await page.locator('#ncThemeLauncher').click();
       check(`${viewport.label}: ribbon opens`, await panel.evaluate(el => el.classList.contains('is-open') && getComputedStyle(el).visibility === 'visible' && getComputedStyle(el).pointerEvents !== 'none'));

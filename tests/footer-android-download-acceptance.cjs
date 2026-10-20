@@ -42,7 +42,7 @@ const server = http.createServer((req, res) => {
   check('Cafe Bazaar button uses official Cafe Bazaar domain and safe new-tab attributes', /href="https:\/\/cafebazaar\.ir\/app\/ir\.nightcast\.app"[\s\S]{0,120}target="_blank" rel="noopener noreferrer"/.test(html));
   check('Android and store icons are present', /fa-brands fa-android/.test(html) && /fa-solid fa-store/.test(html));
     check('theme stylesheet cache version is bumped', /nightcast-themes\.css\?v=19/.test(html));
-    check('Moonlight contrast stylesheet cache version is bumped', html.includes('nightcast-moonlight-contrast.css?v=13'));
+    check('Moonlight contrast stylesheet cache version is bumped', html.includes('nightcast-moonlight-contrast.css?v=14'));
   check('global footer gap fix is cache-busted and includes mobile footer behavior', /nightcast-global-polish\.css\?v=4/.test(html) && /nc-footer-viewport-behavior/.test(html));
   check('now-playing overlay is forced to fixed positioning so it cannot extend document flow', /#ncNowPlaying\.nc-now-playing\s*\{[^}]*position:\s*fixed\s*!important;[^}]*inset:\s*0\s*!important;/s.test(fs.readFileSync(path.join(root, 'css/nightcast-global-polish.css'), 'utf8')));
   check('footer spacing override removes oversized mobile bottom padding', /padding-bottom: max\(10px, env\(safe-area-inset-bottom\)\) !important/.test(fs.readFileSync(path.join(root, 'css/nightcast-global-polish.css'), 'utf8')));

@@ -6,7 +6,7 @@ on:
     paths:
       - 'tests/nightcast-tv-full-experience.cjs'
       - '.github/workflows/nightcast-tv-full-experience.yml'
-      - 'index.html'
+      - 'index.html'\n      - 'tv-lite.html'\n      - 'tests/nightcast-tv-legacy-edition.cjs'
       - 'css/**'
       - 'js/**'
       - 'users/data/podcasts.json'
@@ -57,6 +57,6 @@ jobs:
             echo "## NightCast Full TV Experience Acceptance"
             echo ""
             echo "- Tests the published full homepage at 1920x1080, desktop, tablet and mobile widths."
-            echo "- Verifies live catalogue API count, podcast cards, full player controls, keyboard/remote focus, mobile navigation, no horizontal overflow and no tv-lite redirect."
+            echo "- Verifies the legacy-compatible TV edition, equal-height podcast cards, live catalogue, audio player, section navigation, responsive layouts, plus the full modern site."
             echo "- This automated browser test is not a substitute for checking the specific physical TV/browser model."
           } >> "$GITHUB_STEP_SUMMARY"

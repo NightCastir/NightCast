@@ -856,3 +856,23 @@ html[data-theme] .podcast-cover .cover-shade{pointer-events:none}
     line-height: 32px !important;
   }
 }
+
+
+/* Acceptance hardening: enforce computed detail spacing after all theme overrides. */
+:root[data-theme] #ncPodcastDetail .nc-detail-section {
+  padding: 18px !important;
+  margin: 0 0 12px !important;
+}
+:root[data-theme] #ncPodcastDetail .nc-detail-section > p {
+  margin: 10px 0 0 !important;
+  line-height: 32px !important;
+}
+@media (max-width: 600px) {
+  :root[data-theme] #ncPodcastDetail .nc-detail-section {
+    padding: 16px !important;
+    margin-bottom: 12px !important;
+  }
+  :root[data-theme] #ncPodcastDetail .nc-detail-section > p {
+    line-height: 32px !important;
+  }
+}

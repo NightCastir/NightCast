@@ -17,7 +17,7 @@ jobs:
   migrate:
     name: Download, localize, validate and commit static assets
     runs-on: ubuntu-latest
-    timeout-minutes: 29
+    timeout-minutes: 30
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -41,6 +41,9 @@ jobs:
         run: |
           set -e
           find . -path './.git' -prune -o -path './node_modules' -prune -o -name '*.js' -type f -print0 | xargs -0 -n1 node --check
+          node --check tests/nightcast-acceptance.cjs
+          node --check tests/theme-system-acceptance.cjs
+          node --check tests/cdn-asset-audit.cjs
           node - <<'NODE'
           const fs = require('node:fs');
           for (const file of ['users/data/podcasts.json','package.json','manifest.json','version.json']) {

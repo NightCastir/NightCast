@@ -14,7 +14,7 @@ const assert = require('node:assert/strict');
     page.on('pageerror', error => { if (/nightcast-theme(?:-experience)?\.js|NightCast Theme System/i.test(error.stack || error.message)) failures.push('theme controller browser error: ' + error.message); });
     const response = await page.goto('http://127.0.0.1:4173/', { waitUntil: 'domcontentloaded', timeout: 30000 });
     check('homepage loads successfully', !!response && response.ok());
-    check('theme stylesheet is requested', (await page.request.get('http://127.0.0.1:4173/css/nightcast-themes.css?v=7')).ok());
+    check('theme stylesheet is requested', (await page.request.get('http://127.0.0.1:4173/css/nightcast-themes.css?v=8')).ok());
     check('theme controller is requested', (await page.request.get('http://127.0.0.1:4173/js/nightcast-theme.js?v=2')).ok());
 
     await page.waitForFunction(() => !!window.NightCastThemes, null, { timeout: 10000 });
@@ -154,6 +154,49 @@ const assert = require('node:assert/strict');
       }
     }
     check('podcast card appearance changes across theme palettes', observedCardSurfaces.size >= 7);
+    await page.evaluate(() => window.NightCastThemes.apply('moonlight', false));
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.evaluate(() => {
+      const modal = document.getElementById('ncPodcastDetail');
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.getElementById('ncPodcastDetailBody').innerHTML =
+        '<div class="nc-detail-hero"><img class="nc-detail-cover" src="/logo.png" alt=""><div class="nc-detail-heading"><h2 id="ncPodcastDetailTitle">آزمون خوانایی</h2><p class="nc-detail-author">NightCast</p></div></div><section class="nc-detail-section"><h3>معرفی کوتاه</h3><p id="ncDetailReadableSample">متن آزمایشی برای بررسی کنتراست و فاصله‌گذاری پنل جزئیات پادکست.</p></section>';
+    });
+    check('Moonlight podcast details body uses readable charcoal text',
+      await page.locator('#ncDetailReadableSample').evaluate(el => getComputedStyle(el).color === 'rgb(69, 77, 93)'));
+    check('Moonlight podcast details sections use soft neutral borders',
+      await page.locator('#ncPodcastDetail .nc-detail-section').first().evaluate(el => {
+        const color = getComputedStyle(el).borderTopColor;
+        return color === 'rgba(91, 101, 120, 0.24)' || color === 'rgba(91, 101, 120, 0.22)';
+      }));
+    check('podcast details section has intentional padding and spacing',
+      await page.locator('#ncPodcastDetail .nc-detail-section').first().evaluate(el =>
+        parseFloat(getComputedStyle(el).paddingTop) >= 14 &&
+        parseFloat(getComputedStyle(el).marginBottom) >= 10 &&
+        parseFloat(getComputedStyle(el.querySelector('p')).lineHeight) >= 30));
+    await page.evaluate(() => {
+      const player = document.getElementById('playerBar');
+      const audio = document.getElementById('audioPlayer');
+      window.__ncSwipePaused = false;
+      audio.pause = () => { window.__ncSwipePaused = true; };
+      player.classList.add('show');
+      player.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('player-open');
+      const target = player.querySelector('.player-inner');
+      const make = (type, x) => new PointerEvent(type, {
+        bubbles: true, pointerId: 7, pointerType: 'touch', isPrimary: true,
+        clientX: x, clientY: 300
+      });
+      target.dispatchEvent(make('pointerdown', 20));
+      target.dispatchEvent(make('pointermove', 155));
+      target.dispatchEvent(make('pointerup', 155));
+    });
+    check('mobile right-swipe pauses and dismisses the mini player',
+      await page.evaluate(() => window.__ncSwipePaused &&
+        !document.getElementById('playerBar').classList.contains('show') &&
+        document.getElementById('playerBar').getAttribute('aria-hidden') === 'true' &&
+        !document.body.classList.contains('player-open')));
     await page.evaluate(() => window.NightCastThemes.apply('aurora', false));
 
     const loginResponse = await page.goto('http://127.0.0.1:4173/users/login.html', { waitUntil: 'domcontentloaded', timeout: 30000 });

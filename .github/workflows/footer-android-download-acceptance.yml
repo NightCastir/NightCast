@@ -11,6 +11,10 @@ on:
     paths:
       - "index.html"
       - "css/nightcast-themes.css"
+      - "css/nightcast-platform-download.css"
+      - "js/nightcast-pwa.js"
+      - "manifest.json"
+      - "sw.js"
       - "tests/footer-android-download-acceptance.cjs"
       - "tests/footer-android-live-links.cjs"
       - "tests/footer-android-live-site.cjs"

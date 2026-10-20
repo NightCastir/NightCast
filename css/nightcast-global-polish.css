@@ -45,3 +45,10 @@ img,video,iframe{height:auto}
     pointer-events: none !important;
   }
 }
+
+
+/* The now-playing overlay must never participate in document flow: when its fixed positioning is overridden, its ~800px panel creates the exact blank strip reported below the footer. */
+#ncNowPlaying.nc-now-playing {
+  position: fixed !important;
+  inset: 0 !important;
+}

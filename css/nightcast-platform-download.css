@@ -1,7 +1,9 @@
 /* NightCast platform selector: Android downloads + iOS installable web app. */
-.nc-footer .nc-footer-download{
+.nc-footer-download{
   display:block;
   grid-template-columns:minmax(0,1fr);
+  width:min(1200px,calc(100% - 32px));
+  margin:0 auto clamp(24px,4vw,42px);
   padding:clamp(16px,2.6vw,28px);
 }
 .nc-sr-only{
@@ -113,7 +115,10 @@
 .nc-drawer-platform-ios{color:#007AFF}
 .nc-drawer-platform:is(:hover,:focus-visible){background:rgba(255,255,255,.075);box-shadow:inset 0 0 0 1px currentColor;outline:none}
 .nc-drawer-platform-hint{position:absolute;z-index:30;inset-block-end:calc(100% + 9px);inset-inline-start:50%;transform:translate(-50%,4px);width:max-content;max-width:190px;padding:7px 10px;border:1px solid rgba(167,176,192,.38);border-radius:9px;background:#080D1A;color:#fff;font-size:.73rem;font-weight:700;line-height:1.4;white-space:nowrap;opacity:0;visibility:hidden;pointer-events:none;box-shadow:0 8px 22px rgba(0,0,0,.28);transition:opacity .15s ease,transform .15s ease}
-.nc-drawer-platform:is(:hover,:focus-visible) .nc-drawer-platform-hint{opacity:1;visibility:visible;transform:translate(-50%,0)}
+.nc-drawer-platform:is(:hover,:focus-visible,:active) .nc-drawer-platform-hint{opacity:1;visibility:visible;transform:translate(-50%,0)}
+.nc-drawer-platform:focus-visible{outline:2px solid currentColor;outline-offset:-3px}
+.nc-drawer-platforms .nc-drawer-platform:nth-child(2){border-inline-start:1px solid rgba(167,176,192,.28)}
+.nc-drawer-platforms .nc-drawer-platform:is(:hover,:focus-visible){background:color-mix(in srgb,currentColor 10%,#080D1A);box-shadow:inset 0 0 0 1px currentColor}
 .nc-drawer-platform:active{filter:brightness(1.18)}
 @media(max-width:800px){.nc-drawer-platforms{display:grid}}
 @media(min-width:801px){.nc-drawer-platforms{display:none}}

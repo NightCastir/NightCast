@@ -1,0 +1,62 @@
+name: NightCast Full TV Experience Acceptance
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tests/nightcast-tv-full-experience.cjs'
+      - '.github/workflows/nightcast-tv-full-experience.yml'
+      - 'index.html'
+      - 'css/**'
+      - 'js/**'
+      - 'users/data/podcasts.json'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tests/nightcast-tv-full-experience.cjs'
+      - '.github/workflows/nightcast-tv-full-experience.yml'
+      - 'index.html'
+      - 'css/**'
+      - 'js/**'
+      - 'users/data/podcasts.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  full-experience:
+    name: TV, desktop, tablet, mobile and remote controls
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install browser test dependencies
+        run: npm install --no-save playwright
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Validate workflow YAML
+        run: go run github.com/rhysd/actionlint/cmd/actionlint@latest -color
+
+      - name: Test full live NightCast experience on TV and responsive layouts
+        run: node tests/nightcast-tv-full-experience.cjs
+
+      - name: Publish acceptance summary
+        if: always()
+        run: |
+          {
+            echo "## NightCast Full TV Experience Acceptance"
+            echo ""
+            echo "- Tests the published full homepage at 1920x1080, desktop, tablet and mobile widths."
+            echo "- Verifies live catalogue API count, podcast cards, full player controls, keyboard/remote focus, mobile navigation, no horizontal overflow and no tv-lite redirect."
+            echo "- This automated browser test is not a substitute for checking the specific physical TV/browser model."
+          } >> "$GITHUB_STEP_SUMMARY"

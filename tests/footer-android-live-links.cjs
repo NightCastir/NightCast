@@ -12,8 +12,11 @@ const targets = [
         signal: AbortSignal.timeout(25000),
         headers: target.method === 'GET' ? { 'user-agent': 'Mozilla/5.0 NightCastAcceptance/1.0' } : {}
       });
-      const ok = response.status >= 200 && response.status < 400;
-      console.log((ok ? 'PASS' : 'FAIL') + ' | ' + target.name + ' | HTTP ' + response.status + ' | ' + response.url);
+      const contentType = response.headers.get('content-type') || '';
+      const disposition = response.headers.get('content-disposition') || '';
+      let ok = response.status >= 200 && response.status < 400;
+      if (target.name === 'Direct APK download') ok = ok && !/text\/html/i.test(contentType) && (/android|apk|octet-stream/i.test(contentType) || /attachment/i.test(disposition));
+      console.log((ok ? 'PASS' : 'FAIL') + ' | ' + target.name + ' | HTTP ' + response.status + ' | type=' + contentType + ' | disposition=' + disposition + ' | ' + response.url);
       if (!ok) failed = true;
       if (response.body) await response.body.cancel().catch(() => {});
     } catch (error) {

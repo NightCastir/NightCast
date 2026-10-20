@@ -33,7 +33,7 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
 
-      - name: Wait for the live site deployment
+      - name: Confirm the live site is reachable
         run: |
           for attempt in $(seq 1 12); do
             status=$(curl -sS -o /dev/null -w '%{http_code}' https://nightcast.ir/ || true)

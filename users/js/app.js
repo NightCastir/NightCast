@@ -2475,13 +2475,13 @@ const App = {
 
                     navigator.serviceWorker
                     .register(
-                        "/service-worker.js"
+                        "/sw.js"
                     )
                     .then(()=>{
 
 
                         console.log(
-                            "PWA Ready ✔"
+                            "NightCast PWA ready"
                         );
 
 
@@ -2490,7 +2490,7 @@ const App = {
 
 
                         console.warn(
-                            "PWA Error:",
+                            "NightCast PWA registration error:",
                             error
                         );
 

@@ -226,3 +226,9 @@ body.player-open{--nc-player-visible:1}
     flex-basis:25px!important;
   }
 }
+
+/* Force transport order independent of inherited RTL direction: mirrored copy, Previous, Play, Next, main copy. */
+.player .controls{
+  flex-direction:row!important;
+  direction:ltr!important;
+}

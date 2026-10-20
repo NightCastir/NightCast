@@ -479,7 +479,8 @@ main#home .hero h1{max-width:100%;overflow-wrap:normal;word-break:normal}
   min-width: 0 !important;
   min-height: 0 !important;
   aspect-ratio: 1 / 1 !important;
-  align-self: stretch !important;
+  align-self: flex-start !important;
+  height: auto !important;
   overflow: hidden !important;
 }
 #podcasts .podcast-card > .podcast-cover > img,

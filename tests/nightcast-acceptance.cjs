@@ -214,6 +214,22 @@ function silentWavDataUri() {
       cleanRouteFailures.length === 0,
       cleanRouteFailures.join(' || ') || 'Navigation uses /, /about, and /contact; legacy fragments are migrated away');
 
+    // Activity 1.9: validate the committed static mirror used when D1 reaches its daily row-read limit.
+    try {
+      const fallbackSource = JSON.parse(fs.readFileSync('users/data/podcasts.json', 'utf8'));
+      const fallbackRecords = Array.isArray(fallbackSource.podcasts) ? fallbackSource.podcasts : [];
+      const activeFallbackRecords = fallbackRecords.filter(podcast => podcast && podcast.status === 'active');
+      const malformedFallbackRecords = activeFallbackRecords.filter(podcast =>
+        !podcast.id || !podcast.title || !podcast.slug || !podcast.audio_url || !podcast.cover_url
+      );
+      report('1.9. Static podcast fallback dataset is healthy',
+        fallbackSource.success === true && activeFallbackRecords.length > 0 && malformedFallbackRecords.length === 0,
+        'active=' + activeFallbackRecords.length + ', malformed=' + malformedFallbackRecords.length +
+        ', updated=' + (fallbackSource.updated_at || 'unknown'));
+    } catch (fallbackDataError) {
+      report('1.9. Static podcast fallback dataset is healthy', false, String(fallbackDataError.message || fallbackDataError));
+    }
+
     // Activity 2: validate the real public API and record its response latency.
     // Use curl for this external smoke test: Node 22's undici parser can throw
     // an uncaught internal assertion when the remote edge closes a streamed socket.

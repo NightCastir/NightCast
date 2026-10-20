@@ -1,0 +1,107 @@
+name: NightCast Android TV Compatibility
+
+on:
+  push:
+    branches:
+      - main
+      - test/android-tv-compatibility
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightcast-tv-compatibility-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tv-browser-simulation:
+    name: TV viewport, navigation and podcast rendering
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install browser-test dependencies
+        run: npm install --no-save playwright lightningcss yaml
+
+      - name: Install Chromium for simulated TV browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Validate workflow syntax
+        run: go run github.com/rhysd/actionlint/cmd/actionlint@latest -color
+
+      - name: Simulate TV, desktop, tablet and mobile browser layouts
+        run: node tests/nightcast-acceptance.cjs
+
+      - name: Smoke-test published clean routes and live podcast API
+        env:
+          NIGHTCAST_BASE_URL: https://nightcast.ir
+          NIGHTCAST_API_URL: https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=5
+        run: |
+          node <<'NODE'
+          const base = process.env.NIGHTCAST_BASE_URL;
+          const checks = [
+            { path: '/', marker: 'id="podcasts"', label: 'home/podcast archive' },
+            { path: '/about', marker: 'id="about"', label: 'About route' },
+            { path: '/contact', marker: 'id="contact"', label: 'Contact route' }
+          ];
+          (async () => {
+            let failed = false;
+            for (const check of checks) {
+              try {
+                const response = await fetch(new URL(check.path, base), { redirect: 'follow', signal: AbortSignal.timeout(15000) });
+                const html = await response.text();
+                const ok = response.status === 200 && html.includes(check.marker);
+                console.log(`${ok ? 'PASS' : 'FAIL'} | live ${check.label} | HTTP ${response.status} | marker=${html.includes(check.marker)} | final=${response.url}`);
+                if (!ok) failed = true;
+              } catch (error) {
+                console.log(`FAIL | live ${check.label} | ${error.message}`);
+                failed = true;
+              }
+            }
+            try {
+              const response = await fetch(process.env.NIGHTCAST_API_URL, { headers: { accept: 'application/json' }, signal: AbortSignal.timeout(15000) });
+              const payload = await response.json();
+              const records = Array.isArray(payload.podcasts) ? payload.podcasts : Array.isArray(payload.data) ? payload.data : [];
+              const ok = response.status === 200 && payload.success === true && records.length > 0;
+              console.log(`${ok ? 'PASS' : 'FAIL'} | live podcast API | HTTP ${response.status} | records=${records.length} | total=${payload.total ?? 'unknown'}`);
+              if (!ok) failed = true;
+            } catch (error) {
+              console.log(`FAIL | live podcast API | ${error.message}`);
+              failed = true;
+            }
+            if (failed) process.exit(1);
+          })();
+          NODE
+
+      - name: Upload responsive and TV screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightcast-android-tv-visual-audit-${{ github.run_number }}
+          path: artifacts/visual/*.png
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Publish TV compatibility summary
+        if: always()
+        run: |
+          {
+            echo "## NightCast Android TV compatibility"
+            echo ""
+            echo "- Chromium simulation includes a 1920×1080 TV viewport and mobile/tablet/desktop breakpoints."
+            echo "- The browser suite checks podcast rendering, runtime errors, horizontal overflow and responsive controls."
+            echo "- Published route and public podcast API checks are run separately against nightcast.ir."
+            echo "- This is a browser/viewport simulation, not a claim that a physical Android TV device was tested."
+          } >> "$GITHUB_STEP_SUMMARY"

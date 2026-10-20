@@ -18,7 +18,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: footer-android-download-\${{ github.ref }}
+  group: footer-android-download-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:

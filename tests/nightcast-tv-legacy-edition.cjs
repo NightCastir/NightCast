@@ -2,10 +2,12 @@
 
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
+const http = require('node:http');
+const path = require('node:path');
 const { chromium } = require('playwright');
 
-const SITE = 'https://nightcast.ir';
-const PAGE = SITE + '/tv-lite.html?nc_tv_acceptance=' + Date.now();
+const ROOT = process.cwd();
+const API = 'https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=1';
 const API = 'https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=1';
 
 async function main() {
@@ -25,12 +27,27 @@ async function main() {
   const total = apiData.total || (apiData.pagination && apiData.pagination.total) || (apiData.meta && apiData.meta.total) || rows.length;
   assert(Number(total) >= 20, 'Expected full catalogue, got ' + total);
 
+  const server = http.createServer(function (req, res) {
+    var pathname;
+    try { pathname = decodeURIComponent(new URL(req.url, 'http://127.0.0.1').pathname); } catch (e) { res.writeHead(400); res.end(); return; }
+    var filename = path.resolve(ROOT, '.' + pathname);
+    if (filename.indexOf(ROOT + path.sep) !== 0) { res.writeHead(403); res.end(); return; }
+    fs.readFile(filename, function (error, body) {
+      if (error) { res.writeHead(404); res.end('Not found'); return; }
+      var ext = path.extname(filename).toLowerCase();
+      var types = { '.html': 'text/html; charset=utf-8', '.json': 'application/json; charset=utf-8', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.svg': 'image/svg+xml', '.css': 'text/css; charset=utf-8', '.js': 'application/javascript; charset=utf-8' };
+      res.writeHead(200, { 'Content-Type': types[ext] || 'application/octet-stream', 'Cache-Control': 'no-store' });
+      res.end(body);
+    });
+  });
+  await new Promise(function (resolve, reject) { server.once('error', reject); server.listen(0, '127.0.0.1', resolve); });
+  const site = 'http://127.0.0.1:' + server.address().port;
   const browser = await chromium.launch({ headless: true });
   const errors = [];
   try {
     const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, reducedMotion: 'reduce' });
     page.on('pageerror', function (error) { errors.push(error.message); });
-    const response = await page.goto(PAGE, { waitUntil: 'domcontentloaded', timeout: 45000 });
+    const response = await page.goto(site + '/tv-lite.html?nc_tv_acceptance=' + Date.now(), { waitUntil: 'domcontentloaded', timeout: 45000 });
     assert(response && response.ok(), 'TV edition must return HTTP success');
     await page.waitForFunction(function () {
       var list = document.getElementById('podcast-list');
@@ -81,6 +98,7 @@ async function main() {
     console.log('PASS | responsive TV/desktop/tablet/mobile | ' + JSON.stringify(layouts));
   } finally {
     await browser.close();
+    await new Promise(function (resolve) { server.close(resolve); });
   }
 }
 

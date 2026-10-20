@@ -731,7 +731,11 @@ function silentWavDataUri() {
             infoTop: infoRect.top,
             coverTop: coverRect.top,
             infoLeft: infoRect.left,
-            coverLeft: coverRect.left
+            coverLeft: coverRect.left,
+            infoHeight: infoRect.height,
+            infoBottom: infoRect.bottom,
+            cardBottom: cardRect.bottom,
+            innerWidth: card.clientWidth
           };
         });
         if (coverLayout.missing) {
@@ -739,11 +743,12 @@ function silentWavDataUri() {
         } else {
           const square = Math.abs(coverLayout.ratio - 1) < 0.035;
           const rightAligned = Math.abs(coverLayout.cardRight - coverLayout.coverRight) < 3;
-          const correctFlow = size.width <= 900
-            ? coverLayout.coverTop < coverLayout.infoTop
-            : coverLayout.coverLeft > coverLayout.infoLeft;
-          if (!square || !rightAligned || !correctFlow) {
-            coverLayoutFailures.push(size.name + ': ' + JSON.stringify({ square, rightAligned, correctFlow, ...coverLayout }));
+          const correctFlow = coverLayout.coverTop < coverLayout.infoTop;
+          const fullWidth = Math.abs(coverLayout.width - coverLayout.innerWidth) < 3;
+          const detailsVisible = coverLayout.infoHeight > 0 && coverLayout.infoTop >= coverLayout.coverTop + coverLayout.height - 2 &&
+            coverLayout.infoBottom <= coverLayout.cardBottom + 2;
+          if (!square || !rightAligned || !correctFlow || !fullWidth || !detailsVisible) {
+            coverLayoutFailures.push(size.name + ': ' + JSON.stringify({ square, rightAligned, correctFlow, fullWidth, detailsVisible, ...coverLayout }));
           }
         }
         if (['mobile', 'tablet', 'desktop', 'TV'].includes(size.name)) {

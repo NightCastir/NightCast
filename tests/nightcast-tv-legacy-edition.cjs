@@ -10,6 +10,11 @@ const API = 'https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/po
 
 async function main() {
   const source = fs.readFileSync('tv-lite.html', 'utf8');
+  const homeSource = fs.readFileSync('index.html', 'utf8');
+  assert(homeSource.indexOf('NC_LEGACY_TV_FALLBACK') >= 0, 'Homepage must include conditional legacy Android TV detection');
+  const detectorStart = homeSource.indexOf('NC_LEGACY_TV_FALLBACK');
+  const detector = homeSource.slice(detectorStart, homeSource.indexOf('</script>', detectorStart));
+  assert(!/=>|\\?\\.|\\?\\?|\\b(?:const|let)\\s/.test(detector), 'Early TV detector must be parseable by legacy JavaScript engines');
   const scripts = Array.from(source.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)).map(function (m) { return m[1]; }).join('\n');
   assert(!/\?\.|\?\?|=>|\b(?:const|let)\s/.test(scripts), 'TV page inline JavaScript must stay ES5-compatible');
 

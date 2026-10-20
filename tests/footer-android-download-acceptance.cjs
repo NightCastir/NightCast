@@ -29,7 +29,7 @@ const server = http.createServer((req, res) => {
   check('direct APK button points to official NightCast download endpoint', /href="https:\/\/www\.nightcast\.ir\/downloadrelease\/NightCast\.apk"[\s\S]{0,120}download="NightCast\.apk"/.test(html));
   check('Cafe Bazaar button uses official Cafe Bazaar domain and safe new-tab attributes', /href="https:\/\/cafebazaar\.ir\/app\/ir\.nightcast\.app"[\s\S]{0,120}target="_blank" rel="noopener noreferrer"/.test(html));
   check('Android and store icons are present', /fa-brands fa-android/.test(html) && /fa-solid fa-store/.test(html));
-  check('theme stylesheet cache version is bumped', /nightcast-themes\.css\?v=10/.test(html));
+  check('theme stylesheet cache version is bumped', /nightcast-themes\.css\?v=11/.test(html));
   check('global footer gap fix is cache-busted and includes mobile footer behavior', /nightcast-global-polish\.css\?v=3/.test(html) && /nc-footer-viewport-behavior/.test(html));
   check('footer spacing override removes oversized mobile bottom padding', /padding-bottom: max\(10px, env\(safe-area-inset-bottom\)\) !important/.test(fs.readFileSync(path.join(root, 'css/nightcast-global-polish.css'), 'utf8')));
   check('cosmic CTA has responsive, focus-visible and reduced-motion styles', css.includes('.nc-footer-download::before') && css.includes('.nc-footer-download-button:focus-visible') && css.includes('@media(max-width:760px)') && css.includes('prefers-reduced-motion:reduce'));

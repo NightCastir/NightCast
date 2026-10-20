@@ -79,8 +79,11 @@ async function main() {
       await page.waitForTimeout(150);
       const expanded = await menu.getAttribute('aria-expanded');
       assert.equal(expanded, 'true', 'Mobile navigation button should open the full navigation drawer');
-      await menu.click();
-      await page.waitForTimeout(150);
+      const drawerClose = page.locator('#ncDrawerClose');
+      if (await drawerClose.isVisible()) await drawerClose.click();
+      else await page.keyboard.press('Escape');
+      await page.waitForTimeout(350);
+      assert.equal(await menu.getAttribute('aria-expanded'), 'false', 'Mobile navigation should close cleanly');
     }
 
     assert.deepEqual(errors, [], 'Uncaught JavaScript errors: ' + errors.join(' | '));

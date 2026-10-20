@@ -32,7 +32,7 @@ const files = walk(root);
 const refs = [];
 for (const file of files) {
   const rel = path.relative(root,file).split(path.sep).join('/');
-  const runtime = !/^(?:tests|docs|\.github)\//.test(rel) && !/^(?:README|CHANGELOG)/i.test(rel);
+  const runtime = ['.html','.htm','.css','.js','.mjs','.cjs','.json','.xml','.svg','.webmanifest'].includes(path.extname(rel).toLowerCase()) && !/^(?:tests|docs|\.github)\//.test(rel);
   let text;
   try { text = fs.readFileSync(file,'utf8'); } catch { continue; }
   const re = /https?:\/\/[^\s"'<>\x60]+/g;

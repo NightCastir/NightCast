@@ -1,0 +1,79 @@
+name: NightCast Static CDN Asset Migration
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/cdn-asset-migration.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nightcast-static-cdn-asset-migration
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    name: Download, localize, validate and commit static assets
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate migration script syntax
+        run: node --check scripts/migrate-cdn-assets.cjs
+      - name: Install browser acceptance dependencies
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Download and localize static CDN assets
+        run: node scripts/migrate-cdn-assets.cjs
+      - name: Verify no static CDN assets remain in runtime source
+        run: node tests/cdn-asset-audit.cjs --strict-assets
+      - name: Check JavaScript syntax and JSON data
+        run: |
+          set -e
+          find . -path './.git' -prune -o -path './node_modules' -prune -o -name '*.js' -type f -print0 | xargs -0 -n1 node --check
+          node - <<'NODE'
+          const fs = require('node:fs');
+          for (const file of ['users/data/podcasts.json','package.json','manifest.json','version.json']) {
+            if (fs.existsSync(file)) JSON.parse(fs.readFileSync(file,'utf8'));
+            console.log('PASS | valid JSON | ' + file);
+          }
+          NODE
+      - name: Start local static server
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/nightcast-migration-http.log 2>&1 &
+          for _ in $(seq 1 40); do
+            if curl --silent --fail http://127.0.0.1:4173/index.html >/dev/null; then exit 0; fi
+            sleep 0.25
+          done
+          cat /tmp/nightcast-migration-http.log
+          exit 1
+      - name: Verify theme behavior with local fonts and artwork
+        run: node tests/theme-system-acceptance.cjs
+      - name: Verify browser, API, responsive and player behavior
+        run: node tests/nightcast-acceptance.cjs
+      - name: Check patch whitespace and commit localized assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          git diff --check
+          git status --short
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -- assets index.html 404.html auth login users css/nightcast-themes.css js/nightcast-theme.js js/nightcast-theme-experience.js js/nightcast-cosmos.js js/nightcast-player.js js/nightcast-app.js tests/nightcast-acceptance.cjs tests/theme-system-acceptance.cjs
+          if git diff --cached --quiet; then
+            echo "No asset migration changes to commit."
+            exit 0
+          fi
+          git commit -m "Self-host static CDN assets across NightCast"
+          git push origin HEAD:main

@@ -66,12 +66,13 @@ async function get(url) {
     }
   }
   try {
-    const { response, body } = await get(API + '/podcasts');
+    const { response, body } = await get(API + '/public/podcasts?page=1&limit=1');
     let count = 'unknown';
     if (response.ok) {
       const data = JSON.parse(body);
       const records = Array.isArray(data) ? data : (data.data || data.podcasts || data.items || data.results || []);
-      count = 'records=' + (Array.isArray(records) ? records.length : 'unknown');
+      const total = data.total ?? data.pagination?.total ?? data.meta?.total ?? (Array.isArray(records) ? records.length : 'unknown');
+      count = 'pageRecords=' + (Array.isArray(records) ? records.length : 'unknown') + ', total=' + total;
     }
     add('Live podcast API reachable', response.ok, 'HTTP ' + response.status + ', ' + count);
   } catch (e) {

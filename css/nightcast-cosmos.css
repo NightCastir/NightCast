@@ -718,3 +718,22 @@ main#home .hero h1{max-width:100%;overflow-wrap:normal;word-break:normal}
     padding: 15px !important;
   }
 }
+
+
+/* Moonlight theme: make the Contact page's top hero panel match the other light-theme panels. */
+:root[data-theme="moonlight"] #contact .nc-contact-hero{
+  background:linear-gradient(135deg,#fffefa 0%,#f3f0e8 100%)!important;
+  border:1px solid rgba(91,101,120,.22)!important;
+  border-radius:24px!important;
+  box-shadow:0 14px 36px rgba(32,39,54,.08),inset 0 1px 0 rgba(255,255,255,.88)!important;
+  color:#242936!important;
+}
+:root[data-theme="moonlight"] #contact .nc-contact-hero h2{
+  color:#242936!important;
+}
+:root[data-theme="moonlight"] #contact .nc-contact-hero p{
+  color:#454d5d!important;
+}
+:root[data-theme="moonlight"] #contact .nc-contact-hero .nc-section-eyebrow{
+  color:#6366f1!important;
+}

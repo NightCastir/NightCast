@@ -65,6 +65,20 @@ async function get(url) {
       add('Clean route ' + route + ' resolves', false, e.message);
     }
   }
+  add('Legacy-browser redirect gate is present', html.indexOf('new Function("var a = {}; return a?.x ?? 0;")') >= 0 && html.indexOf('/tv-lite.html') >= 0,
+    'Older parsers should be routed to the ES5-compatible TV archive before modern scripts execute');
+  try {
+    const { response, body } = await get(SITE + '/tv-lite.html');
+    const inlineScripts = [...body.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script\s*>/gi)].map(m => m[1]).join('\n');
+    const modernSyntax = /\?\.(?![0-9])|\?\?(?!=)|=>|\b(?:const|let)\b/.test(inlineScripts);
+    add('Legacy TV fallback page responds', response.ok && /id="podcast-list"/.test(body), 'HTTP ' + response.status + ', fallback archive markup available');
+    add('Legacy TV fallback JavaScript avoids modern syntax', response.ok && !modernSyntax,
+      modernSyntax ? 'Possible modern syntax detected in fallback script' : 'No optional chaining, nullish coalescing, arrow functions, const, or let detected');
+    add('Legacy TV fallback includes About and Contact', response.ok && /id="view-about"/.test(body) && /id="view-contact"/.test(body),
+      'Both sections are embedded in the fallback page');
+  } catch (e) {
+    add('Legacy TV fallback page responds', false, e.message);
+  }
   try {
     const { response, body } = await get(API + '/public/podcasts?page=1&limit=1');
     let count = 'unknown';

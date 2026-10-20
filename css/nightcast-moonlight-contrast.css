@@ -582,3 +582,58 @@
 :root :is(.player .player-progress span,#ncNowCurrent,#ncNowDuration){
   direction:ltr!important;unicode-bidi:isolate!important;text-align:center!important;
 }
+
+
+/* Moonlight modal final fix: remove the remaining dark inset panel in Podcast Details.
+   Keep artwork untouched; use a paper surface and stronger slate text for every
+   nested content panel, including transcript/episode/metadata blocks. */
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-dialog {
+  background:#FFFFFF!important;
+  background-image:linear-gradient(155deg,#FFFFFF 0%,#F8FAFD 100%)!important;
+  color:#344054!important;
+}
+:root[data-theme="moonlight"] #ncPodcastDetail :is(
+  .nc-detail-scroll,.nc-detail-content,.nc-detail-section,.nc-detail-row,
+  .nc-detail-meta,.nc-detail-summary,.nc-detail-description,.nc-detail-episode,
+  .nc-detail-info,.nc-detail-transcript,.nc-detail-transcript summary,
+  .nc-detail-transcript [role="region"],.nc-detail-panel,.nc-detail-card,
+  .nc-detail-body,.nc-detail-extra,.nc-detail-episodes,.nc-detail-description-wrap,
+  details,article
+) {
+  color:#344054!important;
+  background-color:#F8FAFD!important;
+  background-image:none!important;
+  border-color:#D7DFEA!important;
+  box-shadow:none!important;
+}
+:root[data-theme="moonlight"] #ncPodcastDetail :is(
+  .nc-detail-section,.nc-detail-transcript,.nc-detail-panel,.nc-detail-card,
+  .nc-detail-episode,.nc-detail-info,.nc-detail-summary,details,article
+) {
+  border:1px solid #D7DFEA!important;
+  border-radius:14px!important;
+}
+:root[data-theme="moonlight"] #ncPodcastDetail :is(
+  h1,h2,h3,h4,h5,h6,strong,b,dt,.nc-detail-title,.nc-detail-label
+) {
+  color:#263247!important;
+  -webkit-text-fill-color:#263247!important;
+  text-shadow:none!important;
+}
+:root[data-theme="moonlight"] #ncPodcastDetail :is(
+  p,span,li,dd,small,em,.nc-detail-description,.nc-detail-muted,
+  .nc-detail-caption,.nc-detail-transcript summary
+) {
+  color:#46536A!important;
+  -webkit-text-fill-color:#46536A!important;
+  text-shadow:none!important;
+}
+:root[data-theme="moonlight"] #ncPodcastDetail :is(
+  .nc-detail-scroll,.nc-detail-section,.nc-detail-transcript,
+  .nc-detail-panel,.nc-detail-card,.nc-detail-episode,details,article
+) :is(a:not(.btn-primary),code,pre) {
+  color:#344054!important;
+  -webkit-text-fill-color:#344054!important;
+  background-color:#EEF2F8!important;
+  border-color:#D7DFEA!important;
+}

@@ -1679,6 +1679,20 @@ LOGOUT
                     nav.className = "nc-podcast-pagination";
                     nav.setAttribute("aria-label", "صفحه‌بندی پادکست‌ها");
                     nav.setAttribute("dir", "rtl");
+                    nav.addEventListener("click", event => {
+                        const button = event.target.closest("button[data-page]");
+                        if (!button || button.disabled) return;
+                        const requestedPage = Number(button.dataset.page);
+                        if (!Number.isInteger(requestedPage) || requestedPage < 1) return;
+                        if (requestedPage === state.page) return;
+                        state.page = requestedPage;
+                        applyView();
+                        const heading = document.getElementById("podcastHeading");
+                        if (heading) {
+                            const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+                            heading.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+                        }
+                    });
                     els.grid.insertAdjacentElement("afterend", nav);
                 }
 

@@ -41,7 +41,7 @@ const server = http.createServer((req, res) => {
   check('direct APK button points to official NightCast download endpoint', /href="https:\/\/www\.nightcast\.ir\/downloadrelease\/NightCast\.apk"[\s\S]{0,120}download="NightCast\.apk"/.test(html));
   check('Cafe Bazaar button uses official Cafe Bazaar domain and safe new-tab attributes', /href="https:\/\/cafebazaar\.ir\/app\/ir\.nightcast\.app"[\s\S]{0,120}target="_blank" rel="noopener noreferrer"/.test(html));
   check('Android and store icons are present', /fa-brands fa-android/.test(html) && /fa-solid fa-store/.test(html));
-    check('theme stylesheet cache version is bumped', /nightcast-themes\.css\?v=19/.test(html));
+    check('theme stylesheet cache version is bumped', /nightcast-themes\.css\?v=20/.test(html));
     check('Moonlight contrast stylesheet cache version is bumped', html.includes('nightcast-moonlight-contrast.css?v=17'));
   check('global footer gap fix is cache-busted and includes mobile footer behavior', /nightcast-global-polish\.css\?v=4/.test(html) && /nc-footer-viewport-behavior/.test(html));
   check('now-playing overlay is forced to fixed positioning so it cannot extend document flow', /#ncNowPlaying\.nc-now-playing\s*\{[^}]*position:\s*fixed\s*!important;[^}]*inset:\s*0\s*!important;/s.test(fs.readFileSync(path.join(root, 'css/nightcast-global-polish.css'), 'utf8')));

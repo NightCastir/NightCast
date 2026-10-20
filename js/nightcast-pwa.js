@@ -4,8 +4,9 @@
   const dialog = document.getElementById('ncPwaInstallDialog');
   const title = document.getElementById('ncPwaInstallTitle');
   const content = document.getElementById('ncPwaInstallContent');
-  const trigger = document.getElementById('ncIosPwaButton');
-  if (!dialog || !title || !content || !trigger) return;
+  const triggers = [document.getElementById('ncIosPwaButton'), document.getElementById('ncDrawerIosPwaButton')].filter(Boolean);
+  if (!dialog || !title || !content || !triggers.length) return;
+  let activeTrigger = triggers[0];
 
   const iosDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -34,10 +35,10 @@
     dialog.hidden = true;
     dialog.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('nc-pwa-dialog-open');
-    trigger.focus();
+    if (activeTrigger && typeof activeTrigger.focus === 'function') activeTrigger.focus();
   }
 
-  trigger.addEventListener('click', showGuide);
+  triggers.forEach((trigger) => trigger.addEventListener('click', () => { activeTrigger = trigger; showGuide(); }));
   dialog.querySelectorAll('[data-pwa-close]').forEach((element) => element.addEventListener('click', closeGuide));
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && !dialog.hidden) closeGuide();

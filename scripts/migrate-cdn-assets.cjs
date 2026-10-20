@@ -235,7 +235,7 @@ async function main() {
 
   let acceptance=read('tests/nightcast-acceptance.cjs');
   const start=acceptance.indexOf('      const hasPrimaryCdn = ');
-  const end=acceptance.indexOf("      report('0.5.",start);
+  const end=acceptance.indexOf("report('0.5.",start);
   if(start<0||end<0) throw new Error('Could not locate legacy Font Awesome CDN assertion block in acceptance suite');
   const localIconChecks=`      const hasLocalIconStylesheet = /href=["'][^"']*\\/assets\\/vendor\\/fontawesome\\/css\\/all\\.min\\.css["']/i.test(html);
       const hasExternalIconCdn = /(?:cdnjs\\.cloudflare\\.com\\/ajax\\/libs\\/font-awesome|cdn\\.jsdelivr\\.net\\/npm\\/@fortawesome\\/fontawesome-free)/i.test(html);

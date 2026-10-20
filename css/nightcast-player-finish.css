@@ -54,3 +54,57 @@ body.player-open{--nc-player-visible:1}
  .player .control-btn.main{width:38px;height:38px}
 }
 @media(prefers-reduced-motion:reduce){.player{transition:none!important}}
+
+
+/* Responsive player composition: metadata, visualization, transport controls and timeline
+   each receive a deliberate region instead of competing for the top row. */
+.player-inner{
+  grid-template-columns:minmax(190px,1fr) minmax(90px,.55fr) auto!important;
+  grid-template-areas:"track visualizer controls" "progress progress progress"!important;
+  row-gap:10px!important;
+}
+.player .track{grid-area:track}
+.player .nc-audio-visualizer-wrap{grid-area:visualizer;min-width:0;width:100%;max-width:210px;justify-self:center}
+.player .nc-audio-visualizer{display:block;width:100%;max-width:210px;height:36px}
+.player .nc-visualizer-status{font-size:.65rem;line-height:1.2}
+.player .controls{grid-area:controls}
+.player .player-progress{grid-area:progress}
+@media(max-width:900px){
+  :root{--nc-dock-height:218px}
+  body:has(.player.show){padding-bottom:calc(var(--nc-dock-height) + 76px + var(--nc-dock-safe))!important}
+  body:has(.player.show) .mobile-nav{bottom:calc(var(--nc-dock-height) + var(--nc-dock-safe) + 8px)!important}
+  .player{inset-inline:10px!important;bottom:calc(8px + var(--nc-dock-safe))!important;border-radius:22px!important}
+  .player-inner{
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-areas:"track" "controls" "progress"!important;
+    gap:13px!important;
+    min-height:0!important;
+    padding:16px 18px 15px!important;
+  }
+  .player .track{width:100%;gap:12px;justify-content:flex-start}
+  .player .track-cover{width:58px!important;height:58px!important;border-radius:15px!important}
+  .player .track-text{flex:1;min-width:0}
+  .player .track-title{font-size:1rem!important;line-height:1.65;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .player .track-author{font-size:.84rem!important;white-space:nowrap}
+  .player .controls{width:100%;justify-content:center;gap:22px!important;padding-block:2px}
+  .player .control-btn{width:48px;height:48px}
+  .player .control-btn.main{width:62px;height:62px}
+  .player .control-btn i{font-size:1.05rem}
+  .player .control-btn.main i{font-size:1.25rem}
+  .player .player-progress{width:100%;grid-template-columns:42px minmax(0,1fr) 42px!important;gap:9px!important}
+  .player .player-progress span{font-size:.78rem}
+  .player .progress{height:6px}
+  .player .volume{display:none!important}
+  .player .nc-audio-visualizer-wrap{display:none!important}
+}
+@media(max-width:420px){
+  :root{--nc-dock-height:204px}
+  .player-inner{padding:13px 13px 12px!important;gap:11px!important}
+  .player .track-cover{width:50px!important;height:50px!important}
+  .player .controls{gap:18px!important}
+  .player .control-btn{width:44px;height:44px}
+  .player .control-btn.main{width:56px;height:56px}
+  .player .track-title{font-size:.94rem!important}
+  .player .track-author{font-size:.78rem!important}
+}
+@media(prefers-reduced-motion:reduce){.player,.player .control-btn{transition:none!important}}

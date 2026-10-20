@@ -637,3 +637,61 @@
   background-color:#EEF2F8!important;
   border-color:#D7DFEA!important;
 }
+
+
+/* One unified light surface for every nested panel inside the Moonlight Now Playing modal.
+   The modal content is generated/updated dynamically, so cover common wrappers and
+   inline-background descendants as well as the known description/meta panels. */
+:root[data-theme="moonlight"] #ncNowPlaying {
+  --nc-now-surface:#F8FAFD;
+  --nc-now-surface-strong:#FFFFFF;
+  --nc-now-ink:#344054;
+  --nc-now-ink-strong:#263247;
+}
+:root[data-theme="moonlight"] #ncNowPlaying .nc-now-content,
+:root[data-theme="moonlight"] #ncNowPlaying .nc-now-section,
+:root[data-theme="moonlight"] #ncNowPlaying .nc-now-section > *,
+:root[data-theme="moonlight"] #ncNowPlaying .nc-now-description,
+:root[data-theme="moonlight"] #ncNowPlaying .nc-now-meta,
+:root[data-theme="moonlight"] #ncNowPlaying .nc-now-book,
+:root[data-theme="moonlight"] #ncNowPlaying .nc-now-actions,
+:root[data-theme="moonlight"] #ncNowPlaying .nc-now-hero,
+:root[data-theme="moonlight"] #ncNowPlaying .nc-now-copy,
+:root[data-theme="moonlight"] #ncNowPlaying .nc-now-scroll > *,
+:root[data-theme="moonlight"] #ncNowPlaying .nc-now-content > * {
+  background-color:var(--nc-now-surface)!important;
+  background-image:none!important;
+  color:var(--nc-now-ink)!important;
+  border-color:#D7DFEA!important;
+  box-shadow:none!important;
+}
+:root[data-theme="moonlight"] #ncNowPlaying .nc-now-top {
+  background:var(--nc-now-surface-strong)!important;
+  color:var(--nc-now-ink-strong)!important;
+}
+:root[data-theme="moonlight"] #ncNowPlaying :is(.nc-now-title,h1,h2,h3,h4,strong,b) {
+  color:var(--nc-now-ink-strong)!important;
+  -webkit-text-fill-color:var(--nc-now-ink-strong)!important;
+}
+:root[data-theme="moonlight"] #ncNowPlaying :is(.nc-now-author,.nc-now-description,.nc-now-meta,.nc-now-book,p,small,span,li,dd) {
+  color:var(--nc-now-ink)!important;
+  -webkit-text-fill-color:var(--nc-now-ink)!important;
+  text-shadow:none!important;
+}
+:root[data-theme="moonlight"] #ncNowPlaying .nc-now-art {
+  background:transparent!important;
+  background-color:transparent!important;
+}
+:root[data-theme="moonlight"] #ncNowPlaying .nc-now-control,
+:root[data-theme="moonlight"] #ncNowPlaying .nc-now-close,
+:root[data-theme="moonlight"] #ncNowPlaying .nc-now-like,
+:root[data-theme="moonlight"] #ncNowPlaying .nc-now-comments {
+  background:#EDF1F7!important;
+  color:#344054!important;
+  border:1px solid #D2DAE6!important;
+}
+:root[data-theme="moonlight"] #ncNowPlaying .nc-now-control.primary {
+  background:linear-gradient(135deg,#5147B8,#3B63C9)!important;
+  color:#FFFFFF!important;
+  border-color:#5147B8!important;
+}

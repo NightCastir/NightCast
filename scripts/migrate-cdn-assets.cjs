@@ -247,7 +247,7 @@ async function main() {
 `;
   acceptance=acceptance.slice(0,start)+localIconChecks+acceptance.slice(end);
   acceptance=acceptance.replace("report('0.5. Font Awesome fallback loads only if the primary CDN fails'","report('0.5. Font Awesome uses self-hosted assets without CDN fallback'");
-  acceptance=acceptance.replace(/const leafLetRequests = resources\.filter\(item => .*?;\n/, "const leafLetRequests = resources.filter(item => /assets\/vendor\/leaflet\//i.test(item.name));\n");
+  acceptance=acceptance.replace(/const leafLetRequests = resources\.filter\(item => .*?;\n/, "const leafLetRequests = resources.filter(item => item.name.includes('/assets/vendor/leaflet/'));\n");
   acceptance=acceptance.replace('iconCdnFallback: !!document.querySelector(\'link[href*="fontawesome-free@6.7.2"]\'),','localIconStylesheet: !!document.querySelector(\'link[href*="/assets/vendor/fontawesome/css/all.min.css"]\'),');
   acceptance=acceptance.replace('headerState.iconFontLoaded && headerState.iconCdnFallback &&','headerState.iconFontLoaded && headerState.localIconStylesheet &&');
   write('tests/nightcast-acceptance.cjs',acceptance);

@@ -43,41 +43,68 @@ jobs:
       - name: Simulate TV, desktop, tablet and mobile browser layouts
         run: node tests/nightcast-acceptance.cjs
 
-      - name: Smoke-test published clean routes and live podcast API
+      - name: Simulate live clean-route navigation at TV viewport and smoke-test API
         env:
           NIGHTCAST_BASE_URL: https://nightcast.ir
           NIGHTCAST_API_URL: https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=5
         run: |
           node <<'NODE'
+          const { chromium } = require('playwright');
           const base = process.env.NIGHTCAST_BASE_URL;
           const checks = [
-            { path: '/', marker: 'id="podcasts"', label: 'home/podcast archive' },
-            { path: '/about', marker: 'id="about"', label: 'About route' },
-            { path: '/contact', marker: 'id="contact"', label: 'Contact route' }
+            { path: '/', id: 'podcasts', label: 'home/podcast archive' },
+            { path: '/about', id: 'about', label: 'About route' },
+            { path: '/contact', id: 'contact', label: 'Contact route' }
           ];
           (async () => {
             let failed = false;
-            for (const check of checks) {
-              try {
-                const response = await fetch(new URL(check.path, base), { redirect: 'follow', signal: AbortSignal.timeout(15000) });
-                const html = await response.text();
-                const ok = response.status === 200 && html.includes(check.marker);
-                console.log(`${ok ? 'PASS' : 'FAIL'} | live ${check.label} | HTTP ${response.status} | marker=${html.includes(check.marker)} | final=${response.url}`);
-                if (!ok) failed = true;
-              } catch (error) {
-                console.log(`FAIL | live ${check.label} | ${error.message}`);
+            const browser = await chromium.launch({ headless: true });
+            try {
+              const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, reducedMotion: 'reduce' });
+              page.on('pageerror', error => {
+                console.log('BROWSER ERROR | ' + error.message);
                 failed = true;
+              });
+              for (const check of checks) {
+                try {
+                  await page.goto(new URL(check.path, base).toString(), { waitUntil: 'domcontentloaded', timeout: 25000 });
+                  await page.waitForFunction(({ expectedPath, id }) => {
+                    const path = location.pathname.replace(/\/+$/, '') || '/';
+                    const section = document.getElementById(id);
+                    if (path !== expectedPath || !section || !document.querySelector('#podcastGrid')) return false;
+                    if (expectedPath === '/') return document.querySelectorAll('#podcastGrid .podcast-card').length > 0;
+                    const rect = section.getBoundingClientRect();
+                    return !section.hidden && getComputedStyle(section).display !== 'none' &&
+                      rect.top < window.innerHeight * 0.9 && rect.bottom > 0;
+                  }, { expectedPath: check.path, id: check.id }, { timeout: 20000 });
+                  const state = await page.evaluate(id => {
+                    const section = document.getElementById(id);
+                    const rect = section.getBoundingClientRect();
+                    return { path: location.pathname, title: document.title, sectionTop: Math.round(rect.top),
+                      viewport: window.innerWidth + 'x' + window.innerHeight,
+                      podcastCards: document.querySelectorAll('#podcastGrid .podcast-card').length };
+                  }, check.id);
+                  console.log('PASS | TV browser ' + check.label + ' | ' + JSON.stringify(state));
+                } catch (error) {
+                  console.log('FAIL | TV browser ' + check.label + ' | ' + error.message);
+                  failed = true;
+                }
               }
+            } catch (error) {
+              console.log('FAIL | TV browser launch/navigation | ' + error.message);
+              failed = true;
+            } finally {
+              await browser.close();
             }
             try {
               const response = await fetch(process.env.NIGHTCAST_API_URL, { headers: { accept: 'application/json' }, signal: AbortSignal.timeout(15000) });
               const payload = await response.json();
               const records = Array.isArray(payload.podcasts) ? payload.podcasts : Array.isArray(payload.data) ? payload.data : [];
               const ok = response.status === 200 && payload.success === true && records.length > 0;
-              console.log(`${ok ? 'PASS' : 'FAIL'} | live podcast API | HTTP ${response.status} | records=${records.length} | total=${payload.total ?? 'unknown'}`);
+              console.log((ok ? 'PASS' : 'FAIL') + ' | live podcast API | HTTP ' + response.status + ' | records=' + records.length + ' | total=' + (payload.total ?? 'unknown'));
               if (!ok) failed = true;
             } catch (error) {
-              console.log(`FAIL | live podcast API | ${error.message}`);
+              console.log('FAIL | live podcast API | ' + error.message);
               failed = true;
             }
             if (failed) process.exit(1);
@@ -101,6 +128,6 @@ jobs:
             echo ""
             echo "- Chromium simulation includes a 1920×1080 TV viewport and mobile/tablet/desktop breakpoints."
             echo "- The browser suite checks podcast rendering, runtime errors, horizontal overflow and responsive controls."
-            echo "- Published route and public podcast API checks are run separately against nightcast.ir."
+            echo "- Live clean routes are opened in Chromium, including client-side route aliases, and checked for visible target sections."
             echo "- This is a browser/viewport simulation, not a claim that a physical Android TV device was tested."
           } >> "$GITHUB_STEP_SUMMARY"

@@ -6,7 +6,9 @@ on:
     paths:
       - 'tests/nightcast-tv-full-experience.cjs'
       - '.github/workflows/nightcast-tv-full-experience.yml'
-      - 'index.html'\n      - 'tv-lite.html'\n      - 'tests/nightcast-tv-legacy-edition.cjs'
+      - 'index.html'
+      - 'tv-lite.html'
+      - 'tests/nightcast-tv-legacy-edition.cjs'
       - 'css/**'
       - 'js/**'
       - 'users/data/podcasts.json'

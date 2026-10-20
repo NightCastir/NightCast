@@ -963,6 +963,25 @@ html[data-theme="moonlight"] #ncPodcastDetail #ncPodcastDetailBody .nc-detail-se
 }
 #nc-entry-loader .nc-entry-orbit .nc-entry-core{background:transparent!important}
 
+
+/* Initial loader: remove the extra tile around the official logo and let the mark sit directly inside the orbital lines. */
+#nc-entry-loader .nc-entry-orbit{
+  width:clamp(132px,34vw,174px)!important;
+  margin-bottom:26px!important;
+}
+#nc-entry-loader img.nc-entry-core{
+  width:clamp(92px,23vw,116px)!important;
+  height:clamp(92px,23vw,116px)!important;
+  max-width:88%!important;
+  max-height:88%!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  filter:none!important;
+  object-fit:contain!important;
+}
+
 /* Moonlight only: restore strong contrast for the NightCast wordmark in the shared header.
    Applies consistently to phone, tablet and desktop without changing other themes. */
 :root[data-theme="moonlight"] .nc-header .brand-text strong {

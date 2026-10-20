@@ -962,3 +962,12 @@ html[data-theme="moonlight"] #ncPodcastDetail #ncPodcastDetailBody .nc-detail-se
   animation:none!important;
 }
 #nc-entry-loader .nc-entry-orbit .nc-entry-core{background:transparent!important}
+
+/* Moonlight only: restore strong contrast for the NightCast wordmark in the shared header.
+   Applies consistently to phone, tablet and desktop without changing other themes. */
+:root[data-theme="moonlight"] .nc-header .brand-text strong {
+  color: #172033 !important;
+  -webkit-text-fill-color: #172033 !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}

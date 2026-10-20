@@ -41,6 +41,16 @@ async function waitForPodcastCards(page) {
     check('Static podcast fallback is reachable', fallback.ok && fallbackRecords.length > 0,
       'HTTP ' + fallback.status + '; records=' + fallbackRecords.length);
 
+    const liveAppResponse = await fetch(BASE + '/js/nightcast-app.js?v=2&tv-compat-check=' + Date.now(), {
+      headers: { accept: 'text/javascript' }, signal: AbortSignal.timeout(15000)
+    });
+    const liveAppSource = liveAppResponse.ok ? await liveAppResponse.text() : '';
+    const liveFallbackUpdated = liveAppResponse.ok &&
+      liveAppSource.includes('"/users/data/podcasts.json"') &&
+      !liveAppSource.includes('https://nightcast.ir/data/podcasts.json');
+    check('Published app bundle points to the reachable static fallback', liveFallbackUpdated,
+      'HTTP ' + liveAppResponse.status + '; updatedFallback=' + liveFallbackUpdated);
+
     const sizes = [
       { name: 'TV-1080p', width: 1920, height: 1080 },
       { name: 'TV-720p', width: 1280, height: 720 },

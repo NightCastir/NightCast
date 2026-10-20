@@ -749,7 +749,7 @@
 
 
 /* Final Moonlight footer override: must follow legacy contrast reset rules above. */
-:root[data-theme="moonlight"] body .nc-footer-download{background-image:linear-gradient(135deg,#fffefa 0%,#f4f2ec 54%,#e9edf8 100%)!important;background-color:#fffefa!important;color:#242936!important;border-color:#d8dce7!important;box-shadow:0 16px 42px rgba(30,41,59,.10),inset 0 1px rgba(255,255,255,.9)!important;--nc-download-ink:#242936}
+:root[data-theme="moonlight"] .nc-footer-download.nc-footer-download{background:linear-gradient(135deg,#fffefa 0%,#f4f2ec 54%,#e9edf8 100%)!important;background-image:linear-gradient(135deg,#fffefa 0%,#f4f2ec 54%,#e9edf8 100%)!important;background-color:#fffefa!important;color:#242936!important;border-color:#d8dce7!important;box-shadow:0 16px 42px rgba(30,41,59,.10),inset 0 1px rgba(255,255,255,.9)!important;--nc-download-ink:#242936}
 :root[data-theme="moonlight"] .nc-footer-download h2,:root[data-theme="moonlight"] .nc-footer-download h3{color:#242936!important}
 :root[data-theme="moonlight"] .nc-footer-download p,:root[data-theme="moonlight"] .nc-footer-download small{color:#535d70!important}
 :root[data-theme="moonlight"] .nc-footer-download-direct:link,:root[data-theme="moonlight"] .nc-footer-download-direct:visited,:root[data-theme="moonlight"] .nc-footer-download-direct:hover,:root[data-theme="moonlight"] .nc-footer-download-direct:focus,:root[data-theme="moonlight"] .nc-footer-download-direct:focus-visible,:root[data-theme="moonlight"] .nc-footer-download-direct:active{background-image:linear-gradient(135deg,#3DDC84,#26c66b)!important;background-color:#3DDC84!important;color:#07130c!important;-webkit-text-fill-color:#07130c!important}

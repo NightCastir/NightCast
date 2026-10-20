@@ -954,6 +954,33 @@ function silentWavDataUri() {
         report('5.4. Podcast card typography is readable and artwork is centered without cropping', false, String(error.message || error));
       }
       try {
+        const originalViewport = page.viewportSize();
+        const widthFailures = [];
+        for (const width of [320, 360, 390, 768, 820, 900]) {
+          await page.setViewportSize({ width, height: 900 });
+          await page.waitForTimeout(40);
+          const geometry = await page.evaluate(() => {
+            const card = document.querySelector('.podcast-card[data-id="91001"]');
+            const cover = card?.querySelector(':scope > .podcast-cover');
+            if (!card || !cover) return { missing: true };
+            const cardStyle = getComputedStyle(card);
+            const coverRect = cover.getBoundingClientRect();
+            const cardRect = card.getBoundingClientRect();
+            const innerWidth = card.clientWidth -
+              parseFloat(cardStyle.paddingLeft || 0) -
+              parseFloat(cardStyle.paddingRight || 0);
+            return { missing: false, viewport: innerWidth, panel: cardRect.width, cover: coverRect.width,
+              difference: Math.abs(coverRect.width - innerWidth) };
+          });
+          if (geometry.missing || geometry.difference > 2) widthFailures.push(width + 'px: ' + JSON.stringify(geometry));
+        }
+        if (originalViewport) await page.setViewportSize(originalViewport);
+        report('5.4.1. Podcast artwork fills the panel width on tablet and mobile', widthFailures.length === 0,
+          widthFailures.join('; ') || 'Artwork width matches the card inner width at 320, 360, 390, 768, 820 and 900px');
+      } catch (error) {
+        report('5.4.1. Podcast artwork fills the panel width on tablet and mobile', false, String(error.message || error));
+      }
+      try {
         const paletteAudit = await page.evaluate(() => {
           const root = document.documentElement;
           const previous = root.dataset.theme;

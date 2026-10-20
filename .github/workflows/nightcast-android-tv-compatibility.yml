@@ -1,0 +1,68 @@
+name: NightCast Android TV Compatibility
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightcast-android-tv-compatibility
+  cancel-in-progress: false
+
+jobs:
+  tv-browser-smoke:
+    name: Live TV, route, podcast and responsive checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Wait for the live site deployment
+        run: |
+          for attempt in $(seq 1 12); do
+            status=$(curl -sS -o /dev/null -w '%{http_code}' https://nightcast.ir/ || true)
+            echo "Live deployment probe $attempt: HTTP $status"
+            if [ "$status" = "200" ]; then exit 0; fi
+            sleep 10
+          done
+          echo "NightCast homepage did not return HTTP 200 after waiting."
+          exit 1
+
+      - name: Run live TV viewport and navigation checks
+        run: node tests/nightcast-android-tv.cjs
+
+      - name: Upload TV and responsive screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightcast-tv-compatibility-${{ github.run_number }}
+          path: artifacts/*.png
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Publish test summary
+        if: always()
+        run: |
+          {
+            echo "## NightCast Android TV compatibility"
+            echo ""
+            echo "- Tests the live site in Chromium at 1920x1080 (TV), 1280x720 (TV), desktop, tablet and mobile viewport sizes."
+            echo "- Checks live podcast feed, rendered cards, horizontal overflow, direct About/Contact routes, and uncaught JavaScript errors."
+            echo "- This is a browser simulation, not a physical Android TV/WebView certification."
+          } >> "$GITHUB_STEP_SUMMARY"

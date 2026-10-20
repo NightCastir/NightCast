@@ -117,7 +117,7 @@
     el.setAttribute("role","status");
     el.setAttribute("aria-live","polite");
     el.setAttribute("aria-label","در حال اعمال تم جدید");
-    el.innerHTML = '<div class="nct-card"><div class="nct-orbit" aria-hidden="true"><img class="nct-core" src="/assets/icons/icon-192.png" alt="" width="44" height="44" decoding="async"></div><h2 class="nct-title">در حال تغییر فضای NightCast</h2><p class="nct-status">در حال هماهنگ‌سازی رنگ‌ها، پنل‌ها و تصاویر…</p><div class="nct-track" role="progressbar" aria-label="پیشرفت تغییر تم" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="nct-fill"></span></div><span class="nct-percent">۰٪</span></div>';
+    el.innerHTML = '<div class="nct-card"><div class="nct-orbit" aria-hidden="true"><img class="nct-core" src="/assets/icons/icon-512.png" alt="" width="44" height="44" decoding="async"></div><h2 class="nct-title">در حال تغییر فضای NightCast</h2><p class="nct-status">در حال هماهنگ‌سازی رنگ‌ها، پنل‌ها و تصاویر…</p><div class="nct-track" role="progressbar" aria-label="پیشرفت تغییر تم" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="nct-fill"></span></div><span class="nct-percent">۰٪</span></div>';
     document.body.append(el);
     return el;
   }

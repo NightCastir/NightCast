@@ -75,8 +75,8 @@ jobs:
           const test = fs.readFileSync('tests/theme-system-acceptance.cjs', 'utf8');
           const themeIds = ['midnight-cosmos','aurora','studio-noir','deep-ocean','royal-gold','neon-city','persian-heritage','moonlight'];
           const checks = [
-          ['homepage loads theme assets in correct order', html.indexOf('/css/nightcast-themes.css?v=4') >= 0 && html.indexOf('/js/nightcast-theme.js?v=1') < html.indexOf('/js/nightcast-app.js?v=1')],
-          ['login page shares theme controller', login.includes('/js/nightcast-theme.js?v=1')],
+          ['homepage loads theme assets in correct order', html.indexOf('/css/nightcast-themes.css?v=12') >= 0 && html.indexOf('/js/nightcast-theme.js?v=2') < html.indexOf('/js/nightcast-app.js?v=1')],
+          ['login page shares theme controller', login.includes('/js/nightcast-theme.js?v=2')],
           ['profile does not duplicate the global theme picker', !html.includes('profileThemeSettings') && !html.includes('profileSettingsBtn') && test.includes('homepage exposes floating theme launcher')],
           ['theme acceptance suite covers login page', test.includes('Google sign-in page loads successfully')]
           ];

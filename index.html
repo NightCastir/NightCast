@@ -21,6 +21,12 @@
     <title>NightCast | آرشیو پادکست‌های صوتی، خلاصه و تحلیل کتاب</title>
 
     <meta name="theme-color" content="#090F19">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="application-name" content="NightCast">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="NightCast">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="color-scheme" content="dark light">
     <script>
       (() => {
@@ -58,6 +64,7 @@
     <meta name="twitter:image" content="https://nightcast.ir/logo.png">
 
     <link rel="icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/icon-192.png">
 
     <link rel="apple-touch-icon"
           href="/assets/icons/icon-192.png">
@@ -173,6 +180,7 @@
     @keyframes nc-entry-progress{0%{transform:translateX(260%)}100%{transform:translateX(-280%)}}
     @media(prefers-reduced-motion:reduce){#nc-entry-loader *{animation:none!important;transition:none!important}}
 </style>
+    <link rel="stylesheet" href="/css/nightcast-platform-download.css?v=1">
 </head>
 
 <body aria-busy="true">
@@ -1001,30 +1009,45 @@
 
 
             <section class="nc-footer-download" aria-labelledby="ncFooterDownloadTitle">
-                <div class="nc-footer-download-copy">
-                    <span class="nc-footer-download-eyebrow"><i class="fa-solid fa-satellite-dish" aria-hidden="true"></i> NIGHTCAST FOR ANDROID</span>
-                    <h2 id="ncFooterDownloadTitle">رادیو NightCast، همیشه همراه شما</h2>
-                    <p>نسخه اندروید را مستقیم از وب‌سایت رسمی دریافت کنید یا از بازار نصب کنید.</p>
+                <h2 id="ncFooterDownloadTitle" class="nc-sr-only">دریافت NightCast برای Android و iOS</h2>
+                <div class="nc-platform-download-grid">
+                    <section class="nc-platform-download-card nc-platform-android" aria-labelledby="ncAndroidTitle">
+                        <div class="nc-platform-download-heading">
+                            <span class="nc-platform-icon" aria-hidden="true"><i class="fa-brands fa-android"></i></span>
+                            <h3 id="ncAndroidTitle">نسخه Android</h3>
+                        </div>
+                        <div class="nc-footer-download-actions">
+                            <a class="nc-footer-download-button nc-footer-download-direct"
+                               href="https://www.nightcast.ir/downloadrelease/NightCast.apk"
+                               download="NightCast.apk"
+                               aria-label="دانلود مستقیم فایل نصب اندروید NightCast">
+                                <i class="fa-brands fa-android" aria-hidden="true"></i>
+                                <span><strong>دانلود مستقیم APK</strong><small>فایل نصب رسمی NightCast</small></span>
+                                <i class="fa-solid fa-arrow-down-to-line nc-footer-download-arrow" aria-hidden="true"></i>
+                            </a>
+                            <a class="nc-footer-download-button nc-footer-download-market"
+                               href="https://cafebazaar.ir/app/ir.nightcast.app"
+                               target="_blank" rel="noopener noreferrer"
+                               aria-label="مشاهده و نصب NightCast از بازار">
+                                <i class="fa-solid fa-store" aria-hidden="true"></i>
+                                <span><strong>دریافت از بازار</strong><small>نصب از کافه‌بازار</small></span>
+                                <i class="fa-solid fa-arrow-up-right-from-square nc-footer-download-arrow" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    </section>
+                    <section class="nc-platform-download-card nc-platform-ios" aria-labelledby="ncIosTitle">
+                        <div class="nc-platform-download-heading">
+                            <span class="nc-platform-icon" aria-hidden="true"><i class="fa-brands fa-apple"></i></span>
+                            <h3 id="ncIosTitle">نسخه iOS / iPadOS</h3>
+                        </div>
+                        <p class="nc-platform-download-description">نسخه وب‌اپ NightCast روی iPhone و iPad قابل استفاده است و می‌توانید آن را به صفحه اصلی اضافه کنید.</p>
+                        <button type="button" class="nc-footer-download-button nc-footer-download-ios" id="ncIosPwaButton" aria-haspopup="dialog" aria-controls="ncPwaInstallDialog">
+                            <i class="fa-brands fa-apple" aria-hidden="true"></i>
+                            <span><strong>استفاده و نصب نسخه iOS</strong><small>افزودن به صفحه اصلی، بدون نیاز به App Store</small></span>
+                            <i class="fa-solid fa-arrow-up-right-from-square nc-footer-download-arrow" aria-hidden="true"></i>
+                        </button>
+                    </section>
                 </div>
-                <div class="nc-footer-download-actions">
-                    <a class="nc-footer-download-button nc-footer-download-direct"
-                       href="https://www.nightcast.ir/downloadrelease/NightCast.apk"
-                       download="NightCast.apk"
-                       aria-label="دانلود مستقیم فایل نصب اندروید NightCast">
-                        <i class="fa-brands fa-android" aria-hidden="true"></i>
-                        <span><strong>دانلود مستقیم</strong><small>فایل نصب اندروید · APK</small></span>
-                        <i class="fa-solid fa-arrow-down-to-line nc-footer-download-arrow" aria-hidden="true"></i>
-                    </a>
-                    <a class="nc-footer-download-button nc-footer-download-market"
-                       href="https://cafebazaar.ir/app/ir.nightcast.app"
-                       target="_blank" rel="noopener noreferrer"
-                       aria-label="مشاهده و نصب NightCast از بازار">
-                        <i class="fa-solid fa-store" aria-hidden="true"></i>
-                        <span><strong>دریافت از بازار</strong><small>نصب از کافه‌بازار</small></span>
-                        <i class="fa-solid fa-arrow-up-right-from-square nc-footer-download-arrow" aria-hidden="true"></i>
-                    </a>
-                </div>
-                <span class="nc-footer-download-note"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> دریافت از منبع رسمی NightCast</span>
             </section>
 
             <div class="footer-links"><a href="/">
@@ -1050,6 +1073,19 @@
         </div>
 
     </footer>
+
+<div class="nc-pwa-install-dialog" id="ncPwaInstallDialog" hidden aria-hidden="true">
+    <button type="button" class="nc-pwa-install-backdrop" data-pwa-close aria-label="بستن راهنمای نصب"></button>
+    <section class="nc-pwa-install-card" role="dialog" aria-modal="true" aria-labelledby="ncPwaInstallTitle" aria-describedby="ncPwaInstallContent">
+        <button type="button" class="nc-pwa-install-close" data-pwa-close aria-label="بستن"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+        <h2 class="nc-pwa-install-title" id="ncPwaInstallTitle">نصب NightCast روی iPhone یا iPad</h2>
+        <div class="nc-pwa-install-content" id="ncPwaInstallContent"></div>
+        <div class="nc-pwa-install-footer">
+            <a class="nc-pwa-primary" href="/" aria-label="رفتن به نسخه وب NightCast"><i class="fa-solid fa-headphones" aria-hidden="true"></i> باز کردن NightCast</a>
+            <button type="button" data-pwa-close>متوجه شدم</button>
+        </div>
+    </section>
+</div>
 
 
     <!-- =============================================================
@@ -1627,7 +1663,7 @@
     const key=event.key;
     if((event.ctrlKey||event.metaKey)&&(['+','=','-','0'].includes(key)||key==='Add'||key==='Subtract')) event.preventDefault();
   },{capture:true});
-if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(registrations){registrations.forEach(function(registration){registration.unregister();});}).catch(function(){});}
+/* PWA registration is managed by /js/nightcast-pwa.js. */
   })();
 </script>
 
@@ -1643,5 +1679,6 @@ if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then
     observer.observe(footer);
   })();
 </script>
+    <script src="/js/nightcast-pwa.js?v=1" defer></script>
 </body>
 </html>

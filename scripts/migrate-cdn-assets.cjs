@@ -180,7 +180,7 @@ async function main() {
     html=html.replace(/<link\b(?=[^>]*\bhref=["']https:\/\/(?:cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome\/|cdn\.jsdelivr\.net\/npm\/@fortawesome\/fontawesome-free@)[^"']*["'])[^>]*>\s*/gi,'');
     html=html.replace(/<link\b(?=[^>]*\bhref=["']https:\/\/(?:cdnjs\.cloudflare\.com|cdn\.jsdelivr\.net|unpkg\.com)[^"']*["'])(?=[^>]*\brel=["']stylesheet["'])[^>]*>\s*/gi,'');
     html=html.replace(/\n{3,}/g,'\n\n');
-    const wantsFont=/Vazirmatn|fonts\.googleapis\.com/i.test(html);
+    const wantsFont=/lang=["']fa|Vazirmatn|fonts\.googleapis\.com/i.test(html);
     const wantsIcons=/\bfa-(?:solid|regular|brands)\b|Font Awesome/i.test(html);
     const links=[];
     if(wantsFont&&!html.includes('/assets/fonts/vazirmatn.css')) links.push('  <link rel="stylesheet" href="/assets/fonts/vazirmatn.css">');

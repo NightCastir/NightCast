@@ -2462,7 +2462,25 @@ LOGOUT
             els.grid.addEventListener(
                 "click",
                 e => {
-        
+
+                    // Clicking the artwork itself must use the exact same play/pause
+                    // state as the card's play button. Ignore clicks on controls layered
+                    // over the artwork so they are handled only by their own action.
+                    const cover = e.target.closest(".podcast-cover");
+                    if (cover && !e.target.closest("[data-action]")) {
+                        const card = cover.closest(".podcast-card[data-id]");
+                        const playButton = card?.querySelector('[data-action="play"]');
+                        if (playButton && !playButton.disabled) {
+                            const id = card.dataset.id;
+                            if (state.current && Number(state.current.id) === Number(id)) {
+                                togglePlay();
+                            } else {
+                                playPodcast(id);
+                            }
+                        }
+                        return;
+                    }
+
                     const el =
                         e.target.closest(
                             "[data-action]"

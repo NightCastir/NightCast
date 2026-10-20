@@ -51,6 +51,9 @@ jobs:
       - name: Validate workflow YAML
         run: go run github.com/rhysd/actionlint/cmd/actionlint@latest -color
 
+      - name: Test legacy-compatible TV edition
+        run: node tests/nightcast-tv-legacy-edition.cjs
+
       - name: Test full live NightCast experience on TV and responsive layouts
         run: node tests/nightcast-tv-full-experience.cjs
 

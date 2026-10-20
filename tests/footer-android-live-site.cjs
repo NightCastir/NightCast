@@ -1,5 +1,6 @@
 const target = 'https://nightcast.ir/';
-const cssUrl = 'https://nightcast.ir/css/nightcast-themes.css?v=10';
+const cssUrl = 'https://nightcast.ir/css/nightcast-themes.css?v=12';
+const globalCssUrl = 'https://nightcast.ir/css/nightcast-global-polish.css?v=4';
 const failures = [];
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function request(url) {
@@ -11,8 +12,8 @@ async function request(url) {
     try {
       pageResponse = await request(target);
       html = await pageResponse.text();
-      const ready = pageResponse.ok && html.includes('nc-footer-download') && html.includes('https://www.nightcast.ir/downloadrelease/NightCast.apk') && html.includes('https://cafebazaar.ir/app/ir.nightcast.app') && html.includes('nightcast-themes.css?v=10');
-      console.log((ready ? 'PASS' : 'WAIT') + ' | live homepage deploy check | attempt ' + attempt + ' | HTTP ' + pageResponse.status + ' | footer=' + html.includes('nc-footer-download') + ' | theme-css-v9=' + html.includes('nightcast-themes.css?v=10'));
+      const ready = pageResponse.ok && html.includes('nc-footer-download') && html.includes('https://www.nightcast.ir/downloadrelease/NightCast.apk') && html.includes('https://cafebazaar.ir/app/ir.nightcast.app') && html.includes('nightcast-themes.css?v=12') && html.includes('nightcast-global-polish.css?v=4');
+      console.log((ready ? 'PASS' : 'WAIT') + ' | live homepage deploy check | attempt ' + attempt + ' | HTTP ' + pageResponse.status + ' | footer=' + html.includes('nc-footer-download') + ' | theme-css-v12=' + html.includes('nightcast-themes.css?v=10'));
       if (ready) break;
       if (attempt === 18) failures.push('live homepage does not yet contain the merged Android footer panel and stylesheet cache version');
     } catch (error) {
@@ -26,10 +27,16 @@ async function request(url) {
       const cssResponse = await request(cssUrl);
       const css = await cssResponse.text();
       const cssReady = cssResponse.ok && css.includes('.nc-footer-download') && css.includes('.nc-footer-download-button:focus-visible') && css.includes('prefers-reduced-motion');
-      console.log((cssReady ? 'PASS' : 'FAIL') + ' | live theme CSS v10 contains CTA visual/accessibility styles | HTTP ' + cssResponse.status);
-      if (!cssReady) failures.push('live theme CSS v10 is missing the Android footer CTA rules');
+      console.log((cssReady ? 'PASS' : 'FAIL') + ' | live theme CSS v12 contains CTA visual/accessibility styles | HTTP ' + cssResponse.status);
+      if (!cssReady) failures.push('live theme CSS v12 is missing the Android footer CTA rules');
+
+      const globalResponse = await request(globalCssUrl);
+      const globalCss = await globalResponse.text();
+      const overlayReady = globalResponse.ok && /#ncNowPlaying\\.nc-now-playing\\s*\\{[^}]*position:\\s*fixed\\s*!important;[^}]*inset:\\s*0\\s*!important;/s.test(globalCss);
+      console.log((overlayReady ? 'PASS' : 'FAIL') + ' | live global CSS v4 keeps now-playing overlay out of document flow | HTTP ' + globalResponse.status);
+      if (!overlayReady) failures.push('live global CSS v4 is missing the fixed now-playing overlay correction');
     } catch (error) {
-      failures.push('live theme stylesheet probe failed: ' + error.message);
+      failures.push('live stylesheet probe failed: ' + error.message);
     }
   }
   if (failures.length) {

@@ -111,6 +111,10 @@ async function main() {
     await saveUrl(assetUrl,'assets/vendor/leaflet/'+relative);
     leafletCss=leafletCss.split(ref).join('/assets/vendor/leaflet/'+relative);
   }
+  for(const name of ['images/marker-icon.png','images/marker-icon-2x.png','images/marker-shadow.png','images/layers.png','images/layers-2x.png']) {
+    const file=path.join(ROOT,'assets/vendor/leaflet',name);
+    if(!fs.existsSync(file)) await saveUrl(new URL(name,leafletBase).href,'assets/vendor/leaflet/'+name);
+  }
   write('assets/vendor/leaflet/leaflet.css',leafletCss);
   await saveUrl(leafletBase+'leaflet.js','assets/vendor/leaflet/leaflet.js');
   await saveLicense('https://raw.githubusercontent.com/Leaflet/Leaflet/v1.9.4/LICENSE','assets/vendor/leaflet/LICENSE');

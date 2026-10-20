@@ -67,7 +67,7 @@ jobs:
             ['theme stylesheet cache key v19', /nightcast-themes\.css\?v=19/.test(html)],
             ['Moonlight contrast stylesheet cache key v13', html.includes('nightcast-moonlight-contrast.css?v=13')],
             ['Moonlight footer override exists after legacy reset', contrast.lastIndexOf('Final Moonlight footer override') > contrast.lastIndexOf('background-image:none!important')],
-            ['Moonlight panel has light gradient and dark text', /:root\\[data-theme="moonlight"\\] body \\.nc-footer-download\\{[^}]*linear-gradient\\([^}]*#fffefa[^}]*--nc-download-ink:#242936/s.test(contrast)],
+            ['Moonlight panel has light gradient and dark text', /:root\[data-theme="moonlight"\] body \.nc-footer-download\{[^}]*linear-gradient\([^}]*#fffefa[^}]*--nc-download-ink:#242936/s.test(contrast)],
             ['Android CTA defines explicit link states', ['.nc-footer-download-direct:link','.nc-footer-download-direct:visited','.nc-footer-download-direct:hover','.nc-footer-download-direct:focus-visible','.nc-footer-download-direct:active'].every(x => themes.includes(x))],
             ['iOS CTA retains explicit blue background and white text', contrast.includes('background:#007AFF!important;color:#fff!important;-webkit-text-fill-color:#fff!important')]
           ];

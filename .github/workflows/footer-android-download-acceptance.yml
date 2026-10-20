@@ -51,6 +51,7 @@ jobs:
         run: node tests/footer-android-live-links.cjs
 
       - name: Verify the published NightCast footer and stylesheet
+        if: github.event_name != 'pull_request'
         run: node tests/footer-android-live-site.cjs
 
       - name: Publish test summary

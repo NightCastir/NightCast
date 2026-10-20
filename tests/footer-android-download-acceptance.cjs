@@ -29,8 +29,9 @@ const server = http.createServer((req, res) => {
   check('direct APK button points to official NightCast download endpoint', /href="https:\/\/www\.nightcast\.ir\/downloadrelease\/NightCast\.apk"[\s\S]{0,120}download="NightCast\.apk"/.test(html));
   check('Cafe Bazaar button uses official Cafe Bazaar domain and safe new-tab attributes', /href="https:\/\/cafebazaar\.ir\/app\/ir\.nightcast\.app"[\s\S]{0,120}target="_blank" rel="noopener noreferrer"/.test(html));
   check('Android and store icons are present', /fa-brands fa-android/.test(html) && /fa-solid fa-store/.test(html));
-  check('theme stylesheet cache version is bumped', /nightcast-themes\.css\?v=9/.test(html));
+  check('theme stylesheet cache version is bumped', /nightcast-themes\.css\?v=10/.test(html));
   check('cosmic CTA has responsive, focus-visible and reduced-motion styles', css.includes('.nc-footer-download::before') && css.includes('.nc-footer-download-button:focus-visible') && css.includes('@media(max-width:760px)') && css.includes('prefers-reduced-motion:reduce'));
+  check('direct APK CTA explicitly fixes link, visited, hover, focus and active text colors', ['.nc-footer-download-direct:link','.nc-footer-download-direct:visited','.nc-footer-download-direct:hover','.nc-footer-download-direct:focus','.nc-footer-download-direct:focus-visible','.nc-footer-download-direct:active','-webkit-text-fill-color:#fff'].every(rule => css.includes(rule)));
   check('Moonlight theme has a dedicated light readable CTA palette', /:root\[data-theme="moonlight"\] \.nc-footer-download/.test(css) && css.includes('--nc-download-ink:#242936'));
 
   await new Promise(resolve => server.listen(4173, '127.0.0.1', resolve));
@@ -49,6 +50,27 @@ const server = http.createServer((req, res) => {
       await panel.scrollIntoViewIfNeeded({ timeout: 15000 });
       check(viewport.name + ': download panel is visible', await panel.isVisible());
       check(viewport.name + ': both download choices are visible', await page.locator('.nc-footer-download-button').count() === 2 && await page.locator('.nc-footer-download-button').nth(0).isVisible() && await page.locator('.nc-footer-download-button').nth(1).isVisible());
+      const directButton = page.locator('.nc-footer-download-direct');
+      const colorOf = async state => directButton.evaluate((el, state) => {
+        const style = getComputedStyle(el);
+        const text = getComputedStyle(el.querySelector('strong'));
+        return { state, buttonColor: style.color, textColor: text.color, textFill: text.webkitTextFillColor, background: style.backgroundImage, outlineStyle: style.outlineStyle };
+      }, state);
+      const baseState = await colorOf('default');
+      check(viewport.name + ': direct button default text is white and visible', baseState.buttonColor === 'rgb(255, 255, 255)' && baseState.textColor === 'rgb(255, 255, 255)' && baseState.textFill === 'rgb(255, 255, 255)' && baseState.background.includes('gradient'), JSON.stringify(baseState));
+      await directButton.hover();
+      await page.waitForTimeout(250);
+      const hoverState = await colorOf('hover');
+      check(viewport.name + ': hover preserves readable white text', hoverState.buttonColor === 'rgb(255, 255, 255)' && hoverState.textColor === 'rgb(255, 255, 255)' && hoverState.background.includes('gradient'), JSON.stringify(hoverState));
+      await directButton.focus();
+      const focusState = await colorOf('focus');
+      check(viewport.name + ': keyboard/programmatic focus preserves readable text', focusState.buttonColor === 'rgb(255, 255, 255)' && focusState.textColor === 'rgb(255, 255, 255)' && focusState.background.includes('gradient'), JSON.stringify(focusState));
+      await page.mouse.move(5, 5);
+      await directButton.hover();
+      await page.mouse.down();
+      const activeState = await colorOf('active');
+      check(viewport.name + ': pressed/active state preserves readable text', activeState.buttonColor === 'rgb(255, 255, 255)' && activeState.textColor === 'rgb(255, 255, 255)' && activeState.background.includes('gradient'), JSON.stringify(activeState));
+      await page.mouse.up();
       const layout = await page.evaluate(() => {
         const panel = document.querySelector('.nc-footer-download');
         const buttons = Array.from(document.querySelectorAll('.nc-footer-download-button'));

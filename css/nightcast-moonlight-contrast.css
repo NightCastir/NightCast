@@ -180,3 +180,82 @@
 :root[data-theme="moonlight"] .login-card :is(h1,h2,h3,strong){color:#172033!important;-webkit-text-fill-color:#172033!important}
 :root[data-theme="moonlight"] .login-card :is(p,small,.hero-text,.cosmic-eyebrow,footer){color:#4B5568!important;-webkit-text-fill-color:#4B5568!important}
 :root[data-theme="moonlight"] .login-card .google-login-container{color:#172033!important}
+
+/* Focused repair: podcast-detail dialog + About page contrast in Moonlight.
+   Keep the modal backdrop translucent; make the dialog itself a light surface. */
+:root[data-theme="moonlight"] #ncPodcastDetail.nc-podcast-detail{
+  color:#172033!important;
+  background:transparent!important;
+  background-image:none!important;
+  box-shadow:none!important;
+}
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-dialog{
+  color:#172033!important;
+  background:#FFFFFF!important;
+  background-image:linear-gradient(145deg,#FFFFFF 0%,#F8FAFD 100%)!important;
+  border:1px solid #D5DCE7!important;
+  box-shadow:0 24px 70px rgba(23,32,51,.20)!important;
+}
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-topbar{
+  color:#243047!important;
+  background:#F3F5F9!important;
+  border-bottom:1px solid #D5DCE7!important;
+}
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-topbar span,
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-topbar i,
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-close{
+  color:#243047!important;
+  -webkit-text-fill-color:currentColor!important;
+}
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-scroll{
+  color:#172033!important;
+  background:transparent!important;
+}
+:root[data-theme="moonlight"] #ncPodcastDetail :is(.nc-detail-section,.nc-detail-content,.nc-detail-description,.nc-detail-meta,.nc-detail-info,.nc-detail-summary,.nc-detail-body,.nc-detail-episode,.nc-detail-row){
+  color:#172033!important;
+  background:#FFFFFF!important;
+  background-image:none!important;
+  border-color:#D5DCE7!important;
+}
+:root[data-theme="moonlight"] #ncPodcastDetail :is(h1,h2,h3,h4,h5,h6,strong,b,dt,.nc-detail-title,.nc-detail-label){
+  color:#172033!important;
+  -webkit-text-fill-color:#172033!important;
+}
+:root[data-theme="moonlight"] #ncPodcastDetail :is(p,span,li,dd,small,.nc-detail-description,.nc-detail-muted,.nc-detail-caption){
+  color:#465166!important;
+  -webkit-text-fill-color:#465166!important;
+}
+:root[data-theme="moonlight"] #ncPodcastDetail :is(a:not(.btn),.nc-detail-link){
+  color:#3730A3!important;
+  -webkit-text-fill-color:#3730A3!important;
+}
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-close{
+  background:#FFFFFF!important;
+  border:1px solid #C7D0DE!important;
+}
+:root[data-theme="moonlight"] :is(.nc-about-block,.nc-section-intro,.nc-identity,.nc-about-grid,.nc-about-content,.nc-about-feature,.nc-editorial-card,.nc-identity-quote,.nc-mission-card,.nc-process-step,.nc-why){
+  color:#172033!important;
+}
+:root[data-theme="moonlight"] :is(.nc-about-block,.nc-editorial-card,.nc-identity-quote,.nc-mission-card,.nc-process-step,.nc-why){
+  background:#FFFFFF!important;
+  background-image:none!important;
+  border-color:#D5DCE7!important;
+  box-shadow:0 8px 24px rgba(23,32,51,.045)!important;
+}
+:root[data-theme="moonlight"] :is(.nc-about-block,.nc-editorial-card,.nc-identity-quote,.nc-mission-card,.nc-process-step,.nc-why) :is(h1,h2,h3,h4,h5,h6,strong,b){
+  color:#172033!important;
+  -webkit-text-fill-color:#172033!important;
+}
+:root[data-theme="moonlight"] :is(.nc-about-block,.nc-editorial-card,.nc-identity-quote,.nc-mission-card,.nc-process-step,.nc-why) :is(p,span,li,small,em,.nc-section-text,.nc-about-lead){
+  color:#465166!important;
+  -webkit-text-fill-color:#465166!important;
+}
+:root[data-theme="moonlight"] .nc-identity-quote i,
+:root[data-theme="moonlight"] .nc-about-block .nc-section-eyebrow{
+  color:#4338CA!important;
+  -webkit-text-fill-color:#4338CA!important;
+}
+:root[data-theme="moonlight"] :is(.nc-about-block,.nc-editorial-card,.nc-identity-quote,.nc-mission-card,.nc-process-step,.nc-why) a{
+  color:#3730A3!important;
+  -webkit-text-fill-color:#3730A3!important;
+}

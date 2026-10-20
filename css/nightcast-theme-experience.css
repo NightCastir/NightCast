@@ -122,3 +122,14 @@ html[dir="ltr"] #ncThemeRibbon {
     transition: none !important;
   }
 }
+
+
+/* Keep the open state stronger than the direction-specific closed transform. */
+html[dir="rtl"] .nc-theme-ribbon.is-open,
+html[dir="rtl"] #ncThemeRibbon.is-open,
+html[dir="ltr"] .nc-theme-ribbon.is-open,
+html[dir="ltr"] #ncThemeRibbon.is-open {
+  transform: translateX(0);
+  visibility: visible;
+  pointer-events: auto;
+}

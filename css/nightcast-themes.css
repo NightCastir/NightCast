@@ -942,3 +942,23 @@ html[data-theme="moonlight"] #ncPodcastDetail #ncPodcastDetailBody .nc-detail-se
 html[data-theme="moonlight"] #ncPodcastDetail #ncPodcastDetailBody .nc-detail-section p#ncDetailReadableSample{
   color:#454D5D!important;
 }
+
+
+/* Use the official 512px NightCast app artwork in the initial listening-experience loader. */
+#nc-entry-loader .nc-entry-orbit{display:grid!important;place-items:center!important}
+#nc-entry-loader img.nc-entry-core{
+  display:block!important;
+  position:relative!important;
+  z-index:2!important;
+  width:clamp(64px,18vw,88px)!important;
+  height:clamp(64px,18vw,88px)!important;
+  max-width:72%!important;
+  max-height:72%!important;
+  object-fit:contain!important;
+  border:0!important;
+  border-radius:18px!important;
+  background:transparent!important;
+  box-shadow:0 0 28px var(--nc-theme-glow),0 0 60px color-mix(in srgb,var(--nc-theme-primary) 24%,transparent)!important;
+  animation:none!important;
+}
+#nc-entry-loader .nc-entry-orbit .nc-entry-core{background:transparent!important}

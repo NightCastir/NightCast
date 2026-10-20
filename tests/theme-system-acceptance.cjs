@@ -86,7 +86,7 @@ const assert = require('node:assert/strict');
 
     await page.evaluate(() => {
       const grid = document.getElementById('podcastGrid');
-      if (grid && !grid.querySelector('.podcast-card')) grid.innerHTML = '<article class="podcast-card"><h3>Theme acceptance card</h3><p>Surface and text sample</p><button type="button">Action</button></article>';
+      if (grid && !grid.querySelector('.podcast-card')) grid.innerHTML = '<article class="podcast-card"><div class="podcast-info"><div class="podcast-card-overline"><span class="podcast-category">دسته آزمایشی</span><span class="podcast-episode">قسمت ۱</span></div><h3 class="podcast-title">Theme acceptance card</h3><p class="podcast-desc">Surface and text sample</p><div class="meta"><span>آزمون</span></div><div class="card-footer"><button class="btn btn-secondary" type="button">Action</button></div></div></article>';
     });
     const themeIds = ['midnight-cosmos','aurora','studio-noir','deep-ocean','royal-gold','neon-city','persian-heritage','moonlight'];
     const observedCardSurfaces = new Set();

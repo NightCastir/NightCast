@@ -8,9 +8,9 @@
         var supported = true;
         try { new Function("var a = {}; return a?.x ?? 0;"); }
         catch (error) { supported = false; }
-        if (supported || /(?:^|\\/)tv-lite\\.html$/.test(window.location.pathname)) return;
+        if (supported || /(?:^|\/)tv-lite\.html$/.test(window.location.pathname)) return;
         var section = "podcasts";
-        var path = String(window.location.pathname || "").replace(/\\/+$/, "");
+        var path = String(window.location.pathname || "").replace(/\/+$/, "");
         if (path === "/about") section = "about";
         else if (path === "/contact") section = "contact";
         else {

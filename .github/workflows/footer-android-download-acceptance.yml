@@ -5,12 +5,14 @@ on:
     branches:
       - main
       - feat/footer-android-download-cta
+      - fix/footer-moonlight-pwa-acceptance
   pull_request:
     branches:
       - main
     paths:
       - "index.html"
       - "css/nightcast-themes.css"
+      - "css/nightcast-moonlight-contrast.css"
       - "css/nightcast-platform-download.css"
       - "js/nightcast-pwa.js"
       - "manifest.json"

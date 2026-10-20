@@ -503,6 +503,13 @@
                     const response = await fetch(CONFIG.API_BASE + "/public/podcasts/stats", {headers:{"Accept":"application/json"}, cache:"no-store"});
                     const data = await response.json().catch(() => ({}));
                     if (request !== podcastCardStatsRequest || !response.ok || !data.success) return;
+                    if (data.degraded) {
+                        document.querySelectorAll("[data-comment-count], [data-like-count]").forEach(el => {
+                            el.textContent = "—";
+                            el.title = data.message || "آمار موقتاً در دسترس نیست.";
+                        });
+                        return;
+                    }
                     const stats = data.stats || {};
                     document.querySelectorAll("[data-comment-count]").forEach(el => {
                         const item = stats[String(el.dataset.commentCount)] || {};
@@ -597,6 +604,10 @@
                     const data = await response.json().catch(() => ({}));
                     if (requestId !== commentsRequestSequence || Number(activeCommentsPodcastId) !== Number(id)) return;
                     if (!response.ok || !data.success) throw new Error(data.message || "دریافت دیدگاه‌ها ممکن نشد.");
+                    if (data.degraded) {
+                        if (list) list.innerHTML = '<div class="nc-comments-empty"><i class="fa-solid fa-cloud-arrow-down" aria-hidden="true"></i>' + escapeHtml(data.message || "دیدگاه‌ها موقتاً در دسترس نیستند.") + '</div>';
+                        return;
+                    }
                     renderPodcastComments(data.comments || []);
                     loadPodcastCardStats();
                 } catch (error) {

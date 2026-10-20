@@ -1,0 +1,68 @@
+name: NightCast Theme Ribbon Dismissal
+on:
+  push:
+    branches: [main, 'fix/theme-ribbon-rtl-dismissal']
+    paths:
+      - 'css/nightcast-theme-experience.css'
+      - 'js/nightcast-theme-experience.js'
+      - 'tests/theme-ribbon-dismissal.cjs'
+      - '.github/workflows/theme-ribbon-dismissal.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'css/nightcast-theme-experience.css'
+      - 'js/nightcast-theme-experience.js'
+      - 'tests/theme-ribbon-dismissal.cjs'
+      - '.github/workflows/theme-ribbon-dismissal.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ribbon-dismissal-browser-tests:
+    name: RTL drawer dismissal — desktop, tablet, mobile
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Start local static server
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/nightcast-ribbon-http.log 2>&1 &
+          for _ in $(seq 1 40); do
+            if curl --silent --fail http://127.0.0.1:4173/index.html >/dev/null; then exit 0; fi
+            sleep 0.25
+          done
+          cat /tmp/nightcast-ribbon-http.log
+          exit 1
+      - name: Test ribbon open and dismissal behavior
+        run: node tests/theme-ribbon-dismissal.cjs
+      - name: Verify RTL-specific hidden-state safeguards
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const css = fs.readFileSync('css/nightcast-theme-experience.css', 'utf8');
+          const test = fs.readFileSync('tests/theme-ribbon-dismissal.cjs', 'utf8');
+          const checks = [
+            ['RTL ribbon moves off the left edge when closed', /html\[dir="rtl"\][\s\S]*?transform:\s*translateX\(-105%\)/.test(css)],
+            ['LTR ribbon retains the right-edge exit direction', /html\[dir="ltr"\][\s\S]*?transform:\s*translateX\(105%\)/.test(css)],
+            ['aria-hidden ribbon cannot remain visible or receive pointer input', /\.nc-theme-ribbon\[aria-hidden="true"\][\s\S]*?visibility:\s*hidden\s*!important;[\s\S]*?pointer-events:\s*none\s*!important;/.test(css)],
+            ['dedicated browser test covers desktop, tablet, and mobile', ['desktop','tablet','mobile'].every(label => test.includes(label))],
+            ['dedicated browser test covers close button, outside click, and Escape', ['close button','outside click','Escape'].every(label => test.includes(label))]
+          ];
+          let failed = false;
+          for (const [name, ok] of checks) {
+            console.log((ok ? 'PASS' : 'FAIL') + ' | ' + name);
+            if (!ok) failed = true;
+          }
+          if (failed) process.exit(1);
+          NODE

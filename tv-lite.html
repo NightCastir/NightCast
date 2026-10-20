@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#08101f">
+<title>NightCast | نسخه سازگار با تلویزیون</title>
+<style>
+html{background:#07101f;color:#f5f7ff;font-family:Tahoma,Arial,sans-serif}
+body{margin:0;background:radial-gradient(ellipse at top,#16294a 0,#07101f 62%);min-height:100vh}
+*{box-sizing:border-box}
+header{padding:22px clamp(16px,4vw,48px);border-bottom:1px solid #30405c;background:#08101feF}
+.brand{font-size:clamp(24px,3vw,38px);font-weight:bold;letter-spacing:2px;color:#e8f2ff}
+.brand span{display:block;font-size:15px;font-weight:normal;letter-spacing:0;color:#b6c5df;margin-top:8px}
+nav{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+button,input{font:inherit}
+nav button,.action{min-height:48px;padding:10px 20px;border:1px solid #53698e;border-radius:12px;background:#172744;color:#fff;cursor:pointer}
+nav button[aria-current="page"]{background:#e3b86b;color:#141c2b;border-color:#e3b86b;font-weight:bold}
+main{max-width:1500px;margin:auto;padding:24px clamp(14px,3vw,40px) 48px}
+h1{font-size:clamp(25px,3vw,42px);margin:4px 0 10px}
+.intro{color:#c3d0e6;font-size:18px;line-height:1.9;margin:0 0 22px}
+.toolbar{display:flex;gap:12px;flex-wrap:wrap;margin:18px 0 24px}
+#search{flex:1;min-width:220px;min-height:48px;border-radius:12px;border:1px solid #526584;background:#0d1a30;color:#fff;padding:10px 14px;font-size:18px}
+#count{color:#d8e2f3;align-self:center}
+.grid{display:flex;flex-wrap:wrap;gap:18px}
+.card{display:flex;flex:1 1 300px;max-width:460px;min-width:260px;gap:14px;padding:16px;border:1px solid #2b4264;border-radius:18px;background:#101e34;align-items:flex-start}
+.cover{width:112px;height:112px;flex:0 0 112px;object-fit:cover;border-radius:12px;background:#253650}
+.card h2{font-size:19px;line-height:1.6;margin:0 0 6px}
+.meta{font-size:13px;color:#b6c6df;margin-bottom:8px}
+.summary{font-size:14px;line-height:1.8;color:#d5deed;margin:0 0 12px}
+.card button{min-height:44px;padding:8px 16px;border:0;border-radius:10px;background:#e3b86b;color:#172033;font-weight:bold;cursor:pointer}
+.panel{padding:24px;border:1px solid #304765;border-radius:18px;background:#101e34;line-height:2;font-size:18px}
+.panel a{color:#f2ce8a}
+.player{position:sticky;bottom:0;padding:14px 18px;background:#08101ff2;border-top:1px solid #435776}
+.player strong{display:block;margin-bottom:8px}
+audio{width:100%;max-width:100%}
+.notice{padding:12px 16px;border:1px solid #6a5737;background:#2a241a;color:#f6dfb2;border-radius:12px;margin:16px 0}
+[hidden]{display:none!important}
+@media(max-width:600px){.card{max-width:none;min-width:0;flex-basis:100%}.cover{width:88px;height:88px;flex-basis:88px}.summary{font-size:13px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">NIGHTCAST<span>رادیویی برای شنیدن، فکر کردن و کشف کردن</span></div>
+  <nav aria-label="منوی اصلی">
+    <button type="button" data-section="podcasts" aria-current="page">پادکست‌ها</button>
+    <button type="button" data-section="about">درباره ما</button>
+    <button type="button" data-section="contact">تماس با ما</button>
+  </nav>
+</header>
+<main>
+  <section id="view-podcasts">
+    <h1>آرشیو پادکست‌های NightCast</h1>
+    <p class="intro">خلاصه و تحلیل کتاب، روان‌شناسی، رشد فردی و مدیریت؛ برای شنیدن و یادگرفتن.</p>
+    <div class="notice" id="status" role="status" aria-live="polite">در حال بارگذاری آرشیو پادکست‌ها…</div>
+    <div class="toolbar"><input id="search" type="search" placeholder="جست‌وجوی عنوان، نویسنده یا دسته‌بندی" aria-label="جست‌وجوی پادکست"><span id="count"></span></div>
+    <div class="grid" id="podcast-list"></div>
+  </section>
+  <section id="view-about" hidden>
+    <h1>درباره NightCast</h1>
+    <div class="panel">
+      <p>NightCast یک رادیوی صوتی دیجیتال است؛ جایی که کتاب، دانش، روایت و صدا در قالب تجربه‌هایی شنیدنی به هم می‌رسند.</p>
+      <p>ما ایده‌های ارزشمند را از میان صفحات بیرون می‌کشیم، روایت می‌کنیم و به شنونده می‌رسانیم؛ برای لحظه‌هایی که می‌خواهید چیزی فراتر از یک صدای پس‌زمینه بشنوید.</p>
+      <p><button class="action" type="button" data-section="podcasts">رفتن به آرشیو پادکست‌ها</button></p>
+    </div>
+  </section>
+  <section id="view-contact" hidden>
+    <h1>با NightCast در ارتباط باشید</h1>
+    <div class="panel">
+      <p>صدای شما بخشی از مسیر NightCast است. برای ارتباط با تیم NightCast از راه‌های زیر استفاده کنید.</p>
+      <p>تلفن: <a href="tel:05136624919">05136624919</a></p>
+      <p>وب‌سایت: <a href="https://nightcast.ir/">nightcast.ir</a></p>
+      <p><button class="action" type="button" data-section="podcasts">بازگشت به پادکست‌ها</button></p>
+    </div>
+  </section>
+</main>
+<div class="player">
+  <strong id="now-playing">برای شنیدن، یک پادکست را انتخاب کنید.</strong>
+  <audio id="audio" controls preload="none"></audio>
+</div>
+<script>
+(function () {
+  var data = [];
+  var currentSection = 'podcasts';
+  var list = document.getElementById('podcast-list');
+  var status = document.getElementById('status');
+  var search = document.getElementById('search');
+  var count = document.getElementById('count');
+  var audio = document.getElementById('audio');
+  var nowPlaying = document.getElementById('now-playing');
+
+  function safe(value) {
+    return String(value == null ? '' : value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function duration(seconds) {
+    var n = parseInt(seconds, 10);
+    if (!n || n < 0) return '';
+    return Math.floor(n / 60) + ' دقیقه';
+  }
+  function setSection(name) {
+    if (name !== 'about' && name !== 'contact') name = 'podcasts';
+    currentSection = name;
+    document.getElementById('view-podcasts').hidden = name !== 'podcasts';
+    document.getElementById('view-about').hidden = name !== 'about';
+    document.getElementById('view-contact').hidden = name !== 'contact';
+    var buttons = document.querySelectorAll('[data-section]');
+    var i;
+    for (i = 0; i < buttons.length; i++) {
+      if (buttons[i].getAttribute('data-section') === name) buttons[i].setAttribute('aria-current', 'page');
+      else buttons[i].removeAttribute('aria-current');
+    }
+    try { window.history.replaceState(null, '', name === 'podcasts' ? '/tv-lite.html' : '/tv-lite.html?section=' + name); } catch (e) {}
+    window.scrollTo(0, 0);
+  }
+  function render() {
+    var q = String(search.value || '').toLowerCase().replace(/^\s+|\s+$/g, '');
+    var html = '';
+    var visible = 0;
+    var i;
+    for (i = 0; i < data.length; i++) {
+      var p = data[i] || {};
+      var text = [p.title, p.book_name, p.author_name, p.category_name, p.summary, p.description].join(' ').toLowerCase();
+      if (q && text.indexOf(q) < 0) continue;
+      if (p.status && p.status !== 'active') continue;
+      var cover = String(p.cover_url || '/assets/icons/icon-512.png');
+      if (cover.indexOf('https://') !== 0 && cover.charAt(0) !== '/') cover = '/assets/icons/icon-512.png';
+      var audioUrl = String(p.audio_url || '');
+      if (audioUrl.indexOf('https://') !== 0 && audioUrl.indexOf('/') !== 0) audioUrl = '';
+      html += '<article class="card"><img class="cover" loading="lazy" src="' + safe(cover) + '" alt=""><div><h2>' + safe(p.title || p.book_name || 'پادکست NightCast') + '</h2><div class="meta">' + safe(p.author_name || '') + (p.category_name ? ' · ' + safe(p.category_name) : '') + (duration(p.duration_seconds) ? ' · ' + safe(duration(p.duration_seconds)) : '') + '</div><p class="summary">' + safe(p.summary || p.description || 'برای شنیدن این اپیزود آماده شوید.') + '</p><button type="button" data-play="' + safe(audioUrl) + '" data-title="' + safe(p.title || p.book_name || 'NightCast') + '"' + (audioUrl ? '' : ' disabled') + '>▶ پخش پادکست</button></div></article>';
+      visible++;
+    }
+    list.innerHTML = html;
+    count.innerHTML = 'نمایش ' + visible + ' از ' + data.length + ' پادکست';
+    if (!visible) list.innerHTML = '<div class="panel">موردی مطابق جست‌وجو پیدا نشد.</div>';
+  }
+  function loadUrl(url, fallback) {
+    var request = new XMLHttpRequest();
+    request.open('GET', url, true);
+    request.timeout = 12000;
+    request.onreadystatechange = function () {
+      if (request.readyState !== 4) return;
+      if (request.status >= 200 && request.status < 300) {
+        try {
+          var result = JSON.parse(request.responseText);
+          var records = Object.prototype.toString.call(result) === '[object Array]' ? result : (result.podcasts || result.data || result.items || []);
+          if (Object.prototype.toString.call(records) === '[object Array]' && records.length) {
+            data = records;
+            status.innerHTML = 'آرشیو پادکست‌ها آماده است.';
+            render();
+            return;
+          }
+        } catch (e) {}
+      }
+      if (fallback) loadUrl(fallback, '');
+      else {
+        status.innerHTML = 'دریافت آرشیو آنلاین ممکن نشد. لطفاً اتصال اینترنت تلویزیون را بررسی کنید.';
+      }
+    };
+    request.onerror = request.ontimeout = function () {
+      if (fallback) loadUrl(fallback, '');
+      else status.innerHTML = 'ارتباط با آرشیو برقرار نشد. لطفاً اتصال اینترنت تلویزیون را بررسی کنید.';
+    };
+    request.send(null);
+  }
+  document.addEventListener('click', function (event) {
+    var target = event.target;
+    while (target && target !== document && !target.getAttribute('data-section') && !target.getAttribute('data-play')) target = target.parentNode;
+    if (!target || target === document) return;
+    var section = target.getAttribute('data-section');
+    if (section) { setSection(section); return; }
+    var source = target.getAttribute('data-play');
+    if (source) {
+      if (audio.getAttribute('src') !== source) audio.setAttribute('src', source);
+      nowPlaying.innerHTML = 'در حال پخش: ' + safe(target.getAttribute('data-title') || 'NightCast');
+      var play = audio.play();
+      if (play && typeof play.catch === 'function') play.catch(function () { nowPlaying.innerHTML = 'برای شروع پخش، دکمه Play در پلیر را انتخاب کنید.'; });
+    }
+  });
+  search.oninput = render;
+  var match = /(?:\?|&)section=(about|contact)(?:&|$)/.exec(window.location.search);
+  setSection(match ? match[1] : 'podcasts');
+  loadUrl('/users/data/podcasts.json', 'https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=50');
+})();
+</script>
+</body>
+</html>

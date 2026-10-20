@@ -119,9 +119,9 @@ jobs:
             for url in "${urls[@]}"; do
               echo "Checking ${url}"
               body="$(curl --location --silent --show-error --max-time 20 --user-agent 'NightCast-Live-Verification/1.0' "${url}" 2>/dev/null || true)"
-              if [[ "${body}" == *'ncAudioVisualizer'* && "${body}" == *'nc-player-cover-clickable'* && "${body}" == *'/js/nightcast-app.js?v=1'* ]]; then
+              if [[ "${body}" == *'ncAudioVisualizer'* && "${body}" == *'nc-player-cover-clickable'* && "${body}" == *'/js/nightcast-app.js?v=2'* ]]; then
                 asset_origin="$(printf '%s' "${url}" | sed -E 's#^(https?://[^/]+).*#\1#')"
-                app_js="$(curl --location --silent --show-error --max-time 20 --user-agent 'NightCast-Live-Verification/1.0' "${asset_origin}/js/nightcast-app.js?v=1" 2>/dev/null || true)"
+                app_js="$(curl --location --silent --show-error --max-time 20 --user-agent 'NightCast-Live-Verification/1.0' "${asset_origin}/js/nightcast-app.js?v=2" 2>/dev/null || true)"
                 player_js="$(curl --location --silent --show-error --max-time 20 --user-agent 'NightCast-Live-Verification/1.0' "${asset_origin}/js/nightcast-player.js?v=1" 2>/dev/null || true)"
                 if [[ "${app_js}" == *'getByteFrequencyData'* && "${app_js}" == *'createAnalyser('* && "${app_js}" == *'playerCover'* && "${player_js}" == *'NightCastPodcastBridge'* ]]; then
                   echo "PASS: production HTML references the external app/player scripts and the published scripts contain the visualizer/player implementation."

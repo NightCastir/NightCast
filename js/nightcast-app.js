@@ -224,6 +224,56 @@
 
             document.body.classList.remove("player-open");
 
+            // Mobile/tablet gesture: swipe the mini-player from left to right to pause and dismiss it.
+            // Interactive controls and the seek/volume sliders retain their normal touch behavior.
+            (() => {
+                const player = els.player;
+                if (!player || player.dataset.ncSwipeDismissBound === "1") return;
+                player.dataset.ncSwipeDismissBound = "1";
+                player.setAttribute("aria-hidden", player.classList.contains("show") ? "false" : "true");
+                let gesture = null;
+                const isTouchLayout = () => window.matchMedia("(max-width: 1024px)").matches;
+                const resetDrag = () => {
+                    player.classList.remove("nc-player-dragging");
+                    player.style.transform = "";
+                    player.style.opacity = "";
+                };
+                const dismissPlayer = () => {
+                    try { els.audio?.pause(); } catch (_) {}
+                    player.classList.remove("show");
+                    player.setAttribute("aria-hidden", "true");
+                    document.body.classList.remove("player-open");
+                    resetDrag();
+                    updateCardPlaying();
+                };
+                player.addEventListener("pointerdown", event => {
+                    if (!isTouchLayout() || event.pointerType !== "touch" || event.isPrimary === false) return;
+                    if (event.target instanceof Element && event.target.closest("button,input,select,textarea,a,[role='button']")) return;
+                    gesture = { x: event.clientX, y: event.clientY, id: event.pointerId, dx: 0, dy: 0 };
+                }, { passive: true });
+                player.addEventListener("pointermove", event => {
+                    if (!gesture || event.pointerId !== gesture.id || !isTouchLayout()) return;
+                    gesture.dx = event.clientX - gesture.x;
+                    gesture.dy = event.clientY - gesture.y;
+                    if (gesture.dx > 8 && Math.abs(gesture.dx) > Math.abs(gesture.dy) * 1.2) {
+                        player.classList.add("nc-player-dragging");
+                        player.style.transform = "translateX(" + Math.min(gesture.dx, window.innerWidth) + "px)";
+                        player.style.opacity = String(Math.max(.25, 1 - gesture.dx / Math.max(window.innerWidth * .85, 1)));
+                    }
+                }, { passive: true });
+                const finishGesture = event => {
+                    if (!gesture || (event && event.pointerId !== gesture.id)) return;
+                    const shouldDismiss = isTouchLayout() && gesture.dx >= 90 && gesture.dx > Math.abs(gesture.dy) * 1.35;
+                    gesture = null;
+                    if (shouldDismiss) dismissPlayer();
+                    else resetDrag();
+                };
+                player.addEventListener("pointerup", finishGesture, { passive: true });
+                player.addEventListener("pointercancel", () => { gesture = null; resetDrag(); }, { passive: true });
+                player.addEventListener("lostpointercapture", () => { gesture = null; resetDrag(); }, { passive: true });
+            })();
+
+
 
             const placeholder =
                 "https://placehold.co/600x600/11233A/E9BE70?text=NightCast";
@@ -2054,6 +2104,11 @@ LOGOUT
                 els.player.classList.add(
                     "show"
                 );
+
+                els.player.setAttribute("aria-hidden", "false");
+                els.player.style.transform = "";
+                els.player.style.opacity = "";
+                els.player.classList.remove("nc-player-dragging");
 
 
                 document.body.classList.add(

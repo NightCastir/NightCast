@@ -17,7 +17,7 @@ jobs:
   migrate:
     name: Download, localize, validate and commit static assets
     runs-on: ubuntu-latest
-    timeout-minutes: 28
+    timeout-minutes: 29
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

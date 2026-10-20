@@ -101,7 +101,7 @@
         #nc-theme-transition.is-active{opacity:1;visibility:visible;pointer-events:auto}
         #nc-theme-transition .nct-card{width:min(390px,92vw);padding:28px 24px;border:1px solid var(--nc-theme-border,rgba(255,255,255,.2));border-radius:24px;background:var(--nc-theme-surface,rgba(8,15,35,.95));box-shadow:0 28px 100px rgba(0,0,0,.4);text-align:center}
         #nc-theme-transition .nct-orbit{width:76px;height:76px;margin:0 auto 18px;border:1px solid var(--nc-theme-primary,#8b5cf6);border-right-color:var(--nc-theme-secondary,#38bdf8);border-radius:50%;display:grid;place-items:center;animation:nct-spin 1.2s linear infinite}
-        #nc-theme-transition .nct-core{width:26px;height:26px;border-radius:50%;background:var(--nc-theme-primary,#8b5cf6);box-shadow:0 0 28px var(--nc-theme-glow,rgba(139,92,246,.5))}
+        #nc-theme-transition .nct-core{display:block;width:44px;height:44px;max-width:62%;max-height:62%;object-fit:contain;border-radius:10px;background:transparent;box-shadow:0 0 24px var(--nc-theme-glow,rgba(139,92,246,.32));animation:none}
         #nc-theme-transition .nct-title{font:800 19px/1.7 Vazirmatn,sans-serif;margin:0 0 5px}
         #nc-theme-transition .nct-status{font:500 12px/1.9 Vazirmatn,sans-serif;color:var(--nc-theme-muted,#b8c4dc);margin:0 0 16px}
         #nc-theme-transition .nct-track{height:7px;overflow:hidden;border-radius:999px;background:color-mix(in srgb,var(--nc-theme-primary,#8b5cf6) 15%,transparent);border:1px solid var(--nc-theme-border,rgba(255,255,255,.2))}
@@ -117,7 +117,7 @@
     el.setAttribute("role","status");
     el.setAttribute("aria-live","polite");
     el.setAttribute("aria-label","در حال اعمال تم جدید");
-    el.innerHTML = '<div class="nct-card"><div class="nct-orbit" aria-hidden="true"><span class="nct-core"></span></div><h2 class="nct-title">در حال تغییر فضای NightCast</h2><p class="nct-status">در حال هماهنگ‌سازی رنگ‌ها، پنل‌ها و تصاویر…</p><div class="nct-track" role="progressbar" aria-label="پیشرفت تغییر تم" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="nct-fill"></span></div><span class="nct-percent">۰٪</span></div>';
+    el.innerHTML = '<div class="nct-card"><div class="nct-orbit" aria-hidden="true"><img class="nct-core" src="/assets/icons/icon-192.png" alt="" width="44" height="44" decoding="async"></div><h2 class="nct-title">در حال تغییر فضای NightCast</h2><p class="nct-status">در حال هماهنگ‌سازی رنگ‌ها، پنل‌ها و تصاویر…</p><div class="nct-track" role="progressbar" aria-label="پیشرفت تغییر تم" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="nct-fill"></span></div><span class="nct-percent">۰٪</span></div>';
     document.body.append(el);
     return el;
   }

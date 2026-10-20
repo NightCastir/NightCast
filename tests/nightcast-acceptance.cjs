@@ -151,7 +151,7 @@ report('0.5. Font Awesome uses self-hosted assets without CDN fallback', iconCdn
       iconCdnFailures.join(', ') || 'Icon-bearing documents use a primary stylesheet and no unconditional duplicate request');
 
     const staticAssetAudit = spawnSync(process.execPath, ['tests/cdn-asset-audit.cjs','--strict-assets'], { encoding: 'utf8' });
-    const auditSummary = (staticAssetAudit.stdout || '').split('\\n').find(line => line.startsWith('CDN INVENTORY')) || staticAssetAudit.stderr || '';
+    const auditSummary = (staticAssetAudit.stdout || '').split(/\r?\n/).find(line => line.startsWith('CDN INVENTORY')) || staticAssetAudit.stderr || '';
     report('0.5.1. Runtime has no static CDN asset or remote podcast-cover references', staticAssetAudit.status === 0, auditSummary.trim());
 
     const fallbackCatalog = JSON.parse(fs.readFileSync('users/data/podcasts.json','utf8'));

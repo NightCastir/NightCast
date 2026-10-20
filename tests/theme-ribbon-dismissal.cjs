@@ -33,7 +33,7 @@ const assert = require('node:assert/strict');
       check(`${viewport.label}: closed ribbon is outside viewport`, await panel.evaluate(el => { const r = el.getBoundingClientRect(); return r.right <= 0 || r.left >= innerWidth; }));
       
       await page.locator('#ncThemeLauncher').click();
-      await page.locator('#ncThemeRibbonScrim').click({ position: { x: 4, y: 4 } });
+      await page.locator('#ncThemeRibbonScrim').click({ position: { x: viewport.width - 4, y: 4 } });
       check(`${viewport.label}: outside click closes ribbon`, await panel.evaluate(el => !el.classList.contains('is-open') && el.getAttribute('aria-hidden') === 'true' && getComputedStyle(el).visibility === 'hidden'));
       
       await page.locator('#ncThemeLauncher').click();

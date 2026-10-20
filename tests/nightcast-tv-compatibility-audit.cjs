@@ -14,8 +14,18 @@ async function get(url) {
   const response = await fetch(url, { redirect: 'follow', signal: AbortSignal.timeout(15000) });
   return { response, body: await response.text() };
 }
+async function getPublishedHome() {
+  var latest;
+  for (var attempt = 1; attempt <= 18; attempt++) {
+    latest = await get(SITE + '/');
+    if (!latest.response.ok || latest.body.indexOf('new Function("var a = {}; return a?.x ?? 0;")') >= 0) return latest;
+    console.log('WAIT | Cloudflare deployment not visible yet | attempt ' + attempt + '/18');
+    await new Promise(function (resolve) { setTimeout(resolve, 10000); });
+  }
+  return latest;
+}
 (async () => {
-  const { response: homeResponse, body: html } = await get(SITE + '/');
+  const { response: homeResponse, body: html } = await getPublishedHome();
   add('Live homepage responds', homeResponse.ok, 'HTTP ' + homeResponse.status + ', final URL ' + homeResponse.url);
   if (!homeResponse.ok) throw new Error('Live homepage unavailable; cannot complete audit.');
   const refs = [...html.matchAll(/<script\b[^>]*\bsrc\s*=\s*["']([^"']+)["'][^>]*>/gi)]

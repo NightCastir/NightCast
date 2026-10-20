@@ -610,6 +610,22 @@ function silentWavDataUri() {
       await page.waitForFunction(() => document.querySelector('audio')?.paused === true, undefined, { timeout: 5000 });
       console.log('PASS | Audio pause control works');
 
+      // The cover artwork itself should use the same shared play/pause state.
+      const artwork = page.locator('.podcast-card[data-id="91001"] .podcast-cover');
+      await artwork.click({ position: { x: 12, y: 12 } });
+      await page.waitForFunction(() => {
+        const audio = document.querySelector('audio');
+        return !!audio && !audio.paused &&
+          document.querySelector('.podcast-card[data-id="91001"] [data-action="play"] i')?.classList.contains('fa-pause');
+      }, undefined, { timeout: 5000 });
+      console.log('PASS | Clicking podcast artwork starts playback');
+      await artwork.click({ position: { x: 12, y: 12 } });
+      await page.waitForFunction(() => document.querySelector('audio')?.paused === true, undefined, { timeout: 5000 });
+      await page.waitForFunction(() =>
+        document.querySelector('.podcast-card[data-id="91001"] [data-action="play"] i')?.classList.contains('fa-play')
+      , undefined, { timeout: 3000 });
+      console.log('PASS | Clicking podcast artwork pauses playback and synchronizes the card icon');
+
       // Switch to galaxy mode only for the planet/detail interaction.
       await page.locator('[data-nc-view="galaxy"]').click();
       await page.waitForSelector('#ncConstellation .nc-planet', { state: 'visible', timeout: 5000 });

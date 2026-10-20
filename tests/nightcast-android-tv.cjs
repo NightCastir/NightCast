@@ -4,6 +4,7 @@ const fs = require('node:fs');
 fs.mkdirSync('artifacts', { recursive: true });
 
 const BASE = process.env.NIGHTCAST_BASE_URL || 'https://nightcast.ir';
+const API_URL = process.env.NIGHTCAST_API_URL || 'https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=5';
 const results = [];
 function check(name, ok, detail = '') {
   results.push({ name, ok: !!ok, detail });
@@ -23,14 +24,22 @@ async function waitForPodcastCards(page) {
   const runtimeErrors = [];
   try {
     browser = await chromium.launch({ headless: true });
-    const api = await fetch(BASE + '/data/podcasts.json', { signal: AbortSignal.timeout(15000) });
+    const api = await fetch(API_URL, { headers: { accept: 'application/json' }, signal: AbortSignal.timeout(15000) });
     let records = [];
+    let payload = {};
     if (api.ok) {
-      const payload = await api.json();
-      records = Array.isArray(payload) ? payload : (payload.podcasts || payload.data || payload.items || []);
+      payload = await api.json();
+      records = Array.isArray(payload.podcasts) ? payload.podcasts : (Array.isArray(payload.data) ? payload.data : []);
     }
-    check('Live podcast feed responds with valid data', api.ok && Array.isArray(records) && records.length > 0,
-      'HTTP ' + api.status + '; records=' + records.length);
+    check('Live D1-backed podcast API responds with valid data', api.ok && payload.success === true && records.length > 0,
+      'HTTP ' + api.status + '; records=' + records.length + '; total=' + (payload.total ?? 'unknown'));
+
+    const fallback = await fetch(BASE + '/users/data/podcasts.json', { headers: { accept: 'application/json' }, signal: AbortSignal.timeout(15000) });
+    let fallbackPayload = {};
+    if (fallback.ok) fallbackPayload = await fallback.json();
+    const fallbackRecords = Array.isArray(fallbackPayload.podcasts) ? fallbackPayload.podcasts : [];
+    check('Static podcast fallback is reachable', fallback.ok && fallbackRecords.length > 0,
+      'HTTP ' + fallback.status + '; records=' + fallbackRecords.length);
 
     const sizes = [
       { name: 'TV-1080p', width: 1920, height: 1080 },

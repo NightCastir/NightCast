@@ -11,6 +11,7 @@ on:
       - "index.html"
       - "css/nightcast-themes.css"
       - "tests/footer-android-download-acceptance.cjs"
+      - "tests/footer-android-live-links.cjs"
       - ".github/workflows/footer-android-download-acceptance.yml"
   workflow_dispatch:
 
@@ -44,6 +45,9 @@ jobs:
       - name: Validate footer download markup, links, styles and theme support
         run: node tests/footer-android-download-acceptance.cjs
 
+      - name: Probe live APK and Cafe Bazaar destinations
+        run: node tests/footer-android-live-links.cjs
+
       - name: Publish test summary
         if: always()
         run: |
@@ -52,5 +56,5 @@ jobs:
             echo ""
             echo "- Checks the direct APK destination, Cafe Bazaar destination, Android/store icons, theme cache version, visual effects, keyboard focus and reduced-motion rules."
             echo "- Runs Chromium checks at mobile (390px), tablet (820px), and desktop (1440px), including CTA visibility, button dimensions, horizontal overflow, and Moonlight contrast."
-            echo "- This workflow validates UI wiring and responsive behavior; it does not claim the remote APK binary or Cafe Bazaar listing is available unless a separate live endpoint probe is performed."
+            echo "- A live endpoint probe also checks that the official APK URL and Cafe Bazaar listing respond successfully. This does not verify APK signing or installation on a physical Android device."
           } >> "$GITHUB_STEP_SUMMARY"

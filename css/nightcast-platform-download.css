@@ -1,0 +1,88 @@
+/* NightCast platform selector: Android downloads + iOS installable web app. */
+.nc-footer .nc-footer-download{
+  display:block;
+  grid-template-columns:minmax(0,1fr);
+  padding:clamp(16px,2.6vw,28px);
+}
+.nc-sr-only{
+  position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;
+  overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
+}
+.nc-platform-download-grid{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(14px,2.2vw,24px);
+  align-items:stretch;min-width:0;
+}
+.nc-platform-download-card{
+  min-width:0;display:flex;flex-direction:column;gap:16px;padding:clamp(16px,2.1vw,24px);
+  border:1px solid var(--nc-theme-border,var(--nc-theme-divider,rgba(148,163,184,.22)));
+  border-radius:20px;background:color-mix(in srgb,var(--nc-theme-surface,#101827) 82%,transparent);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045);
+}
+.nc-platform-download-heading{display:flex;align-items:center;gap:12px;min-width:0}
+.nc-platform-download-heading h3{margin:0;color:var(--nc-theme-text,#f7f8ff);font-size:1.12rem;line-height:1.5;font-weight:850}
+.nc-platform-icon{
+  display:grid;place-items:center;flex:0 0 48px;width:48px;height:48px;border-radius:15px;
+  background:color-mix(in srgb,var(--nc-theme-primary,#536dfe) 16%,var(--nc-theme-surface,#101827));
+  border:1px solid var(--nc-theme-border,rgba(148,163,184,.2));font-size:1.7rem;color:var(--nc-theme-accent,var(--nc-theme-secondary,#8ea8ff));
+}
+.nc-platform-android .nc-platform-icon{color:#55d68a}
+.nc-platform-ios .nc-platform-icon{color:var(--nc-theme-text,#f7f8ff)}
+.nc-platform-download-card .nc-footer-download-actions{grid-template-columns:minmax(0,1fr);gap:10px}
+.nc-platform-download-card .nc-footer-download-button{width:100%;min-width:0;min-height:68px;box-sizing:border-box;font:inherit;text-align:start;cursor:pointer}
+.nc-platform-download-card .nc-footer-download-button strong{overflow-wrap:anywhere}
+.nc-platform-download-card .nc-footer-download-button small{overflow-wrap:anywhere}
+.nc-platform-download-card .nc-footer-download-market{background:var(--nc-theme-panel-inset,var(--nc-theme-surface-2,rgba(255,255,255,.04)))}
+.nc-platform-download-card .nc-footer-download-ios{
+  color:var(--nc-theme-text,#f7f8ff)!important;
+  -webkit-text-fill-color:currentColor;
+  background:linear-gradient(130deg,color-mix(in srgb,var(--nc-theme-primary,#536dfe) 18%,var(--nc-theme-surface,#101827)),var(--nc-theme-surface-2,#111827));
+  border-color:var(--nc-theme-border,var(--nc-theme-divider,rgba(148,163,184,.24)));
+}
+.nc-platform-download-card .nc-footer-download-ios>i:first-child{background:transparent;color:var(--nc-theme-text,#f7f8ff)}
+.nc-platform-download-card .nc-footer-download-ios :is(strong,small,i){color:inherit;-webkit-text-fill-color:currentColor}
+.nc-platform-download-card .nc-footer-download-ios:hover{filter:brightness(1.08)}
+.nc-platform-download-description{margin:0;color:var(--nc-theme-muted,#b7c1d4);font-size:.86rem;line-height:1.9}
+:root[data-theme="moonlight"] .nc-platform-download-card{
+  background:rgba(255,255,255,.78);border-color:rgba(91,101,120,.22);box-shadow:0 8px 24px rgba(32,39,54,.045);
+}
+:root[data-theme="moonlight"] .nc-platform-download-heading h3,
+:root[data-theme="moonlight"] .nc-platform-ios .nc-platform-icon{color:#242936}
+:root[data-theme="moonlight"] .nc-platform-download-description{color:#535D70}
+:root[data-theme="moonlight"] .nc-platform-download-card .nc-footer-download-ios{
+  color:#242936!important;-webkit-text-fill-color:#242936;
+  background:linear-gradient(135deg,#fff,#f3f0e8);border-color:#d7d2c7;
+}
+.nc-pwa-install-dialog[hidden]{display:none!important}
+.nc-pwa-install-dialog{position:fixed;inset:0;z-index:2147482000;display:grid;place-items:center;padding:18px;isolation:isolate}
+.nc-pwa-install-backdrop{position:absolute;inset:0;width:100%;height:100%;border:0;background:rgba(2,6,23,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.nc-pwa-install-card{
+  position:relative;z-index:1;width:min(100%,520px);max-height:min(86dvh,760px);overflow:auto;
+  padding:clamp(22px,4vw,32px);border:1px solid var(--nc-theme-border,rgba(148,163,184,.24));
+  border-radius:24px;color:var(--nc-theme-text,#f7f8ff);
+  background:var(--nc-theme-surface,#0b1228);box-shadow:0 30px 100px rgba(0,0,0,.35);
+}
+.nc-pwa-install-close{position:absolute;inset-block-start:14px;inset-inline-end:14px;width:40px;height:40px;border-radius:12px;border:1px solid var(--nc-theme-border,rgba(148,163,184,.2));background:var(--nc-theme-surface-2,#172033);color:inherit;font-size:1.1rem;cursor:pointer}
+.nc-pwa-install-title{margin:0 46px 12px 0;font-size:1.25rem;line-height:1.7}
+.nc-pwa-install-content{margin:0;color:var(--nc-theme-muted,#b7c1d4);font-size:.95rem;line-height:2}
+.nc-pwa-install-content ol{padding-inline-start:1.4rem;margin:12px 0 0}
+.nc-pwa-install-content li{padding-inline-start:4px;margin:7px 0}
+.nc-pwa-install-content strong{color:var(--nc-theme-text,#fff)}
+.nc-pwa-install-footer{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.nc-pwa-install-footer a,.nc-pwa-install-footer button{display:inline-flex;justify-content:center;align-items:center;gap:8px;min-height:44px;padding:10px 16px;border-radius:12px;border:1px solid var(--nc-theme-border,rgba(148,163,184,.25));background:var(--nc-theme-surface-2,#172033);color:inherit;text-decoration:none;font:inherit;cursor:pointer}
+.nc-pwa-install-footer .nc-pwa-primary{background:linear-gradient(125deg,var(--nc-theme-primary,#536dfe),var(--nc-theme-secondary,#38BDF8));color:#fff;border-color:transparent}
+:root[data-theme="moonlight"] .nc-pwa-install-card{background:#fffefa;color:#242936;border-color:#ded9cf}
+:root[data-theme="moonlight"] .nc-pwa-install-content{color:#535D70}
+:root[data-theme="moonlight"] .nc-pwa-install-content strong{color:#242936}
+:root[data-theme="moonlight"] .nc-pwa-install-close{background:#f5f1e8;color:#242936}
+.nc-pwa-install-dialog :is(button,a):focus-visible{outline:3px solid var(--nc-theme-accent,var(--nc-theme-secondary,#38BDF8));outline-offset:3px}
+@media(max-width:760px){
+  .nc-platform-download-grid{grid-template-columns:minmax(0,1fr);gap:13px}
+  .nc-platform-download-card{padding:17px;gap:13px}
+  .nc-platform-download-heading h3{font-size:1.04rem}
+  .nc-pwa-install-dialog{padding:12px}
+  .nc-pwa-install-card{max-height:90dvh;border-radius:20px}
+}
+@media(prefers-reduced-motion:reduce){
+  .nc-platform-download-card .nc-footer-download-button{transition:none!important}
+  .nc-platform-download-card .nc-footer-download-button:hover{transform:none}
+}

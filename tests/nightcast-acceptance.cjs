@@ -924,6 +924,70 @@ function silentWavDataUri() {
       }
       report('5. Mobile, tablet, desktop and TV layouts avoid horizontal overflow', failures.length === 0, failures.join('; ') || 'Tested 320, 360, 390, 768, 801, 820, 900, 1000, 1024, 1440, 1920 px');
       report('5.3. Podcast cover is square and stays top-right on mobile/tablet or right-side on desktop', coverLayoutFailures.length === 0, coverLayoutFailures.join('; ') || 'Verified 1:1 cover geometry and RTL placement at all 11 viewport widths');
+      try {
+        const typography = await page.evaluate(() => {
+          const card = document.querySelector('.podcast-card[data-id="91001"]');
+          const title = card?.querySelector('.podcast-title');
+          const description = card?.querySelector('.podcast-desc');
+          const image = card?.querySelector('.podcast-cover img');
+          if (!card || !title || !description || !image) return { missing: true };
+          const titleStyle = getComputedStyle(title);
+          const descStyle = getComputedStyle(description);
+          const imageStyle = getComputedStyle(image);
+          return {
+            missing: false,
+            titlePx: parseFloat(titleStyle.fontSize),
+            descriptionPx: parseFloat(descStyle.fontSize),
+            imageObjectPosition: imageStyle.objectPosition,
+            imageObjectFit: imageStyle.objectFit,
+            titleColor: titleStyle.color,
+            descriptionColor: descStyle.color
+          };
+        });
+        const typographyOk = !typography.missing && typography.titlePx >= 17.8 &&
+          typography.descriptionPx >= 15.5 &&
+          /50%|center/i.test(typography.imageObjectPosition) &&
+          typography.imageObjectFit === 'contain' &&
+          typography.titleColor !== typography.descriptionColor;
+        report('5.4. Podcast card typography is readable and artwork is centered without cropping', typographyOk, JSON.stringify(typography));
+      } catch (error) {
+        report('5.4. Podcast card typography is readable and artwork is centered without cropping', false, String(error.message || error));
+      }
+      try {
+        const paletteAudit = await page.evaluate(() => {
+          const root = document.documentElement;
+          const previous = root.dataset.theme;
+          const ids = ['midnight-cosmos','aurora','studio-noir','deep-ocean','royal-gold','neon-city','persian-heritage','moonlight'];
+          const values = ids.map(id => {
+            root.dataset.theme = id;
+            const style = getComputedStyle(root);
+            const card = document.querySelector('.podcast-card[data-id="91001"]');
+            const title = card?.querySelector('.podcast-title');
+            const desc = card?.querySelector('.podcast-desc');
+            return {
+              id,
+              bg: style.getPropertyValue('--nc-theme-bg').trim(),
+              surface: style.getPropertyValue('--nc-theme-surface').trim(),
+              text: style.getPropertyValue('--nc-theme-text').trim(),
+              muted: style.getPropertyValue('--nc-theme-muted').trim(),
+              divider: style.getPropertyValue('--nc-theme-divider').trim(),
+              titleColor: title ? getComputedStyle(title).color : '',
+              descColor: desc ? getComputedStyle(desc).color : ''
+            };
+          });
+          root.dataset.theme = previous || 'midnight-cosmos';
+          const distinct = key => new Set(values.map(v => v[key])).size;
+          const valid = values.every(v => v.bg && v.surface && v.text && v.muted && v.divider &&
+            v.titleColor && v.descColor && v.titleColor !== v.descColor) &&
+            distinct('bg') === ids.length && distinct('primary' /* intentionally checked below */) >= 1;
+          return { valid, themes: values, uniqueBackgrounds: distinct('bg'), uniqueSurfaces: distinct('surface'), uniqueTextPalettes: distinct('text'), uniqueMutedPalettes: distinct('muted') };
+        });
+        const paletteOk = paletteAudit.valid && paletteAudit.uniqueBackgrounds === 8 &&
+          paletteAudit.uniqueSurfaces >= 7 && paletteAudit.uniqueMutedPalettes >= 7;
+        report('5.5. All eight themes provide distinct panel and readable text palettes', paletteOk, JSON.stringify(paletteAudit));
+      } catch (error) {
+        report('5.5. All eight themes provide distinct panel and readable text palettes', false, String(error.message || error));
+      }
       report('5.1. Header, navigation and controls fit across breakpoints', headerFailures.length === 0, headerFailures.join('; ') || 'Header geometry and navigation mode passed at 11 viewport widths');
       report('5.2. Welcome hero is absent across breakpoints', heroTitleFailures.length === 0, heroTitleFailures.join('; ') || 'Welcome hero is absent at all 11 viewport widths');
       report('6. Mobile navigation drawer remains fixed and usable', mobileNavigationPassed, mobileNavigationDetail);

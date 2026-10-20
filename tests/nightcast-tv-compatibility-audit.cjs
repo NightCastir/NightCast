@@ -18,9 +18,9 @@ async function get(url) {
   const { response: homeResponse, body: html } = await get(SITE + '/');
   add('Live homepage responds', homeResponse.ok, 'HTTP ' + homeResponse.status + ', final URL ' + homeResponse.url);
   if (!homeResponse.ok) throw new Error('Live homepage unavailable; cannot complete audit.');
-  const refs = [...html.matchAll(/<script\\b[^>]*\\bsrc\\s*=\\s*["']([^"']+)["'][^>]*>/gi)]
+  const refs = [...html.matchAll(/<script\b[^>]*\bsrc\s*=\s*["']([^"']+)["'][^>]*>/gi)]
     .map(m => new URL(m[1], SITE).href).filter(u => new URL(u).origin === SITE);
-  const inline = [...html.matchAll(/<script\\b(?![^>]*\\bsrc\\s*=)[^>]*>([\\s\\S]*?)<\\/script\\s*>/gi)]
+  const inline = [...html.matchAll(/<script\b(?![^>]*\bsrc\s*=)[^>]*>([\s\S]*?)<\/script\s*>/gi)]
     .map((m, i) => ({ label: 'index.html inline script #' + (i + 1), code: m[1] }));
   const uniqueRefs = [...new Set(refs)];
   const sources = [...inline];
@@ -41,14 +41,14 @@ async function get(url) {
     }
   }
   const syntaxRules = [
-    { name: 'Optional chaining (?.)', re: /\\?\\.(?![0-9])/g, note: 'Unsupported by older TV browser engines; a parse error can prevent an entire script from running.' },
-    { name: 'Nullish coalescing (??)', re: /\\?\\?(?!=)/g, note: 'ES2020 syntax; older TV browser engines may fail to parse this script.' },
-    { name: 'Array spread syntax', re: /\\[[^\\]\\n]{0,180}\\.\\.\\.[^\\]\\n]{0,180}\\]/g, note: 'Requires a modern JavaScript parser; review against the TV browser version.' }
+    { name: 'Optional chaining (?.)', re: /\?\.(?![0-9])/g, note: 'Unsupported by older TV browser engines; a parse error can prevent an entire script from running.' },
+    { name: 'Nullish coalescing (??)', re: /\?\?(?!=)/g, note: 'ES2020 syntax; older TV browser engines may fail to parse this script.' },
+    { name: 'Array spread syntax', re: /\[[^\]\n]{0,180}\.\.\.[^\]\n]{0,180}\]/g, note: 'Requires a modern JavaScript parser; review against the TV browser version.' }
   ];
   for (const rule of syntaxRules) {
     const hits = [];
     for (const source of sources) {
-      const lines = source.code.split('\\n');
+      const lines = source.code.split('\n');
       lines.forEach((line, i) => {
         if (rule.re.test(line)) hits.push(source.label + ':' + (i + 1) + ' ' + line.trim().slice(0, 130));
         rule.re.lastIndex = 0;
@@ -92,7 +92,7 @@ async function get(url) {
     ...(findings.length ? findings.map(f => '- **' + f.name + '**: ' + f.detail) : ['- None detected by the limited static scanner.']),
     '',
     'Important: this audit checks the deployed site and syntax-risk indicators. It cannot identify the exact TV browser engine or prove physical-device compatibility.'
-  ].join('\\n');
+  ].join('\n');
   require('node:fs').mkdirSync('artifacts', { recursive: true });
   require('node:fs').writeFileSync('artifacts/nightcast-tv-compatibility-report.md', summary);
   const failures = checks.filter(c => !c.ok);

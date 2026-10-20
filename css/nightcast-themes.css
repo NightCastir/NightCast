@@ -797,42 +797,42 @@ html[data-theme] .podcast-cover .cover-shade{pointer-events:none}
 
 
 /* Keep the direct APK CTA legible in every anchor interaction state. */
-.nc-footer .nc-footer-download-actions > a.nc-footer-download-direct,
-.nc-footer .nc-footer-download-actions > a.nc-footer-download-direct:link,
-.nc-footer .nc-footer-download-actions > a.nc-footer-download-direct:visited,
-.nc-footer .nc-footer-download-actions > a.nc-footer-download-direct:hover,
-.nc-footer .nc-footer-download-actions > a.nc-footer-download-direct:focus,
-.nc-footer .nc-footer-download-actions > a.nc-footer-download-direct:focus-visible,
-.nc-footer .nc-footer-download-actions > a.nc-footer-download-direct:active{
-  color:#fff!important;
-  -webkit-text-fill-color:#fff;
+.nc-footer-download .nc-footer-download-actions > a.nc-footer-download-direct,
+.nc-footer-download .nc-footer-download-actions > a.nc-footer-download-direct:link,
+.nc-footer-download .nc-footer-download-actions > a.nc-footer-download-direct:visited,
+.nc-footer-download .nc-footer-download-actions > a.nc-footer-download-direct:hover,
+.nc-footer-download .nc-footer-download-actions > a.nc-footer-download-direct:focus,
+.nc-footer-download .nc-footer-download-actions > a.nc-footer-download-direct:focus-visible,
+.nc-footer-download .nc-footer-download-actions > a.nc-footer-download-direct:active{
+  color:#07130c!important;
+  -webkit-text-fill-color:#07130c;
   text-decoration:none!important;
-  background:linear-gradient(125deg,var(--nc-theme-primary,#2563EB),var(--nc-theme-secondary,#0891B2))!important;
+  background:linear-gradient(135deg,#3DDC84,#26c66b)!important;
   border-color:transparent!important;
 }
-.nc-footer .nc-footer-download-actions > a.nc-footer-download-direct:hover{
+.nc-footer-download .nc-footer-download-actions > a.nc-footer-download-direct:hover{
   filter:brightness(1.08);
-  box-shadow:0 14px 32px color-mix(in srgb,var(--nc-theme-primary,#2563EB) 28%,transparent);
+  box-shadow:0 14px 32px rgba(61,220,132,.24);
   transform:translateY(-2px);
 }
-.nc-footer .nc-footer-download-actions > a.nc-footer-download-direct:focus-visible{
+.nc-footer-download .nc-footer-download-actions > a.nc-footer-download-direct:focus-visible{
   outline:3px solid var(--nc-theme-accent,#38BDF8)!important;
   outline-offset:4px;
-  box-shadow:0 0 0 5px color-mix(in srgb,var(--nc-theme-accent,#38BDF8) 22%,transparent),0 10px 26px color-mix(in srgb,var(--nc-theme-primary,#2563EB) 22%,transparent);
+  box-shadow:0 0 0 5px rgba(61,220,132,.18),0 10px 26px rgba(61,220,132,.2);
 }
-.nc-footer .nc-footer-download-actions > a.nc-footer-download-direct:active{
+.nc-footer-download .nc-footer-download-actions > a.nc-footer-download-direct:active{
   filter:brightness(.94);
   transform:translateY(0) scale(.985);
-  box-shadow:0 4px 14px color-mix(in srgb,var(--nc-theme-primary,#2563EB) 24%,transparent);
+  box-shadow:0 4px 14px rgba(61,220,132,.2);
 }
-.nc-footer .nc-footer-download-actions > a.nc-footer-download-direct :is(strong,small,i){
-  color:#fff!important;
-  -webkit-text-fill-color:#fff;
+.nc-footer-download .nc-footer-download-actions > a.nc-footer-download-direct :is(strong,small,i){
+  color:#07130c!important;
+  -webkit-text-fill-color:#07130c;
 }
-.nc-footer .nc-footer-download-actions > a.nc-footer-download-direct .nc-footer-download-arrow{opacity:1}
+.nc-footer-download .nc-footer-download-actions > a.nc-footer-download-direct .nc-footer-download-arrow{opacity:1}
 @media(prefers-reduced-motion:reduce){
-  .nc-footer .nc-footer-download-actions > a.nc-footer-download-direct:hover,
-  .nc-footer .nc-footer-download-actions > a.nc-footer-download-direct:active{
+  .nc-footer-download .nc-footer-download-actions > a.nc-footer-download-direct:hover,
+  .nc-footer-download .nc-footer-download-actions > a.nc-footer-download-direct:active{
     transform:none;
   }
 }

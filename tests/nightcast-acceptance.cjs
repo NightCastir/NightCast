@@ -979,7 +979,7 @@ function silentWavDataUri() {
           const distinct = key => new Set(values.map(v => v[key])).size;
           const valid = values.every(v => v.bg && v.surface && v.text && v.muted && v.divider &&
             v.titleColor && v.descColor && v.titleColor !== v.descColor) &&
-            distinct('bg') === ids.length && distinct('primary' /* intentionally checked below */) >= 1;
+            distinct('bg') === ids.length && distinct('text') >= 1;
           return { valid, themes: values, uniqueBackgrounds: distinct('bg'), uniqueSurfaces: distinct('surface'), uniqueTextPalettes: distinct('text'), uniqueMutedPalettes: distinct('muted') };
         });
         const paletteOk = paletteAudit.valid && paletteAudit.uniqueBackgrounds === 8 &&

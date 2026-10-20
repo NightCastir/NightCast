@@ -11,6 +11,7 @@ on:
     paths:
       - "index.html"
       - "css/nightcast-themes.css"
+      - "css/nightcast-moonlight-contrast.css"
       - "css/nightcast-platform-download.css"
       - "js/nightcast-pwa.js"
       - "manifest.json"

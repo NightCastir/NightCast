@@ -1,0 +1,108 @@
+name: NightCast Stage 2 - Moonlight Footer Visual Acceptance
+
+on:
+  push:
+    branches:
+      - fix/footer-moonlight-pwa-acceptance
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "index.html"
+      - "manifest.json"
+      - "css/nightcast-themes.css"
+      - "css/nightcast-moonlight-contrast.css"
+      - "css/nightcast-platform-download.css"
+      - "css/nightcast-global-polish.css"
+      - "tests/footer-android-download-acceptance.cjs"
+      - ".github/workflows/footer-moonlight-visual-acceptance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: moonlight-footer-visual-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static-pwa-contract:
+    name: Stage 2A - PWA manifest and stylesheet contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate Persian RTL PWA manifest and referenced icons
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const manifest = JSON.parse(fs.readFileSync('manifest.json', 'utf8'));
+          const checks = [
+            ['Persian RTL locale', manifest.lang === 'fa-IR' && manifest.dir === 'rtl'],
+            ['Root standalone scope', manifest.start_url === '/' && manifest.scope === '/' && manifest.display === 'standalone'],
+            ['192px icon exists', manifest.icons.some(x => x.sizes === '192x192' && fs.existsSync(path.join('.', x.src.replace(/^\//, ''))))],
+            ['512px icon exists', manifest.icons.some(x => x.sizes === '512x512' && fs.existsSync(path.join('.', x.src.replace(/^\//, ''))))]
+          ];
+          let failed = false;
+          for (const [label, ok] of checks) {
+            console.log((ok ? 'PASS' : 'FAIL') + ' | ' + label);
+            if (!ok) failed = true;
+          }
+          if (failed) process.exit(1);
+          NODE
+      - name: Validate cache keys and Moonlight override order
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const html = fs.readFileSync('index.html', 'utf8');
+          const themes = fs.readFileSync('css/nightcast-themes.css', 'utf8');
+          const contrast = fs.readFileSync('css/nightcast-moonlight-contrast.css', 'utf8');
+          const checks = [
+            ['theme stylesheet cache key v19', /nightcast-themes\.css\?v=19/.test(html)],
+            ['Moonlight contrast stylesheet cache key v15', html.includes('nightcast-moonlight-contrast.css?v=15')],
+            ['Moonlight footer override exists after legacy reset', contrast.lastIndexOf('Final Moonlight footer override') > contrast.lastIndexOf('background-image:none!important')],
+            ['Moonlight panel has light gradient and dark text', /:root\[data-theme="moonlight"\] #ncFooterDownload\{[^}]*linear-gradient\([^}]*#fffefa[^}]*--nc-download-ink:#242936/s.test(contrast)],
+            ['Android CTA defines explicit link states', ['.nc-footer-download-direct:link','.nc-footer-download-direct:visited','.nc-footer-download-direct:hover','.nc-footer-download-direct:focus-visible','.nc-footer-download-direct:active'].every(x => themes.includes(x))],
+            ['iOS CTA retains explicit blue background and white text', contrast.includes('background:#007AFF!important;color:#fff!important;-webkit-text-fill-color:#fff!important')]
+          ];
+          let failed = false;
+          for (const [label, ok] of checks) {
+            console.log((ok ? 'PASS' : 'FAIL') + ' | ' + label);
+            if (!ok) failed = true;
+          }
+          if (failed) process.exit(1);
+          NODE
+
+  browser-responsive-acceptance:
+    name: Stage 2B - Chromium responsive and interaction checks
+    needs: static-pwa-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install Playwright
+        run: npm install --no-save playwright
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run full footer UI acceptance at mobile, tablet and desktop
+        run: node tests/footer-android-download-acceptance.cjs
+      - name: Publish stage result
+        if: always()
+        run: |
+          {
+            echo "## Stage 2 - Moonlight Footer Visual Acceptance"
+            echo "- Static manifest/icon and CSS cascade checks run first."
+            echo "- Chromium acceptance covers mobile (390px), tablet (820px), desktop (1440px), CTA colors and states, overflow, footer geometry, Moonlight contrast, and iOS install guidance."
+            echo "- A passing local browser test does not by itself prove the production site has deployed the commit."
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -29,7 +29,7 @@ const server = http.createServer((req, res) => {
   const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'utf8'));
   const serviceWorker = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
   const pwaScript = fs.readFileSync(path.join(root, 'js/nightcast-pwa.js'), 'utf8');
-  check('homepage has an accessible platform-download panel in footer', /<section class="nc-footer-download"[^>]*aria-labelledby="ncFooterDownloadTitle"/.test(html));
+  check('homepage has an accessible platform-download panel in footer', /<section\b(?=[^>]*class="nc-footer-download")(?=[^>]*aria-labelledby="ncFooterDownloadTitle")[^>]*>/.test(html));
   check('legacy promotional heading and paragraph above the platform choices are removed', !html.includes('nc-footer-download-copy') && !html.includes('NIGHTCAST FOR ANDROID'));
   check('Android and iOS are separated into labelled sections with their platform icons', html.includes('nc-platform-android') && html.includes('nc-platform-ios') && /fa-brands fa-android/.test(html) && /fa-brands fa-apple/.test(html));
   check('iOS action is an install/use button, not a fake IPA download link', /id="ncIosPwaButton"/.test(html) && !/href="[^"]+\.ipa"/i.test(html));
@@ -41,7 +41,8 @@ const server = http.createServer((req, res) => {
   check('direct APK button points to official NightCast download endpoint', /href="https:\/\/www\.nightcast\.ir\/downloadrelease\/NightCast\.apk"[\s\S]{0,120}download="NightCast\.apk"/.test(html));
   check('Cafe Bazaar button uses official Cafe Bazaar domain and safe new-tab attributes', /href="https:\/\/cafebazaar\.ir\/app\/ir\.nightcast\.app"[\s\S]{0,120}target="_blank" rel="noopener noreferrer"/.test(html));
   check('Android and store icons are present', /fa-brands fa-android/.test(html) && /fa-solid fa-store/.test(html));
-  check('theme stylesheet cache version is bumped', /nightcast-themes\.css\?v=12/.test(html));
+    check('theme stylesheet cache version is bumped', /nightcast-themes\.css\?v=19/.test(html));
+    check('Moonlight contrast stylesheet cache version is bumped', html.includes('nightcast-moonlight-contrast.css?v=15'));
   check('global footer gap fix is cache-busted and includes mobile footer behavior', /nightcast-global-polish\.css\?v=4/.test(html) && /nc-footer-viewport-behavior/.test(html));
   check('now-playing overlay is forced to fixed positioning so it cannot extend document flow', /#ncNowPlaying\.nc-now-playing\s*\{[^}]*position:\s*fixed\s*!important;[^}]*inset:\s*0\s*!important;/s.test(fs.readFileSync(path.join(root, 'css/nightcast-global-polish.css'), 'utf8')));
   check('footer spacing override removes oversized mobile bottom padding', /padding-bottom: max\(10px, env\(safe-area-inset-bottom\)\) !important/.test(fs.readFileSync(path.join(root, 'css/nightcast-global-polish.css'), 'utf8')));

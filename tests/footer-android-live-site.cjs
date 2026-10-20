@@ -32,7 +32,7 @@ async function request(url) {
 
       const globalResponse = await request(globalCssUrl);
       const globalCss = await globalResponse.text();
-      const overlayReady = globalResponse.ok && /#ncNowPlaying\\.nc-now-playing\\s*\\{[^}]*position:\\s*fixed\\s*!important;[^}]*inset:\\s*0\\s*!important;/s.test(globalCss);
+      const overlayReady = globalResponse.ok && /#ncNowPlaying\.nc-now-playing\s*\{[^}]*position:\s*fixed\s*!important;[^}]*inset:\s*0\s*!important;/s.test(globalCss);
       console.log((overlayReady ? 'PASS' : 'FAIL') + ' | live global CSS v4 keeps now-playing overlay out of document flow | HTTP ' + globalResponse.status);
       if (!overlayReady) failures.push('live global CSS v4 is missing the fixed now-playing overlay correction');
     } catch (error) {

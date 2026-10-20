@@ -70,7 +70,7 @@
   document.addEventListener('keydown',function(event){
     if((event.ctrlKey||event.metaKey)&&(['+','=','-','0','Add','Subtract'].includes(event.key)))event.preventDefault();
   },{capture:true});
-  if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(registrations){registrations.forEach(function(registration){registration.unregister();});}).catch(function(){});}
+  /* Do not unregister the root-scoped NightCast PWA when opening authentication pages. */
 })();
 </script>
 </body>

@@ -19,7 +19,11 @@
 }
 :root[data-theme="moonlight"] body{
   color:#172033!important;
-  background:linear-gradient(180deg,#F8FAFD 0%,#F3F6FA 100%)!important;
+  background-color:#F5F7FB!important;
+  background-image:linear-gradient(135deg,rgba(248,250,253,.94),rgba(243,246,250,.92)),var(--nc-theme-texture)!important;
+  background-size:cover,cover!important;
+  background-position:center,center!important;
+  background-attachment:scroll,scroll!important;
 }
 :root[data-theme="moonlight"] :is(.hero,.hero-card,.nc-about-hero,.nc-about-block,.nc-mission-card,.nc-editorial-card,.nc-studio,.nc-contact-hero,.nc-contact-card,.nc-contact-panel,.nc-contact-info,.nc-social-card,.nc-stat,.stat,.profile-panel,.profile-stat,.profile-favorite-item,.nc-view-settings,.nc-drawer-panel,.nc-detail-dialog,.nc-comments-card,.nc-now-playing,.nc-podcast-detail,.nc-constellation,.nc-planet,.book-summary-request-panel,.nc-process-step,.nc-why,.nc-identity-quote,.nc-map,.nc-map-panel,.nc-footer-download,.nc-platform-download-card){
   color:#172033!important;

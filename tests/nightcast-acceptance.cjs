@@ -150,6 +150,31 @@ function silentWavDataUri() {
 report('0.5. Font Awesome uses self-hosted assets without CDN fallback', iconCdnFailures.length === 0,
       iconCdnFailures.join(', ') || 'Icon-bearing documents use a primary stylesheet and no unconditional duplicate request');
 
+    const staticAssetAudit = spawnSync(process.execPath, ['tests/cdn-asset-audit.cjs','--strict-assets'], { encoding: 'utf8' });
+    const auditSummary = (staticAssetAudit.stdout || '').split('\\n').find(line => line.startsWith('CDN INVENTORY')) || staticAssetAudit.stderr || '';
+    report('0.5.1. Runtime has no static CDN asset or remote podcast-cover references', staticAssetAudit.status === 0, auditSummary.trim());
+
+    const fallbackCatalog = JSON.parse(fs.readFileSync('users/data/podcasts.json','utf8'));
+    const requiredLocalAssets = [
+      '/assets/fonts/vazirmatn.css',
+      '/assets/fonts/vazirmatn/vazirmatn-01.woff2',
+      '/assets/fonts/vazirmatn/vazirmatn-02.woff2',
+      '/assets/fonts/vazirmatn/vazirmatn-03.woff2',
+      '/assets/vendor/fontawesome/css/all.min.css',
+      '/assets/vendor/fontawesome/webfonts/fa-solid-900.woff2',
+      '/assets/vendor/fontawesome/webfonts/fa-regular-400.woff2',
+      '/assets/vendor/fontawesome/webfonts/fa-brands-400.woff2',
+      '/assets/vendor/leaflet/leaflet.css',
+      '/assets/vendor/leaflet/leaflet.js',
+      '/assets/vendor/leaflet/images/marker-icon.png',
+      ...['midnight-cosmos','moonlight','aurora','studio-noir','deep-ocean','royal-gold','neon-city','persian-heritage'].map(id => '/assets/themes/' + id + '.jpg'),
+      ...['1F431','1F436','1F43C','1F981','1F98A','1F43A','1F42F','1F430','1F43B','1F418','1F433','1F42C','1F989','1F985','1F98B','1F984','1F42E','1F437','1F438','1F427'].map(code => '/assets/avatars/openmoji/' + code + '.svg'),
+      ...(fallbackCatalog.podcasts || []).map(podcast => podcast.cover_url)
+    ];
+    const missingLocalAssets = [...new Set(requiredLocalAssets)].filter(asset => typeof asset !== 'string' || !asset.startsWith('/assets/') || !fs.existsSync('.' + asset));
+    report('0.5.2. Theme, font, icon, map, avatar and podcast-cover files are self-hosted', missingLocalAssets.length === 0,
+      missingLocalAssets.slice(0,12).join(', ') || 'All expected local asset files exist');
+
     // Only the root document is indexable; legacy paths are small aliases into its sections.
     const routeMetadataExpectations = [
       { file: 'index.html', canonical: 'https://nightcast.ir/', title: 'NightCast | آرشیو پادکست‌های صوتی، خلاصه و تحلیل کتاب' }

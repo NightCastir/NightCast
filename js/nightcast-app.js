@@ -1376,7 +1376,6 @@ LOGOUT
                                 (duration !== "00:00" ? '<span><i class="fa-regular fa-clock" aria-hidden="true"></i> ' + escapeHtml(duration) + '</span>' : '') +
                                 (podcast.episode_number ? '<span><i class="fa-solid fa-headphones" aria-hidden="true"></i> قسمت ' + escapeHtml(String(podcast.episode_number)) + '</span>' : '') +
                                 (date ? '<span><i class="fa-regular fa-calendar" aria-hidden="true"></i> ' + escapeHtml(date) + '</span>' : '') +
-                                '<span><i class="fa-solid fa-play" aria-hidden="true"></i> ' + Number(podcast.listen_count || 0).toLocaleString("fa-IR") + ' پخش</span>' +
                             '</div>' +
                             '<button type="button" class="btn btn-primary nc-detail-play" data-action="play" data-id="' + Number(podcast.id) + '"' + (podcast.audio_url ? '' : ' disabled') + '><i class="fa-solid fa-play" aria-hidden="true"></i> پخش اپیزود</button>' +
                         '</div>' +
@@ -2212,7 +2211,6 @@ LOGOUT
                     if (duration !== "00:00") chips.push("مدت: " + duration);
                     if (p.episode_number) chips.push("قسمت: " + p.episode_number);
                     if (published) chips.push("انتشار: " + published);
-                    if (Number(p.listen_count || 0) > 0) chips.push("پخش: " + Number(p.listen_count).toLocaleString("fa-IR"));
                     meta.innerHTML = chips.map(x => "<span>" + escapeHtml(String(x)) + "</span>").join("");
                 }
                 updateNowPlayingControls();

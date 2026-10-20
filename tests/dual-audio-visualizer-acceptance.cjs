@@ -77,6 +77,7 @@ const server = http.createServer((req, res) => {
         const player = document.getElementById('playerBar');
         return { elements, viewportWidth: innerWidth, documentWidth: document.documentElement.scrollWidth, playerWidth: player.getBoundingClientRect().width };
       });
+      console.log('LAYOUT | ' + viewport.name + ' | ' + JSON.stringify(result.elements));
       assert.ok(result.elements.ncAudioVisualizerPrev && result.elements.ncAudioVisualizer, viewport.name + ': both canvases must exist');
       assert.ok(result.elements.ncAudioVisualizerPrev.width > 0 && result.elements.ncAudioVisualizer.width > 0, viewport.name + ': both canvases must be visible');
       assert.ok(result.elements.ncAudioVisualizerPrev.right <= result.elements.prevBtn.left + 1, viewport.name + ': flipped copy must be beside/before Previous');

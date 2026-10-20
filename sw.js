@@ -5,7 +5,7 @@ const CACHE_PREFIX = 'nightcast-pwa-shell-';
 const CACHE_NAME = CACHE_PREFIX + 'v1';
 const PRECACHE_URLS = [
   '/',
-  '/assets/icons/icon-192.png',
+  '/assets/icons/icon-512.png',
   '/assets/icons/icon-512.png',
   '/favicon.ico'
 ];

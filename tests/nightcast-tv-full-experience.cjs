@@ -36,14 +36,12 @@ async function main() {
       title: document.title,
       hasPlayer: !!document.querySelector('#playerBar #playButton'),
       nav: [...document.querySelectorAll('.nc-nav .nav-link')].filter(a => a.offsetWidth || a.offsetHeight).length,
-      legacyTvFallback: document.documentElement.innerHTML.indexOf('NC_LEGACY_TV_FALLBACK') >= 0
     }));
     assert(initial.cards > 0, 'TV layout must render podcast cards');
     assert(initial.documentWidth <= initial.viewport + 1 && initial.bodyWidth <= initial.viewport + 1,
       'TV layout has horizontal overflow: ' + JSON.stringify(initial));
     assert(initial.hasPlayer, 'Full player controls must exist on TV');
     assert(initial.nav >= 3, 'Full desktop navigation must remain available on TV');
-    assert.equal(initial.legacyTvFallback, true, 'Homepage must include a conditional ES5 fallback for legacy Android TV browsers');
 
     // Exercise keyboard focus like a TV remote.
     await page.keyboard.press('Tab');

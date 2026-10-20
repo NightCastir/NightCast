@@ -442,3 +442,54 @@
 :root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-section{
   border-color:rgba(91,101,120,.24)!important;
 }
+
+
+/* Moonlight player contrast: the light player surface requires dark, high-contrast text. */
+:root[data-theme="moonlight"] .player{
+  color:#263247!important;
+  background:linear-gradient(145deg,#FFFFFF 0%,#F5F7FC 62%,#EEF2FA 100%)!important;
+  background-image:linear-gradient(145deg,#FFFFFF 0%,#F5F7FC 62%,#EEF2FA 100%)!important;
+  border-color:#CDD5E3!important;
+  box-shadow:0 -8px 30px rgba(31,41,55,.08),0 14px 42px rgba(31,41,55,.18),inset 0 1px #FFFFFF!important;
+}
+:root[data-theme="moonlight"] .player:before{
+  background:linear-gradient(90deg,transparent,#4D78D0 22%,#7866C9 60%,#C18A42 86%,transparent)!important;
+}
+:root[data-theme="moonlight"] .player .track-title{
+  color:#172033!important;
+  -webkit-text-fill-color:#172033!important;
+  text-shadow:none!important;
+  font-weight:850!important;
+}
+:root[data-theme="moonlight"] .player .track-author{
+  color:#4B586D!important;
+  -webkit-text-fill-color:#4B586D!important;
+  text-shadow:none!important;
+}
+:root[data-theme="moonlight"] .player .player-progress span{
+  color:#46536A!important;
+  -webkit-text-fill-color:#46536A!important;
+}
+:root[data-theme="moonlight"] .player .control-btn:not(.main){
+  color:#35435A!important;
+  -webkit-text-fill-color:#35435A!important;
+  background:#E9EDF5!important;
+  background-image:none!important;
+  border-color:#CCD5E4!important;
+  box-shadow:0 2px 6px rgba(31,41,55,.06)!important;
+}
+:root[data-theme="moonlight"] .player .control-btn.main{
+  color:#FFFFFF!important;
+  -webkit-text-fill-color:#FFFFFF!important;
+  background:linear-gradient(135deg,#5147B8,#3B63C9)!important;
+  border-color:#5147B8!important;
+  box-shadow:0 0 0 5px rgba(81,71,184,.10),0 5px 18px rgba(59,99,201,.22)!important;
+}
+:root[data-theme="moonlight"] .player input[type="range"]{accent-color:#5147B8!important}
+:root[data-theme="moonlight"] .player .track-cover{border-color:#C8D1E0!important;box-shadow:0 4px 15px rgba(31,41,55,.14)!important}
+:root[data-theme="moonlight"] .player .nc-player-like{
+  color:#B42345!important;
+  -webkit-text-fill-color:#B42345!important;
+  background:#FFF0F3!important;
+  border-color:#F3C4D0!important;
+}

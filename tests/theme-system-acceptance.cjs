@@ -14,8 +14,13 @@ const assert = require('node:assert/strict');
     page.on('pageerror', error => { if (/nightcast-theme(?:-experience)?\.js|NightCast Theme System/i.test(error.stack || error.message)) failures.push('theme controller browser error: ' + error.message); });
     const response = await page.goto('http://127.0.0.1:4173/', { waitUntil: 'domcontentloaded', timeout: 30000 });
     check('homepage loads successfully', !!response && response.ok());
-    check('theme stylesheet is requested', (await page.request.get('http://127.0.0.1:4173/css/nightcast-themes.css?v=8')).ok());
-    check('theme controller is requested', (await page.request.get('http://127.0.0.1:4173/js/nightcast-theme.js?v=2')).ok());
+    const themeStylesheetHref = await page.locator('link[rel="stylesheet"][href*="/css/nightcast-themes.css"]').first().getAttribute('href').catch(() => null);
+    check('theme CSS is loaded from the canonical stylesheet', !!themeStylesheetHref && (await page.request.get(new URL(themeStylesheetHref, 'http://127.0.0.1:4173/').href)).ok());
+    const scriptOrder = await page.locator('script[src]').evaluateAll(scripts => scripts.map(script => new URL(script.src, location.href).pathname));
+    const themeControllerIndex = scriptOrder.indexOf('/js/nightcast-theme.js');
+    const appControllerIndex = scriptOrder.indexOf('/js/nightcast-app.js');
+    check('theme controller is loaded before the app', themeControllerIndex >= 0 && appControllerIndex >= 0 && themeControllerIndex < appControllerIndex);
+    check('theme controller is requested', themeControllerIndex >= 0 && (await page.request.get('http://127.0.0.1:4173/js/nightcast-theme.js').then(response => response.ok())));
 
     await page.waitForFunction(() => !!window.NightCastThemes, null, { timeout: 10000 });
     check('theme controller exposes the eight themes', (await page.evaluate(() => window.NightCastThemes.list().length)) === 8);

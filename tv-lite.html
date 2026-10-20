@@ -159,7 +159,6 @@ button:hover,.action:hover{border-color:#f4d69c}
       var p = data[i] || {};
       var text = [p.title, p.book_name, p.author_name, p.category_name, p.summary, p.description].join(' ').toLowerCase();
       if (q && text.indexOf(q) < 0) continue;
-      if (p.status && p.status !== 'active') continue;
       var cover = String(p.cover_url || '/assets/icons/icon-512.png');
       if (cover.indexOf('https://') !== 0 && cover.charAt(0) !== '/') cover = '/assets/icons/icon-512.png';
       var audioUrl = String(p.audio_url || '');

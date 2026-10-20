@@ -1,0 +1,56 @@
+name: NightCast Internal TV Browser Compatibility Audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tests/nightcast-tv-compatibility-audit.cjs'
+      - '.github/workflows/nightcast-tv-compatibility.yml'
+      - 'index.html'
+      - 'js/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tests/nightcast-tv-compatibility-audit.cjs'
+      - '.github/workflows/nightcast-tv-compatibility.yml'
+      - 'index.html'
+      - 'js/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deployed-tv-compatibility-audit:
+    name: Audit live site for internal-TV browser risks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Audit deployed scripts, clean routes, and podcast API
+        run: node tests/nightcast-tv-compatibility-audit.cjs
+
+      - name: Upload TV compatibility report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightcast-tv-compatibility-report-${{ github.run_number }}
+          path: artifacts/nightcast-tv-compatibility-report.md
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Publish TV compatibility summary
+        if: always()
+        run: |
+          if [ -f artifacts/nightcast-tv-compatibility-report.md ]; then
+            cat artifacts/nightcast-tv-compatibility-report.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "TV compatibility report was not generated; inspect the audit step logs." >> "$GITHUB_STEP_SUMMARY"
+          fi

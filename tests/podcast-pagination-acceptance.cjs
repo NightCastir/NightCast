@@ -60,7 +60,7 @@ const mockPodcasts = Array.from({ length: 14 }, (_, index) => ({
             nav.querySelector('.nc-page-btn.is-active')?.getAttribute('aria-current') === 'page';
         }));
 
-      await page.locator('#ncPodcastPagination [data-page="2"]').click();
+      await page.locator('#ncPodcastPagination .nc-page-btn:not(.nc-page-edge)[data-page="2"]').click();
       await page.waitForFunction(() => {
         const cards = [...document.querySelectorAll('#podcastGrid .podcast-card')];
         return cards.length === 6 && Number(cards[0]?.dataset.id) === 7;
@@ -70,7 +70,7 @@ const mockPodcasts = Array.from({ length: 14 }, (_, index) => ({
       check('page 2 active number is visibly and accessibly selected',
         await page.locator('#ncPodcastPagination [data-page="2"].is-active[aria-current="page"]').count() === 1);
 
-      await page.locator('#ncPodcastPagination [data-page="3"]').click();
+      await page.locator('#ncPodcastPagination .nc-page-btn:not(.nc-page-edge)[data-page="3"]').click();
       await page.waitForFunction(() => {
         const cards = [...document.querySelectorAll('#podcastGrid .podcast-card')];
         return cards.length === 2 && Number(cards[0]?.dataset.id) === 13 && Number(cards[1]?.dataset.id) === 14;

@@ -845,7 +845,7 @@ html[data-theme] .podcast-cover .cover-shade{pointer-events:none}
 }
 #ncPodcastDetail .nc-detail-section > p {
   margin: 10px 0 0 !important;
-  line-height: 1.9 !important;
+  line-height: 32px !important;
 }
 @media (max-width: 600px) {
   #ncPodcastDetail .nc-detail-section {
@@ -853,6 +853,6 @@ html[data-theme] .podcast-cover .cover-shade{pointer-events:none}
     margin-bottom: 12px !important;
   }
   #ncPodcastDetail .nc-detail-section > p {
-    line-height: 1.9 !important;
+    line-height: 32px !important;
   }
 }

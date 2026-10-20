@@ -21,7 +21,7 @@
   color:#172033!important;
   background:linear-gradient(180deg,#F8FAFD 0%,#F3F6FA 100%)!important;
 }
-:root[data-theme="moonlight"] :is(.hero,.hero-card,.section,.nc-about-hero,.nc-about-block,.nc-mission-card,.nc-editorial-card,.nc-studio,.nc-contact-hero,.nc-contact-card,.nc-contact-panel,.nc-contact-info,.nc-social-card,.nc-stat,.stat,.profile-panel,.profile-stat,.profile-favorite-item,.nc-view-settings,.nc-drawer-panel,.nc-detail-dialog,.nc-comments-card,.nc-now-playing,.nc-podcast-detail,.nc-constellation,.nc-planet,.book-summary-request-panel,.nc-process-step,.nc-why,.nc-identity-quote,.nc-map,.nc-map-panel,.nc-footer-download,.nc-platform-download-card){
+:root[data-theme="moonlight"] :is(.hero,.hero-card,.nc-about-hero,.nc-about-block,.nc-mission-card,.nc-editorial-card,.nc-studio,.nc-contact-hero,.nc-contact-card,.nc-contact-panel,.nc-contact-info,.nc-social-card,.nc-stat,.stat,.profile-panel,.profile-stat,.profile-favorite-item,.nc-view-settings,.nc-drawer-panel,.nc-detail-dialog,.nc-comments-card,.nc-now-playing,.nc-podcast-detail,.nc-constellation,.nc-planet,.book-summary-request-panel,.nc-process-step,.nc-why,.nc-identity-quote,.nc-map,.nc-map-panel,.nc-footer-download,.nc-platform-download-card){
   color:#172033!important;
   background:#FFFFFF!important;
   background-image:none!important;
@@ -64,13 +64,13 @@
   background:linear-gradient(135deg,#4338CA,#0369A1)!important;
   border:1px solid transparent!important;
 }
-:root[data-theme="moonlight"] :is(.btn-secondary,.btn:not(.btn-primary),.control-btn,.icon-btn,.nc-now-control,.nc-like-button,.profile-favorite-actions button,.profile-close,.nc-theme-back,.nc-avatar-reset,.nc-pwa-install-footer a,.nc-pwa-install-footer button,.nc-drawer-links a,.nc-theme-ribbon-option){
+:root[data-theme="moonlight"] :is(button:not(.btn-primary):not(.button-primary):not(.nc-comments-submit):not(.nc-now-control.primary):not(.latest-play):not(.control-btn.main):not(.nc-pwa-primary):not(.nc-footer-download-direct):not(.nc-footer-download-ios),.btn-secondary,.btn:not(.btn-primary),.control-btn,.icon-btn,.nc-now-control,.nc-like-button,.profile-favorite-actions button,.profile-close,.nc-theme-back,.nc-avatar-reset,.nc-pwa-install-footer a,.nc-pwa-install-footer button,.nc-drawer-links a,.nc-theme-ribbon-option){
   color:#243047!important;
   -webkit-text-fill-color:currentColor;
   background:#F3F5F9!important;
   border:1px solid #D5DCE7!important;
 }
-:root[data-theme="moonlight"] :is(button,input,textarea,select,.search-input,.form-group input,.form-group textarea,.page-size-control,.search-box,.nc-search-input,.nc-contact input,.nc-contact textarea,.nc-contact select){
+:root[data-theme="moonlight"] :is(input,textarea,select,.search-input,.form-group input,.form-group textarea,.page-size-control,.search-box,.nc-search-input,.nc-contact input,.nc-contact textarea,.nc-contact select){
   color:#172033!important;
   -webkit-text-fill-color:currentColor;
   background-color:#FFFFFF!important;
@@ -133,3 +133,10 @@
     border-radius:18px;
   }
 }
+
+
+:root[data-theme="moonlight"] .nc-drawer-platforms{background:#FFFFFF!important;border-color:#D5DCE7!important}
+:root[data-theme="moonlight"] .nc-drawer-platform{background:#FFFFFF!important;border-color:#D5DCE7!important}
+:root[data-theme="moonlight"] .nc-drawer-platform-hint{background:#172033!important;color:#FFFFFF!important;border-color:#45516A!important}
+:root[data-theme="moonlight"] .nc-footer-download{background:linear-gradient(145deg,#FFFFFF,#F5F7FB)!important}
+:root[data-theme="moonlight"] .nc-footer-download-actions .nc-footer-download-market{background:#FFFFFF!important;color:#243047!important;border-color:#C7D0DE!important}

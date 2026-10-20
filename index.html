@@ -2,6 +2,25 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="utf-8">
+    <!-- ES5-only compatibility gate: older TV browsers cannot parse optional chaining/nullish coalescing. -->
+    <script>
+      (function () {
+        var supported = true;
+        try { new Function("var a = {}; return a?.x ?? 0;"); }
+        catch (error) { supported = false; }
+        if (supported || /(?:^|\\/)tv-lite\\.html$/.test(window.location.pathname)) return;
+        var section = "podcasts";
+        var path = String(window.location.pathname || "").replace(/\\/+$/, "");
+        if (path === "/about") section = "about";
+        else if (path === "/contact") section = "contact";
+        else {
+          var route = /(?:[?&])__route=(about|contact)(?:&|$)/.exec(window.location.search || "");
+          if (route) section = route[1];
+          else if (window.location.hash === "#about" || window.location.hash === "#contact") section = window.location.hash.substring(1);
+        }
+        window.location.replace("/tv-lite.html" + (section === "podcasts" ? "" : "?section=" + section));
+      })();
+    </script>
     <!-- Reset stale scroll only for the archive entry. About/Contact route intent must survive pageshow. -->
     <script>
       (() => {

@@ -1955,9 +1955,15 @@ LOGOUT
 
             function drawAudioVisualizer() {
                 cancelAnimationFrame(ncVisualizerFrame);
-                const canvas = document.getElementById("ncAudioVisualizer");
-                const context = canvas?.getContext("2d", { alpha: true, desynchronized: true });
-                if (!canvas || !context || !ncAnalyser || !ncFrequencyData || !ncTimeData) return;
+                const canvases = [
+                    document.getElementById("ncAudioVisualizerPrev"),
+                    document.getElementById("ncAudioVisualizer")
+                ].filter(Boolean);
+                const renderTargets = canvases.map(canvas => ({
+                    canvas,
+                    context: canvas.getContext("2d", { alpha: true, desynchronized: true })
+                })).filter(target => target.context);
+                if (!renderTargets.length || !ncAnalyser || !ncFrequencyData || !ncTimeData) return;
 
                 const render = timestamp => {
                     if (timestamp - ncVisualizerLastFrame < 30) {
@@ -1965,34 +1971,23 @@ LOGOUT
                         return;
                     }
                     ncVisualizerLastFrame = timestamp;
-                    const width = canvas.clientWidth || 280;
-                    const height = canvas.clientHeight || 42;
-                    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-                    const pixelWidth = Math.max(1, Math.round(width * dpr));
-                    const pixelHeight = Math.max(1, Math.round(height * dpr));
-                    if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
-                        canvas.width = pixelWidth;
-                        canvas.height = pixelHeight;
-                    }
-                    context.setTransform(dpr, 0, 0, dpr, 0, 0);
-                    context.clearRect(0, 0, width, height);
                     ncAnalyser.getByteFrequencyData(ncFrequencyData);
                     ncAnalyser.getByteTimeDomainData(ncTimeData);
 
-                    const bars = Math.max(16, Math.min(36, Math.floor(width / 5.5)));
-                    const gap = Math.max(1.25, Math.min(3, width / (bars * 10)));
-                    const barWidth = Math.max(1.5, (width - gap * (bars - 1)) / bars);
+                    // Both canvases use the same analyser samples and the same computed levels.
+                    // The previous-side copy is mirrored by CSS, not independently animated.
+                    const primary = renderTargets.find(target => target.canvas.id === "ncAudioVisualizer") || renderTargets[0];
+                    const width = primary.canvas.clientWidth || 38;
+                    const height = primary.canvas.clientHeight || 34;
+                    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+                    const bars = Math.max(16, Math.min(36, Math.floor(width / 2.2)));
+                    const gap = Math.max(1, Math.min(2.2, width / (bars * 10)));
+                    const barWidth = Math.max(1, (width - gap * (bars - 1)) / bars);
                     const mid = height / 2;
                     const maxHeight = Math.max(5, height - 5);
-                    const gradient = context.createLinearGradient(0, 0, width, height);
-                    gradient.addColorStop(0, "#43d9ff");
-                    gradient.addColorStop(.52, "#55aaff");
-                    gradient.addColorStop(1, "#b5a0ff");
-                    context.fillStyle = gradient;
-                    context.shadowColor = "rgba(62,181,255,.28)";
-                    context.shadowBlur = 3;
 
                     if (ncVisualizerLevels.length !== bars) ncVisualizerLevels = Array(bars).fill(0.035);
+                    const levels = [];
                     for (let i = 0; i < bars; i++) {
                         const from = Math.floor(i * ncFrequencyData.length / bars);
                         const to = Math.max(from + 1, Math.floor((i + 1) * ncFrequencyData.length / bars));
@@ -2012,16 +2007,44 @@ LOGOUT
                         const previous = ncVisualizerLevels[i];
                         const level = previous + (target - previous) * (target > previous ? .72 : .28);
                         ncVisualizerLevels[i] = level;
-                        const barHeight = Math.max(2.5, level * maxHeight);
-                        const x = i * (barWidth + gap);
-                        const y = mid - barHeight / 2;
-                        const radius = Math.min(barWidth / 2, 2.5);
-                        context.beginPath();
-                        if (typeof context.roundRect === "function") context.roundRect(x, y, barWidth, barHeight, radius);
-                        else context.rect(x, y, barWidth, barHeight);
-                        context.fill();
+                        levels.push(level);
                     }
-                    context.shadowBlur = 0;
+
+                    renderTargets.forEach(({ canvas, context }) => {
+                        const canvasWidth = canvas.clientWidth || width;
+                        const canvasHeight = canvas.clientHeight || height;
+                        const pixelWidth = Math.max(1, Math.round(canvasWidth * dpr));
+                        const pixelHeight = Math.max(1, Math.round(canvasHeight * dpr));
+                        if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+                            canvas.width = pixelWidth;
+                            canvas.height = pixelHeight;
+                        }
+                        context.setTransform(dpr, 0, 0, dpr, 0, 0);
+                        context.clearRect(0, 0, canvasWidth, canvasHeight);
+                        const gradient = context.createLinearGradient(0, 0, canvasWidth, canvasHeight);
+                        gradient.addColorStop(0, "#43d9ff");
+                        gradient.addColorStop(.52, "#55aaff");
+                        gradient.addColorStop(1, "#b5a0ff");
+                        context.fillStyle = gradient;
+                        context.shadowColor = "rgba(62,181,255,.28)";
+                        context.shadowBlur = 3;
+                        const canvasMid = canvasHeight / 2;
+                        const canvasMaxHeight = Math.max(5, canvasHeight - 5);
+                        const canvasGap = Math.max(1, Math.min(2.2, canvasWidth / (bars * 10)));
+                        const canvasBarWidth = Math.max(1, (canvasWidth - canvasGap * (bars - 1)) / bars);
+                        levels.forEach((level, i) => {
+                            const barHeight = Math.max(2.5, level * canvasMaxHeight);
+                            const x = i * (canvasBarWidth + canvasGap);
+                            const y = canvasMid - barHeight / 2;
+                            const radius = Math.min(canvasBarWidth / 2, 2.5);
+                            context.beginPath();
+                            if (typeof context.roundRect === "function") context.roundRect(x, y, canvasBarWidth, barHeight, radius);
+                            else context.rect(x, y, canvasBarWidth, barHeight);
+                            context.fill();
+                        });
+                        context.shadowBlur = 0;
+                    });
+
                     if (!els.audio.paused && !els.audio.ended) ncVisualizerFrame = requestAnimationFrame(render);
                     else ncVisualizerFrame = 0;
                 };

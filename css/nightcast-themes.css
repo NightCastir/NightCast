@@ -1000,3 +1000,46 @@ html[data-theme="moonlight"] #ncPodcastDetail #ncPodcastDetailBody .nc-detail-se
 :root[data-theme="moonlight"] .nc-footer-download{background-image:linear-gradient(135deg,#fffefa 0%,#f4f2ec 54%,#e9edf8 100%)!important;background-color:#fffefa!important;border-color:#d8dce7!important;color:#242936!important;box-shadow:0 16px 42px rgba(30,41,59,.10),inset 0 1px rgba(255,255,255,.9)!important}
 :root[data-theme="moonlight"] .nc-footer-download h2,:root[data-theme="moonlight"] .nc-footer-download h3{color:#242936!important}
 :root[data-theme="moonlight"] .nc-footer-download p,:root[data-theme="moonlight"] .nc-footer-download small{color:#535d70!important}
+
+
+/* Six-at-a-time podcast pagination — colors inherit the active NightCast theme tokens. */
+.nc-podcast-pagination{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;
+  width:100%;margin:clamp(24px,3.2vw,42px) auto 8px;padding:14px 12px;
+  border:1px solid var(--nc-theme-border,rgba(148,163,184,.2));
+  border-radius:24px;
+  background:linear-gradient(145deg,
+    color-mix(in srgb,var(--nc-theme-surface,#0b1228) 92%,var(--nc-theme-primary,#8b5cf6) 8%),
+    color-mix(in srgb,var(--nc-theme-bg,#050816) 94%,var(--nc-theme-secondary,#38bdf8) 6%));
+  box-shadow:0 12px 36px color-mix(in srgb,var(--nc-theme-bg,#050816) 62%,transparent),
+    inset 0 1px color-mix(in srgb,var(--nc-theme-text,#fff) 7%,transparent);
+}
+.nc-podcast-pagination[hidden]{display:none!important}
+.nc-podcast-pagination .nc-page-btn{
+  display:inline-grid;place-items:center;min-width:48px;min-height:48px;padding:0 13px;
+  border:1px solid var(--nc-theme-border,rgba(148,163,184,.2));border-radius:15px;
+  background:var(--nc-theme-surface,#0b1228);color:var(--nc-theme-text,#f8fafc);
+  font:inherit;font-size:1.12rem;font-weight:800;line-height:1;cursor:pointer;
+  box-shadow:0 5px 16px color-mix(in srgb,var(--nc-theme-bg,#050816) 30%,transparent);
+  transition:transform .18s ease,border-color .18s ease,background .18s ease,color .18s ease,box-shadow .18s ease;
+}
+.nc-podcast-pagination .nc-page-btn:hover:not(:disabled){
+  transform:translateY(-2px);border-color:var(--nc-theme-primary,#8b5cf6);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--nc-theme-primary,#8b5cf6) 14%,transparent);
+}
+.nc-podcast-pagination .nc-page-btn.is-active{
+  color:#fff;background:linear-gradient(135deg,var(--nc-theme-primary,#8b5cf6),var(--nc-theme-secondary,#38bdf8));
+  border-color:transparent;box-shadow:0 7px 24px var(--nc-theme-glow,rgba(139,92,246,.2)),inset 0 1px #ffffff55;
+  transform:translateY(-1px) scale(1.06);
+}
+.nc-podcast-pagination .nc-page-btn:focus-visible{outline:3px solid var(--nc-theme-accent,#67e8f9);outline-offset:3px}
+.nc-podcast-pagination .nc-page-btn:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
+.nc-podcast-pagination .nc-page-edge{font-size:1.7rem;min-width:48px}
+:root[data-theme="moonlight"] .nc-podcast-pagination{box-shadow:0 12px 32px rgba(30,41,59,.08),inset 0 1px #fff}
+:root[data-theme="moonlight"] .nc-podcast-pagination .nc-page-btn{box-shadow:0 4px 14px rgba(30,41,59,.07)}
+@media(max-width:520px){
+  .nc-podcast-pagination{gap:6px;padding:12px 7px;border-radius:19px;margin-top:20px}
+  .nc-podcast-pagination .nc-page-btn{min-width:40px;min-height:42px;padding:0 8px;border-radius:12px;font-size:1rem}
+  .nc-podcast-pagination .nc-page-edge{min-width:38px;font-size:1.45rem}
+}
+@media(prefers-reduced-motion:reduce){.nc-podcast-pagination .nc-page-btn{transition:none!important}}

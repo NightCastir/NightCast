@@ -64,7 +64,7 @@ jobs:
           const themes = fs.readFileSync('css/nightcast-themes.css', 'utf8');
           const contrast = fs.readFileSync('css/nightcast-moonlight-contrast.css', 'utf8');
           const checks = [
-            ['theme stylesheet cache key v20', /nightcast-themes\.css\?v=19/.test(html)],
+            ['theme stylesheet cache key v20', /nightcast-themes\.css\?v=20/.test(html)],
             ['Moonlight contrast stylesheet cache key v17', html.includes('nightcast-moonlight-contrast.css?v=17')],
             ['Moonlight footer override exists after legacy reset', contrast.lastIndexOf('Final Moonlight footer override') > contrast.lastIndexOf('background-image:none!important')],
             ['Moonlight panel has light gradient and dark text', /:root\[data-theme="moonlight"\] #ncFooterDownload\{[^}]*linear-gradient\([^}]*#fffefa[^}]*--nc-download-ink:#242936/s.test(contrast)],

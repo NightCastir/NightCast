@@ -72,19 +72,19 @@ const server = http.createServer((req, res) => {
         return { state, buttonColor: style.color, textColor: text.color, textFill: text.webkitTextFillColor, background: style.backgroundImage, outlineStyle: style.outlineStyle };
       }, state);
       const baseState = await colorOf('default');
-      check(viewport.name + ': direct button default text is white and visible', baseState.buttonColor === 'rgb(255, 255, 255)' && baseState.textColor === 'rgb(255, 255, 255)' && baseState.textFill === 'rgb(255, 255, 255)' && baseState.background.includes('gradient'), JSON.stringify(baseState));
+      check(viewport.name + ': direct button default text has high-contrast dark text on Android green', baseState.buttonColor === 'rgb(7, 19, 12)' && baseState.textColor === 'rgb(7, 19, 12)' && baseState.textFill === 'rgb(7, 19, 12)' && baseState.background.includes('gradient'), JSON.stringify(baseState));
       await directButton.hover();
       await page.waitForTimeout(250);
       const hoverState = await colorOf('hover');
-      check(viewport.name + ': hover preserves readable white text', hoverState.buttonColor === 'rgb(255, 255, 255)' && hoverState.textColor === 'rgb(255, 255, 255)' && hoverState.background.includes('gradient'), JSON.stringify(hoverState));
+      check(viewport.name + ': hover preserves high-contrast dark text', hoverState.buttonColor === 'rgb(7, 19, 12)' && hoverState.textColor === 'rgb(7, 19, 12)' && hoverState.background.includes('gradient'), JSON.stringify(hoverState));
       await directButton.focus();
       const focusState = await colorOf('focus');
-      check(viewport.name + ': keyboard/programmatic focus preserves readable text', focusState.buttonColor === 'rgb(255, 255, 255)' && focusState.textColor === 'rgb(255, 255, 255)' && focusState.background.includes('gradient'), JSON.stringify(focusState));
+      check(viewport.name + ': keyboard/programmatic focus preserves readable text', focusState.buttonColor === 'rgb(7, 19, 12)' && focusState.textColor === 'rgb(7, 19, 12)' && focusState.background.includes('gradient'), JSON.stringify(focusState));
       await page.mouse.move(5, 5);
       await directButton.hover();
       await page.mouse.down();
       const activeState = await colorOf('active');
-      check(viewport.name + ': pressed/active state preserves readable text', activeState.buttonColor === 'rgb(255, 255, 255)' && activeState.textColor === 'rgb(255, 255, 255)' && activeState.background.includes('gradient'), JSON.stringify(activeState));
+      check(viewport.name + ': pressed/active state preserves readable text', activeState.buttonColor === 'rgb(7, 19, 12)' && activeState.textColor === 'rgb(7, 19, 12)' && activeState.background.includes('gradient'), JSON.stringify(activeState));
       await page.mouse.up();
       const layout = await page.evaluate(() => {
         const panel = document.querySelector('.nc-footer-download');

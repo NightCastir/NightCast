@@ -12,8 +12,8 @@ async function request(url) {
     try {
       pageResponse = await request(target);
       html = await pageResponse.text();
-      const ready = pageResponse.ok && html.includes('nc-footer-download') && html.includes('https://www.nightcast.ir/downloadrelease/NightCast.apk') && html.includes('https://cafebazaar.ir/app/ir.nightcast.app') && html.includes('nightcast-themes.css?v=12') && html.includes('nightcast-global-polish.css?v=4');
-      console.log((ready ? 'PASS' : 'WAIT') + ' | live homepage deploy check | attempt ' + attempt + ' | HTTP ' + pageResponse.status + ' | footer=' + html.includes('nc-footer-download') + ' | theme-css-v12=' + html.includes('nightcast-themes.css?v=12'));
+      const ready = pageResponse.ok && html.includes('nc-footer-download') && html.includes('nc-platform-android') && html.includes('nc-platform-ios') && html.includes('ncIosPwaButton') && html.includes('/manifest.json') && html.includes('/js/nightcast-pwa.js?v=1') && html.includes('https://www.nightcast.ir/downloadrelease/NightCast.apk') && html.includes('https://cafebazaar.ir/app/ir.nightcast.app') && html.includes('nightcast-themes.css?v=12') && html.includes('nightcast-global-polish.css?v=4');
+      console.log((ready ? 'PASS' : 'WAIT') + ' | live homepage deploy check | attempt ' + attempt + ' | HTTP ' + pageResponse.status + ' | footer=' + html.includes('nc-footer-download') + ' | iOS-PWA=' + html.includes('ncIosPwaButton') + ' | theme-css-v12=' + html.includes('nightcast-themes.css?v=12'));
       if (ready) break;
       if (attempt === 18) failures.push('live homepage does not yet contain the merged Android footer panel and stylesheet cache version');
     } catch (error) {

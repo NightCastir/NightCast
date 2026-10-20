@@ -94,6 +94,37 @@ const server = http.createServer((req, res) => {
       await page.locator('html').evaluate(el => el.dataset.theme = 'moonlight');
       const moonlight = await panel.evaluate(el => ({ background: getComputedStyle(el).backgroundImage, heading: getComputedStyle(el.querySelector('h2')).color }));
       check(viewport.name + ': Moonlight CTA remains readable', moonlight.heading !== 'rgba(0, 0, 0, 0)' && moonlight.background.includes('gradient'), JSON.stringify(moonlight));
+
+      // Test the reported footer-to-screen gap itself, not only the download card.
+      await page.locator('.nc-footer').scrollIntoViewIfNeeded();
+      await page.waitForTimeout(180); // allow IntersectionObserver to update the mobile navigation state
+      await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+      await page.waitForTimeout(80);
+      const footerGeometry = await page.evaluate(() => {
+        const footer = document.querySelector('.nc-footer');
+        const rect = footer.getBoundingClientRect();
+        const style = getComputedStyle(footer);
+        const mobileNav = document.querySelector('.mobile-nav');
+        const navStyle = mobileNav ? getComputedStyle(mobileNav) : null;
+        return {
+          viewportHeight: innerHeight,
+          documentHeight: document.documentElement.scrollHeight,
+          scrollY: window.scrollY,
+          footerBottomInDocument: rect.bottom + window.scrollY,
+          trailingGap: document.documentElement.scrollHeight - (rect.bottom + window.scrollY),
+          footerPaddingBottom: parseFloat(style.paddingBottom) || 0,
+          footerVisible: rect.bottom > 0 && rect.top < innerHeight,
+          footerInViewClass: document.body.classList.contains('nc-footer-in-view'),
+          mobileNavOpacity: navStyle ? Number(navStyle.opacity) : null,
+          mobileNavTransform: navStyle ? navStyle.transform : 'not-present'
+        };
+      });
+      check(viewport.name + ': no document gap after footer', footerGeometry.trailingGap <= 2, JSON.stringify(footerGeometry));
+      check(viewport.name + ': footer is actually visible at page end', footerGeometry.footerVisible, JSON.stringify(footerGeometry));
+      check(viewport.name + ': footer bottom padding is intentional', footerGeometry.footerPaddingBottom <= (viewport.width <= 760 ? 24 : 40), JSON.stringify(footerGeometry));
+      if (viewport.width <= 760) {
+        check(viewport.name + ': mobile navigation yields while footer is in view', footerGeometry.footerInViewClass && footerGeometry.mobileNavOpacity === 0, JSON.stringify(footerGeometry));
+      }
       await page.close();
     }
   } catch (error) {

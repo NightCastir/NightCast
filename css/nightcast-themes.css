@@ -346,3 +346,101 @@ html[data-theme] .podcast-cover .cover-shade{pointer-events:none}
   html[data-theme] .podcast-info .card-footer .favorite,
   html[data-theme] .podcast-info .card-footer .nc-comment-action{min-height:40px;font-size:.86rem!important}
 }
+
+
+/* Moonlight refinement: replace leftover gray surfaces with clean, very light
+   moon-white / ice-blue tones. Scoped exclusively to the Moonlight theme. */
+:root[data-theme="moonlight"]{
+  --nc-theme-bg:#FBFCFF;
+  --nc-theme-surface:#FFFFFF;
+  --nc-theme-surface-2:#F8FAFF;
+  --nc-theme-panel-inset:#FAFBFF;
+  --nc-theme-muted:#596579;
+  --nc-theme-border:rgba(99,102,241,.14);
+  --nc-theme-divider:rgba(99,102,241,.2);
+  --nc-theme-card-shadow:rgba(71,85,105,.09);
+}
+:root[data-theme="moonlight"] .podcast-card,
+:root[data-theme="moonlight"] .podcast-info,
+:root[data-theme="moonlight"] .hero-card,
+:root[data-theme="moonlight"] .nc-about-hero,
+:root[data-theme="moonlight"] .nc-about-block,
+:root[data-theme="moonlight"] .nc-mission-card,
+:root[data-theme="moonlight"] .nc-editorial-card,
+:root[data-theme="moonlight"] .nc-studio,
+:root[data-theme="moonlight"] .nc-contact-card,
+:root[data-theme="moonlight"] .nc-contact-panel,
+:root[data-theme="moonlight"] .profile-panel,
+:root[data-theme="moonlight"] .nc-detail-dialog,
+:root[data-theme="moonlight"] .nc-comments-card,
+:root[data-theme="moonlight"] .nc-view-settings,
+:root[data-theme="moonlight"] .nc-stat,
+:root[data-theme="moonlight"] .stat,
+:root[data-theme="moonlight"] .profile-stat,
+:root[data-theme="moonlight"] .profile-favorite-item,
+:root[data-theme="moonlight"] .nc-process-step,
+:root[data-theme="moonlight"] .nc-why,
+:root[data-theme="moonlight"] .nc-identity-quote,
+:root[data-theme="moonlight"] .nc-theme-option,
+:root[data-theme="moonlight"] .book-summary-request-panel{
+  background-color:#FFFFFF!important;
+  border-color:rgba(99,102,241,.15)!important;
+}
+:root[data-theme="moonlight"] .podcast-card,
+:root[data-theme="moonlight"] .podcast-info,
+:root[data-theme="moonlight"] .hero-card,
+:root[data-theme="moonlight"] .nc-about-hero,
+:root[data-theme="moonlight"] .nc-about-block,
+:root[data-theme="moonlight"] .nc-mission-card,
+:root[data-theme="moonlight"] .nc-editorial-card,
+:root[data-theme="moonlight"] .nc-studio,
+:root[data-theme="moonlight"] .nc-contact-card,
+:root[data-theme="moonlight"] .nc-contact-panel,
+:root[data-theme="moonlight"] .profile-panel,
+:root[data-theme="moonlight"] .nc-detail-dialog,
+:root[data-theme="moonlight"] .nc-comments-card,
+:root[data-theme="moonlight"] .nc-view-settings,
+:root[data-theme="moonlight"] .nc-stat,
+:root[data-theme="moonlight"] .stat,
+:root[data-theme="moonlight"] .profile-stat,
+:root[data-theme="moonlight"] .profile-favorite-item{
+  background-image:linear-gradient(145deg,#FFFFFF 0%,#FBFCFF 100%)!important;
+}
+:root[data-theme="moonlight"] .podcast-info .meta,
+:root[data-theme="moonlight"] .podcast-category,
+:root[data-theme="moonlight"] .podcast-tag,
+:root[data-theme="moonlight"] .podcast-episode,
+:root[data-theme="moonlight"] .nc-comment-action,
+:root[data-theme="moonlight"] .favorite,
+:root[data-theme="moonlight"] .profile-settings-button,
+:root[data-theme="moonlight"] .btn-secondary,
+:root[data-theme="moonlight"] .control-btn,
+:root[data-theme="moonlight"] .icon-btn,
+:root[data-theme="moonlight"] .nc-now-control,
+:root[data-theme="moonlight"] input,
+:root[data-theme="moonlight"] textarea,
+:root[data-theme="moonlight"] select{
+  background-color:#FCFDFF!important;
+  border-color:rgba(99,102,241,.16)!important;
+}
+:root[data-theme="moonlight"] .podcast-info .meta,
+:root[data-theme="moonlight"] .podcast-desc,
+:root[data-theme="moonlight"] .profile-section>p,
+:root[data-theme="moonlight"] .nc-comments-subtitle,
+:root[data-theme="moonlight"] .nc-now-description{
+  color:#596579!important;
+}
+:root[data-theme="moonlight"] .nc-header,
+:root[data-theme="moonlight"] .nc-nav,
+:root[data-theme="moonlight"] .nc-mobile-drawer,
+:root[data-theme="moonlight"] .mobile-nav,
+:root[data-theme="moonlight"] footer,
+:root[data-theme="moonlight"] .site-footer,
+:root[data-theme="moonlight"] #playerBar,
+:root[data-theme="moonlight"] .player-bar,
+:root[data-theme="moonlight"] .nc-now-playing{
+  background-color:rgba(255,255,255,.97)!important;
+  border-color:rgba(99,102,241,.14)!important;
+}
+:root[data-theme="moonlight"] input::placeholder,
+:root[data-theme="moonlight"] textarea::placeholder{color:#8994A7!important}

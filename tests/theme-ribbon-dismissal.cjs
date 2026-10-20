@@ -16,7 +16,7 @@ const assert = require('node:assert/strict');
       const response = await page.goto('http://127.0.0.1:4173/', { waitUntil: 'domcontentloaded', timeout: 30000 });
       check(`${viewport.label}: homepage loads`, !!response && response.ok());
       await page.waitForSelector('#ncThemeLauncher', { timeout: 15000 });
-      await page.waitForSelector('#ncThemeRibbon', { timeout: 15000 });
+      await page.locator('#ncThemeRibbon').waitFor({ state: 'attached', timeout: 15000 });
       const panel = page.locator('#ncThemeRibbon');
       check(`${viewport.label}: document uses RTL layout`, await page.locator('html').getAttribute('dir') === 'rtl');
       check(`${viewport.label}: ribbon starts closed and inaccessible`, await panel.getAttribute('aria-hidden') === 'true' && await panel.evaluate(el => el.inert));

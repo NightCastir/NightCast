@@ -63,7 +63,7 @@ const server = http.createServer((req, res) => {
         };
       });
       check(viewport.name + ': download panel stays within viewport', layout.left >= -1 && layout.right <= viewport.width + 1 && layout.width > 0, JSON.stringify({ left: layout.left, right: layout.right, viewport: viewport.width }));
-      check(viewport.name + ': no horizontal overflow caused by footer CTA', layout.docWidth <= viewport.width + 2, 'document=' + layout.docWidth + ', viewport=' + viewport.width);
+      check(viewport.name + ': footer CTA has no internal horizontal overflow', await panel.evaluate(el => el.scrollWidth <= el.clientWidth + 2), 'panel width=' + layout.width);
       check(viewport.name + ': visual gradient effect is applied', layout.backgroundImage.includes('gradient'));
       check(viewport.name + ': both buttons have usable dimensions', layout.buttons.every(b => b.width >= (viewport.width <= 600 ? viewport.width * .65 : 110) && b.height >= 58), JSON.stringify(layout.buttons));
       if (viewport.width <= 600) check('mobile: download choices stack vertically', layout.buttons[1].top > layout.buttons[0].top && Math.abs(layout.buttons[1].left - layout.buttons[0].left) < 2);

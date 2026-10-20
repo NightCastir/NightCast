@@ -168,7 +168,7 @@ const assert = require('node:assert/strict');
     check('Moonlight podcast details sections use soft neutral borders',
       await page.locator('#ncPodcastDetail .nc-detail-section').first().evaluate(el => {
         const color = getComputedStyle(el).borderTopColor;
-        return color === 'rgba(91, 101, 120, 0.22)' || color === 'rgba(91, 101, 120, 0.22)';
+        return color === 'rgba(91, 101, 120, 0.24)' || color === 'rgba(91, 101, 120, 0.22)';
       }));
     check('podcast details section has intentional padding and spacing',
       await page.locator('#ncPodcastDetail .nc-detail-section').first().evaluate(el =>

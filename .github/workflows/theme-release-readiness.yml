@@ -3,13 +3,18 @@ on:
   push:
     branches: [main, 'feat/theme-system-and-adaptive-loader']
     paths:
-      - 'index.html'\n      - 'assets/**'\n      - 'tests/nightcast-acceptance.cjs'\n      - 'tests/cdn-asset-audit.cjs'\n      - 'scripts/migrate-cdn-assets.cjs'\n      - 'docs/CDN-ASSET-MIGRATION.md'
+      - 'index.html'
+      - 'assets/**'
       - 'users/login.html'
       - 'js/nightcast-app.js'
       - 'js/nightcast-theme.js'
       - 'css/nightcast-profile.css'
       - 'css/nightcast-themes.css'
-      - 'tests/theme-system-acceptance.cjs'\n      - 'assets/**'\n      - 'tests/nightcast-acceptance.cjs'\n      - 'tests/cdn-asset-audit.cjs'\n      - 'scripts/migrate-cdn-assets.cjs'\n      - 'docs/CDN-ASSET-MIGRATION.md'
+      - 'tests/theme-system-acceptance.cjs'
+      - 'tests/nightcast-acceptance.cjs'
+      - 'tests/cdn-asset-audit.cjs'
+      - 'scripts/migrate-cdn-assets.cjs'
+      - 'docs/CDN-ASSET-MIGRATION.md'
       - '.github/workflows/theme-functionality.yml'
       - '.github/workflows/theme-mobile-layout.yml'
       - '.github/workflows/theme-desktop-layout.yml'
@@ -20,12 +25,17 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - 'assets/**'
       - 'users/login.html'
       - 'js/nightcast-app.js'
       - 'js/nightcast-theme.js'
       - 'css/nightcast-profile.css'
       - 'css/nightcast-themes.css'
       - 'tests/theme-system-acceptance.cjs'
+      - 'tests/nightcast-acceptance.cjs'
+      - 'tests/cdn-asset-audit.cjs'
+      - 'scripts/migrate-cdn-assets.cjs'
+      - 'docs/CDN-ASSET-MIGRATION.md'
       - '.github/workflows/theme-functionality.yml'
       - '.github/workflows/theme-mobile-layout.yml'
       - '.github/workflows/theme-desktop-layout.yml'

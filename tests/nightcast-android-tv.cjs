@@ -1,0 +1,87 @@
+'use strict';
+const { chromium } = require('playwright');
+
+const BASE = process.env.NIGHTCAST_BASE_URL || 'https://nightcast.ir';
+const results = [];
+function check(name, ok, detail = '') {
+  results.push({ name, ok: !!ok, detail });
+  console.log((ok ? 'PASS' : 'FAIL') + ' | ' + name + (detail ? ' | ' + detail : ''));
+}
+async function waitForPodcastCards(page) {
+  const grid = page.locator('#podcastGrid');
+  await grid.waitFor({ state: 'attached', timeout: 15000 });
+  await page.waitForFunction(() => {
+    const grid = document.querySelector('#podcastGrid');
+    return !!grid && (grid.children.length > 0 || /خطا|دوباره|پادکستی یافت نشد/i.test(grid.textContent || ''));
+  }, { timeout: 25000 }).catch(() => {});
+  return { count: await grid.locator(':scope > *').count(), text: (await grid.innerText().catch(() => '')).slice(0, 160) };
+}
+(async () => {
+  let browser;
+  const runtimeErrors = [];
+  try {
+    browser = await chromium.launch({ headless: true });
+    const api = await fetch(BASE + '/data/podcasts.json', { signal: AbortSignal.timeout(15000) });
+    let records = [];
+    if (api.ok) {
+      const payload = await api.json();
+      records = Array.isArray(payload) ? payload : (payload.podcasts || payload.data || payload.items || []);
+    }
+    check('Live podcast feed responds with valid data', api.ok && Array.isArray(records) && records.length > 0,
+      'HTTP ' + api.status + '; records=' + records.length);
+
+    const sizes = [
+      { name: 'TV-1080p', width: 1920, height: 1080 },
+      { name: 'TV-720p', width: 1280, height: 720 },
+      { name: 'Desktop', width: 1365, height: 768 },
+      { name: 'Tablet', width: 1024, height: 768 },
+      { name: 'Mobile', width: 360, height: 800 }
+    ];
+    for (const size of sizes) {
+      const context = await browser.newContext({ viewport: { width: size.width, height: size.height }, deviceScaleFactor: 1 });
+      const page = await context.newPage();
+      page.on('pageerror', error => runtimeErrors.push(size.name + ': ' + error.message));
+      page.on('console', message => {
+        if (message.type() === 'error' && !/net::ERR_ABORTED|favicon/i.test(message.text())) runtimeErrors.push(size.name + ': console ' + message.text());
+      });
+      const response = await page.goto(BASE + '/', { waitUntil: 'domcontentloaded', timeout: 30000 });
+      check(size.name + ' homepage responds', !!response && response.status() < 400, 'HTTP ' + (response && response.status()));
+      const gridResult = await waitForPodcastCards(page).catch(error => ({ count: 0, text: error.message }));
+      check(size.name + ' podcasts render', gridResult.count > 0,
+        'cards=' + gridResult.count + (gridResult.text ? '; ' + gridResult.text.replace(/\s+/g, ' ') : ''));
+      const overflow = await page.evaluate(() => ({
+        viewport: document.documentElement.clientWidth,
+        scroll: document.documentElement.scrollWidth,
+        body: document.body.scrollWidth
+      }));
+      check(size.name + ' no horizontal page overflow',
+        overflow.scroll <= overflow.viewport + 2 && overflow.body <= overflow.viewport + 2,
+        JSON.stringify(overflow));
+      await page.screenshot({ path: 'artifacts/nightcast-' + size.name.toLowerCase() + '.png', fullPage: false }).catch(() => {});
+      await context.close();
+    }
+
+    for (const route of ['about', 'contact']) {
+      const context = await browser.newContext({ viewport: { width: 1920, height: 1080 } });
+      const page = await context.newPage();
+      page.on('pageerror', error => runtimeErrors.push(route + ': ' + error.message));
+      const response = await page.goto(BASE + '/' + route, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      const target = page.locator('#' + route);
+      await target.waitFor({ state: 'attached', timeout: 15000 }).catch(() => {});
+      await page.waitForTimeout(900);
+      const visible = await target.isVisible().catch(() => false);
+      check('/' + route + ' opens its intended section', !!response && response.status() < 400 && visible,
+        'HTTP ' + (response && response.status()) + '; sectionVisible=' + visible + '; finalURL=' + page.url());
+      await page.screenshot({ path: 'artifacts/nightcast-route-' + route + '.png', fullPage: false }).catch(() => {});
+      await context.close();
+    }
+    check('No uncaught browser JavaScript errors', runtimeErrors.length === 0, runtimeErrors.slice(0, 8).join(' || ') || 'none');
+  } catch (error) {
+    check('TV compatibility test runner completed', false, error.stack || error.message);
+  } finally {
+    if (browser) await browser.close();
+  }
+  const failed = results.filter(result => !result.ok);
+  console.log('SUMMARY | ' + (results.length - failed.length) + '/' + results.length + ' checks passed');
+  if (failed.length) process.exitCode = 1;
+})();

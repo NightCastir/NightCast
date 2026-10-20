@@ -2,6 +2,29 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="utf-8">
+    <!-- NC_LEGACY_TV_FALLBACK: ES5-only detector must run before the modern app scripts. -->
+    <script>
+    (function () {
+      'use strict';
+      try {
+        var query = window.location.search || '';
+        if (query.indexOf('nc_full=1') !== -1 || query.indexOf('nc_tv=1') !== -1) return;
+        if (/\/tv-lite\.html$/i.test(window.location.pathname)) return;
+        var ua = navigator.userAgent || '';
+        var android = /Android/i.test(ua);
+        var tvAgent = /Android TV|GoogleTV|Google TV|SmartTV|SMART-TV|BRAVIA|AFT[A-Z0-9]+|HbbTV|NetCast/i.test(ua);
+        var chromeMatch = /(?:Chrome|CriOS)\/([0-9]+)/i.exec(ua);
+        var chromeMajor = chromeMatch ? parseInt(chromeMatch[1], 10) : 0;
+        var largeScreen = Math.max(screen.width || 0, window.innerWidth || 0) >= 1200 &&
+                          Math.min(screen.height || 0, window.innerHeight || screen.height || 0) >= 600;
+        var legacyBrowser = !chromeMajor || chromeMajor < 100;
+        if (android && (tvAgent || (largeScreen && legacyBrowser))) {
+          window.location.replace('/tv-lite.html' + (window.location.search.indexOf('section=') >= 0 ? window.location.search.replace(/^[^?]*/, '') : ''));
+        }
+      } catch (e) {}
+    })();
+    </script>
+
     <!-- Keep the full NightCast experience on every screen; do not redirect TVs to the reduced tv-lite page. -->
     <!-- Reset stale scroll only for the archive entry. About/Contact route intent must survive pageshow. -->
     <script>

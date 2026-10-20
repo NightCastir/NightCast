@@ -705,6 +705,7 @@ function silentWavDataUri() {
       const failures = [];
       const headerFailures = [];
       const heroTitleFailures = [];
+      const coverLayoutFailures = [];
       const visualArtifactDir = path.join(process.cwd(), 'artifacts', 'visual');
       fs.mkdirSync(visualArtifactDir, { recursive: true });
       let mobileNavigationPassed = false;
@@ -712,6 +713,39 @@ function silentWavDataUri() {
       for (const size of sizes) {
         await page.setViewportSize({ width: size.width, height: size.height });
         await page.waitForTimeout(120);
+        const coverLayout = await page.evaluate(() => {
+          const card = document.querySelector('.podcast-card[data-id="91001"]');
+          const cover = card?.querySelector('.podcast-cover');
+          const info = card?.querySelector('.podcast-info');
+          if (!card || !cover || !info) return { missing: true };
+          const cardRect = card.getBoundingClientRect();
+          const coverRect = cover.getBoundingClientRect();
+          const infoRect = info.getBoundingClientRect();
+          return {
+            missing: false,
+            width: coverRect.width,
+            height: coverRect.height,
+            ratio: coverRect.height ? coverRect.width / coverRect.height : 0,
+            cardRight: cardRect.right,
+            coverRight: coverRect.right,
+            infoTop: infoRect.top,
+            coverTop: coverRect.top,
+            infoLeft: infoRect.left,
+            coverLeft: coverRect.left
+          };
+        });
+        if (coverLayout.missing) {
+          coverLayoutFailures.push(size.name + ': cover/info/card missing');
+        } else {
+          const square = Math.abs(coverLayout.ratio - 1) < 0.035;
+          const rightAligned = Math.abs(coverLayout.cardRight - coverLayout.coverRight) < 3;
+          const correctFlow = size.width <= 900
+            ? coverLayout.coverTop < coverLayout.infoTop
+            : coverLayout.coverLeft > coverLayout.infoLeft;
+          if (!square || !rightAligned || !correctFlow) {
+            coverLayoutFailures.push(size.name + ': ' + JSON.stringify({ square, rightAligned, correctFlow, ...coverLayout }));
+          }
+        }
         if (['mobile', 'tablet', 'desktop', 'TV'].includes(size.name)) {
           await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
           await page.waitForTimeout(180);
@@ -889,6 +923,7 @@ function silentWavDataUri() {
         if (!headerOk) headerFailures.push(size.name + ' (' + size.width + 'px): ' + JSON.stringify(headerState));
       }
       report('5. Mobile, tablet, desktop and TV layouts avoid horizontal overflow', failures.length === 0, failures.join('; ') || 'Tested 320, 360, 390, 768, 801, 820, 900, 1000, 1024, 1440, 1920 px');
+      report('5.3. Podcast cover is square and stays top-right on mobile/tablet or right-side on desktop', coverLayoutFailures.length === 0, coverLayoutFailures.join('; ') || 'Verified 1:1 cover geometry and RTL placement at all 11 viewport widths');
       report('5.1. Header, navigation and controls fit across breakpoints', headerFailures.length === 0, headerFailures.join('; ') || 'Header geometry and navigation mode passed at 11 viewport widths');
       report('5.2. Welcome hero is absent across breakpoints', heroTitleFailures.length === 0, heroTitleFailures.join('; ') || 'Welcome hero is absent at all 11 viewport widths');
       report('6. Mobile navigation drawer remains fixed and usable', mobileNavigationPassed, mobileNavigationDetail);

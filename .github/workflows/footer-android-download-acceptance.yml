@@ -3,6 +3,7 @@ name: NightCast Footer Android Download Acceptance
 on:
   push:
     branches:
+      - main
       - feat/footer-android-download-cta
   pull_request:
     branches:

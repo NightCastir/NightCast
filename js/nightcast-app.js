@@ -12,7 +12,7 @@
             const CONFIG = Object.freeze({
 
                 FEED_URL:
-                    "https://nightcast.ir/data/podcasts.json",
+                    "/users/data/podcasts.json",
 
                 API_BASE:
                     "https://nightcast-api.tomasgermany2580.workers.dev/api/v1",

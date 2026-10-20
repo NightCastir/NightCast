@@ -124,7 +124,7 @@
     <link rel="stylesheet" href="/css/nightcast-cosmos.css?v=23">
     <link rel="stylesheet" href="/css/nightcast-responsive-fix.css?v=6">
     <link rel="stylesheet" href="/css/nightcast-header-fix.css?v=5">
-    <link rel="stylesheet" href="/css/nightcast-player-finish.css?v=5">
+    <link rel="stylesheet" href="/css/nightcast-player-finish.css?v=6">
 
 <link rel="stylesheet" href="/css/nightcast-global-polish.css?v=4">
     <link rel="stylesheet" href="/css/nightcast-performance.css?v=1">
@@ -1034,12 +1034,11 @@
 
             </div>
 
-            <div class="nc-audio-visualizer-wrap" aria-label="نمایش زنده فرکانس صدا">
-                <canvas id="ncAudioVisualizer" class="nc-audio-visualizer" width="320" height="64" role="img" aria-label="نمایشگر زنده فرکانس صوت"></canvas>
-                <span class="nc-visualizer-status" id="ncVisualizerStatus" aria-live="polite">نمایش زنده صدا</span>
-            </div>
+            <div class="controls" aria-label="کنترل‌های پخش">
 
-            <div class="controls">
+                <div class="nc-audio-visualizer-wrap nc-audio-visualizer-wrap--previous" aria-hidden="true">
+                    <canvas id="ncAudioVisualizerPrev" class="nc-audio-visualizer" width="320" height="64"></canvas>
+                </div>
 
                 <button class="control-btn"
                         id="prevBtn"
@@ -1066,6 +1065,11 @@
                     <i class="fa-solid fa-forward-step"></i>
 
                 </button>
+
+                <div class="nc-audio-visualizer-wrap nc-audio-visualizer-wrap--next" aria-label="نمایش زنده فرکانس صدا">
+                    <canvas id="ncAudioVisualizer" class="nc-audio-visualizer" width="320" height="64" role="img" aria-label="نمایشگر زنده فرکانس صوت"></canvas>
+                    <span class="nc-visualizer-status" id="ncVisualizerStatus" aria-live="polite">نمایش زنده صدا</span>
+                </div>
 
             </div>
 

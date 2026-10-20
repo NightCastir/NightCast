@@ -1,0 +1,49 @@
+name: NightCast Dual Audio Visualizer Acceptance
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'js/nightcast-app.js'
+      - 'css/nightcast-player-finish.css'
+      - 'tests/dual-audio-visualizer-acceptance.cjs'
+      - '.github/workflows/dual-audio-visualizer-acceptance.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'js/nightcast-app.js'
+      - 'css/nightcast-player-finish.css'
+      - 'tests/dual-audio-visualizer-acceptance.cjs'
+      - '.github/workflows/dual-audio-visualizer-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightcast-dual-audio-visualizer-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  dual-visualizer-acceptance:
+    name: Source and responsive browser acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout committed source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install browser test dependency
+        run: |
+          npm install --no-save --no-package-lock playwright
+          npx playwright install --with-deps chromium
+
+      - name: Verify shared analyser and mirrored layout at four viewports
+        run: node tests/dual-audio-visualizer-acceptance.cjs

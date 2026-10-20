@@ -75,20 +75,12 @@ async function getPublishedHome() {
       add('Clean route ' + route + ' resolves', false, e.message);
     }
   }
-  add('Legacy-browser redirect gate is present', html.indexOf('new Function("var a = {}; return a?.x ?? 0;")') >= 0 && html.indexOf('/tv-lite.html') >= 0,
-    'Older parsers should be routed to the ES5-compatible TV archive before modern scripts execute');
-  try {
-    const { response, body } = await get(SITE + '/tv-lite.html');
-    const inlineScripts = [...body.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script\s*>/gi)].map(m => m[1]).join('\n');
-    const modernSyntax = /\?\.(?![0-9])|\?\?(?!=)|=>|\b(?:const|let)\b/.test(inlineScripts);
-    add('Legacy TV fallback page responds', response.ok && /id="podcast-list"/.test(body), 'HTTP ' + response.status + ', fallback archive markup available');
-    add('Legacy TV fallback JavaScript avoids modern syntax', response.ok && !modernSyntax,
-      modernSyntax ? 'Possible modern syntax detected in fallback script' : 'No optional chaining, nullish coalescing, arrow functions, const, or let detected');
-    add('Legacy TV fallback includes About and Contact', response.ok && /id="view-about"/.test(body) && /id="view-contact"/.test(body),
-      'Both sections are embedded in the fallback page');
-  } catch (e) {
-    add('Legacy TV fallback page responds', false, e.message);
-  }
+  add('Full NightCast page is retained for TV', html.indexOf('/tv-lite.html') < 0 &&
+    html.indexOf('Keep the full NightCast experience') >= 0,
+    'Main page no longer redirects TV visitors to the reduced tv-lite experience');
+  add('Full desktop feature scripts remain referenced', ['/js/nightcast-app.js', '/js/nightcast-player.js', '/js/nightcast-theme.js']
+    .every(path => html.indexOf(path) >= 0),
+    'Core app, player, and theme scripts remain part of the full homepage');
   try {
     const { response, body } = await get(API + '/public/podcasts?page=1&limit=1');
     let count = 'unknown';

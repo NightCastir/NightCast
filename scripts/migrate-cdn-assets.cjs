@@ -216,8 +216,8 @@ async function main() {
   if(app.includes('https://placehold.co/600x600/11233A/E9BE70')) throw new Error('Remote placeholder image remains in canonical app');
   write('js/nightcast-app.js',app);
   let oldPlayer=read('users/js/player.js');
-  oldPlayer=oldPlayer.replace(/cover\\.src\\s*=\\s*podcast\\.cover_url\\s*\\|\\|\\s*["']\\/users\\/assets\\/images\\/default-cover\\.jpg["'];?/,
-    'const coverUrl = String(podcast.cover_url || "");\\ncover.src = coverUrl.startsWith("https://raw.githubusercontent.com/NightCastir/NightCast-Media/main/covers/")\\n  ? "/assets/podcasts/covers/" + decodeURIComponent(new URL(coverUrl).pathname.split("/").pop())\\n  : (coverUrl || "/assets/icons/icon-512.png");');
+  oldPlayer=oldPlayer.replace(/cover\.src\s*=\s*podcast\.cover_url\s*\|\|\s*["']\/users\/assets\/images\/default-cover\.jpg["'];?/,
+    'const coverUrl = String(podcast.cover_url || "");\ncover.src = coverUrl.startsWith("https://raw.githubusercontent.com/NightCastir/NightCast-Media/main/covers/")\n  ? "/assets/podcasts/covers/" + decodeURIComponent(new URL(coverUrl).pathname.split("/").pop())\n  : (coverUrl || "/assets/icons/icon-512.png");');
 
   // Update regression checks so they validate local assets instead of the old CDN implementation.
   let themeTest=read('tests/theme-system-acceptance.cjs');

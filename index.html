@@ -1642,5 +1642,30 @@
   })();
 </script>
     <script src="/js/nightcast-pwa.js?v=1" defer></script>
+    <script id="nc-remove-about-statistics-panel">
+    /* Remove the retired About-page statistics panel, including stale/dynamically injected markup. */
+    (function () {
+        "use strict";
+        const retiredTitle = /آمار\s*واقعی\s*NightCast|Real\s+NightCast\s+Statistics/i;
+        function removeRetiredPanel() {
+            const candidates = document.querySelectorAll("h1,h2,h3,h4,h5,h6,[role='heading'],strong,b,[aria-label],[data-title]");
+            candidates.forEach(function (node) {
+                const label = (node.textContent || "") + " " + (node.getAttribute("aria-label") || "") + " " + (node.getAttribute("data-title") || "");
+                if (!retiredTitle.test(label)) return;
+                const panel = node.closest(".nc-about-block, .nc-statistics-panel, .nc-stats-panel, .statistics-panel, .stats-panel, [data-panel='statistics'], article, section");
+                if (panel) panel.remove();
+                else node.remove();
+            });
+        }
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", removeRetiredPanel, { once: true });
+        } else {
+            removeRetiredPanel();
+        }
+        const observer = new MutationObserver(removeRetiredPanel);
+        observer.observe(document.documentElement, { childList: true, subtree: true });
+        window.setTimeout(function () { observer.disconnect(); }, 15000);
+    })();
+    </script>
 </body>
 </html>

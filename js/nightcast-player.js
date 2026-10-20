@@ -104,7 +104,7 @@
                     const stylesheet = document.querySelector('link[data-nc-leaflet-css]') ||
                         document.createElement("link");
                     stylesheet.rel = "stylesheet";
-                    stylesheet.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+                    stylesheet.href = "/assets/vendor/leaflet/leaflet.css";
                     stylesheet.crossOrigin = "";
                     stylesheet.dataset.ncLeafletCss = "true";
                     const cssReady = stylesheet.sheet
@@ -117,7 +117,7 @@
 
                     const script = document.querySelector('script[data-nc-leaflet-js]') ||
                         document.createElement("script");
-                    script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+                    script.src = "/assets/vendor/leaflet/leaflet.js";
                     script.crossOrigin = "";
                     script.dataset.ncLeafletJs = "true";
                     const jsReady = window.L

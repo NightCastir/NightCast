@@ -275,8 +275,18 @@
 
 
 
-            const placeholder =
-                "https://placehold.co/600x600/11233A/E9BE70?text=NightCast";
+            const placeholder = "/assets/icons/icon-512.png";
+            const localizeCover = value => {
+                const raw = String(value || "");
+                try {
+                    const url = new URL(raw, window.location.href);
+                    if (url.hostname === "raw.githubusercontent.com" && url.pathname.startsWith("/NightCastir/NightCast-Media/main/covers/")) {
+                        const filename = decodeURIComponent(url.pathname.split("/").pop());
+                        if (/^[A-Za-z0-9._-]+$/.test(filename)) return "/assets/podcasts/covers/" + filename;
+                    }
+                } catch (_) {}
+                return raw;
+            };
 
 
             /* =========================================================
@@ -1349,7 +1359,7 @@ LOGOUT
                     .map(tag => String(tag).trim()).filter(Boolean);
                 const date = formatPodcastDate(podcast.publish_date || podcast.created_at);
                 const duration = formatTime(podcast.duration_seconds || 0);
-                const cover = String(podcast.cover_url || placeholder);
+                const cover = (localizeCover(podcast.cover_url) || placeholder);
                 const sections = [];
 
                 if (shortDescription) sections.push({ title: "معرفی کوتاه", text: shortDescription });
@@ -1441,7 +1451,7 @@ LOGOUT
                 const book = String(p.book_name || "");
                 const category = String(p.category_name || p.category || "پادکست");
                 const desc = String(p.short_description || p.description || p.summary || "توضیحی برای این پادکست ثبت نشده است.");
-                const cover = String(p.cover_url || placeholder);
+                const cover = (localizeCover(p.cover_url) || placeholder);
                 const audio = String(p.audio_url || "");
                 const duration = formatTime(p.duration_seconds || 0);
                 const date = formatPodcastDate(p.publish_date || p.created_at);
@@ -1848,7 +1858,7 @@ LOGOUT
                                 "name": String(p.title || p.book_name || "پادکست NightCast"),
                                 "description": String(p.short_description || p.description || p.summary || ""),
                                 "url": "https://nightcast.ir/#podcast-" + encodeURIComponent(String(p.slug || p.id || "")),
-                                "image": String(p.cover_url || "https://nightcast.ir/logo.png"),
+                                "image": (localizeCover(p.cover_url) || placeholder),
                                 "inLanguage": "fa-IR",
                                 "datePublished": p.publish_date || p.created_at || undefined,
                                 "duration": Number(p.duration_seconds) > 0 ? "PT" + Math.floor(Number(p.duration_seconds) / 60) + "M" + (Number(p.duration_seconds) % 60) + "S" : undefined,
@@ -2126,8 +2136,7 @@ LOGOUT
 
 
                 els.playerCover.src =
-                    p.cover_url ||
-                    placeholder;
+                    localizeCover(p.cover_url) || placeholder;
 
 
                 els.playerCover.alt =
@@ -2177,7 +2186,7 @@ LOGOUT
                 };
                 const cover = document.getElementById("ncNowCover");
                 if (cover) {
-                    cover.src = p.cover_url || placeholder;
+                    cover.src = localizeCover(p.cover_url) || placeholder;
                     cover.alt = p.title || "NightCast";
                 }
                 [document.getElementById("ncPlayerLike"), document.getElementById("ncNowLike")].filter(Boolean).forEach(button => {
@@ -2363,7 +2372,7 @@ LOGOUT
 
                                 {
                                     src:
-                                        state.current.cover_url ||
+                                        localizeCover(state.current.cover_url) ||
                                         placeholder,
 
                                     sizes:

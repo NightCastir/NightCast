@@ -141,18 +141,13 @@ function silentWavDataUri() {
       const html = fs.readFileSync(file, 'utf8');
       const hasIcons = /\bfa-(?:solid|regular|brands)\b/.test(html);
       if (!hasIcons) continue;
-      const hasPrimaryCdn = /href=["']https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome\/[^"']+\/css\/all\.min\.css["']/i.test(html);
-      const hasOnDemandFallback = /onerror="[^"]*cdn\.jsdelivr\.net\/npm\/@fortawesome\/fontawesome-free@6\.7\.2\/css\/all\.min\.css/i.test(html);
-      const hasUnconditionalFallback = [...html.matchAll(/<link\b[^>]*>/gi)].some(match => {
-        const tagAttributes = match[0].split(/\s+onerror\s*=/i, 1)[0];
-        return /\brel=["']stylesheet["']/i.test(tagAttributes) &&
-          /\bhref=["']https:\/\/cdn\.jsdelivr\.net\/npm\/@fortawesome\/fontawesome-free@6\.7\.2\/css\/all\.min\.css["']/i.test(tagAttributes);
-      });
-      if (!hasPrimaryCdn || !hasOnDemandFallback || hasUnconditionalFallback) {
-        iconCdnFailures.push(file + ' must use the primary Font Awesome CDN with an on-demand fallback only');
+      const hasLocalIconStylesheet = /href=["'][^"']*\/assets\/vendor\/fontawesome\/css\/all\.min\.css["']/i.test(html);
+      const hasExternalIconCdn = /(?:cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome|cdn\.jsdelivr\.net\/npm\/@fortawesome\/fontawesome-free)/i.test(html);
+      if (!hasLocalIconStylesheet || hasExternalIconCdn) {
+        iconCdnFailures.push(file + ' must use the self-hosted Font Awesome stylesheet with no CDN dependency');
       }
     }
-    report('0.5. Font Awesome fallback loads only if the primary CDN fails', iconCdnFailures.length === 0,
+report('0.5. Font Awesome uses self-hosted assets without CDN fallback', iconCdnFailures.length === 0,
       iconCdnFailures.join(', ') || 'Icon-bearing documents use a primary stylesheet and no unconditional duplicate request');
 
     // Only the root document is indexable; legacy paths are small aliases into its sections.
@@ -427,7 +422,7 @@ function silentWavDataUri() {
         const localResources = resources.filter(item => new URL(item.name).origin === location.origin);
         const cssResources = localResources.filter(item => /\.css(?:\?|$)/i.test(item.name));
         const jsResources = localResources.filter(item => /\.js(?:\?|$)/i.test(item.name));
-        const leafLetRequests = resources.filter(item => /unpkg\.com\/leaflet\//i.test(item.name));
+        const leafLetRequests = resources.filter(item => item.name.includes('/assets/vendor/leaflet/'));
         return {
           domContentLoadedMs: nav ? Math.round(nav.domContentLoadedEventEnd) : null,
           loadEventMs: nav ? Math.round(nav.loadEventEnd) : null,
@@ -493,7 +488,7 @@ function silentWavDataUri() {
           iconFamily: pseudo?.fontFamily || 'missing',
           iconContent: pseudo?.content || 'missing',
           iconFontLoaded: document.fonts.check('900 16px "Font Awesome 6 Free"'),
-          iconCdnFallback: !!document.querySelector('link[href*="fontawesome-free@6.7.2"]'),
+          localIconStylesheet: !!document.querySelector('link[href*="/assets/vendor/fontawesome/css/all.min.css"]'),
           brandImagePresent: !!brandImage,
           brandImageLoaded: !!brandImage && brandImage.complete && brandImage.naturalWidth > 0
         };
@@ -506,7 +501,7 @@ function silentWavDataUri() {
         headerState.navLinksDisplay !== 'none' &&
         /Font Awesome/i.test(headerState.iconFamily) &&
         !!headerState.iconContent && headerState.iconContent !== 'none' && headerState.iconContent !== '""' &&
-        headerState.iconFontLoaded && headerState.iconCdnFallback &&
+        headerState.iconFontLoaded && headerState.localIconStylesheet &&
         headerState.brandImagePresent && headerState.brandImageLoaded;
       report('1.1. Desktop header fits viewport and CDN icons render', headerAndIconsOk, JSON.stringify(headerState));
     } catch (error) {

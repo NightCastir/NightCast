@@ -39,7 +39,7 @@ const assert = require('node:assert/strict');
     check('theme transition finishes at 100 percent', await page.locator('#nc-theme-transition .nct-track[role="progressbar"]').getAttribute('aria-valuenow') === '100');
     check('selecting Aurora updates the document theme', await page.locator('html').getAttribute('data-theme') === 'aurora');
     check('selecting Aurora updates global CSS variables', await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--nc-theme-primary').trim().toLowerCase()) === '#34d399');
-    check('theme texture token is configured', await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--nc-theme-texture').includes('unsplash.com')));
+    check('theme texture token is configured', await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--nc-theme-texture').includes('/assets/themes/')));
     check('selected theme is persisted locally', await page.evaluate(() => localStorage.getItem('nightcast-theme')) === 'aurora');
     check('theme button is available globally rather than in profile settings', await page.locator('#ncThemeLauncher').count() === 1);
 
@@ -103,7 +103,7 @@ const assert = require('node:assert/strict');
         surface: getComputedStyle(document.documentElement).getPropertyValue('--nc-theme-surface').trim(),
         texture: getComputedStyle(document.documentElement).getPropertyValue('--nc-theme-texture').trim()
       }));
-      check('theme tokens and distinct texture resolve for ' + themeId, appearance.id === themeId && !!appearance.primary && !!appearance.surface && appearance.texture.includes('unsplash.com'));
+      check('theme tokens and distinct texture resolve for ' + themeId, appearance.id === themeId && !!appearance.primary && !!appearance.surface && appearance.texture.includes('/assets/themes/'));
       const themeImageUrl = await page.evaluate(id => window.NightCastThemes.list().find(theme => theme.id === id).image, themeId);
       const cdnImageLoaded = await page.evaluate(url => new Promise(resolve => {
         const image = new Image();
@@ -114,7 +114,7 @@ const assert = require('node:assert/strict');
         image.onerror = () => finish(false);
         image.src = url;
       }), themeImageUrl);
-      check('Unsplash CDN image downloads successfully for ' + themeId, cdnImageLoaded);
+      check('Local theme artwork loads successfully for ' + themeId, cdnImageLoaded);
       await page.setViewportSize({ width: 360, height: 800 });
       check('no horizontal overflow on mobile for ' + themeId, await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1));
       await page.setViewportSize({ width: 1440, height: 900 });
@@ -125,8 +125,8 @@ const assert = require('node:assert/strict');
         page: getComputedStyle(document.body).backgroundImage,
         card: getComputedStyle(document.querySelector('#podcastGrid .podcast-card')).backgroundImage
       }));
-      check('selected Unsplash texture is actually applied to page for ' + themeId, textureVisibility.page.includes('images.unsplash.com'));
-      check('selected Unsplash texture is actually applied to podcast card for ' + themeId, textureVisibility.card.includes('images.unsplash.com'));
+      check('local theme texture is actually applied to page for ' + themeId, textureVisibility.page.includes('/assets/themes/'));
+      check('local theme texture is actually applied to podcast card for ' + themeId, textureVisibility.card.includes('/assets/themes/'));
       observedCardSurfaces.add(cardAppearance.bg + '|' + cardAppearance.border + '|' + cardAppearance.color);
       check('podcast card surface and border are theme-bound for ' + themeId, cardAppearance.bg.includes('linear-gradient') && !!cardAppearance.border && !!cardAppearance.color);
       const viewButtons = await page.locator('#podcasts .nc-view-button').evaluateAll(buttons => buttons.map(button => ({

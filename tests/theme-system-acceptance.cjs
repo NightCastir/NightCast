@@ -14,7 +14,7 @@ const assert = require('node:assert/strict');
     page.on('pageerror', error => { if (/nightcast-theme(?:-experience)?\.js|NightCast Theme System/i.test(error.stack || error.message)) failures.push('theme controller browser error: ' + error.message); });
     const response = await page.goto('http://127.0.0.1:4173/', { waitUntil: 'domcontentloaded', timeout: 30000 });
     check('homepage loads successfully', !!response && response.ok());
-    check('theme stylesheet is requested', (await page.request.get('http://127.0.0.1:4173/css/nightcast-themes.css?v=4')).ok());
+    check('theme stylesheet is requested', (await page.request.get('http://127.0.0.1:4173/css/nightcast-themes.css?v=7')).ok());
     check('theme controller is requested', (await page.request.get('http://127.0.0.1:4173/js/nightcast-theme.js?v=2')).ok());
 
     await page.waitForFunction(() => !!window.NightCastThemes, null, { timeout: 10000 });
@@ -124,6 +124,34 @@ const assert = require('node:assert/strict');
       check('selected Unsplash texture is actually applied to podcast card for ' + themeId, textureVisibility.card.includes('images.unsplash.com'));
       observedCardSurfaces.add(cardAppearance.bg + '|' + cardAppearance.border + '|' + cardAppearance.color);
       check('podcast card surface and border are theme-bound for ' + themeId, cardAppearance.bg.includes('linear-gradient') && !!cardAppearance.border && !!cardAppearance.color);
+      const viewButtons = await page.locator('#podcasts .nc-view-button').evaluateAll(buttons => buttons.map(button => ({
+        pressed: button.getAttribute('aria-pressed'),
+        color: getComputedStyle(button).color,
+        background: getComputedStyle(button).backgroundColor,
+        border: getComputedStyle(button).borderTopColor
+      })));
+      check('view switch exposes clearly different active and inactive states for ' + themeId,
+        viewButtons.length === 2 &&
+        viewButtons.some(button => button.pressed === 'true') &&
+        viewButtons.some(button => button.pressed === 'false') &&
+        viewButtons[0].background !== viewButtons[1].background &&
+        viewButtons[0].border !== viewButtons[1].border);
+      if (themeId === 'moonlight') {
+        check('Moonlight active view control is indigo with white text',
+          viewButtons.some(button => button.pressed === 'true' &&
+            button.background === 'rgb(81, 69, 205)' && button.color === 'rgb(255, 255, 255)'));
+        check('Moonlight inactive view control has charcoal text and a visible gray border',
+          viewButtons.some(button => button.pressed === 'false' &&
+            button.color === 'rgb(48, 55, 71)' && button.border === 'rgb(174, 182, 198)'));
+        check('Moonlight view settings panel is warm ivory',
+          await page.locator('#podcasts .nc-view-settings').evaluate(el =>
+            getComputedStyle(el).backgroundImage.includes('245, 241, 231') ||
+            getComputedStyle(el).backgroundColor === 'rgb(255, 254, 250)'));
+        check('Moonlight category and episode chips use cream surfaces',
+          await page.locator('#podcasts .podcast-card-overline .podcast-category, #podcasts .podcast-card-overline .podcast-episode').first().evaluate(el =>
+            getComputedStyle(el).backgroundColor === 'rgb(248, 245, 237)' &&
+            getComputedStyle(el).color === 'rgb(57, 53, 121)'));
+      }
     }
     check('podcast card appearance changes across theme palettes', observedCardSurfaces.size >= 7);
     await page.evaluate(() => window.NightCastThemes.apply('aurora', false));

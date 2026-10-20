@@ -1,0 +1,60 @@
+name: NightCast Footer Android Download Acceptance
+
+on:
+  push:
+    branches:
+      - feat/footer-android-download-cta
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "index.html"
+      - "css/nightcast-themes.css"
+      - "tests/footer-android-download-acceptance.cjs"
+      - "tests/footer-android-live-links.cjs"
+      - ".github/workflows/footer-android-download-acceptance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: footer-android-download-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  footer-android-download:
+    name: Footer download UI and responsive browser tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Playwright
+        run: npm install --no-save playwright
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Validate footer download markup, links, styles and theme support
+        run: node tests/footer-android-download-acceptance.cjs
+
+      - name: Probe live APK and Cafe Bazaar destinations
+        run: node tests/footer-android-live-links.cjs
+
+      - name: Publish test summary
+        if: always()
+        run: |
+          {
+            echo "## NightCast Footer Android Download Acceptance"
+            echo ""
+            echo "- Checks the direct APK destination, Cafe Bazaar destination, Android/store icons, theme cache version, visual effects, keyboard focus and reduced-motion rules."
+            echo "- Runs Chromium checks at mobile (390px), tablet (820px), and desktop (1440px), including CTA visibility, button dimensions, horizontal overflow, and Moonlight contrast."
+            echo "- A live endpoint probe also checks that the official APK URL and Cafe Bazaar listing respond successfully. This does not verify APK signing or installation on a physical Android device."
+          } >> "$GITHUB_STEP_SUMMARY"

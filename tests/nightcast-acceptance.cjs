@@ -256,6 +256,38 @@ function silentWavDataUri() {
       report('2. Real podcast API returns live records', false, String(error.message || error));
     }
 
+    // Activity 2.1: ensure the public stats/comments reads also degrade safely when D1 is rate-limited.
+    try {
+      const staticFallback = JSON.parse(fs.readFileSync('users/data/podcasts.json', 'utf8'));
+      const samplePodcastId = staticFallback.podcasts?.find(podcast => podcast?.status === 'active')?.id;
+      const readOnlyEndpoints = [
+        { name: '2.1. Public podcast stats API responds successfully', url: 'https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts/stats', shape: payload => payload?.stats && typeof payload.stats === 'object' },
+        { name: '2.2. Public podcast comments API responds successfully', url: 'https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts/' + encodeURIComponent(samplePodcastId) + '/comments', shape: payload => Array.isArray(payload?.comments) }
+      ];
+      for (const endpoint of readOnlyEndpoints) {
+        try {
+          const response = spawnSync('curl', [
+            '--silent', '--show-error', '--max-time', '12',
+            '--write-out', '__HTTP_STATUS__%{http_code}',
+            '-H', 'Accept: application/json', endpoint.url
+          ], { encoding: 'utf8', timeout: 13000, maxBuffer: 2 * 1024 * 1024 });
+          if (response.error) throw response.error;
+          if (response.status !== 0) throw new Error((response.stderr || 'curl failed').trim());
+          const separator = response.stdout.lastIndexOf('__HTTP_STATUS__');
+          if (separator < 0) throw new Error('Missing HTTP status');
+          const status = Number(response.stdout.slice(separator + '__HTTP_STATUS__'.length).trim());
+          const payload = JSON.parse(response.stdout.slice(0, separator));
+          const ok = status === 200 && payload?.success === true && endpoint.shape(payload);
+          report(endpoint.name, ok, 'HTTP ' + status + ', success=' + String(payload?.success) + (payload?.degraded ? ', degraded=true' : ''));
+        } catch (endpointError) {
+          report(endpoint.name, false, String(endpointError.message || endpointError));
+        }
+      }
+    } catch (readOnlySmokeError) {
+      report('2.1. Public podcast stats API responds successfully', false, String(readOnlySmokeError.message || readOnlySmokeError));
+      report('2.2. Public podcast comments API responds successfully', false, String(readOnlySmokeError.message || readOnlySmokeError));
+    }
+
     server = spawn('python3', ['-m', 'http.server', '4173', '--bind', '127.0.0.1'], {
       stdio: 'ignore',
       detached: false

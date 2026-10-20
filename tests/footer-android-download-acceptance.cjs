@@ -116,7 +116,19 @@ const server = http.createServer((req, res) => {
           footerVisible: rect.bottom > 0 && rect.top < innerHeight,
           footerInViewClass: document.body.classList.contains('nc-footer-in-view'),
           mobileNavOpacity: navStyle ? Number(navStyle.opacity) : null,
-          mobileNavTransform: navStyle ? navStyle.transform : 'not-present'
+          mobileNavTransform: navStyle ? navStyle.transform : 'not-present',
+          trailingFlowElements: Array.from(document.body.querySelectorAll('*')).map(el => {
+            const style = getComputedStyle(el);
+            const rect = el.getBoundingClientRect();
+            let ancestor = el.parentElement;
+            let insideOverlay = false;
+            while (ancestor && ancestor !== document.body) {
+              const p = getComputedStyle(ancestor).position;
+              if (p === 'fixed' || p === 'absolute') { insideOverlay = true; break; }
+              ancestor = ancestor.parentElement;
+            }
+            return { tag: el.tagName, id: el.id || '', className: typeof el.className === 'string' ? el.className.slice(0,90) : '', position: style.position, display: style.display, height: Math.round(rect.height), topInDocument: Math.round(rect.top + window.scrollY), bottomInDocument: Math.round(rect.bottom + window.scrollY), insideOverlay };
+          }).filter(el => !el.insideOverlay && el.display !== 'none' && el.position !== 'fixed' && el.position !== 'absolute' && el.height > 0 && el.bottomInDocument > (rect.bottom + window.scrollY) + 20).slice(0, 12)
         };
       });
       check(viewport.name + ': no document gap after footer', footerGeometry.trailingGap <= 2, JSON.stringify(footerGeometry));

@@ -458,3 +458,88 @@ main#home .hero h1{max-width:100%;overflow-wrap:normal;word-break:normal}
   #contact .nc-contact-info .nc-contact-card>.nc-contact-icon{flex-basis:36px!important}
   #contact .nc-contact-grid .nc-contact-map-card{padding:10px!important}
 }
+
+
+/* Podcast cover composition v1:
+   Desktop/tablet landscape: keep the square artwork on the right.
+   Tablet portrait/mobile: move the same complete square cover to the top-right,
+   with the title, metadata, description and controls below it. */
+#podcasts .podcast-card,
+.podcast-card {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  gap: 0 !important;
+  min-width: 0 !important;
+}
+#podcasts .podcast-card > .podcast-cover,
+.podcast-card > .podcast-cover {
+  flex: 0 0 clamp(190px, 27%, 320px) !important;
+  width: clamp(190px, 27%, 320px) !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  aspect-ratio: 1 / 1 !important;
+  align-self: stretch !important;
+  overflow: hidden !important;
+}
+#podcasts .podcast-card > .podcast-cover > img,
+.podcast-card > .podcast-cover > img {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  aspect-ratio: 1 / 1 !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  background: rgba(4, 9, 24, .8) !important;
+}
+#podcasts .podcast-card > .podcast-info,
+.podcast-card > .podcast-info {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  width: auto !important;
+}
+#podcasts .podcast-card .card-footer,
+.podcast-card .card-footer {
+  flex-wrap: wrap !important;
+  min-width: 0 !important;
+}
+@media (max-width: 900px) {
+  #podcasts .podcast-card,
+  .podcast-card {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  #podcasts .podcast-card > .podcast-cover,
+  .podcast-card > .podcast-cover {
+    flex: 0 0 auto !important;
+    width: clamp(160px, 38vw, 270px) !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    aspect-ratio: 1 / 1 !important;
+    align-self: flex-start !important;
+    margin-inline-start: 0 !important;
+    margin-inline-end: auto !important;
+  }
+  #podcasts .podcast-card > .podcast-cover > img,
+  .podcast-card > .podcast-cover > img {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    aspect-ratio: 1 / 1 !important;
+    object-fit: contain !important;
+  }
+  #podcasts .podcast-card > .podcast-info,
+  .podcast-card > .podcast-info {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    padding: clamp(14px, 3vw, 20px) !important;
+  }
+}
+@media (max-width: 380px) {
+  #podcasts .podcast-card > .podcast-cover,
+  .podcast-card > .podcast-cover {
+    width: min(68vw, 220px) !important;
+  }
+}

@@ -1,0 +1,135 @@
+/* NightCast — Moonlight / Mahtab contrast system.
+   Loaded last so component-specific legacy colors cannot override the light theme.
+   Palette is intentionally neutral, with indigo/blue reserved for actions and focus. */
+:root[data-theme="moonlight"]{
+  color-scheme:light;
+  --nc-theme-bg:#F5F7FB;
+  --nc-theme-surface:#FFFFFF;
+  --nc-theme-surface-2:#EEF2F7;
+  --nc-theme-panel:#FFFFFF;
+  --nc-theme-panel-inset:#F3F5F9;
+  --nc-theme-primary:#4338CA;
+  --nc-theme-secondary:#0369A1;
+  --nc-theme-accent:#4F46E5;
+  --nc-theme-text:#172033;
+  --nc-theme-muted:#4B5568;
+  --nc-theme-border:#D5DCE7;
+  --nc-theme-divider:#E1E6EE;
+  --nc-theme-glow:rgba(67,56,202,.08);
+}
+:root[data-theme="moonlight"] body{
+  color:#172033!important;
+  background:linear-gradient(180deg,#F8FAFD 0%,#F3F6FA 100%)!important;
+}
+:root[data-theme="moonlight"] :is(.hero,.hero-card,.section,.nc-about-hero,.nc-about-block,.nc-mission-card,.nc-editorial-card,.nc-studio,.nc-contact-hero,.nc-contact-card,.nc-contact-panel,.nc-contact-info,.nc-social-card,.nc-stat,.stat,.profile-panel,.profile-stat,.profile-favorite-item,.nc-view-settings,.nc-drawer-panel,.nc-detail-dialog,.nc-comments-card,.nc-now-playing,.nc-podcast-detail,.nc-constellation,.nc-planet,.book-summary-request-panel,.nc-process-step,.nc-why,.nc-identity-quote,.nc-map,.nc-map-panel,.nc-footer-download,.nc-platform-download-card){
+  color:#172033!important;
+  background:#FFFFFF!important;
+  background-image:none!important;
+  border-color:#D5DCE7!important;
+  box-shadow:0 8px 24px rgba(23,32,51,.045)!important;
+}
+:root[data-theme="moonlight"] :is(.nc-contact-hero,.nc-about-hero,.nc-studio,.hero-card){
+  background:linear-gradient(145deg,#FFFFFF 0%,#F9FAFD 100%)!important;
+}
+:root[data-theme="moonlight"] :is(.nc-contact-card,.nc-contact-panel,.nc-mission-card,.nc-editorial-card,.nc-process-step,.nc-why,.nc-identity-quote,.profile-stat,.profile-favorite-item,.nc-stat,.stat,.nc-drawer-panel,.nc-view-settings,.nc-detail-section,.nc-comments-item,.nc-comment,.nc-google-chip,.nc-theme-current,.nc-avatar-choice,.nc-avatar-option,.nc-platform-download-card .nc-footer-download-market){
+  background:#F3F5F9!important;
+  color:#172033!important;
+  border-color:#D5DCE7!important;
+}
+:root[data-theme="moonlight"] :is(h1,h2,h3,h4,h5,h6,.section-title,.section-head,.nc-section-title,.nc-about-title,.nc-contact-hero h1,.nc-contact-hero h2,.nc-contact-card strong,.nc-contact-card h3,.nc-platform-download-heading h3,.podcast-title,.podcast-card h2,.podcast-card h3,.nc-now-title,.nc-detail-dialog h2,.profile-user-info h2,.profile-stat strong,.nc-theme-heading h3,.nc-theme-option-name,.nc-avatar-choice-head strong,.nc-pwa-install-title){
+  color:#172033!important;
+  -webkit-text-fill-color:currentColor;
+}
+:root[data-theme="moonlight"] :is(p,.hero p,.section-sub,.nc-section-text,.nc-about-lead,.nc-contact-hero p,.nc-contact-card p,.nc-contact-card small,.nc-contact-card span,.nc-contact-card em,.podcast-desc,.podcast-card p,.nc-comments-subtitle,.nc-now-description,.nc-theme-heading p,.nc-theme-option-subtitle,.nc-theme-save-note,.nc-platform-download-description,.nc-footer-download-note,.nc-pwa-install-content,.profile-section>p,.nc-google-chip){
+  color:#4B5568!important;
+  -webkit-text-fill-color:currentColor;
+}
+:root[data-theme="moonlight"] :is(a:not(.btn):not(.brand),.nav-link,.nc-nav .nav-link,.nc-contact-card a,.nc-social-card a,.nc-footer a){
+  color:#334155!important;
+}
+:root[data-theme="moonlight"] :is(a:not(.btn):not(.brand),.nav-link,.nc-nav .nav-link,.nc-contact-card a,.nc-social-card a,.nc-footer a):hover{
+  color:#3730A3!important;
+}
+:root[data-theme="moonlight"] :is(.nc-section-eyebrow,.nc-kicker,.nc-comments-kicker,.nc-now-kicker,.nc-contact-hero .nc-section-eyebrow,.nc-contact-icon,.nc-mission-icon,.nc-identity-quote i,.nc-frequency,.nc-radio-caption){
+  color:#4338CA!important;
+}
+:root[data-theme="moonlight"] :is(.nc-contact-icon,.nc-mission-icon,.profile-icon,.nc-theme-launcher i,.nc-theme-ribbon-option i,.nc-theme-option .nc-theme-selected){
+  background:#EDEBFF!important;
+  border-color:#D8D4FE!important;
+  color:#3730A3!important;
+}
+:root[data-theme="moonlight"] :is(.btn-primary,.button-primary,.nc-comments-submit,.nc-now-control.primary,.latest-play,.control-btn.main,.nc-pwa-primary,.profile-settings-button){
+  color:#FFFFFF!important;
+  -webkit-text-fill-color:#FFFFFF!important;
+  background:linear-gradient(135deg,#4338CA,#0369A1)!important;
+  border:1px solid transparent!important;
+}
+:root[data-theme="moonlight"] :is(.btn-secondary,.btn:not(.btn-primary),.control-btn,.icon-btn,.nc-now-control,.nc-like-button,.profile-favorite-actions button,.profile-close,.nc-theme-back,.nc-avatar-reset,.nc-pwa-install-footer a,.nc-pwa-install-footer button,.nc-drawer-links a,.nc-theme-ribbon-option){
+  color:#243047!important;
+  -webkit-text-fill-color:currentColor;
+  background:#F3F5F9!important;
+  border:1px solid #D5DCE7!important;
+}
+:root[data-theme="moonlight"] :is(button,input,textarea,select,.search-input,.form-group input,.form-group textarea,.page-size-control,.search-box,.nc-search-input,.nc-contact input,.nc-contact textarea,.nc-contact select){
+  color:#172033!important;
+  -webkit-text-fill-color:currentColor;
+  background-color:#FFFFFF!important;
+  border-color:#C7D0DE!important;
+}
+:root[data-theme="moonlight"] :is(input,textarea,select,.search-input,.form-group input,.form-group textarea,.nc-contact input,.nc-contact textarea,.nc-contact select)::placeholder{
+  color:#647084!important;
+  -webkit-text-fill-color:#647084!important;
+  opacity:1;
+}
+:root[data-theme="moonlight"] :is(.page-size-control,.search-box,.nc-search-input,.infinite-scroll-sentinel,.nc-theme-ribbon,.nc-theme-launcher-label,.nc-theme-option,.nc-avatar-choice,.nc-avatar-option,.nc-pwa-install-close){
+  color:#172033!important;
+  background:#FFFFFF!important;
+  border-color:#D5DCE7!important;
+}
+:root[data-theme="moonlight"] :is(.podcast-grid>*,.podcast-card,.podcast-item,.nc-podcast-card,.nc-planet,.nc-constellation,.nc-detail-section,.nc-comments-list,.nc-comments-compose,.nc-comment-form,.nc-profile-section,.profile-section,.nc-theme-option-copy,.nc-theme-ribbon-option-copy){
+  color:#172033!important;
+  background-color:#FFFFFF!important;
+  border-color:#D5DCE7!important;
+}
+:root[data-theme="moonlight"] :is(.podcast-grid>*,.podcast-card,.podcast-item,.nc-podcast-card,.nc-planet,.nc-detail-section,.nc-comments-card,.nc-comment,.profile-favorite-item){
+  background-image:none!important;
+  box-shadow:0 5px 18px rgba(23,32,51,.045)!important;
+}
+:root[data-theme="moonlight"] :is(.podcast-grid>*,.podcast-card,.podcast-item,.nc-podcast-card,.nc-planet):before{
+  opacity:.3;
+}
+:root[data-theme="moonlight"] :is(.nc-header,.nc-nav,.nc-mobile-drawer,.mobile-nav,.nc-drawer-links,.nc-footer,footer,.site-footer,#playerBar,.player-bar,.player,.nc-now-playing){
+  color:#172033!important;
+  background:#FFFFFF!important;
+  border-color:#D5DCE7!important;
+}
+:root[data-theme="moonlight"] :is(.nc-header,.nc-nav,.nc-mobile-drawer,.mobile-nav,.nc-footer,footer,.site-footer){
+  box-shadow:0 5px 20px rgba(23,32,51,.045)!important;
+}
+:root[data-theme="moonlight"] :is(.nc-mobile-drawer,.nc-drawer-links a,.nc-drawer-panel,.nc-theme-ribbon,.nc-theme-ribbon-scrim){
+  --nc-theme-text:#172033;
+  --nc-theme-muted:#4B5568;
+  --nc-theme-border:#D5DCE7;
+}
+:root[data-theme="moonlight"] :is(.nc-theme-option[aria-pressed="true"],.nc-theme-ribbon-option[aria-pressed="true"],.nc-avatar-option[aria-pressed="true"]){
+  border-color:#4338CA!important;
+  box-shadow:0 0 0 2px rgba(67,56,202,.14)!important;
+}
+:root[data-theme="moonlight"] :is(button,a,input,textarea,select,[tabindex]):focus-visible{
+  outline:3px solid #4338CA!important;
+  outline-offset:3px;
+}
+:root[data-theme="moonlight"] :is(hr,.nc-divider,.nc-contact-divider,.nc-footer-divider){
+  border-color:#D5DCE7!important;
+  background-color:#D5DCE7!important;
+}
+:root[data-theme="moonlight"] .nc-platform-android .nc-platform-icon{color:#16834A!important;background:#E8F9EF!important;border-color:#9ADCB7!important}
+:root[data-theme="moonlight"] .nc-platform-ios .nc-platform-icon{color:#005FCC!important;background:#EAF3FF!important;border-color:#A9CEFF!important}
+:root[data-theme="moonlight"] .nc-platform-download-card .nc-footer-download-direct{background:#3DDC84!important;color:#07130C!important;-webkit-text-fill-color:#07130C!important}
+:root[data-theme="moonlight"] .nc-platform-download-card .nc-footer-download-market{background:#FFFFFF!important;color:#243047!important}
+:root[data-theme="moonlight"] .nc-platform-download-card .nc-footer-download-ios{background:#007AFF!important;color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important;border-color:#007AFF!important}
+@media(max-width:760px){
+  :root[data-theme="moonlight"] :is(.nc-contact-hero,.nc-contact-card,.nc-about-hero,.nc-about-block,.nc-platform-download-card,.nc-detail-dialog,.nc-comments-card){
+    border-radius:18px;
+  }
+}

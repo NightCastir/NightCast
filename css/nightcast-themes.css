@@ -444,3 +444,27 @@ html[data-theme] .podcast-cover .cover-shade{pointer-events:none}
 }
 :root[data-theme="moonlight"] input::placeholder,
 :root[data-theme="moonlight"] textarea::placeholder{color:#8994A7!important}
+
+
+/* Moonlight: remove the gray strip behind podcast category and episode labels.
+   Keep this fix limited to the metadata row and its two pills. */
+:root[data-theme="moonlight"] .podcast-info .podcast-card-overline{
+  background:transparent!important;
+  background-color:transparent!important;
+  background-image:none!important;
+  box-shadow:none!important;
+  border-bottom-color:rgba(99,102,241,.14)!important;
+}
+:root[data-theme="moonlight"] .podcast-info .podcast-card-overline .podcast-category,
+:root[data-theme="moonlight"] .podcast-info .podcast-card-overline .podcast-episode{
+  background:#FFFFFF!important;
+  background-image:none!important;
+  color:#4147A8!important;
+  border:1px solid rgba(99,102,241,.18)!important;
+  box-shadow:0 1px 3px rgba(71,85,105,.04)!important;
+}
+:root[data-theme="moonlight"] .podcast-info .meta{
+  background:#FFFFFF!important;
+  background-image:none!important;
+  border-color:rgba(99,102,241,.12)!important;
+}

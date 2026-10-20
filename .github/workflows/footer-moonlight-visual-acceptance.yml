@@ -46,8 +46,8 @@ jobs:
           const checks = [
             ['Persian RTL locale', manifest.lang === 'fa-IR' && manifest.dir === 'rtl'],
             ['Root standalone scope', manifest.start_url === '/' && manifest.scope === '/' && manifest.display === 'standalone'],
-            ['192px icon exists', manifest.icons.some(x => x.sizes === '192x192' && fs.existsSync(path.join('.', x.src.replace(/^\\//, ''))))],
-            ['512px icon exists', manifest.icons.some(x => x.sizes === '512x512' && fs.existsSync(path.join('.', x.src.replace(/^\\//, ''))))]
+            ['192px icon exists', manifest.icons.some(x => x.sizes === '192x192' && fs.existsSync(path.join('.', x.src.replace(/^\//, ''))))],
+            ['512px icon exists', manifest.icons.some(x => x.sizes === '512x512' && fs.existsSync(path.join('.', x.src.replace(/^\//, ''))))]
           ];
           let failed = false;
           for (const [label, ok] of checks) {
@@ -64,10 +64,10 @@ jobs:
           const themes = fs.readFileSync('css/nightcast-themes.css', 'utf8');
           const contrast = fs.readFileSync('css/nightcast-moonlight-contrast.css', 'utf8');
           const checks = [
-            ['theme stylesheet cache key v19', /nightcast-themes\\.css\\?v=19/.test(html)],
-            ['Moonlight contrast stylesheet cache key v12', /nightcast-moonlight-contrast\\.css\\?v=12/.test(html)],
+            ['theme stylesheet cache key v19', /nightcast-themes\.css\?v=19/.test(html)],
+            ['Moonlight contrast stylesheet cache key v12', /nightcast-moonlight-contrast\.css\?v=12/.test(html)],
             ['Moonlight footer override exists after legacy reset', contrast.lastIndexOf('Final Moonlight footer override') > contrast.lastIndexOf('background-image:none!important')],
-            ['Moonlight panel has light gradient and dark text', /:root\\[data-theme="moonlight"\\] \\.nc-footer-download\\{[^}]*linear-gradient\\([^}]*#fffefa[^}]*--nc-download-ink:#242936/s.test(contrast)],
+            ['Moonlight panel has light gradient and dark text', /:root\[data-theme="moonlight"\] \.nc-footer-download\{[^}]*linear-gradient\([^}]*#fffefa[^}]*--nc-download-ink:#242936/s.test(contrast)],
             ['Android CTA defines explicit link states', ['.nc-footer-download-direct:link','.nc-footer-download-direct:visited','.nc-footer-download-direct:hover','.nc-footer-download-direct:focus-visible','.nc-footer-download-direct:active'].every(x => themes.includes(x))],
             ['iOS CTA retains explicit blue background and white text', contrast.includes('background:#007AFF!important;color:#fff!important;-webkit-text-fill-color:#fff!important')]
           ];

@@ -32,7 +32,7 @@ const files = walk(root);
 const refs = [];
 for (const file of files) {
   const rel = path.relative(root,file).split(path.sep).join('/');
-  const runtime = ['.html','.htm','.css','.js','.mjs','.cjs','.json','.xml','.svg','.webmanifest'].includes(path.extname(rel).toLowerCase()) && !/^(?:tests|docs|\.github)\//.test(rel);
+  const runtime = ['.html','.htm','.css','.js','.mjs','.cjs','.json','.xml','.svg','.webmanifest'].includes(path.extname(rel).toLowerCase()) && !/^(?:tests|docs|scripts|\.github)\//.test(rel);
   let text;
   try { text = fs.readFileSync(file,'utf8'); } catch { continue; }
   const re = /https?:\/\/[^\s"'<>\x60]+/g;
@@ -91,7 +91,7 @@ const lines = [
 fs.writeFileSync(path.join(output,'cdn-asset-inventory.md'),lines.join('\n')+'\n');
 console.log('CDN INVENTORY | files='+report.filesScanned+' runtime_refs='+report.runtimeReferences+' static_cdn='+report.staticCdnReferences+' podcast_covers='+report.externalPodcastCovers+' podcast_audio='+report.externalPodcastAudio);
 console.log(lines.slice(0,Math.min(lines.length,45)).join('\n'));
-if (process.argv.includes('--strict-assets') && report.staticCdnReferences) {
-  console.error('FAIL | '+report.staticCdnReferences+' static CDN asset references remain in runtime files');
+if (process.argv.includes('--strict-assets') && (report.staticCdnReferences || report.externalPodcastCovers)) {
+  console.error('FAIL | '+report.staticCdnReferences+' static CDN references and '+report.externalPodcastCovers+' external podcast-cover references remain in runtime files');
   process.exitCode = 1;
 }

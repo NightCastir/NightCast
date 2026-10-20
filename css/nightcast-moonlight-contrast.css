@@ -757,18 +757,18 @@
 
 
 /* Pagination active state must retain the selected theme accent even under Moonlight's global button contrast rules. */
-:root[data-theme="moonlight"] .nc-podcast-pagination .nc-page-btn.is-active{
+:root[data-theme="moonlight"] #podcasts .nc-podcast-pagination .nc-page-btn.is-active{
   color:#fff!important;
   background:linear-gradient(135deg,var(--nc-theme-primary,#6366f1),var(--nc-theme-secondary,#38bdf8))!important;
   border-color:transparent!important;
   box-shadow:0 7px 22px rgba(99,102,241,.18),inset 0 1px rgba(255,255,255,.34)!important;
 }
-:root[data-theme="moonlight"] .nc-podcast-pagination .nc-page-btn:not(.is-active){
+:root[data-theme="moonlight"] #podcasts .nc-podcast-pagination .nc-page-btn:not(.is-active){
   color:var(--nc-theme-text,#172033)!important;
   background:var(--nc-theme-surface,#fff)!important;
   border-color:var(--nc-theme-border,rgba(100,116,139,.2))!important;
 }
-:root[data-theme="moonlight"] .nc-podcast-pagination .nc-page-btn.is-active:hover{
+:root[data-theme="moonlight"] #podcasts .nc-podcast-pagination .nc-page-btn.is-active:hover{
   color:#fff!important;
   background:linear-gradient(135deg,var(--nc-theme-primary,#6366f1),var(--nc-theme-secondary,#38bdf8))!important;
 }

@@ -29,7 +29,7 @@ const server = http.createServer((req, res) => {
   const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'utf8'));
   const serviceWorker = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
   const pwaScript = fs.readFileSync(path.join(root, 'js/nightcast-pwa.js'), 'utf8');
-  check('homepage has an accessible platform-download panel in footer', /<section class="nc-footer-download"[^>]*aria-labelledby="ncFooterDownloadTitle"/.test(html));
+  check('homepage has an accessible platform-download panel in footer', /<section\b(?=[^>]*class="nc-footer-download")(?=[^>]*aria-labelledby="ncFooterDownloadTitle")[^>]*>/.test(html));
   check('legacy promotional heading and paragraph above the platform choices are removed', !html.includes('nc-footer-download-copy') && !html.includes('NIGHTCAST FOR ANDROID'));
   check('Android and iOS are separated into labelled sections with their platform icons', html.includes('nc-platform-android') && html.includes('nc-platform-ios') && /fa-brands fa-android/.test(html) && /fa-brands fa-apple/.test(html));
   check('iOS action is an install/use button, not a fake IPA download link', /id="ncIosPwaButton"/.test(html) && !/href="[^"]+\.ipa"/i.test(html));

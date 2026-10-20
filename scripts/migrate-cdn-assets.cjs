@@ -196,9 +196,9 @@ async function main() {
   write('js/nightcast-cosmos.js',cosmos);
   let experience=read('js/nightcast-theme-experience.js');
   experience=experience.replace('const openMoji = code => "https://cdn.jsdelivr.net/npm/openmoji@17.0.0/color/svg/" + code + ".svg";','const openMoji = code => "/assets/avatars/openmoji/" + code + ".svg";');
-  experience=experience.replace('const photo=custom||getPhoto(user);','const photo=custom ? custom.replace("https://cdn.jsdelivr.net/npm/openmoji@17.0.0/color/svg/","/assets/avatars/openmoji/") : getPhoto(user);');
-  experience=experience.replace('custom===openMoji(b.dataset.avatarCode)','custom.replace("https://cdn.jsdelivr.net/npm/openmoji@17.0.0/color/svg/","/assets/avatars/openmoji/")===openMoji(b.dataset.avatarCode)');
-  if(experience.includes('https://cdn.jsdelivr.net/npm/openmoji@17.0.0')) throw new Error('OpenMoji CDN URL remains in theme experience controller');
+  experience=experience.replace('const photo=custom||getPhoto(user);','const photo=custom ? custom.replace(/^https?:\\/\\/cdn\\.jsdelivr\\.net\\/npm\\/openmoji@17\\.0\\.0\\/color\\/svg\\//,"/assets/avatars/openmoji/") : getPhoto(user);');
+  experience=experience.replace('custom===openMoji(b.dataset.avatarCode)','custom.replace(/^https?:\\/\\/cdn\\.jsdelivr\\.net\\/npm\\/openmoji@17\\.0\\.0\\/color\\/svg\\//,"/assets/avatars/openmoji/")===openMoji(b.dataset.avatarCode)');
+  if(!experience.includes('const openMoji = code => "/assets/avatars/openmoji/" + code + ".svg";')) throw new Error('OpenMoji local path was not applied');
   write('js/nightcast-theme-experience.js',experience);
   let player=read('js/nightcast-player.js');
   player=player.replaceAll('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css','/assets/vendor/leaflet/leaflet.css').replaceAll('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js','/assets/vendor/leaflet/leaflet.js');

@@ -217,7 +217,7 @@ button:hover,.action:hover{border-color:#f4d69c}
   search.oninput = render;
   var match = /(?:\?|&)section=(about|contact)(?:&|$)/.exec(window.location.search);
   setSection(match ? match[1] : 'podcasts');
-  loadUrl('/users/data/podcasts.json', 'https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=50');
+  loadUrl('https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=50', '/users/data/podcasts.json');
 })();
 </script>
 </body>

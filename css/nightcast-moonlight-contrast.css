@@ -493,3 +493,92 @@
   background:#FFF0F3!important;
   border-color:#F3C4D0!important;
 }
+
+
+/* Moonlight final consistency pass: detail and Now Playing must stay light all the way down. */
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-dialog,
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-scroll,
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-content,
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-section,
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-section > :not(img):not(video):not(audio),
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-row,
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-meta,
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-summary,
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-description,
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-episode,
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-info {
+  color:#384255!important;
+  background-color:#FFFFFF!important;
+  background-image:none!important;
+  border-color:#DCE2EB!important;
+  box-shadow:none!important;
+}
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-topbar,
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-close {
+  color:#344054!important;
+  background:#F1F4F8!important;
+  border-color:#D6DDE7!important;
+}
+:root[data-theme="moonlight"] #ncPodcastDetail :is(h1,h2,h3,h4,h5,h6,strong,b,dt,.nc-detail-title,.nc-detail-label){
+  color:#202B3E!important;-webkit-text-fill-color:#202B3E!important;text-shadow:none!important;
+}
+:root[data-theme="moonlight"] #ncPodcastDetail :is(p,span,li,dd,small,.nc-detail-description,.nc-detail-muted,.nc-detail-caption){
+  color:#566176!important;-webkit-text-fill-color:#566176!important;text-shadow:none!important;
+}
+
+/* Now Playing uses the same Moonlight paper palette, including nested surfaces. */
+:root[data-theme="moonlight"] #ncNowPlaying{
+  color:#293449!important;background:#F7F8FC!important;
+  background-image:linear-gradient(145deg,#FFFFFF 0%,#F5F7FB 100%)!important;
+  border-color:#D7DEEA!important;box-shadow:0 24px 70px rgba(31,41,55,.18)!important;
+  color-scheme:light!important;
+}
+:root[data-theme="moonlight"] #ncNowPlaying :is(.nc-now-top,.nc-now-scroll,.nc-now-content,.nc-now-hero,.nc-now-copy,.nc-now-section,.nc-now-actions,.nc-now-timeline){
+  color:#344054!important;background-color:transparent!important;background-image:none!important;
+  border-color:#DCE2EB!important;box-shadow:none!important;
+}
+:root[data-theme="moonlight"] #ncNowPlaying .nc-now-top{
+  background:#FFFFFF!important;border-bottom:1px solid #DCE2EB!important;
+}
+:root[data-theme="moonlight"] #ncNowPlaying .nc-now-section{
+  padding:18px!important;border:1px solid #DCE2EB!important;border-radius:18px!important;
+  background:#FFFFFF!important;
+}
+:root[data-theme="moonlight"] #ncNowPlaying :is(.nc-now-title,h2,h3,strong,b){
+  color:#202B3E!important;-webkit-text-fill-color:#202B3E!important;text-shadow:none!important;
+}
+:root[data-theme="moonlight"] #ncNowPlaying :is(.nc-now-author,.nc-now-description,.nc-now-meta,.nc-now-kicker,.nc-now-book,p,small,span){
+  color:#566176!important;-webkit-text-fill-color:#566176!important;text-shadow:none!important;
+}
+:root[data-theme="moonlight"] #ncNowPlaying .nc-now-control:not(.primary),
+:root[data-theme="moonlight"] #ncNowPlaying .nc-now-close{
+  color:#344054!important;-webkit-text-fill-color:#344054!important;
+  background:#EDF1F7!important;background-image:none!important;border:1px solid #D2DAE6!important;
+}
+:root[data-theme="moonlight"] #ncNowPlaying .nc-now-control.primary{
+  color:#FFFFFF!important;-webkit-text-fill-color:#FFFFFF!important;
+  background:linear-gradient(135deg,#5147B8,#3B63C9)!important;border-color:#5147B8!important;
+}
+:root[data-theme="moonlight"] #ncNowPlaying input[type="range"]{accent-color:#5147B8!important}
+:root[data-theme="moonlight"] #ncNowPlaying .nc-now-art{border:1px solid #D4DCE8!important;box-shadow:0 8px 24px rgba(31,41,55,.12)!important}
+
+/* Transport controls and playback icons always follow LTR conventions; Persian copy remains RTL. */
+:root :is(.player .controls,.player .player-progress,.nc-now-controls,.nc-now-timeline){
+  direction:ltr!important;
+}
+:root :is(.player .controls,.nc-now-controls){
+  flex-direction:row!important;
+}
+:root :is(.player .control-btn,.nc-now-control){
+  direction:ltr!important;unicode-bidi:isolate!important;
+}
+:root :is(.player .control-btn i,.nc-now-control i){
+  direction:ltr!important;unicode-bidi:isolate!important;
+}
+:root :is(.player .track-text,.player .track-title,.player .track-author,#ncNowTitle,#ncNowAuthor,#ncNowBook,#ncNowDescription,#ncNowMeta,#ncPodcastDetail .nc-detail-scroll,#ncPodcastDetail .nc-detail-section){
+  direction:rtl;
+  text-align:right;
+}
+:root :is(.player .player-progress span,#ncNowCurrent,#ncNowDuration){
+  direction:ltr!important;unicode-bidi:isolate!important;text-align:center!important;
+}

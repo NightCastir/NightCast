@@ -137,6 +137,7 @@ async function main() {
   write('users/data/podcasts.json',JSON.stringify(podcastData,null,2)+'\n');
   let rss=read('users/data/podcasts.xml');
   rss=rss.replace(/https:\/\/raw\.githubusercontent\.com\/NightCastir\/NightCast-Media\/main\/covers\/([A-Za-z0-9._-]+)/g,'https://nightcast.ir/assets/podcasts/covers/$1');
+  if(/https:\/\/raw\.githubusercontent\.com\/NightCastir\/NightCast-Media\/main\/covers\//i.test(rss)) throw new Error('An external podcast cover URL remains in the RSS feed');
   write('users/data/podcasts.xml',rss);
 
   // Replace theme photo CDN URLs with local files in the theme controller and palette CSS.
@@ -222,6 +223,7 @@ async function main() {
   write('js/nightcast-app.js',app);
   let oldPlayer=read('users/js/player.js');
   oldPlayer=oldPlayer.replace(/cover\.src\s*=\s*podcast\.cover_url\s*\|\|\s*["']\/users\/assets\/images\/default-cover\.jpg["'];?/,
+    'const coverUrl = String(podcast.cover_url || "");\nlet localCover = coverUrl;\ntry { const coverUrlObject = new URL(coverUrl); if (coverUrlObject.hostname === "raw.githubusercontent.com" && coverUrlObject.pathname.startsWith("/NightCastir/NightCast-Media/main/covers/")) localCover = "/assets/podcasts/covers/" + decodeURIComponent(coverUrlObject.pathname.split("/").pop()); } catch (_) {}\ncover.src = localCover || "/assets/icons/icon-512.png";');
     'const coverUrl = String(podcast.cover_url || "");\ncover.src = coverUrl.startsWith("https://raw.githubusercontent.com/NightCastir/NightCast-Media/main/covers/")\n  ? "/assets/podcasts/covers/" + decodeURIComponent(new URL(coverUrl).pathname.split("/").pop())\n  : (coverUrl || "/assets/icons/icon-512.png");');
 
   // Update regression checks so they validate local assets instead of the old CDN implementation.

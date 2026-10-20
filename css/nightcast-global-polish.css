@@ -2,7 +2,11 @@
 :root{color-scheme:dark}
 html{min-height:100%;margin:0!important;padding:0!important;background:#050817;scroll-behavior:auto}
 body{min-height:100vh;min-height:100svh;margin:0!important;padding-bottom:0!important;display:flex;flex-direction:column;background-color:#050817!important}
-body>main,body>main#home,body>main.login-page{flex:1 0 auto;min-height:0}\nbody>main:has(footer){display:flex;flex-direction:column}\nbody>main:has(footer)>footer,body>main:has(footer) footer{margin-top:auto!important}\n.login-page:has(.login-card footer)>.login-card{flex:1;display:flex;flex-direction:column}\n.login-page .login-card footer{margin-top:auto!important}
+body>main,body>main#home,body>main.login-page{flex:1 0 auto;min-height:0}
+body>main:has(footer){display:flex;flex-direction:column}
+body>main:has(footer)>footer,body>main:has(footer) footer{margin-top:auto!important}
+.login-page:has(.login-card footer)>.login-card{flex:1;display:flex;flex-direction:column}
+.login-page .login-card footer{margin-top:auto!important}
 body>footer,body>main>footer,footer,.nc-footer{margin-bottom:0!important}
 body>footer:last-child{margin-top:auto}
 body::after{content:"";display:block;flex:0 0 0;height:0;min-height:0}

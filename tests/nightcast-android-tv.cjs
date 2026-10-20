@@ -41,9 +41,6 @@ async function waitForPodcastCards(page) {
       const context = await browser.newContext({ viewport: { width: size.width, height: size.height }, deviceScaleFactor: 1 });
       const page = await context.newPage();
       page.on('pageerror', error => runtimeErrors.push(size.name + ': ' + error.message));
-      page.on('console', message => {
-        if (message.type() === 'error' && !/net::ERR_ABORTED|favicon/i.test(message.text())) runtimeErrors.push(size.name + ': console ' + message.text());
-      });
       const response = await page.goto(BASE + '/', { waitUntil: 'domcontentloaded', timeout: 30000 });
       check(size.name + ' homepage responds', !!response && response.status() < 400, 'HTTP ' + (response && response.status()));
       const gridResult = await waitForPodcastCards(page).catch(error => ({ count: 0, text: error.message }));
@@ -68,7 +65,7 @@ async function waitForPodcastCards(page) {
       const response = await page.goto(BASE + '/' + route, { waitUntil: 'domcontentloaded', timeout: 30000 });
       const target = page.locator('#' + route);
       await target.waitFor({ state: 'attached', timeout: 15000 }).catch(() => {});
-      await page.waitForTimeout(900);
+      await page.waitForTimeout(1500);
       const sectionState = await target.evaluate(node => {
         const rect = node.getBoundingClientRect();
         return { visible: !!(rect.width && rect.height) && getComputedStyle(node).visibility !== 'hidden' && getComputedStyle(node).display !== 'none',

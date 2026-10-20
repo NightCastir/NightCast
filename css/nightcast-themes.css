@@ -876,3 +876,56 @@ html[data-theme] .podcast-cover .cover-shade{pointer-events:none}
     line-height: 32px !important;
   }
 }
+
+
+/* Cross-device CDN artwork parity: keep theme artwork visible on phone, tablet and desktop.
+   This intentionally overrides legacy breakpoint rules that can flatten or hide image layers. */
+html[data-theme] body{
+  background-color:var(--nc-theme-bg,#050816)!important;
+  background-image:
+    linear-gradient(135deg,
+      color-mix(in srgb,var(--nc-theme-bg,#050816) 34%,transparent),
+      color-mix(in srgb,var(--nc-theme-bg,#050816) 22%,transparent)),
+    var(--nc-theme-texture, url("https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=1600&q=72"))!important;
+  background-repeat:no-repeat,no-repeat!important;
+  background-size:cover,cover!important;
+  background-position:center center,center center!important;
+  background-attachment:scroll,scroll!important;
+}
+html[data-theme] .nc-theme-image,
+html[data-theme] .nc-theme-ribbon-preview{
+  display:block!important;
+  position:relative;
+  overflow:hidden;
+  background-color:var(--nc-theme-surface-2,var(--nc-theme-bg,#050816))!important;
+}
+html[data-theme] .nc-theme-image img,
+html[data-theme] .nc-theme-ribbon-preview img{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0;
+  object-fit:cover!important;
+  object-position:center!important;
+}
+html[data-theme] .nc-theme-ribbon-preview img{position:absolute;inset:0}
+html[data-theme] .nc-theme-ribbon-preview:after{z-index:1;pointer-events:none}
+html[data-theme] .nc-theme-ribbon-check{z-index:2}
+@media (min-width:701px){
+  html[data-theme] body{
+    background-attachment:scroll,scroll!important;
+    background-size:cover,cover!important;
+    background-position:center top,center top!important;
+  }
+  html[data-theme] .nc-theme-image{min-height:110px}
+  html[data-theme] .nc-theme-ribbon-preview{min-height:66px}
+}
+@media (min-width:701px) and (max-width:1100px){
+  html[data-theme] .nc-theme-image{min-height:100px}
+  html[data-theme] .nc-theme-ribbon-preview{min-height:62px}
+}
+@media (max-width:700px){
+  html[data-theme] body{background-attachment:scroll,scroll!important}
+}

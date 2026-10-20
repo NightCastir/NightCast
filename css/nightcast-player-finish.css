@@ -232,3 +232,16 @@ body.player-open{--nc-player-visible:1}
   flex-direction:row!important;
   direction:ltr!important;
 }
+
+/* Higher-specificity safeguard: inherited RTL styling must never reverse the transport row. */
+html body .player .player-inner .controls{
+  display:flex!important;
+  flex-direction:row!important;
+  direction:ltr!important;
+  justify-content:center!important;
+}
+html body .player .player-inner .controls > .nc-audio-visualizer-wrap--previous{order:0!important}
+html body .player .player-inner .controls > #prevBtn{order:1!important}
+html body .player .player-inner .controls > #playButton{order:2!important}
+html body .player .player-inner .controls > #nextBtn{order:3!important}
+html body .player .player-inner .controls > .nc-audio-visualizer-wrap--next{order:4!important}

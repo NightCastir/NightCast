@@ -180,7 +180,7 @@
     @keyframes nc-entry-progress{0%{transform:translateX(260%)}100%{transform:translateX(-280%)}}
     @media(prefers-reduced-motion:reduce){#nc-entry-loader *{animation:none!important;transition:none!important}}
 </style>
-    <link rel="stylesheet" href="/css/nightcast-platform-download.css?v=1">
+    <link rel="stylesheet" href="/css/nightcast-platform-download.css?v=2">
 </head>
 
 <body aria-busy="true">
@@ -1000,6 +1000,34 @@
     </main>
 
 
+    <section class="nc-footer-download" aria-labelledby="ncFooterDownloadTitle">
+        <h2 id="ncFooterDownloadTitle" class="nc-sr-only">دریافت NightCast برای Android و iOS</h2>
+        <div class="nc-platform-download-grid">
+            <section class="nc-platform-download-card nc-platform-android" aria-labelledby="ncAndroidTitle">
+                <div class="nc-platform-download-heading">
+                    <span class="nc-platform-icon" aria-hidden="true"><i class="fa-brands fa-android"></i></span>
+                    <h3 id="ncAndroidTitle">نسخه Android</h3>
+                </div>
+                <div class="nc-footer-download-actions">
+                    <a class="nc-footer-download-button nc-footer-download-direct"
+                       href="https://www.nightcast.ir/downloadrelease/NightCast.apk"
+                       download="NightCast.apk"
+                       aria-label="دانلود مستقیم فایل نصب اندروید NightCast">
+                        <i class="fa-brands fa-android" aria-hidden="true"></i>
+                        <span><strong>دانلود مستقیم APK</strong><small>فایل نصب رسمی NightCast</small></span>
+                        <i class="fa-solid fa-arrow-down-to-line nc-footer-download-arrow" aria-hidden="true"></i>
+                    </a>
+                    <a class="nc-footer-download-button nc-footer-download-market"
+                       href="https://cafebazaar.ir/app/ir.nightcast.app"
+                       target="_blank" rel="noopener noreferrer"
+                       aria-label="مشاهده و نصب NightCast از بازار">
+                        <i class="fa-solid fa-store" aria-hidden="true"></i>
+                        <span><strong>دریافت از بازار</strong><small>نصب از کافه‌بازار</small></span>
+                        <i class="fa-solid fa-arrow-up-right-from-square nc-footer-download-arrow" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </section>
+
     <!-- =============================================================
          FOOTER
     ============================================================= -->
@@ -1019,33 +1047,7 @@
             </div>
 
 
-            <section class="nc-footer-download" aria-labelledby="ncFooterDownloadTitle">
-                <h2 id="ncFooterDownloadTitle" class="nc-sr-only">دریافت NightCast برای Android و iOS</h2>
-                <div class="nc-platform-download-grid">
-                    <section class="nc-platform-download-card nc-platform-android" aria-labelledby="ncAndroidTitle">
-                        <div class="nc-platform-download-heading">
-                            <span class="nc-platform-icon" aria-hidden="true"><i class="fa-brands fa-android"></i></span>
-                            <h3 id="ncAndroidTitle">نسخه Android</h3>
-                        </div>
-                        <div class="nc-footer-download-actions">
-                            <a class="nc-footer-download-button nc-footer-download-direct"
-                               href="https://www.nightcast.ir/downloadrelease/NightCast.apk"
-                               download="NightCast.apk"
-                               aria-label="دانلود مستقیم فایل نصب اندروید NightCast">
-                                <i class="fa-brands fa-android" aria-hidden="true"></i>
-                                <span><strong>دانلود مستقیم APK</strong><small>فایل نصب رسمی NightCast</small></span>
-                                <i class="fa-solid fa-arrow-down-to-line nc-footer-download-arrow" aria-hidden="true"></i>
-                            </a>
-                            <a class="nc-footer-download-button nc-footer-download-market"
-                               href="https://cafebazaar.ir/app/ir.nightcast.app"
-                               target="_blank" rel="noopener noreferrer"
-                               aria-label="مشاهده و نصب NightCast از بازار">
-                                <i class="fa-solid fa-store" aria-hidden="true"></i>
-                                <span><strong>دریافت از بازار</strong><small>نصب از کافه‌بازار</small></span>
-                                <i class="fa-solid fa-arrow-up-right-from-square nc-footer-download-arrow" aria-hidden="true"></i>
-                            </a>
-                        </div>
-                    </section>
+
                     <section class="nc-platform-download-card nc-platform-ios" aria-labelledby="ncIosTitle">
                         <div class="nc-platform-download-heading">
                             <span class="nc-platform-icon" aria-hidden="true"><i class="fa-brands fa-apple"></i></span>

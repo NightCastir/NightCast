@@ -69,9 +69,15 @@ async function waitForPodcastCards(page) {
       const target = page.locator('#' + route);
       await target.waitFor({ state: 'attached', timeout: 15000 }).catch(() => {});
       await page.waitForTimeout(900);
-      const visible = await target.isVisible().catch(() => false);
-      check('/' + route + ' opens its intended section', !!response && response.status() < 400 && visible,
-        'HTTP ' + (response && response.status()) + '; sectionVisible=' + visible + '; finalURL=' + page.url());
+      const sectionState = await target.evaluate(node => {
+        const rect = node.getBoundingClientRect();
+        return { visible: !!(rect.width && rect.height) && getComputedStyle(node).visibility !== 'hidden' && getComputedStyle(node).display !== 'none',
+          top: Math.round(rect.top), bottom: Math.round(rect.bottom), viewport: window.innerHeight,
+          hidden: node.hidden, ariaHidden: node.getAttribute('aria-hidden') };
+      }).catch(() => ({ visible: false, top: null, bottom: null, viewport: 0, hidden: true, ariaHidden: null }));
+      const sectionInViewport = sectionState.visible && sectionState.top < sectionState.viewport && sectionState.bottom > 0 && sectionState.top < 300;
+      check('/' + route + ' opens its intended section at the viewport', !!response && response.status() < 400 && sectionInViewport,
+        'HTTP ' + (response && response.status()) + '; section=' + JSON.stringify(sectionState) + '; finalURL=' + page.url());
       await page.screenshot({ path: 'artifacts/nightcast-route-' + route + '.png', fullPage: false }).catch(() => {});
       await context.close();
     }

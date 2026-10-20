@@ -16,8 +16,10 @@ on:
     branches: [main]
     paths:
       - 'tests/nightcast-tv-full-experience.cjs'
+      - 'tests/nightcast-tv-legacy-edition.cjs'
       - '.github/workflows/nightcast-tv-full-experience.yml'
       - 'index.html'
+      - 'tv-lite.html'
       - 'css/**'
       - 'js/**'
       - 'users/data/podcasts.json'

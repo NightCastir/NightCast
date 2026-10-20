@@ -13,6 +13,7 @@ on:
       - "css/nightcast-themes.css"
       - "tests/footer-android-download-acceptance.cjs"
       - "tests/footer-android-live-links.cjs"
+      - "tests/footer-android-live-site.cjs"
       - ".github/workflows/footer-android-download-acceptance.yml"
   workflow_dispatch:
 
@@ -49,6 +50,9 @@ jobs:
       - name: Probe live APK and Cafe Bazaar destinations
         run: node tests/footer-android-live-links.cjs
 
+      - name: Verify the published NightCast footer and stylesheet
+        run: node tests/footer-android-live-site.cjs
+
       - name: Publish test summary
         if: always()
         run: |
@@ -57,5 +61,5 @@ jobs:
             echo ""
             echo "- Checks the direct APK destination, Cafe Bazaar destination, Android/store icons, theme cache version, visual effects, keyboard focus and reduced-motion rules."
             echo "- Runs Chromium checks at mobile (390px), tablet (820px), and desktop (1440px), including CTA visibility, button dimensions, horizontal overflow, and Moonlight contrast."
-            echo "- A live endpoint probe also checks that the official APK URL and Cafe Bazaar listing respond successfully. This does not verify APK signing or installation on a physical Android device."
+            echo "- Live checks verify the APK response is a downloadable binary, the Cafe Bazaar listing responds, and the published homepage plus theme stylesheet contain the footer CTA. This does not verify installation on a physical Android device."
           } >> "$GITHUB_STEP_SUMMARY"

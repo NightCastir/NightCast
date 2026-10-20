@@ -2,11 +2,18 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="utf-8">
-    <!-- Keep every clean route at the top on entry; prevent browser scroll restoration from reopening at the previous page's position. -->
+    <!-- Reset stale scroll only for the archive entry. About/Contact route intent must survive pageshow. -->
     <script>
       (() => {
         if ("scrollRestoration" in history) history.scrollRestoration = "manual";
-        const resetScroll = () => window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+        const initialUrl = new URL(window.location.href);
+        const routeIntent = ["about", "contact"].includes(initialUrl.searchParams.get("__route")) ||
+          ["about", "contact"].includes(initialUrl.hash.slice(1)) ||
+          ["/about", "/contact"].includes(initialUrl.pathname.replace(/\/+$/, "") || "/");
+        const resetScroll = () => {
+          if (routeIntent) return;
+          window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+        };
         resetScroll();
         window.addEventListener("pageshow", resetScroll, { once: true });
       })();

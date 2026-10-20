@@ -695,3 +695,54 @@
   color:#FFFFFF!important;
   border-color:#5147B8!important;
 }
+
+
+/* Podcast Detail: one audited surface system for ALL nested panels in Moonlight.
+   Covers known detail components, semantic containers, and inline-styled wrappers
+   produced by the detail renderer. Artwork, media, and interactive controls are excluded. */
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-dialog {
+  --nc-detail-surface:#F8FAFD;
+  --nc-detail-surface-strong:#FFFFFF;
+  --nc-detail-ink:#344054;
+  --nc-detail-border:#D7DFEA;
+  color:var(--nc-detail-ink)!important;
+  background:var(--nc-detail-surface-strong)!important;
+  background-image:none!important;
+}
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-scroll > *,
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-scroll :is(
+  [class*="panel"],[class*="card"],[class*="section"],[class*="row"],
+  [class*="meta"],[class*="summary"],[class*="description"],[class*="content"],
+  [class*="body"],[class*="info"],[class*="episode"],[class*="transcript"],
+  [class*="extra"],[class*="detail-hero"],details,article,fieldset,blockquote,
+  [style*="background"],[style*="background-color"],[style*="background-image"]
+):not(img):not(video):not(audio):not(button):not(.nc-detail-close):not(.nc-detail-backdrop) {
+  color:var(--nc-detail-ink)!important;
+  background-color:var(--nc-detail-surface)!important;
+  background-image:none!important;
+  border-color:var(--nc-detail-border)!important;
+  box-shadow:none!important;
+  text-shadow:none!important;
+}
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-scroll :is(
+  .nc-detail-section,.nc-detail-transcript,.nc-detail-panel,.nc-detail-card,
+  .nc-detail-episode,.nc-detail-info,.nc-detail-summary,details,article
+) {
+  border:1px solid rgba(91,101,120,.24)!important;
+  border-radius:14px!important;
+}
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-scroll :is(
+  h1,h2,h3,h4,h5,h6,strong,b,dt,[class*="title"],[class*="label"]
+) {
+  color:#263247!important;
+  -webkit-text-fill-color:#263247!important;
+}
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-scroll :is(
+  p,span,li,dd,small,em,[class*="author"],[class*="caption"],[class*="muted"]
+) {
+  color:#46536A!important;
+  -webkit-text-fill-color:#46536A!important;
+}
+:root[data-theme="moonlight"] #ncPodcastDetail .nc-detail-scroll :is(img,video,audio,iframe) {
+  background-color:transparent!important;
+}

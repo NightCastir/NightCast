@@ -1,0 +1,50 @@
+name: NightCast Podcast Pagination Acceptance
+on:
+  push:
+    branches: [main, 'feat/podcast-pagination-six-per-page']
+    paths:
+      - 'index.html'
+      - 'js/nightcast-app.js'
+      - 'css/nightcast-themes.css'
+      - 'tests/podcast-pagination-acceptance.cjs'
+      - '.github/workflows/podcast-pagination-acceptance.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'js/nightcast-app.js'
+      - 'css/nightcast-themes.css'
+      - 'tests/podcast-pagination-acceptance.cjs'
+      - '.github/workflows/podcast-pagination-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pagination-acceptance:
+    name: Six-item pagination on mobile and desktop across all themes
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Start local static server
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/nightcast-pagination-http.log 2>&1 &
+          for _ in $(seq 1 40); do
+            if curl --silent --fail http://127.0.0.1:4173/index.html >/dev/null; then exit 0; fi
+            sleep 0.25
+          done
+          cat /tmp/nightcast-pagination-http.log
+          exit 1
+      - name: Run pagination browser acceptance checks
+        run: node tests/podcast-pagination-acceptance.cjs

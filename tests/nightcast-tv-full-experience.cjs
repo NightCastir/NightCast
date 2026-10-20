@@ -43,7 +43,7 @@ async function main() {
       'TV layout has horizontal overflow: ' + JSON.stringify(initial));
     assert(initial.hasPlayer, 'Full player controls must exist on TV');
     assert(initial.nav >= 3, 'Full desktop navigation must remain available on TV');
-    assert.equal(initial.liteRedirect, false, 'Homepage must not contain the reduced tv-lite redirect');
+    assert.equal(initial.legacyTvFallback, true, 'Homepage must include a conditional ES5 fallback for legacy Android TV browsers');
 
     // Exercise keyboard focus like a TV remote.
     await page.keyboard.press('Tab');

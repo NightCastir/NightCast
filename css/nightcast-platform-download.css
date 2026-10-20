@@ -86,3 +86,37 @@
   .nc-platform-download-card .nc-footer-download-button{transition:none!important}
   .nc-platform-download-card .nc-footer-download-button:hover{transform:none}
 }
+
+
+/* Platform identity: Android green and iOS blue, independent of the active site theme. */
+.nc-platform-download-card{background:#080D1A;border-color:rgba(167,176,192,.22);box-shadow:0 16px 42px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.04)}
+.nc-platform-download-heading h3{color:#fff}
+.nc-platform-android .nc-platform-icon{color:#3DDC84;background:rgba(61,220,132,.10);border-color:rgba(61,220,132,.38)}
+.nc-platform-ios .nc-platform-icon{color:#007AFF;background:rgba(0,122,255,.12);border-color:rgba(0,122,255,.42)}
+.nc-platform-download-card .nc-footer-download-direct{color:#07130c!important;background:linear-gradient(135deg,#3DDC84,#26c66b)!important;border:1px solid #3DDC84!important}
+.nc-platform-download-card .nc-footer-download-market{color:#fff!important;background:#121c30!important;border:1px solid rgba(167,176,192,.32)!important}
+.nc-platform-download-card .nc-footer-download-ios{color:#fff!important;-webkit-text-fill-color:#fff;background:linear-gradient(135deg,#1685ff,#0063d9)!important;border:1px solid #4da0ff!important}
+.nc-platform-download-card .nc-footer-download-button:is(:hover,:focus-visible){filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 0 0 3px rgba(255,255,255,.07)}
+.nc-platform-download-card .nc-footer-download-button :is(strong,small){color:inherit!important;-webkit-text-fill-color:currentColor}
+.nc-platform-download-card .nc-footer-download-button>i:first-child{font-size:1.35rem}
+.nc-platform-download-card .nc-footer-download-button .nc-footer-download-arrow{opacity:.8}
+.nc-platform-download-card .nc-footer-download-market>i:first-child{color:#ffb547}
+.nc-platform-download-description{display:none!important}
+
+/* Three compact, separated platform shortcuts at the bottom of the mobile/tablet drawer. */
+.nc-drawer-platforms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin:18px 18px 14px;border:1px solid rgba(167,176,192,.3);border-radius:15px;overflow:visible;background:#080D1A}
+.nc-drawer-platform{position:relative;display:grid;place-items:center;min-width:0;min-height:48px;padding:9px 4px;border:0;border-inline-end:1px solid rgba(167,176,192,.28);border-radius:0;background:transparent;color:#fff;text-decoration:none;font:inherit;cursor:pointer;transition:background .18s ease,box-shadow .18s ease}
+.nc-drawer-platform:last-child{border-inline-end:0}
+.nc-drawer-platform i{font-size:1.22rem;line-height:1}
+.nc-drawer-platform-android{color:#3DDC84}
+.nc-drawer-platform-market{color:#ffbd59}
+.nc-drawer-platform-ios{color:#007AFF}
+.nc-drawer-platform:is(:hover,:focus-visible){background:rgba(255,255,255,.075);box-shadow:inset 0 0 0 1px currentColor;outline:none}
+.nc-drawer-platform-hint{position:absolute;z-index:30;inset-block-end:calc(100% + 9px);inset-inline-start:50%;transform:translate(-50%,4px);width:max-content;max-width:190px;padding:7px 10px;border:1px solid rgba(167,176,192,.38);border-radius:9px;background:#080D1A;color:#fff;font-size:.73rem;font-weight:700;line-height:1.4;white-space:nowrap;opacity:0;visibility:hidden;pointer-events:none;box-shadow:0 8px 22px rgba(0,0,0,.28);transition:opacity .15s ease,transform .15s ease}
+.nc-drawer-platform:is(:hover,:focus-visible) .nc-drawer-platform-hint{opacity:1;visibility:visible;transform:translate(-50%,0)}
+.nc-drawer-platform:active{filter:brightness(1.18)}
+@media(max-width:800px){.nc-drawer-platforms{display:grid}}
+@media(min-width:801px){.nc-drawer-platforms{display:none}}
+@media(prefers-reduced-motion:reduce){.nc-drawer-platform,.nc-drawer-platform-hint{transition:none}}
+:root[data-theme="moonlight"] .nc-platform-download-card{background:#080D1A;border-color:rgba(167,176,192,.22)}
+:root[data-theme="moonlight"] .nc-platform-download-heading h3{color:#fff}

@@ -556,3 +556,36 @@ main#home .hero h1{max-width:100%;overflow-wrap:normal;word-break:normal}
   aspect-ratio:1/1!important;object-fit:contain!important;object-position:center center!important;
   margin:auto!important;
 }
+
+
+/* Tablet and mobile: artwork spans the full inner width of its podcast panel. */
+@media (max-width: 900px) {
+  #podcasts .podcast-card > .podcast-cover,
+  .podcast-card > .podcast-cover {
+    box-sizing: border-box !important;
+    display: grid !important;
+    place-items: center !important;
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    align-self: stretch !important;
+    margin-inline: 0 !important;
+    padding: 0 !important;
+    aspect-ratio: 1 / 1 !important;
+    height: auto !important;
+    overflow: hidden !important;
+  }
+  #podcasts .podcast-card > .podcast-cover > img,
+  .podcast-card > .podcast-cover > img {
+    display: block !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    aspect-ratio: 1 / 1 !important;
+    object-fit: contain !important;
+    object-position: center center !important;
+    margin: 0 !important;
+  }
+}

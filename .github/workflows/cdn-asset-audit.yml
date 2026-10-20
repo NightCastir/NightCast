@@ -1,0 +1,71 @@
+name: NightCast CDN Asset Inventory
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - '404.html'
+      - 'auth/**'
+      - 'login/**'
+      - 'about/**'
+      - 'contact/**'
+      - 'podcasts/**'
+      - 'users/**'
+      - 'assets/**'
+      - 'css/**'
+      - 'js/**'
+      - 'app.js'
+      - 'style.css'
+      - 'sw.js'
+      - 'manifest.json'
+      - 'tests/cdn-asset-audit.cjs'
+      - '.github/workflows/cdn-asset-audit.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - '404.html'
+      - 'auth/**'
+      - 'login/**'
+      - 'about/**'
+      - 'contact/**'
+      - 'podcasts/**'
+      - 'users/**'
+      - 'assets/**'
+      - 'css/**'
+      - 'js/**'
+      - 'app.js'
+      - 'style.css'
+      - 'sw.js'
+      - 'manifest.json'
+      - 'tests/cdn-asset-audit.cjs'
+      - '.github/workflows/cdn-asset-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inventory:
+    name: Scan external assets across the repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build complete URL inventory
+        run: node tests/cdn-asset-audit.cjs
+      - name: Publish inventory summary
+        run: cat artifacts/cdn-asset-inventory.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload machine-readable and human-readable inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightcast-cdn-asset-inventory
+          path: |
+            artifacts/cdn-asset-inventory.md
+            artifacts/cdn-asset-inventory.json
+          retention-days: 30

@@ -710,3 +710,87 @@ html[data-theme] .podcast-cover .cover-shade{pointer-events:none}
 @media(prefers-reduced-motion:reduce){
   #playerBar{transition:none!important}
 }
+
+
+/* Dedicated Android download feature in the global footer. */
+.nc-footer .footer-inner{
+  display:grid!important;
+  grid-template-columns:minmax(0,.8fr) minmax(0,2fr);
+  align-items:center;
+  gap:clamp(18px,3vw,32px);
+}
+.nc-footer .footer-brand{grid-column:1;grid-row:1;min-width:0}
+.nc-footer .footer-links{grid-column:2;grid-row:1;min-width:0}
+.nc-footer-download{
+  --nc-download-ink:var(--nc-theme-text,#F8FAFC);
+  position:relative;isolation:isolate;overflow:hidden;
+  grid-column:1/-1;grid-row:2;min-width:0;width:100%;
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.9fr);
+  align-items:center;gap:clamp(18px,3vw,34px);
+  margin:clamp(12px,2vw,22px) 0;padding:clamp(22px,3.4vw,38px);
+  border:1px solid color-mix(in srgb,var(--nc-theme-primary,#8B5CF6) 32%,var(--nc-theme-border,rgba(148,163,184,.2)));
+  border-radius:clamp(20px,3vw,30px);
+  color:var(--nc-download-ink);
+  background:
+    radial-gradient(ellipse at 12% 0%,color-mix(in srgb,var(--nc-theme-primary,#8B5CF6) 24%,transparent),transparent 48%),
+    radial-gradient(ellipse at 100% 100%,color-mix(in srgb,var(--nc-theme-secondary,#38BDF8) 17%,transparent),transparent 45%),
+    linear-gradient(135deg,color-mix(in srgb,var(--nc-theme-surface,#0B1228) 96%,var(--nc-theme-primary,#8B5CF6) 4%),var(--nc-theme-bg,#050816));
+  box-shadow:0 18px 48px color-mix(in srgb,var(--nc-theme-bg,#050816) 30%,transparent),inset 0 1px 0 rgba(255,255,255,.08);
+}
+.nc-footer-download::before{
+  content:"";position:absolute;z-index:-1;inset:-45% -12% auto auto;
+  width:min(46vw,460px);aspect-ratio:1;border:1px solid color-mix(in srgb,var(--nc-theme-secondary,#38BDF8) 20%,transparent);
+  border-radius:50%;pointer-events:none;transform:rotate(-18deg);
+  box-shadow:0 0 0 22px color-mix(in srgb,var(--nc-theme-secondary,#38BDF8) 4%,transparent),0 0 0 48px color-mix(in srgb,var(--nc-theme-primary,#8B5CF6) 4%,transparent);
+}
+.nc-footer-download::after{
+  content:"";position:absolute;z-index:-1;inset:0;pointer-events:none;opacity:.32;
+  background-image:radial-gradient(circle at 15% 30%,#fff 0 1px,transparent 1.7px),radial-gradient(circle at 72% 24%,#fff 0 1px,transparent 1.7px),radial-gradient(circle at 84% 76%,#fff 0 1px,transparent 1.7px);
+  background-size:83px 79px,127px 113px,101px 97px;
+}
+.nc-footer-download-copy,.nc-footer-download-actions,.nc-footer-download-note{position:relative;z-index:1;min-width:0}
+.nc-footer-download-eyebrow{display:inline-flex;align-items:center;gap:9px;margin-bottom:10px;color:var(--nc-theme-accent,var(--nc-theme-secondary,#38BDF8));font-size:.76rem;font-weight:850;letter-spacing:.09em}
+.nc-footer-download-copy h2{margin:0 0 10px;color:var(--nc-download-ink);font-size:clamp(1.25rem,2.3vw,1.9rem);line-height:1.65;font-weight:850}
+.nc-footer-download-copy p{margin:0;max-width:58ch;color:var(--nc-theme-muted,#94A3B8);font-size:.96rem;line-height:1.95}
+.nc-footer-download-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.nc-footer-download-button{
+  min-width:0;min-height:74px;display:flex;align-items:center;gap:11px;
+  padding:13px 15px;border:1px solid var(--nc-theme-border,rgba(148,163,184,.2));border-radius:17px;
+  color:var(--nc-download-ink);text-decoration:none!important;
+  background:color-mix(in srgb,var(--nc-theme-surface,#0B1228) 88%,transparent);
+  box-shadow:0 8px 24px rgba(0,0,0,.12);
+  transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease,filter .2s ease;
+}
+.nc-footer-download-button>i:first-child{flex:0 0 auto;font-size:1.65rem}
+.nc-footer-download-button>span{display:grid;gap:3px;min-width:0}
+.nc-footer-download-button strong{font-size:.94rem;line-height:1.6;font-weight:850}
+.nc-footer-download-button small{font-size:.73rem;line-height:1.6;opacity:.82;overflow-wrap:anywhere}
+.nc-footer-download-button .nc-footer-download-arrow{margin-inline-start:auto;flex:0 0 auto;font-size:.85rem;opacity:.8}
+.nc-footer-download-direct{color:#fff!important;border-color:transparent;background:linear-gradient(125deg,var(--nc-theme-primary,#8B5CF6),var(--nc-theme-secondary,#38BDF8));box-shadow:0 10px 26px color-mix(in srgb,var(--nc-theme-primary,#8B5CF6) 22%,transparent)}
+.nc-footer-download-market{border-color:color-mix(in srgb,var(--nc-theme-secondary,#38BDF8) 30%,var(--nc-theme-border,transparent))}
+.nc-footer-download-button:hover{transform:translateY(-3px);border-color:var(--nc-theme-secondary,#38BDF8);box-shadow:0 14px 30px rgba(0,0,0,.18)}
+.nc-footer-download-direct:hover{filter:brightness(1.08)}
+.nc-footer-download-button:focus-visible{outline:3px solid var(--nc-theme-accent,var(--nc-theme-secondary,#38BDF8));outline-offset:4px}
+.nc-footer-download-note{grid-column:1/-1;display:flex;align-items:center;gap:8px;margin-top:-8px;color:var(--nc-theme-muted,#94A3B8);font-size:.78rem;line-height:1.8}
+.nc-footer-download-note i{color:var(--nc-theme-accent,var(--nc-theme-secondary,#38BDF8))}
+:root[data-theme="moonlight"] .nc-footer-download{
+  --nc-download-ink:#242936;
+  border-color:rgba(91,101,120,.22);
+  background:radial-gradient(ellipse at 12% 0%,rgba(99,102,241,.10),transparent 48%),radial-gradient(ellipse at 100% 100%,rgba(56,189,248,.10),transparent 45%),linear-gradient(135deg,#FFFEFA,#F5F3ED);
+  box-shadow:0 18px 42px rgba(32,39,54,.09),inset 0 1px 0 rgba(255,255,255,.9);
+}
+:root[data-theme="moonlight"] .nc-footer-download-copy p,
+:root[data-theme="moonlight"] .nc-footer-download-note{color:#535D70}
+:root[data-theme="moonlight"] .nc-footer-download-market{background:rgba(255,255,255,.78);color:#30394A;border-color:rgba(91,101,120,.24)}
+@media(max-width:760px){
+  .nc-footer .footer-inner{grid-template-columns:minmax(0,1fr);gap:18px}
+  .nc-footer .footer-brand,.nc-footer .footer-links{grid-column:1;grid-row:auto}
+  .nc-footer-download{grid-column:1;grid-row:auto;grid-template-columns:minmax(0,1fr);gap:18px;padding:clamp(18px,5vw,26px)}
+  .nc-footer-download-actions{grid-template-columns:minmax(0,1fr)}
+  .nc-footer-download-button{min-height:68px}
+  .nc-footer-download-note{grid-column:1;margin-top:0}
+}
+@media(prefers-reduced-motion:reduce){
+  .nc-footer-download-button{transition:none!important}
+  .nc-footer-download-button:hover{transform:none}
+}

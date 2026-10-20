@@ -18,7 +18,7 @@ async function getPublishedHome() {
   var latest;
   for (var attempt = 1; attempt <= 18; attempt++) {
     latest = await get(SITE + '/');
-    if (!latest.response.ok || latest.body.indexOf('new Function("var a = {}; return a?.x ?? 0;")') >= 0) return latest;
+    if (!latest.response.ok || latest.body.indexOf('window.location.replace("/tv-lite.html') < 0) return latest;
     console.log('WAIT | Cloudflare deployment not visible yet | attempt ' + attempt + '/18');
     await new Promise(function (resolve) { setTimeout(resolve, 10000); });
   }

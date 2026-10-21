@@ -26,11 +26,11 @@ async function run() {
   const target = targetByAction[ACTION];
 
   const missing = await post(target.path, target.body);
-  assert.equal(missing.status, 403, 'protected endpoint must reject a missing CAPTCHA proof');
+  assert.equal(missing.status, 403, `protected endpoint must reject a missing CAPTCHA proof; got HTTP ${missing.status}: ${JSON.stringify(missing.data)}`);
   assert.equal(missing.data.code, 'CAPTCHA_REQUIRED', 'missing proof must be rejected by Shield before proxying');
 
   const challengeResponse = await post('/captcha/challenge', { action: ACTION });
-  assert.equal(challengeResponse.status, 200, 'challenge endpoint must respond successfully');
+  assert.equal(challengeResponse.status, 200, `challenge endpoint must respond successfully; got HTTP ${challengeResponse.status}: ${JSON.stringify(challengeResponse.data)}`);
   assert.equal(challengeResponse.data.success, true);
   assert.equal(challengeResponse.data.action, ACTION);
   assert.match(challengeResponse.data.id || '', /^[a-f0-9]{32}$/);

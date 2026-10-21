@@ -1,0 +1,11 @@
+/* NightCast success dialog — shared by comment and podcast-suggestion submissions. */
+.nc-success-dialog{position:fixed;inset:0;z-index:10050;display:grid;place-items:center;padding:20px;background:rgba(3,7,18,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);opacity:0;visibility:hidden;transition:opacity .2s ease,visibility .2s ease}
+.nc-success-dialog.is-open{opacity:1;visibility:visible}
+.nc-success-dialog__panel{width:min(420px,100%);box-sizing:border-box;padding:28px 24px 22px;border:1px solid var(--nc-theme-border,rgba(150,170,210,.28));border-radius:24px;background:var(--nc-theme-surface,linear-gradient(145deg,#111a31,#080e1e));color:var(--nc-theme-text,#f4f7ff);box-shadow:0 24px 80px rgba(0,0,0,.42);text-align:center;transform:translateY(10px) scale(.98);transition:transform .2s ease}
+.nc-success-dialog.is-open .nc-success-dialog__panel{transform:translateY(0) scale(1)}
+.nc-success-dialog__icon{display:grid;place-items:center;width:68px;height:68px;margin:0 auto 16px;border-radius:50%;color:#fff;background:linear-gradient(135deg,#16a875,#38d99b);box-shadow:0 0 0 8px rgba(39,199,139,.12),0 12px 30px rgba(18,170,111,.24);font-size:30px}
+.nc-success-dialog__title{margin:0 0 8px;font-size:clamp(20px,5vw,24px);line-height:1.5}
+.nc-success-dialog__message{margin:0 auto 22px;max-width:34ch;color:var(--nc-theme-muted,#aebbd2);font-size:15px;line-height:1.9;overflow-wrap:anywhere}
+.nc-success-dialog__close{width:100%;min-height:48px;border:0;border-radius:14px;background:var(--nc-theme-primary,#7b7cff);color:#fff;font:inherit;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(76,94,220,.22)}
+.nc-success-dialog__close:focus-visible{outline:3px solid var(--nc-theme-accent,#78e8ff);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.nc-success-dialog,.nc-success-dialog__panel{transition:none}}

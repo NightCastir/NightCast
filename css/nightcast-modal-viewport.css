@@ -1,0 +1,136 @@
+/* NightCast modal viewport safety: login, comments and podcast suggestions.
+   Keep every primary action reachable on short/narrow screens and with safe-area insets. */
+html{scroll-padding-block:12px}
+body{overscroll-behavior-y:auto}
+#bookSummaryRequestModal.profile-overlay{
+  box-sizing:border-box;
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior-y:contain;
+  -webkit-overflow-scrolling:touch;
+  align-items:flex-start;
+  justify-content:center;
+  padding: max(10px,env(safe-area-inset-top,0px)) max(10px,env(safe-area-inset-right,0px)) max(10px,env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px));
+  touch-action:pan-y;
+}
+#bookSummaryRequestModal .book-summary-request-panel{
+  box-sizing:border-box;
+  width:min(560px,100%);
+  max-height:calc(100vh - 20px);
+  max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 20px);
+  min-height:0;
+  margin-block:auto;
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  padding:clamp(14px,3.5vw,28px);
+  padding-top:clamp(54px,10vw,72px);
+}
+#bookSummaryRequestModal .profile-header{gap:10px;padding-bottom:14px}
+#bookSummaryRequestModal .profile-avatar-wrap{width:54px;height:54px;flex-basis:54px}
+#bookSummaryRequestModal .profile-user-info h2{font-size:clamp(17px,4vw,21px);line-height:1.55}
+#bookSummaryRequestModal .profile-user-info p{font-size:13px;line-height:1.8}
+#bookSummaryRequestModal .form-group{margin-block:12px}
+#bookSummaryRequestModal .form-group input,
+#bookSummaryRequestModal .form-group textarea{width:100%;min-width:0;max-width:100%;box-sizing:border-box}
+#bookSummaryRequestModal .form-group textarea{min-height:82px;max-height:180px}
+#bookSummaryRequestModal .nc-shield-widget{margin:12px 0;padding:12px;gap:9px}
+#bookSummaryRequestModal .book-summary-request-actions{
+  position:sticky;
+  bottom:0;
+  z-index:2;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  padding:12px 0 max(2px,env(safe-area-inset-bottom,0px));
+  background:var(--nc-theme-surface,#10192c);
+}
+#bookSummaryRequestModal .book-summary-request-actions .btn{flex:1 1 120px;min-width:0;margin:0;min-height:44px}
+#ncCommentsModal.nc-comments-modal{
+  box-sizing:border-box;
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior-y:contain;
+  -webkit-overflow-scrolling:touch;
+  align-items:flex-start;
+  justify-content:center;
+  padding:max(8px,env(safe-area-inset-top,0px)) max(8px,env(safe-area-inset-right,0px)) max(8px,env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px));
+  touch-action:pan-y;
+}
+#ncCommentsModal .nc-comments-card{
+  box-sizing:border-box;
+  flex:0 0 auto;
+  max-height:none;
+  min-height:0;
+  overflow:visible;
+  margin-block:auto;
+  border-radius:20px;
+}
+#ncCommentsModal .nc-comments-list{
+  box-sizing:border-box;
+  flex:0 1 auto;
+  min-height:60px;
+  max-height:clamp(70px,25dvh,220px);
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+#ncCommentsModal .nc-comments-compose{
+  flex:0 0 auto;
+  min-width:0;
+  padding:clamp(10px,3vw,16px);
+}
+#ncCommentsModal .nc-comments-compose textarea{
+  min-height:72px;
+  max-height:130px;
+  resize:vertical;
+}
+#ncCommentsModal .nc-shield-widget{margin:10px 0;padding:10px;gap:8px}
+#ncCommentsModal .nc-comments-compose-foot{flex-wrap:wrap}
+#ncCommentsModal .nc-comments-submit{flex:1 1 145px;min-height:44px}
+body.cosmic-login .login-page{
+  box-sizing:border-box;
+  min-height:100vh;
+  min-height:100dvh;
+}
+body.cosmic-login .login-card{min-height:0;max-height:none}
+body.cosmic-login .nc-shield-widget{margin-block:12px;padding:12px}
+@media(max-width:600px){
+  #bookSummaryRequestModal.profile-overlay{padding-inline:8px}
+  #bookSummaryRequestModal .book-summary-request-panel{border-radius:18px;padding-inline:14px;padding-top:56px}
+  #bookSummaryRequestModal .profile-header{align-items:flex-start;text-align:right}
+  #bookSummaryRequestModal .profile-avatar-wrap{display:none}
+  #bookSummaryRequestModal .book-summary-request-actions .btn{flex:1 1 100%;width:100%}
+  #ncCommentsModal.nc-comments-modal{padding-inline:0}
+  #ncCommentsModal .nc-comments-card{width:100%;max-width:100%;border-radius:18px 18px 0 0}
+  #ncCommentsModal .nc-comments-head{padding:12px 14px}
+  #ncCommentsModal .nc-comments-head h2{font-size:18px}
+  #ncCommentsModal .nc-comments-list{padding:10px 14px;max-height:20dvh}
+  #ncCommentsModal .nc-comments-compose{padding:10px 12px max(12px,env(safe-area-inset-bottom,0px))}
+  #ncCommentsModal .nc-comments-compose textarea{min-height:64px}
+  #ncCommentsModal .nc-shield-widget{grid-template-columns:minmax(0,1fr);padding:10px}
+  #ncCommentsModal .nc-shield-title,#ncCommentsModal .nc-shield-actions,#ncCommentsModal .nc-shield-status{grid-column:1}
+  #ncCommentsModal .nc-shield-answer-label{justify-content:space-between}
+  #ncCommentsModal .nc-shield-answer-label input{width:82px}
+  #ncCommentsModal .nc-shield-actions>*{flex:1 1 auto}
+  body.cosmic-login .login-page{align-items:flex-start;padding: max(12px,env(safe-area-inset-top,0px)) 10px max(16px,env(safe-area-inset-bottom,0px))}
+  body.cosmic-login .login-card{width:100%;padding:18px 14px;border-radius:20px}
+  body.cosmic-login .hero{margin-bottom:14px}
+  body.cosmic-login .brand-icon{width:58px;height:58px;font-size:26px}
+  body.cosmic-login .hero h1{margin-top:10px;font-size:27px}
+  body.cosmic-login .hero-text{margin-top:6px}
+}
+@media(max-height:620px){
+  #bookSummaryRequestModal .book-summary-request-panel{padding-top:54px}
+  #bookSummaryRequestModal .profile-header{padding-bottom:8px}
+  #bookSummaryRequestModal .form-group{margin-block:8px}
+  #bookSummaryRequestModal .form-group textarea{min-height:60px}
+  #ncCommentsModal .nc-comments-head{padding-block:10px}
+  #ncCommentsModal .nc-comments-list{max-height:14dvh;min-height:48px}
+  #ncCommentsModal .nc-comments-compose textarea{min-height:54px}
+  body.cosmic-login .login-page{align-items:flex-start;padding-block:8px}
+  body.cosmic-login .hero{margin-bottom:10px}
+  body.cosmic-login .brand-icon{width:48px;height:48px;font-size:22px}
+}
+@media(prefers-reduced-motion:reduce){#bookSummaryRequestModal.profile-overlay,#ncCommentsModal.nc-comments-modal{scroll-behavior:auto;transition:none}}

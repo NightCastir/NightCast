@@ -29,8 +29,10 @@
                 USER_KEY:
                     "NightCastUser",
 
-                LOGIN_PAGE:
-                    "/login",
+                // Capacitor's local asset server is more reliable with an explicit
+                // index document than a bare directory route. Keep the clean URL on web.
+                LOGIN_PAGE: (window.Capacitor && typeof window.Capacitor.getPlatform === "function" &&
+                    window.Capacitor.getPlatform() === "android") ? "/login/index.html" : "/login",
 
                 PROFILE_PAGE:
                     "profile.html",

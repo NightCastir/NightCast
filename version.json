@@ -1,7 +1,7 @@
 {
-  "version": "5.2.6",
+  "version": "5.2.8",
   "title": "به‌روزرسانی NightCast",
-  "message": "نسخه ۵.۲.۶ رابط کاربری برنامه اندروید را مستقیماً از وب‌سایت رسمی NightCast بارگذاری می‌کند تا صفحات و ورود با نسخه وب یکسان باشند.",
+  "message": "رفع صفحه خالی ورود Google در Android، نمایش دکمه از ابتدا و اصلاح مسیر ورود در نسخه اندروید.",
   "marketUrl": "https://cafebazaar.ir/app/ir.nightcast.app",
   "githubUrl": "https://github.com/NightCastir/NightCast/raw/refs/heads/main/downloadrelease/NightCast.apk",
   "downloadUrl": "https://www.nightcast.ir/downloadrelease/NightCast.apk"

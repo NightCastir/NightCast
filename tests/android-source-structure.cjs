@@ -8,7 +8,8 @@ const workflow = fs.readFileSync('.github/workflows/build-android.yml', 'utf8');
 const main = fs.readFileSync('android-template/src/main/java/ir/nightcast/app/MainActivity.java', 'utf8');
 const auth = fs.readFileSync('android-template/src/main/java/ir/nightcast/app/NightCastGoogleAuth.java', 'utf8');
 
-assert.match(config, /url:\s*'https:\/\/www\.nightcast\.ir'/, 'Capacitor must have one explicit remote entry URL');
+assert.doesNotMatch(config, /url:\s*'https:\/\/www\.nightcast\.ir'/, 'Production Android must not use a remote server.url that bypasses the bundled Capacitor bridge');
+assert.match(config, /webDir:\s*'www'/, 'Android must use bundled www assets for native plugin access');
 assert.match(config, /androidScheme:\s*'https'/, 'Android WebView must use HTTPS');
 assert.match(config, /allowNavigation:\s*\[[^\]]*'www\.nightcast\.ir'[^\]]*'nightcast\.ir'/s, 'Both canonical NightCast hosts must be allowed');
 assert.doesNotMatch(workflow, /cat > android\/app\/src\/main\/java\/ir\/nightcast\/app\/(?:MainActivity|NightCastGoogleAuth)\.java/, 'Java source must not be embedded in workflow YAML');
@@ -20,6 +21,18 @@ assert.match(main, /registerPlugin\(NightCastGoogleAuth\.class\)/);
 assert.match(auth, /^package ir\.nightcast\.app;/m);
 assert.match(auth, /@CapacitorPlugin\(name = "NightCastGoogleAuth"\)/);
 assert.match(auth, /public void signIn\(PluginCall call\)/);
+assert.match(auth, /public void exchangeToken\(PluginCall call\)/, 'Native Android must exchange the Google token without WebView CORS');
+assert.ok(auth.includes('/public/openid/google'), 'Native exchange must use the canonical NightCast Google login endpoint');
+assert.match(fs.readFileSync('users/js/login.js', 'utf8'), /plugin\.exchangeToken\(\{ idToken \}\)/, 'Android login must use native token exchange rather than WebView fetch');
+const packagedLogin = fs.readFileSync('login/index.html', 'utf8');
+const webLogin = fs.readFileSync('users/login.html', 'utf8');
+assert.match(packagedLogin, /id="googleLoginFallback"/, 'Packaged /login/index.html must show a real Google button before JavaScript loads');
+assert.match(webLogin, /id="googleLoginFallback"/, 'Web login must show a real Google button before JavaScript loads');
+assert.match(packagedLogin + webLogin, /users\/js\/login\.js\?v=20261021-1/, 'Both login pages must load the cache-busted controller containing the stale-session fix');
+assert.match(fs.readFileSync('js/nightcast-app.js', 'utf8'), /"\/login\/index\.html"/, 'Android app login navigation must use the explicit packaged index document');
+const loginJs = fs.readFileSync('users/js/login.js', 'utf8');
+assert.doesNotMatch(loginJs, /if\s*\(\s*token\s*&&\s*user\s*\)\s*\{[\s\S]{0,350}window\.location\.replace/, 'Opening the explicit login page must not auto-redirect away based on possibly stale localStorage');
+assert.match(loginJs, /keeping sign-in button visible/, 'Android login must retain a visible sign-in button when the native bridge is missing');
 assert.match(workflow, /GENERATED_CONFIG="android\/app\/src\/main\/assets\/capacitor\.config\.json"/, 'CI must verify the configuration copied into the built Android project');
 
 console.log('PASS | One tracked Capacitor entry configuration');

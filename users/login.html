@@ -49,7 +49,17 @@
         <p class="hero-text">رادیو NightCast؛ پلی به سوی جهان صداها</p>
       </div>
 
-      <div id="googleLoginButton" class="google-login-container" aria-label="ورود با Google"></div>
+      <div id="googleLoginButton" class="google-login-container" aria-label="ورود با Google">
+        <button id="googleLoginFallback" class="nightcast-google-fallback" type="button" aria-label="ادامه با Google"
+          style="width:320px;max-width:100%;min-height:48px;display:flex;align-items:center;justify-content:center;gap:12px;padding:10px 16px;border:1px solid #dadce0;border-radius:6px;background:#fff;color:#202124;font:500 14px/1.4 Tahoma,sans-serif;cursor:pointer;box-sizing:border-box;position:relative;z-index:3;touch-action:manipulation"
+          onclick="if(window.NightCastLogin){if(window.Capacitor&&typeof window.Capacitor.getPlatform==='function'&&window.Capacitor.getPlatform()==='android'){window.NightCastLogin.nativeGoogleSignIn()}else if(window.google&&window.google.accounts&&window.google.accounts.id){window.NightCastLogin.setupGoogle()}else{document.getElementById('loginMessage').textContent='سرویس Google هنوز آماده نیست؛ اتصال اینترنت را بررسی کنید.'}}else{document.getElementById('loginMessage').textContent='صفحه ورود کامل بارگذاری نشد. صفحه را دوباره باز کنید.'}">
+          <span aria-hidden="true" style="font:700 20px/1 Arial,sans-serif;color:#4285f4">G</span><span>ادامه با Google</span>
+        </button>
+        <button type="button" id="googleLoginFallback" class="nightcast-google-fallback" onclick="if(window.NightCastLogin){window.NightCastLogin.isAndroidApp()?window.NightCastLogin.setupNativeGoogle():window.NightCastLogin.setupGoogle()}else{document.getElementById('loginMessage').textContent='در حال آماده‌سازی ورود Google؛ لطفاً چند لحظه دیگر تلاش کنید.'}">
+          <span class="nightcast-google-fallback-icon" aria-hidden="true">G</span>
+          <span>ادامه با Google</span>
+        </button>
+      </div>
       <div id="loginMessage" class="login-status" role="alert" aria-live="polite"></div>
 
       <footer>
@@ -59,7 +69,7 @@
   </main>
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="/users/js/login.js?v=20261018-2"></script>
+  <script src="/users/js/login.js?v=20261021-1"></script>
 
 <script>
 /* NightCast app-like interaction layer; retire legacy PWA registrations. */

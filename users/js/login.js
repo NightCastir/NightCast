@@ -46,13 +46,17 @@ const Login = {
     ================================================== */
 
     getPostLoginDestination(){
-        const fallback = "/podcasts";
+        const nativeAndroid = this.isAndroidApp();
+        const fallback = nativeAndroid ? "/" : "/podcasts";
         try {
             const params = new URLSearchParams(window.location.search);
             const next = params.get("next");
             if (!next || !next.startsWith("/") || next.startsWith("//")) return fallback;
             const target = new URL(next, window.location.origin);
             if (target.origin !== window.location.origin) return fallback;
+            // The bundled Android app serves the archive at its local root, not the
+            // website host's /podcasts rewrite. Preserve the canonical web route on browsers.
+            if (nativeAndroid && target.pathname === "/podcasts") return "/";
             return target.pathname + target.search + target.hash;
         } catch (_) {
             return fallback;
@@ -99,42 +103,20 @@ const Login = {
 
 
         /*
-        ==========================================
-        EXISTING SESSION
-        ==========================================
-        */
-
-        if(token && user){
-
-            console.log(
-                "Existing NightCast session found."
-            );
-
-
-            window.location.replace(
-                this.getPostLoginDestination()
-            );
-
-
-            return;
-
+         * Do not auto-redirect away from an explicit login page just because
+         * localStorage contains old session values. Those values may be stale,
+         * malformed, or left over from a previous app/site version; redirecting
+         * here can make the login page appear blank and return to the prior page.
+         * Keep the sign-in control available and let a fresh Google login replace
+         * the stored NightCast session.
+         */
+        if (token && user) {
+            console.log("Existing NightCast session values found; explicit login remains available.");
+        } else {
+            console.log("No NightCast session found.");
         }
 
-
-        /*
-        ==========================================
-        NO SESSION
-        ==========================================
-        */
-
-        console.log(
-            "No NightCast session found."
-        );
-
-
         this.bindEvents();
-
-
         this.initGoogle();
 
     },
@@ -483,26 +465,16 @@ const Login = {
         ==========================================
         */
 
-        const plugin =
-            this.getNativeGooglePlugin();
+        const plugin = this.getNativeGooglePlugin();
 
-
-        if(!plugin){
-
-            console.error(
-                "NightCastGoogleAuth native plugin is not available."
-            );
-
-
-            this.showError(
-                "امکان ورود با Google در نسخه Android فراهم نیست. لطفاً نسخه برنامه را به‌روزرسانی کنید."
-            );
-
-
-            return;
-
+        /*
+         * Never hide the only sign-in button when the native bridge is missing.
+         * This can happen in older APKs or embedded browsers. Keep the control
+         * visible; nativeGoogleSignIn() will explain the issue when tapped.
+         */
+        if (!plugin) {
+            console.error("NightCastGoogleAuth native plugin is not available; keeping sign-in button visible.");
         }
-
 
         /*
         ==========================================
@@ -808,32 +780,22 @@ const Login = {
             );
 
 
-            let message =
-                "خطا در ورود با Google";
+            let message = error && error.message
+                ? String(error.message)
+                : (typeof error === "string" ? error : "خطا در ورود با Google");
 
-
-            if(
-                error &&
-                error.message
-            ){
-
-                message =
-                    error.message;
-
-            }
-            else if(
-                typeof error === "string"
-            ){
-
-                message =
-                    error;
-
+            const normalized = message.toLowerCase();
+            if (normalized.includes("cancel")) {
+                message = "ورود لغو شد. هر زمان آماده بودید، دوباره تلاش کنید.";
+            } else if (normalized.includes("no google credential") || normalized.includes("no credential")) {
+                message = "حساب Google در این دستگاه پیدا نشد. یک حساب Google اضافه کنید و دوباره تلاش کنید.";
+            } else if (normalized.includes("could not contact") || normalized.includes("network") || normalized.includes("timeout") || normalized.includes("timed out")) {
+                message = "ارتباط با سرویس ورود برقرار نشد. اتصال اینترنت را بررسی کرده و دوباره تلاش کنید.";
+            } else if (normalized.includes("google sign-in failed") || normalized.includes("credential processing failed")) {
+                message = "ورود با Google کامل نشد. لطفاً دوباره تلاش کنید.";
             }
 
-
-            this.showError(
-                message
-            );
+            this.showError(message);
 
 
             /*
@@ -977,54 +939,55 @@ const Login = {
             ==========================================
             */
 
-            const controller = new AbortController();
-            const requestTimeout = window.setTimeout(() => controller.abort(), 12000);
-
-            let result;
-            try {
-                result = await fetch(
-                    API_URL + "/public/openid/google",
-                    {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ idToken }),
-                        signal: controller.signal
-                    }
-                );
-            } catch (requestError) {
-                if (requestError && requestError.name === "AbortError") {
-                    throw new Error("پاسخ سرور ورود بیش از ۱۲ ثانیه طول کشید. لطفاً دوباره تلاش کنید.");
-                }
-                throw new Error("ارتباط با سرور ورود برقرار نشد. اینترنت را بررسی کرده و دوباره تلاش کنید.");
-            } finally {
-                window.clearTimeout(requestTimeout);
-            }
-
-
-            /*
-            ==========================================
-            READ RESPONSE
-            ==========================================
-            */
-
             let data;
+            let httpOk = true;
 
+            if (this.isAndroidApp()) {
+                // Android uses native HTTPS networking for the session exchange.
+                // This avoids WebView CORS and keeps the Google flow inside the app.
+                const plugin = this.getNativeGooglePlugin();
+                if (!plugin || typeof plugin.exchangeToken !== "function") {
+                    throw new Error("ورود امن اندروید در این نسخه فعال نیست. لطفاً برنامه را به‌روزرسانی کنید.");
+                }
 
-            try{
-
-                data =
-                    await result.json();
-
+                try {
+                    data = await plugin.exchangeToken({ idToken });
+                } catch (nativeError) {
+                    throw new Error("ارتباط امن با سرور ورود برقرار نشد. اینترنت را بررسی کرده و دوباره تلاش کنید.");
+                }
+                httpOk = !!data && (!data.httpStatus || (data.httpStatus >= 200 && data.httpStatus < 300));
+            } else {
+                const controller = new AbortController();
+                const requestTimeout = window.setTimeout(() => controller.abort(), 12000);
+                let result;
+                try {
+                    result = await fetch(
+                        API_URL + "/public/openid/google",
+                        {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ idToken }),
+                            signal: controller.signal
+                        }
+                    );
+                    httpOk = result.ok;
+                    try {
+                        data = await result.json();
+                    } catch (_) {
+                        throw new Error("پاسخ معتبر از NightCast دریافت نشد.");
+                    }
+                } catch (requestError) {
+                    if (requestError && requestError.name === "AbortError") {
+                        throw new Error("پاسخ سرور ورود بیش از ۱۲ ثانیه طول کشید. لطفاً دوباره تلاش کنید.");
+                    }
+                    if (requestError && requestError.message === "پاسخ معتبر از NightCast دریافت نشد.") {
+                        throw requestError;
+                    }
+                    throw new Error("ارتباط با سرور ورود برقرار نشد. اینترنت را بررسی کرده و دوباره تلاش کنید.");
+                } finally {
+                    window.clearTimeout(requestTimeout);
+                }
             }
-
-            catch(error){
-
-                throw new Error(
-                    "پاسخ معتبر از NightCast دریافت نشد."
-                );
-
-            }
-
 
             /*
             ==========================================
@@ -1033,13 +996,14 @@ const Login = {
             */
 
             if(
-                !result.ok ||
+                !httpOk ||
+                !data ||
                 !data.success
             ){
 
                 throw new Error(
 
-                    data.message ||
+                    (data && data.message) ||
 
                     "ورود Google در NightCast ناموفق بود."
 

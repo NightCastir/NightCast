@@ -72,7 +72,6 @@ jobs:
           const c = fs.readFileSync('capacitor.config.ts', 'utf8');
           for (const [label, pattern] of [
             ['application ID', /appId:\s*'ir\.nightcast\.app'/],
-            ['official website URL', /url:\s*'https:\/\/www\.nightcast\.ir'/],
             ['HTTPS scheme', /androidScheme:\s*'https'/]
           ]) if (!pattern.test(c)) throw new Error('Invalid Capacitor setting: ' + label);
           const [a,b,d] = v.split('.').map(Number);
@@ -97,7 +96,7 @@ jobs:
         run: |
           set -euo pipefail
           sdkmanager --licenses >/dev/null
-          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" "ndk;27.0.11718014"
+          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" "platforms;android-35" "build-tools;35.0.0" "ndk;27.0.11718014"
 
       - name: Prepare website assets for Capacitor
         run: |
@@ -109,7 +108,7 @@ jobs:
           for f in style.css app.js favicon.ico favicon.png favicon.png logo.png; do
             [ ! -f "$f" ] || cp "$f" www/
           done
-          for d in css js assets auth .well-known; do
+          for d in css js assets auth login .well-known; do
             [ ! -d "$d" ] || cp -R "$d" www/
           done
           [ ! -d users ] || cp -R users/. www/users/
@@ -117,6 +116,32 @@ jobs:
           test -s www/index.html
           test -s www/users/index.html
           echo "TRUE | Website entry point and user pages staged."
+
+      - name: Inject Capacitor bridge into packaged HTML pages
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          root = Path("www")
+          pages = list(root.rglob("*.html"))
+          if not pages:
+              raise SystemExit("No packaged HTML pages found")
+          injected = 0
+          for page in pages:
+              html = page.read_text(encoding="utf-8")
+              if 'src="/capacitor.js"' in html:
+                  continue
+              tag = '<script src="/capacitor.js"></script>\n'
+              if "</head>" in html:
+                  html = html.replace("</head>", tag + "</head>", 1)
+              else:
+                  html = tag + html
+              page.write_text(html, encoding="utf-8")
+              injected += 1
+          if not (root / "login" / "index.html").is_file():
+              raise SystemExit("Packaged canonical login page www/login/index.html is missing")
+          print(f"TRUE | Capacitor bridge reference injected into {injected} packaged HTML pages.")
+          PY
 
       - name: Add Android platform
         run: npx cap add android
@@ -208,11 +233,9 @@ jobs:
           const fs = require('node:fs');
           const c = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
           if (c.appId !== 'ir.nightcast.app') throw new Error('Unexpected appId');
-          if (!c.server || c.server.url !== 'https://www.nightcast.ir') throw new Error('APK must load the official HTTPS NightCast website');
+          if (c.server && c.server.url) throw new Error('Production APK must bundle local assets; server.url disables reliable native Google sign-in.');
           if (c.server.androidScheme !== 'https') throw new Error('HTTPS scheme missing');
-          const a = c.server.allowNavigation || [];
-          if (!a.includes('www.nightcast.ir') || !a.includes('nightcast.ir')) throw new Error('NightCast navigation allowlist is incomplete');
-          console.log('TRUE | Packaged app loads https://www.nightcast.ir over HTTPS');
+          console.log('TRUE | Packaged app uses local web assets and the native Capacitor bridge.');
           NODE
 
       - name: Decode release signing key
@@ -296,12 +319,12 @@ jobs:
             echo "## NightCast — Cafe Bazaar Release APK"
             echo ""
             echo "- Build status: **$JOB_STATUS**"
-            echo "- App ID: `ir.nightcast.app`"
-            echo "- Website: `https://www.nightcast.ir`"
-            echo "- Version: `$VERSION`"
-            echo "- Android versionCode: `$VERSION_CODE`"
+            echo "- App ID: ir.nightcast.app"
+            echo "- Website: https://www.nightcast.ir"
+            echo "- Version: $VERSION"
+            echo "- Android versionCode: $VERSION_CODE"
             echo "- Output: signed Release APK (not Debug)"
-            echo "- Artifact: `NightCast-Bazaar-Release-APK-v$VERSION`"
+            echo "- Artifact: NightCast-Bazaar-Release-APK-v$VERSION"
             echo ""
             echo "This workflow does not publish or commit the APK automatically. Download the artifact and upload it manually to Cafe Bazaar."
           } >> "$GITHUB_STEP_SUMMARY"

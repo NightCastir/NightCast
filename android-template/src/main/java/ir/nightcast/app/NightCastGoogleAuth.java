@@ -22,6 +22,16 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption;
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
 
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+
 @CapacitorPlugin(name = "NightCastGoogleAuth")
 public class NightCastGoogleAuth extends Plugin {
 
@@ -162,6 +172,96 @@ public class NightCastGoogleAuth extends Plugin {
                     }
                 }
         );
+    }
+
+
+    /**
+     * Exchange the Google ID token from Android natively.
+     *
+     * This deliberately avoids WebView CORS and remote-origin bridge issues:
+     * Google authentication and NightCast session creation remain separate steps.
+     */
+    @PluginMethod
+    public void exchangeToken(PluginCall call) {
+        String idToken = call.getString("idToken");
+        if (idToken == null || idToken.trim().isEmpty()) {
+            call.reject("Google ID Token is missing.");
+            return;
+        }
+
+        final Activity activity = getActivity();
+        if (activity == null) {
+            call.reject("Android Activity is not available.");
+            return;
+        }
+
+        Thread worker = new Thread(() -> {
+            HttpURLConnection connection = null;
+            try {
+                URL url = new URL(
+                        "https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/openid/google"
+                );
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setConnectTimeout(15000);
+                connection.setReadTimeout(15000);
+                connection.setDoOutput(true);
+                connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+                connection.setRequestProperty("Accept", "application/json");
+                // Match the trusted website origin expected by the existing API middleware.
+                connection.setRequestProperty("Origin", "https://www.nightcast.ir");
+
+                JSONObject payload = new JSONObject();
+                payload.put("idToken", idToken);
+                byte[] body = payload.toString().getBytes(StandardCharsets.UTF_8);
+                connection.setFixedLengthStreamingMode(body.length);
+                try (OutputStream output = connection.getOutputStream()) {
+                    output.write(body);
+                }
+
+                int status = connection.getResponseCode();
+                InputStream stream = status >= 200 && status < 400
+                        ? connection.getInputStream()
+                        : connection.getErrorStream();
+
+                StringBuilder text = new StringBuilder();
+                if (stream != null) {
+                    try (BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(stream, StandardCharsets.UTF_8))) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            text.append(line);
+                        }
+                    }
+                }
+
+                JSONObject json = new JSONObject(text.toString());
+                JSObject response = new JSObject();
+                response.put("httpStatus", status);
+                response.put("success", json.optBoolean("success", false));
+                if (json.has("token")) response.put("token", json.opt("token"));
+                if (json.has("user")) response.put("user", json.opt("user"));
+                if (json.has("message")) response.put("message", json.opt("message"));
+                if (status < 200 || status >= 300) {
+                    if (!response.has("message")) {
+                        response.put("message", "NightCast login service returned HTTP " + status);
+                    }
+                }
+
+                activity.runOnUiThread(() -> call.resolve(response));
+            } catch (Exception error) {
+                String message = error.getMessage();
+                if (message == null || message.trim().isEmpty()) {
+                    message = "Could not contact the NightCast login service.";
+                }
+                activity.runOnUiThread(() ->
+                        call.reject("Could not contact the NightCast login service.")
+                );
+            } finally {
+                if (connection != null) connection.disconnect();
+            }
+        }, "NightCast-Google-Token-Exchange");
+        worker.start();
     }
 
 

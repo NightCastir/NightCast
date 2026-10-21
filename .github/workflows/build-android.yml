@@ -1,8 +1,8 @@
 name: Build NightCast Android APK
 
 concurrency:
-  group: nightcast-android-${{ github.ref }}
-  cancel-in-progress: true
+  group: nightcast-android-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
 
 on:
   push:
@@ -137,13 +137,17 @@ jobs:
           if (!authPageScript.includes('"/login"')) {
             throw new Error('Legacy auth entry must redirect to the canonical Google-only /login page.');
           }
-          if (!/LOGIN_PAGE:\s*"\/login"/.test(rootSource) || rootSource.includes('/auth/login.html')) {
-            throw new Error('Every archive login entry must use the canonical Google-only /login route.');
+          if (!rootSource.includes('"/login/index.html"') || !rootSource.includes('"/login"') || rootSource.includes('/auth/login.html')) {
+            throw new Error('Archive login entries must use the explicit packaged /login/index.html on Android and canonical /login on web.');
           }
           if (!googleLoginPage.includes('id="googleLoginButton"') ||
               !googleLoginScript.includes('/public/openid/google') ||
-              !googleLoginScript.includes('NightCastGoogleAuth')) {
-            throw new Error('Canonical login must use Google sign-in and exchange the Google ID token with the NightCast API.');
+              !googleLoginScript.includes('NightCastGoogleAuth') ||
+              !googleLoginScript.includes('plugin.exchangeToken({ idToken })')) {
+            throw new Error('Canonical login must use the native Google plugin and native NightCast token exchange on Android.');
+          }
+          if (!fs.existsSync('login/index.html')) {
+            throw new Error('Canonical /login page must be packaged for the local Android WebView.');
           }
           if (!legacySmsPage.includes('url=/login') ||
               !legacySmsScript.includes('new URL("/login"')) {
@@ -217,6 +221,8 @@ jobs:
             "platform-tools" \
             "platforms;android-34" \
             "build-tools;34.0.0" \
+            "platforms;android-35" \
+            "build-tools;35.0.0" \
             "ndk;27.0.11718014"
 
           echo ""
@@ -239,7 +245,6 @@ jobs:
           const required = [
             ["appId", /appId:\s*'ir\.nightcast\.app'/],
             ["appName", /appName:\s*'NightCast'/],
-            ["remote entry URL", /url:\s*'https:\/\/www\.nightcast\.ir'/],
             ["HTTPS scheme", /androidScheme:\s*'https'/],
             ["www hostname allowlist", /allowNavigation:\s*\[[^\]]*'www\.nightcast\.ir'/s],
             ["apex hostname allowlist", /allowNavigation:\s*\[[^\]]*'nightcast\.ir'/s]
@@ -300,6 +305,7 @@ jobs:
           node -e 'const fs=require("node:fs"); const v=require("./version.json").version; fs.writeFileSync("www/js/nightcast-version.js", "window.NIGHTCAST_APP_VERSION = " + JSON.stringify(v) + ";" + String.fromCharCode(10));'
           cp -r assets www/ 2>/dev/null || true
           cp -r auth www/ 2>/dev/null || true
+          cp -r login www/ 2>/dev/null || true
           cp -r .well-known www/ 2>/dev/null || true
 
 
@@ -345,6 +351,32 @@ jobs:
             -type f \
             | sort
 
+
+      - name: Inject Capacitor bridge into packaged HTML pages
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          root = Path("www")
+          pages = list(root.rglob("*.html"))
+          if not pages:
+              raise SystemExit("No packaged HTML pages found")
+          injected = 0
+          for page in pages:
+              html = page.read_text(encoding="utf-8")
+              if 'src="/capacitor.js"' in html:
+                  continue
+              tag = '<script src="/capacitor.js"></script>\n'
+              if "</head>" in html:
+                  html = html.replace("</head>", tag + "</head>", 1)
+              else:
+                  html = tag + html
+              page.write_text(html, encoding="utf-8")
+              injected += 1
+          if not (root / "login" / "index.html").is_file():
+              raise SystemExit("Packaged canonical login page www/login/index.html is missing")
+          print(f"TRUE | Capacitor bridge reference injected into {injected} packaged HTML pages.")
+          PY
 
       # ============================================================
       # 8. Create Android platform
@@ -828,8 +860,7 @@ jobs:
 
           npx cap sync android
 
-          # Capacitor must carry the canonical remote website settings into
-          # the actual Android package. Checking only the source JSON is not enough.
+          # Verify the packaged production config uses local bundled assets so native plugins work.
           GENERATED_CONFIG="android/app/src/main/assets/capacitor.config.json"
           test -s "$GENERATED_CONFIG"
           node - "$GENERATED_CONFIG" <<'NODE'
@@ -837,18 +868,16 @@ jobs:
           const file = process.argv[2];
           const config = JSON.parse(fs.readFileSync(file, 'utf8'));
           const server = config.server || {};
-          const allowed = server.allowNavigation || [];
-          if (server.url !== 'https://www.nightcast.ir') {
-            throw new Error('Generated Android config does not load https://www.nightcast.ir');
+          if (server.url) {
+            throw new Error('Production APK must not set server.url; bundle local assets for native Google sign-in.');
           }
           if (server.androidScheme !== 'https') {
             throw new Error('Generated Android config must use the HTTPS scheme');
           }
-          if (!allowed.includes('www.nightcast.ir') || !allowed.includes('nightcast.ir')) {
-            throw new Error('Generated Android config must allow both NightCast hostnames in the WebView');
+          if (config.appId !== 'ir.nightcast.app') {
+            throw new Error('Generated Android config has an unexpected application ID.');
           }
-          console.log('TRUE | Packaged Android config loads the live NightCast website.');
-          console.log('TRUE | Both NightCast hostnames remain in the app WebView.');
+          console.log('TRUE | Packaged Android config uses bundled assets and retains the native bridge.');
           NODE
 
 

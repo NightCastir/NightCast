@@ -1,0 +1,153 @@
+name: NightCast Android Google Login Acceptance
+
+on:
+  pull_request:
+    paths:
+      - "capacitor.config.ts"
+      - "version.json"
+      - "users/js/login.js"
+      - "users/login.html"
+      - "js/nightcast-app.js"
+      - "js/nightcast-player.js"
+      - "login/**"
+      - "android-template/**"
+      - "tests/android-source-structure.cjs"
+      - ".github/workflows/build-android.yml"
+      - ".github/workflows/cafebazaar-release-apk.yml"
+      - ".github/workflows/android-google-login-acceptance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-google-login-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  native-google-login-build:
+    name: Verify native Google login and build debug APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Run Android login source regression tests
+        run: node tests/android-source-structure.cjs
+
+      - name: Install dependencies
+        run: |
+          set -euo pipefail
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          accept-android-sdk-licenses: true
+          packages: ""
+
+      - name: Install Android SDK packages
+        run: |
+          set -euo pipefail
+          sdkmanager --licenses >/dev/null
+          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Stage bundled website and canonical login page
+        run: |
+          set -euo pipefail
+          rm -rf www android
+          mkdir -p www/users
+          cp index.html www/index.html
+          cp version.json www/version.json
+          for f in style.css app.js favicon.ico favicon.png logo.png; do
+            [ ! -f "$f" ] || cp "$f" www/
+          done
+          for d in css js assets auth login .well-known; do
+            [ ! -d "$d" ] || cp -R "$d" www/
+          done
+          [ ! -d users ] || cp -R users/. www/users/
+          find . -maxdepth 1 -type f -name '*.html' ! -name 'index.html' -exec cp {} www/ \;
+          test -s www/index.html
+          test -s www/login/index.html
+          python3 <<'PY'
+          from pathlib import Path
+          root = Path("www")
+          pages = list(root.rglob("*.html"))
+          for page in pages:
+              html = page.read_text(encoding="utf-8")
+              if 'src="/capacitor.js"' not in html:
+                  tag = '<script src="/capacitor.js"></script>\n'
+                  html = html.replace("</head>", tag + "</head>", 1) if "</head>" in html else tag + html
+                  page.write_text(html, encoding="utf-8")
+          print(f"TRUE | Capacitor bridge referenced by {len(pages)} bundled HTML pages")
+          PY
+
+      - name: Generate Android project and install native Google plugin
+        run: |
+          set -euo pipefail
+          npx cap add android
+          src="android-template/src/main/java/ir/nightcast/app"
+          dst="android/app/src/main/java/ir/nightcast/app"
+          mkdir -p "$dst"
+          cp "$src/MainActivity.java" "$dst/MainActivity.java"
+          cp "$src/NightCastGoogleAuth.java" "$dst/NightCastGoogleAuth.java"
+          python3 <<'PY'
+          from pathlib import Path
+          p = Path("android/app/build.gradle")
+          text = p.read_text()
+          marker = "dependencies {"
+          if marker not in text:
+              raise SystemExit("Gradle dependencies block not found")
+          deps = [
+              'implementation "androidx.credentials:credentials:1.6.0"',
+              'implementation "androidx.credentials:credentials-play-services-auth:1.6.0"',
+              'implementation "com.google.android.libraries.identity.googleid:googleid:1.2.0"',
+          ]
+          missing = [d for d in deps if d not in text]
+          if missing:
+              text = text.replace(marker, marker + "\n" + "\n".join("    " + d for d in missing), 1)
+          p.write_text(text)
+          PY
+          npx cap sync android
+
+      - name: Verify packaged Capacitor configuration
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+          const fs = require("node:fs");
+          const c = JSON.parse(fs.readFileSync("android/app/src/main/assets/capacitor.config.json", "utf8"));
+          if (c.appId !== "ir.nightcast.app") throw new Error("Wrong app ID");
+          if (c.server && c.server.url) throw new Error("Production-style test build must use bundled assets, not server.url");
+          if (!c.server || c.server.androidScheme !== "https") throw new Error("HTTPS Android scheme missing");
+          const html = fs.readFileSync("www/login/index.html", "utf8");
+          if (!html.includes('src="/capacitor.js"')) throw new Error("Native bridge script missing from login page");
+          console.log("PASS | Local assets, HTTPS scheme, and Capacitor bridge are packaged");
+          NODE
+
+      - name: Build debug APK
+        run: |
+          set -euo pipefail
+          cd android
+          ./gradlew --no-daemon assembleDebug
+          test -s app/build/outputs/apk/debug/app-debug.apk
+          echo "PASS | Android debug APK built with native Google sign-in plugin"
+
+      - name: Upload debug APK for QA
+        uses: actions/upload-artifact@v4
+        with:
+          name: NightCast-Android-Google-Login-QA
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 7

@@ -46,13 +46,17 @@ const Login = {
     ================================================== */
 
     getPostLoginDestination(){
-        const fallback = "/podcasts";
+        const nativeAndroid = this.isAndroidApp();
+        const fallback = nativeAndroid ? "/" : "/podcasts";
         try {
             const params = new URLSearchParams(window.location.search);
             const next = params.get("next");
             if (!next || !next.startsWith("/") || next.startsWith("//")) return fallback;
             const target = new URL(next, window.location.origin);
             if (target.origin !== window.location.origin) return fallback;
+            // The bundled Android app serves the archive at its local root, not the
+            // website host's /podcasts rewrite. Preserve the canonical web route on browsers.
+            if (nativeAndroid && target.pathname === "/podcasts") return "/";
             return target.pathname + target.search + target.hash;
         } catch (_) {
             return fallback;

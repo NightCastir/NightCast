@@ -208,6 +208,8 @@ public class NightCastGoogleAuth extends Plugin {
                 connection.setDoOutput(true);
                 connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
                 connection.setRequestProperty("Accept", "application/json");
+                // Match the trusted website origin expected by the existing API middleware.
+                connection.setRequestProperty("Origin", "https://www.nightcast.ir");
 
                 JSONObject payload = new JSONObject();
                 payload.put("idToken", idToken);

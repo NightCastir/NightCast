@@ -72,8 +72,15 @@ function silentWavDataUri() {
     const jsFailures = [];
     const jsFiles = walkFiles('.', /\.js$/i);
     for (const file of jsFiles) {
-      try { new vm.Script(fs.readFileSync(file, 'utf8'), { filename: file }); }
-      catch (error) { jsFailures.push(file + ': ' + error.message); }
+      try {
+        const source = fs.readFileSync(file, 'utf8');
+        if (file.replace(/\\\\/g, '/').endsWith('/workers/nightcast-shield.js')) {
+          const checked = spawnSync(process.execPath, ['--input-type=module', '--check'], { input: source, encoding: 'utf8' });
+          if (checked.status !== 0) throw new Error(checked.stderr || 'ES module syntax check failed');
+        } else {
+          new vm.Script(source, { filename: file });
+        }
+      } catch (error) { jsFailures.push(file + ': ' + error.message); }
     }
     report('0.1. JavaScript files pass syntax parsing', jsFailures.length === 0,
       jsFailures.slice(0, 8).join(' || ') || 'Parsed ' + jsFiles.length + ' JavaScript files');

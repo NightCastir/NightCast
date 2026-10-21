@@ -6,6 +6,9 @@ on:
       - "capacitor.config.ts"
       - "version.json"
       - "users/js/login.js"
+      - "users/login.html"
+      - "js/nightcast-app.js"
+      - "js/nightcast-player.js"
       - "login/**"
       - "android-template/**"
       - "tests/android-source-structure.cjs"
@@ -18,8 +21,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: android-google-login-${{ github.ref }}
-  cancel-in-progress: true
+  group: android-google-login-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
 
 jobs:
   native-google-login-build:

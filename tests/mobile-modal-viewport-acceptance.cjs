@@ -10,7 +10,7 @@ const viewports = [
   { width: 844, height: 390, label: 'short landscape' }
 ];
 const selectors = {
-  login: { url: '/users/login.html', actions: [{ selector: 'body.cosmic-login [data-nc-shield-continue]', label: 'login CAPTCHA continue' }], scroll: 'document.scrollingElement' },
+  login: { url: '/users/login.html', actions: [{ selector: '#googleLoginButton', label: 'Google-only login control' }], scroll: 'document.scrollingElement' },
   comment: { url: '/', actions: [{ selector: '#ncCommentsSubmit', label: 'single comment submit' }], scroll: '#ncCommentsModal' },
   suggestion: { url: '/', actions: [{ selector: '#bookSummaryRequestSubmit', label: 'single suggestion submit' }], scroll: '#bookSummaryRequestModal .book-summary-request-panel' }
 };

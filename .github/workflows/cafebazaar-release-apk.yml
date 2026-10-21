@@ -117,6 +117,32 @@ jobs:
           test -s www/users/index.html
           echo "TRUE | Website entry point and user pages staged."
 
+      - name: Inject Capacitor bridge into packaged HTML pages
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          root = Path("www")
+          pages = list(root.rglob("*.html"))
+          if not pages:
+              raise SystemExit("No packaged HTML pages found")
+          injected = 0
+          for page in pages:
+              html = page.read_text(encoding="utf-8")
+              if 'src="/capacitor.js"' in html:
+                  continue
+              tag = '<script src="/capacitor.js"></script>\n'
+              if "</head>" in html:
+                  html = html.replace("</head>", tag + "</head>", 1)
+              else:
+                  html = tag + html
+              page.write_text(html, encoding="utf-8")
+              injected += 1
+          if not (root / "login" / "index.html").is_file():
+              raise SystemExit("Packaged canonical login page www/login/index.html is missing")
+          print(f"TRUE | Capacitor bridge reference injected into {injected} packaged HTML pages.")
+          PY
+
       - name: Add Android platform
         run: npx cap add android
 

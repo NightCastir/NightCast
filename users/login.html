@@ -49,7 +49,12 @@
         <p class="hero-text">رادیو NightCast؛ پلی به سوی جهان صداها</p>
       </div>
 
-      <div id="googleLoginButton" class="google-login-container" aria-label="ورود با Google"></div>
+      <div id="googleLoginButton" class="google-login-container" aria-label="ورود با Google">
+        <button type="button" id="googleLoginFallback" class="nightcast-google-fallback" onclick="if(window.NightCastLogin){window.NightCastLogin.isAndroidApp()?window.NightCastLogin.setupNativeGoogle():window.NightCastLogin.setupGoogle()}else{document.getElementById('loginMessage').textContent='در حال آماده‌سازی ورود Google؛ لطفاً چند لحظه دیگر تلاش کنید.'}">
+          <span class="nightcast-google-fallback-icon" aria-hidden="true">G</span>
+          <span>ادامه با Google</span>
+        </button>
+      </div>
       <div id="loginMessage" class="login-status" role="alert" aria-live="polite"></div>
 
       <footer>
@@ -59,7 +64,7 @@
   </main>
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="/users/js/login.js?v=20261018-2"></script>
+  <script src="/users/js/login.js?v=20261021-1"></script>
 
 <script>
 /* NightCast app-like interaction layer; retire legacy PWA registrations. */

@@ -1035,7 +1035,7 @@ const Login = {
 
                 throw new Error(
 
-                    data.message ||
+                    (data && data.message) ||
 
                     "ورود Google در NightCast ناموفق بود."
 

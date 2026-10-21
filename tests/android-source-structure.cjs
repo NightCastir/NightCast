@@ -28,6 +28,7 @@ const packagedLogin = fs.readFileSync('login/index.html', 'utf8');
 const webLogin = fs.readFileSync('users/login.html', 'utf8');
 assert.match(packagedLogin, /id="googleLoginFallback"/, 'Packaged /login/index.html must show a real Google button before JavaScript loads');
 assert.match(webLogin, /id="googleLoginFallback"/, 'Web login must show a real Google button before JavaScript loads');
+assert.match(packagedLogin + webLogin, /users\/js\/login\.js\?v=20261021-1/, 'Both login pages must load the cache-busted controller containing the stale-session fix');
 assert.match(fs.readFileSync('js/nightcast-app.js', 'utf8'), /"\/login\/index\.html"/, 'Android app login navigation must use the explicit packaged index document');
 const loginJs = fs.readFileSync('users/js/login.js', 'utf8');
 assert.doesNotMatch(loginJs, /if\s*\(\s*token\s*&&\s*user\s*\)\s*\{[\s\S]{0,350}window\.location\.replace/, 'Opening the explicit login page must not auto-redirect away based on possibly stale localStorage');

@@ -82,8 +82,8 @@ function staticChecks() {
   assert.match(widget, /if \(action === "login"\)/);
   assert.match(player, /NightCastSuccessDialog/);
   assert.match(app, /NightCastSuccessDialog/);
-  assert.match(index, /nightcast-success-dialog\\.css/);
-  assert.match(index, /nightcast-success-dialog\\.js/);
+  assert.match(index, /nightcast-success-dialog\.css/);
+  assert.match(index, /nightcast-success-dialog\.js/);
   assert.match(index, /id="ncCommentsSubmit"/);
   assert.match(index, /id="bookSummaryRequestSubmit"/);
   assert.match(read('css/nightcast-shield.css'), /--nc-theme-primary/);

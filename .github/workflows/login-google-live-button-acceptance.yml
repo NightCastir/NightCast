@@ -8,6 +8,7 @@ on:
       - 'users/js/login.js'
       - 'users/css/login.css'
       - 'tests/login-page-load-acceptance.cjs'
+      - 'tests/login-visible-captcha-google-gate-acceptance.cjs'
       - '.github/workflows/login-google-live-button-acceptance.yml'
   workflow_dispatch:
 
@@ -26,7 +27,7 @@ jobs:
           node-version: '22'
       - name: Wait for GitHub Pages to publish the fixed login script reference
         env:
-          EXPECTED_SCRIPT: '20261021-google-visible5'
+          EXPECTED_SCRIPT: '20261022-visible-captcha-gated-google2'
         run: |
           set -eu
           for attempt in $(seq 1 60); do
@@ -51,6 +52,6 @@ jobs:
           done
           npx playwright install --with-deps chromium
       - name: Assert deployed Google action is visibly rendered
-        run: node tests/login-page-load-acceptance.cjs
+        run: node tests/login-visible-captcha-google-gate-acceptance.cjs
         env:
           NIGHTCAST_LOGIN_URL: "https://nightcast.ir/users/login.html?nc_live_check=$GITHUB_SHA"

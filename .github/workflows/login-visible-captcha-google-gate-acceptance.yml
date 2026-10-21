@@ -1,4 +1,4 @@
-name: NightCast Login Security UI and Google Gate Acceptance
+name: NightCast Google-Only Login UI Acceptance
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
     paths:
       - 'users/login.html'
       - 'users/js/login.js'
-      - 'js/nightcast-shield.js'
+      - 'workers/nightcast-shield.js'
       - 'css/nightcast-shield.css'
       - 'tests/login-visible-captcha-google-gate-acceptance.cjs'
       - 'tests/login-visible-captcha-static-acceptance.cjs'
@@ -28,7 +28,7 @@ permissions:
 
 jobs:
   source-guards:
-    name: Static guards for visible CAPTCHA and Google gate
+    name: Static guards for CAPTCHA-free Google login
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -39,7 +39,7 @@ jobs:
       - run: node tests/login-visible-captcha-static-acceptance.cjs
 
   live-browser:
-    name: Live browser verifies security question and Google gate
+    name: Live browser verifies Google-only login and API handoff
     if: github.event_name != 'pull_request'
     needs: source-guards
     runs-on: ubuntu-latest

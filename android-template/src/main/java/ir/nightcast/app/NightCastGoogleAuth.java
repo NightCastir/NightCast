@@ -252,13 +252,9 @@ public class NightCastGoogleAuth extends Plugin {
                 if (message == null || message.trim().isEmpty()) {
                     message = "Could not contact the NightCast login service.";
                 }
-                final String safeMessage = message;
-                activity.runOnUiThread(() -> {
-                    JSObject response = new JSObject();
-                    response.put("success", false);
-                    response.put("message", safeMessage);
-                    call.resolve(response);
-                });
+                activity.runOnUiThread(() ->
+                        call.reject("Could not contact the NightCast login service.")
+                );
             } finally {
                 if (connection != null) connection.disconnect();
             }

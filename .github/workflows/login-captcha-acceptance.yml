@@ -1,4 +1,4 @@
-name: NightCast Login CAPTCHA Acceptance
+name: NightCast Google-Only Login API Acceptance
 
 on:
   push:
@@ -26,7 +26,7 @@ permissions:
 
 jobs:
   login-captcha:
-    name: Login challenge, wrong answer, valid proof and replay protection
+    name: Google login bypasses CAPTCHA and reaches token validation
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -34,7 +34,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Validate live login CAPTCHA contract
+      - name: Validate live Google-only login contract
         run: node tests/nightcast-shield-acceptance.cjs
         env:
           NIGHTCAST_SHIELD_ACTION: login

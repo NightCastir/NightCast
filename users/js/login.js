@@ -527,7 +527,7 @@ const Login = {
 
             '<span class="nightcast-google-text">' +
 
-            'ادامه با Google' +
+            'ادامه از طریق گوگل' +
 
             '</span>';
 

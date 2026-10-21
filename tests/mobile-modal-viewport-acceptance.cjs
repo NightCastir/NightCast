@@ -156,7 +156,7 @@ assert.ok(selectors[target], 'Unknown NIGHTCAST_MODAL_TARGET: ' + target);
           check(target + ' success confirmation dialog fits ' + viewport.width + 'x' + viewport.height,
             successGeometry.visible && successGeometry.left >= -1 && successGeometry.right <= viewport.width + 1,
             JSON.stringify(successGeometry));
-          await successDialog.locator('.nc-success-dialog__close').click();
+          await successDialog.locator('.nc-success-dialog__close').click({ timeout: 5000 });
           await successDialog.waitFor({ state: 'hidden', timeout: 3000 });
         }
       } catch (error) {

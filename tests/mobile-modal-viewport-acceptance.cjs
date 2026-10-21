@@ -10,9 +10,9 @@ const viewports = [
   { width: 844, height: 390, label: 'short landscape' }
 ];
 const selectors = {
-  login: { url: '/users/login.html', action: 'body.cosmic-login [data-nc-shield-continue]', scroll: 'document.scrollingElement' },
-  comment: { url: '/', action: '#ncCommentsSubmit', scroll: '#ncCommentsModal' },
-  suggestion: { url: '/', action: '#bookSummaryRequestSubmit', scroll: '#bookSummaryRequestModal .book-summary-request-panel' }
+  login: { url: '/users/login.html', actions: [{ selector: 'body.cosmic-login [data-nc-shield-continue]', label: 'login CAPTCHA continue' }], scroll: 'document.scrollingElement' },
+  comment: { url: '/', actions: [{ selector: '#ncCommentsModal [data-nc-shield-continue]', label: 'comment CAPTCHA continue' }, { selector: '#ncCommentsSubmit', label: 'comment submit' }], scroll: '#ncCommentsModal' },
+  suggestion: { url: '/', actions: [{ selector: '#bookSummaryRequestModal [data-nc-shield-continue]', label: 'suggestion CAPTCHA continue' }, { selector: '#bookSummaryRequestSubmit', label: 'suggestion submit' }], scroll: '#bookSummaryRequestModal .book-summary-request-panel' }
 };
 assert.ok(selectors[target], 'Unknown NIGHTCAST_MODAL_TARGET: ' + target);
 
@@ -76,34 +76,36 @@ assert.ok(selectors[target], 'Unknown NIGHTCAST_MODAL_TARGET: ' + target);
           });
         }
 
-        const action = page.locator(selectors[target].action);
-        await action.waitFor({ state: 'visible', timeout: 12000 });
-        if (target === 'login') {
-          await page.evaluate(() => window.scrollTo(0, document.scrollingElement.scrollHeight));
-        } else {
-          const scrollTarget = page.locator(selectors[target].scroll);
-          await scrollTarget.evaluate(el => { el.scrollTop = el.scrollHeight; });
+        for (const actionSpec of selectors[target].actions) {
+          const action = page.locator(actionSpec.selector);
+          await action.waitFor({ state: 'visible', timeout: 12000 });
+          if (target === 'login') {
+            await page.evaluate(() => window.scrollTo(0, document.scrollingElement.scrollHeight));
+          } else {
+            const scrollTarget = page.locator(selectors[target].scroll);
+            await scrollTarget.evaluate(el => { el.scrollTop = el.scrollHeight; });
+          }
+          await action.scrollIntoViewIfNeeded();
+          await page.waitForTimeout(60);
+          const geometry = await action.evaluate(el => {
+            const r = el.getBoundingClientRect();
+            const cs = getComputedStyle(el);
+            return {
+              top: Math.round(r.top), bottom: Math.round(r.bottom),
+              left: Math.round(r.left), right: Math.round(r.right),
+              width: Math.round(r.width), height: Math.round(r.height),
+              viewportWidth: innerWidth, viewportHeight: innerHeight,
+              visible: r.width > 0 && r.height > 0 && r.right > 0 && r.left < innerWidth && r.bottom > 0 && r.top < innerHeight,
+              withinHorizontalViewport: r.left >= -1 && r.right <= innerWidth + 1,
+              disabled: el.disabled,
+              display: cs.display,
+              visibility: cs.visibility
+            };
+          });
+          check(target + ' ' + actionSpec.label + ' reachable at ' + viewport.width + 'x' + viewport.height + ' (' + viewport.label + ')',
+            geometry.visible && geometry.withinHorizontalViewport && !geometry.disabled && geometry.display !== 'none' && geometry.visibility !== 'hidden',
+            JSON.stringify(geometry));
         }
-        await action.scrollIntoViewIfNeeded();
-        await page.waitForTimeout(80);
-        const geometry = await action.evaluate(el => {
-          const r = el.getBoundingClientRect();
-          const cs = getComputedStyle(el);
-          return {
-            top: Math.round(r.top), bottom: Math.round(r.bottom),
-            left: Math.round(r.left), right: Math.round(r.right),
-            width: Math.round(r.width), height: Math.round(r.height),
-            viewportWidth: innerWidth, viewportHeight: innerHeight,
-            visible: r.width > 0 && r.height > 0 && r.right > 0 && r.left < innerWidth && r.bottom > 0 && r.top < innerHeight,
-            withinHorizontalViewport: r.left >= -1 && r.right <= innerWidth + 1,
-            disabled: el.disabled,
-            display: cs.display,
-            visibility: cs.visibility
-          };
-        });
-        check(target + ' primary action reachable at ' + viewport.width + 'x' + viewport.height + ' (' + viewport.label + ')',
-          geometry.visible && geometry.withinHorizontalViewport && !geometry.disabled && geometry.display !== 'none' && geometry.visibility !== 'hidden',
-          JSON.stringify(geometry));
 
         const layout = await page.evaluate((kind) => {
           const modal = kind === 'comment' ? document.querySelector('#ncCommentsModal')

@@ -4,7 +4,7 @@
 
             const bridge = window.NightCastPodcastBridge;
             if (!bridge) console.error("NightCast podcast bridge is unavailable.");
-            const CONFIG = { API_BASE: bridge?.apiBase || "", LOGIN_PAGE: bridge?.loginPage || "/login" };
+            const CONFIG = { API_BASE: bridge?.apiBase || "", LOGIN_PAGE: bridge?.loginPage || ((window.Capacitor && typeof window.Capacitor.getPlatform === "function" && window.Capacitor.getPlatform() === "android") ? "/login/index.html" : "/login") };
             const state = {
                 get all() { return bridge?.getPodcasts?.() || []; },
                 get current() { return bridge?.getCurrentPodcast?.() || null; }

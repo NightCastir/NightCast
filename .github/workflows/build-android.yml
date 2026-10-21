@@ -221,6 +221,8 @@ jobs:
             "platform-tools" \
             "platforms;android-34" \
             "build-tools;34.0.0" \
+            "platforms;android-35" \
+            "build-tools;35.0.0" \
             "ndk;27.0.11718014"
 
           echo ""

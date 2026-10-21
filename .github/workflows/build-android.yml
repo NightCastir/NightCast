@@ -137,8 +137,8 @@ jobs:
           if (!authPageScript.includes('"/login"')) {
             throw new Error('Legacy auth entry must redirect to the canonical Google-only /login page.');
           }
-          if (!/LOGIN_PAGE:\s*"\/login"/.test(rootSource) || rootSource.includes('/auth/login.html')) {
-            throw new Error('Every archive login entry must use the canonical Google-only /login route.');
+          if (!rootSource.includes('"/login/index.html"') || !rootSource.includes('"/login"') || rootSource.includes('/auth/login.html')) {
+            throw new Error('Archive login entries must use the explicit packaged /login/index.html on Android and canonical /login on web.');
           }
           if (!googleLoginPage.includes('id="googleLoginButton"') ||
               !googleLoginScript.includes('/public/openid/google') ||

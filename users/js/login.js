@@ -349,13 +349,13 @@ const Login = {
         }
 
         /*
-         * Keep the Google action visible from the first render. The previous
-         * implementation hid this container and then inserted the fallback
-         * button inside it, so both the fallback and Google's rendered button
-         * remained invisible whenever GIS loaded slowly or successfully.
+         * Require the visible NightCast security challenge before exposing
+         * any Google sign-in control. The Google iframe cannot be reliably
+         * intercepted after the user taps it, so it must not be visible yet.
          */
-        container.style.display = "flex";
-        container.removeAttribute("aria-hidden");
+        container.style.display = "none";
+        container.hidden = true;
+        container.setAttribute("aria-hidden", "true");
 
         /*
          * Show an immediate fallback while Google Identity Services loads.
@@ -403,9 +403,10 @@ const Login = {
             clearInterval(checker);
             if (!this.googleReady) {
                 console.error("Google Identity timeout: GIS script did not become ready.");
-                container.style.display = "";
-                container.removeAttribute("aria-hidden");
-                this.showError("سرویس Google دیر پاسخ داد. اکنون می‌توانید دکمه رسمی Google را انتخاب کنید.");
+                container.style.display = "none";
+                container.hidden = true;
+                container.setAttribute("aria-hidden", "true");
+                this.showError("سرویس Google دیر پاسخ داد. ابتدا تأیید امنیتی را کامل کنید؛ سپس می‌توانید دوباره تلاش کنید.");
             }
         }, 10000);
     },
@@ -438,22 +439,18 @@ const Login = {
 
         if (window.google && window.google.accounts && window.google.accounts.id) {
             const status = document.querySelector('[data-nc-shield="login"] [data-nc-shield-status]');
-            window.google.accounts.id.prompt((notification) => {
-                if (notification && (notification.isNotDisplayed() || notification.isSkippedMoment())) {
-                    if (status) {
-                        status.textContent = "برای تکمیل ورود، دکمه رسمی Google را انتخاب کنید.";
-                        status.dataset.state = "ready";
-                    }
-                    const container = document.getElementById("googleLoginButton");
-                    if (container) {
-                        container.style.display = "";
-                        container.removeAttribute("aria-hidden");
-                        container.scrollIntoView({ behavior: "smooth", block: "center" });
-                        const button = container.querySelector("button");
-                        if (button) button.focus({ preventScroll: true });
-                    }
-                }
-            });
+            const container = document.getElementById("googleLoginButton");
+            if (container) {
+                container.hidden = false;
+                container.style.display = "flex";
+                container.removeAttribute("aria-hidden");
+                container.setAttribute("data-captcha-verified", "true");
+                container.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+            if (status) {
+                status.textContent = "تأیید امنیتی انجام شد. اکنون دکمه رسمی Google را انتخاب کنید.";
+                status.dataset.state = "ready";
+            }
             return;
         }
 
@@ -464,8 +461,10 @@ const Login = {
         }
         const container = document.getElementById("googleLoginButton");
         if (container) {
-            container.style.display = "";
+            container.hidden = false;
+            container.style.display = "flex";
             container.removeAttribute("aria-hidden");
+            container.setAttribute("data-captcha-verified", "true");
             container.scrollIntoView({ behavior: "smooth", block: "center" });
         }
     },

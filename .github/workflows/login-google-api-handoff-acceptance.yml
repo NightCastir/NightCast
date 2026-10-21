@@ -1,4 +1,4 @@
-name: NightCast Google Login API Handoff Acceptance
+name: NightCast Google-Only API Handoff Acceptance
 
 on:
   push:
@@ -26,7 +26,7 @@ permissions:
 
 jobs:
   google-api-handoff:
-    name: Live-origin CORS, CAPTCHA proof and Google token validation handoff
+    name: Live-origin CORS and Google token validation without CAPTCHA
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -38,5 +38,5 @@ jobs:
         run: |
           npm install --no-save playwright
           npx playwright install --with-deps chromium
-      - name: Verify live origin reaches Google token validation
+      - name: Verify live origin reaches Google token validation without CAPTCHA
         run: node tests/login-google-live-origin.cjs

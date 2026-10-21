@@ -190,6 +190,7 @@
     <link rel="stylesheet" href="/css/nightcast-moonlight-contrast.css?v=17">
   <link rel="stylesheet" href="/assets/fonts/vazirmatn.css">
   <link rel="stylesheet" href="/assets/vendor/fontawesome/css/all.min.css">
+  <link rel="stylesheet" href="/css/nightcast-shield.css?v=1">
 </head>
 
 <body aria-busy="true">
@@ -1181,6 +1182,7 @@
     </audio>
 
     <script src="/js/nightcast-theme.js?v=6" defer></script>
+    <script src="/js/nightcast-shield.js?v=1" defer></script>
     <script src="/js/nightcast-app.js?v=2" defer></script>
     <script src="/js/nightcast-spider-visualizer.js?v=1" defer></script>
     <script src="/js/nightcast-theme-experience.js?v=4" defer></script>
@@ -1390,6 +1392,8 @@
 
                 </div>
 
+                <div class="nc-shield-widget" data-nc-shield="suggestion"></div>
+
                 <!-- پیام -->
 
                 <div id="bookSummaryRequestMessage"
@@ -1446,6 +1450,7 @@
         <form class="nc-comments-compose" id="ncCommentsForm">
             <label for="ncCommentsInput">دیدگاه شما</label>
             <textarea id="ncCommentsInput" maxlength="1000" placeholder="نظر خود را محترمانه با دیگر شنوندگان به اشتراک بگذارید…" aria-describedby="ncCommentsNotice ncCommentsCharCount"></textarea>
+            <div class="nc-shield-widget" data-nc-shield="comment"></div>
             <div class="nc-comments-compose-foot">
                 <span class="nc-comments-count" id="ncCommentsCharCount">0 / 1000</span>
                 <button class="nc-comments-submit" id="ncCommentsSubmit" type="submit"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i><span>ثبت دیدگاه</span></button>

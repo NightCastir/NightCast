@@ -24,36 +24,40 @@ async function post(pathname, body) {
 async function run() {
   assert.ok(targetByAction[ACTION], `Unknown action: ${ACTION}`);
   const target = targetByAction[ACTION];
-
+  if (ACTION === 'login') {
+    const response = await post(target.path, target.body);
+    assert.notEqual(response.data.code, 'CAPTCHA_REQUIRED', 'Google login must not require CAPTCHA: ' + JSON.stringify(response));
+    assert.notEqual(response.data.code, 'CAPTCHA_INVALID', 'Google login must not validate CAPTCHA: ' + JSON.stringify(response));
+    assert.notEqual(response.status, 502, 'Shield proxy failed: ' + JSON.stringify(response));
+    assert.notEqual(response.status, 503, 'Google login must not depend on CAPTCHA service');
+    assert.match(response.data.message || response.data.code || '', /invalid|token|google|credential|id token/i, 'Invalid token did not reach upstream validation: ' + JSON.stringify(response));
+    console.log('PASS | Google login bypasses CAPTCHA and reaches upstream token validation');
+    return;
+  }
   const missing = await post(target.path, target.body);
-  assert.equal(missing.status, 403, `protected endpoint must reject a missing CAPTCHA proof; got HTTP ${missing.status}: ${JSON.stringify(missing.data)}`);
-  assert.equal(missing.data.code, 'CAPTCHA_REQUIRED', 'missing proof must be rejected by Shield before proxying');
-
+  assert.equal(missing.status, 403, `protected endpoint must reject missing CAPTCHA; got HTTP ${missing.status}: ${JSON.stringify(missing.data)}`);
+  assert.equal(missing.data.code, 'CAPTCHA_REQUIRED');
   const challengeResponse = await post('/captcha/challenge', { action: ACTION });
-  assert.equal(challengeResponse.status, 200, `challenge endpoint must respond successfully; got HTTP ${challengeResponse.status}: ${JSON.stringify(challengeResponse.data)}`);
+  assert.equal(challengeResponse.status, 200, `challenge endpoint failed: ${JSON.stringify(challengeResponse.data)}`);
   assert.equal(challengeResponse.data.success, true);
   assert.equal(challengeResponse.data.action, ACTION);
   assert.match(challengeResponse.data.id || '', /^[a-f0-9]{32}$/);
   const match = /^(\d{1,2}) \+ (\d{1,2})/.exec(challengeResponse.data.question || '');
-  assert.ok(match, 'challenge should be a simple one-digit addition question');
+  assert.ok(match, 'challenge should be a one-digit addition question');
   const correct = Number(match[1]) + Number(match[2]);
   const wrong = correct === 18 ? 1 : correct + 1;
-
   const wrongAnswer = await post(target.path, { ...target.body, captcha: { id: challengeResponse.data.id, answer: String(wrong) } });
-  assert.equal(wrongAnswer.status, 403, 'wrong answer must be rejected');
+  assert.equal(wrongAnswer.status, 403);
   assert.equal(wrongAnswer.data.code, 'CAPTCHA_INVALID');
-
   const proof = { id: challengeResponse.data.id, answer: String(correct) };
   const accepted = await post(target.path, { ...target.body, captcha: proof });
-  assert.notEqual(accepted.data.code, 'CAPTCHA_INVALID', 'correct answer should pass CAPTCHA verification');
-  assert.notEqual(accepted.data.code, 'CAPTCHA_REQUIRED', 'correct proof should reach the upstream API');
-  assert.notEqual(accepted.status, 502, 'proxy should reach the existing NightCast API');
-  assert.notEqual(accepted.status, 503, 'Shield dependencies should be configured');
-
+  assert.notEqual(accepted.data.code, 'CAPTCHA_INVALID');
+  assert.notEqual(accepted.data.code, 'CAPTCHA_REQUIRED');
+  assert.notEqual(accepted.status, 502);
+  assert.notEqual(accepted.status, 503);
   const replay = await post(target.path, { ...target.body, captcha: proof });
-  assert.equal(replay.status, 403, 'a successful challenge must not be reusable');
-  assert.equal(replay.data.code, 'CAPTCHA_INVALID', 'replayed proof must be rejected by Shield');
-
+  assert.equal(replay.status, 403);
+  assert.equal(replay.data.code, 'CAPTCHA_INVALID');
   console.log(`PASS | ${ACTION} challenge, wrong answer, upstream handoff, and single-use replay protection`);
 }
 
@@ -68,12 +72,12 @@ function staticChecks() {
   const worker = read('workers/nightcast-shield.js');
   assert.match(index, /data-nc-shield="comment"/);
   assert.match(index, /data-nc-shield="suggestion"/);
-  assert.match(login, /data-nc-shield="login"/);
+  assert.doesNotMatch(login, /data-nc-shield="login"/);
   assert.match(index, /nightcast-shield\.css/);
-  assert.match(login, /nightcast-shield\.js/);
+  assert.doesNotMatch(login, /nightcast-shield\.(?:css|js)/);
   assert.match(app, /getProof\("suggestion"\)/);
   assert.match(player, /getProof\("comment"\)/);
-  assert.match(loginJs, /getProof\("login"\)/);
+  assert.doesNotMatch(loginJs, /getProof\("login"\)|NightCastShield|captchaProof/);
   assert.match(worker, /CAPTCHA_STORE/);
   assert.match(worker, /protectedAction/);
   assert.match(widget, /data-nc-shield-continue/);
@@ -83,8 +87,8 @@ function staticChecks() {
   assert.match(index, /nightcast-shield\.js\?v=4/);
   assert.match(index, /id="ncCommentsSubmit"[^>]*type="submit"|id="ncCommentsSubmit"[^>]*type="submit"/);
   assert.match(index, /id="bookSummaryRequestSubmit"/);
-  assert.match(loginJs, /continueWithCaptcha/);
-  assert.match(widget, /if \(action === "login"\)/);
+  assert.doesNotMatch(loginJs, /continueWithCaptcha/);
+  assert.doesNotMatch(worker, /path === "\/api\/v1\/public\/openid\/google"\) return "login"/);
   assert.match(player, /NightCastSuccessDialog/);
   assert.match(app, /NightCastSuccessDialog/);
   assert.match(index, /nightcast-success-dialog\.css/);
@@ -94,7 +98,7 @@ function staticChecks() {
   assert.match(read('css/nightcast-shield.css'), /--nc-theme-primary/);
   assert.match(read('css/nightcast-shield.css'), /max-width:480px/);
   assert.doesNotMatch(widget, /google\.com\/recaptcha|hcaptcha\.com|turnstile\.cloudflare\.com/i);
-  console.log('PASS | static wiring for login, comments, suggestion, and self-hosted Shield');
+  console.log('PASS | Google-only login and CAPTCHA-protected comments/suggestions wiring');
 }
 
 if (process.argv.includes('--static')) {

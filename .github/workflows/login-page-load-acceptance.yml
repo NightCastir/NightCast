@@ -1,4 +1,4 @@
-name: NightCast Login Page Load Acceptance
+name: NightCast Google-Only Login Page Acceptance
 
 on:
   push:

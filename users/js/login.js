@@ -39,53 +39,6 @@ const GOOGLE_CLIENT_ID =
 const Login = {
 
     googleReady:false,
-    captchaProof:null,
-    captchaProofStorageKey:"nightcast.login.captchaProof.v1",
-
-    /* ==================================================
-       CAPTCHA PROOF SURVIVES GOOGLE RETURN / WEBVIEW RESUME
-    ================================================== */
-    rememberCaptchaProof(proof){
-        if (!proof || typeof proof.id !== "string" || !proof.id || typeof proof.answer !== "string" || !proof.answer) {
-            throw new Error("پاسخ امنیتی معتبر نیست؛ لطفاً پرسش امنیتی را دوباره پاسخ دهید.");
-        }
-        this.captchaProof = { id: proof.id, answer: proof.answer };
-        try {
-            sessionStorage.setItem(this.captchaProofStorageKey, JSON.stringify(this.captchaProof));
-        } catch (error) {
-            console.warn("Could not persist login CAPTCHA proof for Google return.", error);
-        }
-        return this.captchaProof;
-    },
-
-    getCaptchaProof(){
-        if (this.captchaProof && this.captchaProof.id && this.captchaProof.answer) {
-            return this.captchaProof;
-        }
-        try {
-            const saved = sessionStorage.getItem(this.captchaProofStorageKey);
-            if (saved) {
-                const proof = JSON.parse(saved);
-                if (proof && typeof proof.id === "string" && proof.id && typeof proof.answer === "string" && proof.answer) {
-                    this.captchaProof = { id: proof.id, answer: proof.answer };
-                    return this.captchaProof;
-                }
-                sessionStorage.removeItem(this.captchaProofStorageKey);
-            }
-        } catch (error) {
-            console.warn("Could not restore login CAPTCHA proof after Google return.", error);
-        }
-        const shield = window.NightCastShield;
-        if (shield && typeof shield.getProof === "function") {
-            return this.rememberCaptchaProof(shield.getProof("login"));
-        }
-        throw new Error("پاسخ امنیتی پس از بازگشت از Google در دسترس نیست. لطفاً پرسش امنیتی را تازه کنید و دوباره ادامه دهید.");
-    },
-
-    clearCaptchaProof(){
-        this.captchaProof = null;
-        try { sessionStorage.removeItem(this.captchaProofStorageKey); } catch (_) {}
-    },
 
     /* ==================================================
        POST-LOGIN RETURN TARGET
@@ -342,42 +295,14 @@ const Login = {
     initGoogle(){
 
         const container = document.getElementById("googleLoginButton");
-
         if (!container) {
             console.error("Google login button container not found");
             return;
         }
 
-        /*
-         * Require the visible NightCast security challenge before exposing
-         * any Google sign-in control. The Google iframe cannot be reliably
-         * intercepted after the user taps it, so it must not be visible yet.
-         */
-        container.style.display = "none";
-        container.hidden = true;
-        container.setAttribute("aria-hidden", "true");
-
-        /*
-         * Show an immediate fallback while Google Identity Services loads.
-         * Once GIS is ready, setupGoogle replaces it with Google's official
-         * button in this same visible container.
-         */
-        if (!this.isAndroidApp()) {
-            container.innerHTML = "";
-            const fallback = document.createElement("button");
-            fallback.type = "button";
-            fallback.id = "googleLoginFallback";
-            fallback.className = "nightcast-google-fallback";
-            fallback.innerHTML = '<span class="nightcast-google-fallback-icon" aria-hidden="true">G</span><span>ادامه با Google</span>';
-            fallback.addEventListener("click", () => {
-                if (window.google && window.google.accounts && window.google.accounts.id) {
-                    this.setupGoogle();
-                } else {
-                    this.showError("سرویس ورود Google بارگذاری نشده است. اتصال اینترنت را بررسی کنید و صفحه را دوباره بارگذاری کنید.");
-                }
-            });
-            container.appendChild(fallback);
-        }
+        container.hidden = false;
+        container.style.display = "flex";
+        container.removeAttribute("aria-hidden");
 
         if (this.isAndroidApp()) {
             console.log("Android Capacitor detected.");
@@ -385,13 +310,12 @@ const Login = {
             return;
         }
 
-        console.log("Browser detected. Initializing Google Identity Services.");
-
         if (window.google && window.google.accounts && window.google.accounts.id) {
             this.setupGoogle();
             return;
         }
 
+        console.log("Browser detected. Waiting for Google Identity Services.");
         const checker = setInterval(() => {
             if (window.google && window.google.accounts && window.google.accounts.id) {
                 clearInterval(checker);
@@ -403,70 +327,9 @@ const Login = {
             clearInterval(checker);
             if (!this.googleReady) {
                 console.error("Google Identity timeout: GIS script did not become ready.");
-                container.style.display = "none";
-                container.hidden = true;
-                container.setAttribute("aria-hidden", "true");
-                this.showError("سرویس Google دیر پاسخ داد. ابتدا تأیید امنیتی را کامل کنید؛ سپس می‌توانید دوباره تلاش کنید.");
+                this.showError("سرویس ورود Google بارگذاری نشد. اتصال اینترنت را بررسی کنید و دوباره تلاش کنید.");
             }
-        }, 10000);
-    },
-
-
-    /* ==================================================
-       CAPTCHA → GOOGLE CONTINUE
-    ================================================== */
-    async continueWithCaptcha(){
-        try {
-            const shield = window.NightCastShield;
-            if (!shield || typeof shield.getProof !== "function") {
-                throw new Error("سامانه تأیید امنیتی بارگذاری نشده است. صفحه را تازه‌سازی کنید و دوباره تلاش کنید.");
-            }
-            this.rememberCaptchaProof(shield.getProof("login"));
-        } catch(error) {
-            this.showError(error.message || "لطفاً ابتدا پاسخ پرسش امنیتی را وارد کنید.");
-            return;
-        }
-
-        if (this.isAndroidApp()) {
-            const nativeButton = document.getElementById("nativeGoogleLogin");
-            if (nativeButton) {
-                nativeButton.click();
-                return;
-            }
-            this.showError("دکمه ورود Google هنوز آماده نیست. چند لحظه صبر کنید و دوباره تلاش کنید.");
-            return;
-        }
-
-        if (window.google && window.google.accounts && window.google.accounts.id) {
-            const status = document.querySelector('[data-nc-shield="login"] [data-nc-shield-status]');
-            const container = document.getElementById("googleLoginButton");
-            if (container) {
-                container.hidden = false;
-                container.style.display = "flex";
-                container.removeAttribute("aria-hidden");
-                container.setAttribute("data-captcha-verified", "true");
-                container.scrollIntoView({ behavior: "smooth", block: "center" });
-            }
-            if (status) {
-                status.textContent = "تأیید امنیتی انجام شد. اکنون دکمه رسمی Google را انتخاب کنید.";
-                status.dataset.state = "ready";
-            }
-            return;
-        }
-
-        const status = document.querySelector('[data-nc-shield="login"] [data-nc-shield-status]');
-        if (status) {
-            status.textContent = "سرویس Google هنوز آماده نیست؛ دکمه Google را برای تلاش دوباره انتخاب کنید.";
-            status.dataset.state = "error";
-        }
-        const container = document.getElementById("googleLoginButton");
-        if (container) {
-            container.hidden = false;
-            container.style.display = "flex";
-            container.removeAttribute("aria-hidden");
-            container.setAttribute("data-captcha-verified", "true");
-            container.scrollIntoView({ behavior: "smooth", block: "center" });
-        }
+        }, 15000);
     },
 
     /* ==================================================
@@ -664,7 +527,7 @@ const Login = {
 
             '<span class="nightcast-google-text">' +
 
-            'ادامه با Google' +
+            'ادامه از طریق گوگل' +
 
             '</span>';
 
@@ -1078,13 +941,6 @@ const Login = {
             ==========================================
             */
 
-            /*
-             * Google may open an account chooser or resume this page after a
-             * redirect/WebView pause. The in-memory Shield widget is not a
-             * reliable source after that transition; restore the exact proof
-             * captured before Google was opened, then fall back to the live widget.
-             */
-            const captchaProof = this.getCaptchaProof();
             this.showLoader();
 
 
@@ -1113,7 +969,7 @@ const Login = {
                         mode: "cors",
                         credentials: "omit",
                         cache: "no-store",
-                        body: JSON.stringify({ idToken, captcha: captchaProof }),
+                        body: JSON.stringify({ idToken }),
                         signal: controller.signal
                     }
                 );
@@ -1167,17 +1023,6 @@ const Login = {
             CHECK API RESULT
             ==========================================
             */
-
-            if (result.ok || result.status === 401 || result.status === 403) {
-                // The proof is single-use at the Shield/API boundary. Never reuse
-                // it after the server has returned an authoritative HTTP response.
-                this.clearCaptchaProof();
-            }
-
-            if (!result.ok && result.status === 403 && window.NightCastShield &&
-                typeof window.NightCastShield.refresh === "function") {
-                await window.NightCastShield.refresh("login");
-            }
 
             if(
                 !result.ok ||

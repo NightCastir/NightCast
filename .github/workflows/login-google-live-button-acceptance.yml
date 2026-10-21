@@ -1,4 +1,4 @@
-name: NightCast Live Google Login Button Acceptance
+name: NightCast Live Google-Only Login Button Acceptance
 
 on:
   push:
@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   live-google-button:
-    name: Verify deployed Continue with Google action is visible
+    name: Verify deployed Google-only sign-in action is visible
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -25,15 +25,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Wait for GitHub Pages to publish the fixed login script reference
+      - name: Wait for GitHub Pages to publish the Google-only login script reference
         env:
-          EXPECTED_SCRIPT: '20261022-visible-captcha-gated-google2'
+          EXPECTED_SCRIPT: '20261022-google-only-login1'
         run: |
           set -eu
           for attempt in $(seq 1 60); do
             html="$(curl --silent --show-error --location --max-time 15 "https://nightcast.ir/users/login.html?nc_deploy_check=$GITHUB_SHA" || true)"
             if printf '%s' "$html" | grep -Fq "$EXPECTED_SCRIPT"; then
-              echo "PASS | live login HTML references the fixed Google visibility script | attempt=$attempt"
+              echo "PASS | live login HTML references the Google-only Google sign-in script | attempt=$attempt"
               exit 0
             fi
             echo "WAIT | live login deployment not yet updated | attempt=$attempt"

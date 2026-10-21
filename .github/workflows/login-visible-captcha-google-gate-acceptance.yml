@@ -1,0 +1,76 @@
+name: NightCast Login Security UI and Google Gate Acceptance
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'users/login.html'
+      - 'users/js/login.js'
+      - 'js/nightcast-shield.js'
+      - 'css/nightcast-shield.css'
+      - 'tests/login-visible-captcha-google-gate-acceptance.cjs'
+      - 'tests/login-visible-captcha-static-acceptance.cjs'
+      - '.github/workflows/login-visible-captcha-google-gate-acceptance.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'users/login.html'
+      - 'users/js/login.js'
+      - 'js/nightcast-shield.js'
+      - 'css/nightcast-shield.css'
+      - 'tests/login-visible-captcha-google-gate-acceptance.cjs'
+      - 'tests/login-visible-captcha-static-acceptance.cjs'
+      - '.github/workflows/login-visible-captcha-google-gate-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-guards:
+    name: Static guards for visible CAPTCHA and Google gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node tests/login-visible-captcha-static-acceptance.cjs
+
+  live-browser:
+    name: Live browser verifies security question and Google gate
+    if: github.event_name != 'pull_request'
+    needs: source-guards
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Wait for the live site to publish the new login UI
+        env:
+          EXPECTED_SCRIPT: '20261022-visible-captcha-gated-google2'
+        run: |
+          set -eu
+          for attempt in $(seq 1 60); do
+            html="$(curl --silent --show-error --location --max-time 15 "https://nightcast.ir/users/login.html?nc_deploy_check=$GITHUB_SHA" || true)"
+            if printf '%s' "$html" | grep -Fq "$EXPECTED_SCRIPT" &&
+               printf '%s' "$html" | grep -Fq 'nightcast-shield.js?v=4'; then
+              echo "PASS | live login page references visible CAPTCHA + gated Google fix | attempt=$attempt"
+              exit 0
+            fi
+            echo "WAIT | waiting for live login deployment | attempt=$attempt"
+            sleep 10
+          done
+          echo "FAIL | live login HTML did not publish the expected cache keys"
+          exit 1
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Verify visible security question, gated Google button and server handoff
+        env:
+          NIGHTCAST_LOGIN_URL: "https://nightcast.ir/users/login.html?nc_login_gate_check=$GITHUB_SHA"
+        run: node tests/login-visible-captcha-google-gate-acceptance.cjs

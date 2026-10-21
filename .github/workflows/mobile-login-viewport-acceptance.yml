@@ -4,6 +4,12 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - 'users/js/login.js'
+      - 'js/nightcast-app.js'
+      - 'js/nightcast-player.js'
+      - 'css/nightcast-success-dialog.css'
+      - 'js/nightcast-success-dialog.js'
+      - 'tests/nightcast-shield-acceptance.cjs'
       - 'users/login.html'
       - 'css/nightcast-modal-viewport.css'
       - 'css/nightcast-shield.css'
@@ -16,6 +22,12 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - 'users/js/login.js'
+      - 'js/nightcast-app.js'
+      - 'js/nightcast-player.js'
+      - 'css/nightcast-success-dialog.css'
+      - 'js/nightcast-success-dialog.js'
+      - 'tests/nightcast-shield-acceptance.cjs'
       - 'users/login.html'
       - 'css/nightcast-modal-viewport.css'
       - 'css/nightcast-shield.css'

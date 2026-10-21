@@ -25,7 +25,12 @@ assert.ok(selectors[target], 'Unknown NIGHTCAST_MODAL_TARGET: ' + target);
   };
   try {
     for (const viewport of viewports) {
-      const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height }, reducedMotion: 'reduce' });
+      const context = await browser.newContext({
+        viewport: { width: viewport.width, height: viewport.height },
+        reducedMotion: 'reduce',
+        serviceWorkers: 'block'
+      });
+      const page = await context.newPage();
       // Keep viewport acceptance deterministic: local app assets and the mocked Shield API
       // are allowed; unrelated third-party fonts/widgets must not stall DOMContentLoaded.
       await page.route('**/*', async route => {
@@ -64,7 +69,7 @@ assert.ok(selectors[target], 'Unknown NIGHTCAST_MODAL_TARGET: ' + target);
       });
 
       try {
-        await page.goto(baseURL + selectors[target].url, { waitUntil: 'domcontentloaded', timeout: 20000 });
+        await page.goto(baseURL + selectors[target].url, { waitUntil: 'commit', timeout: 20000 });
         if (target === 'suggestion') {
           if (viewport.width <= 600) {
             await page.locator('#ncMenuToggle').waitFor({ state: 'visible', timeout: 12000 });

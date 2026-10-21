@@ -142,8 +142,12 @@ jobs:
           }
           if (!googleLoginPage.includes('id="googleLoginButton"') ||
               !googleLoginScript.includes('/public/openid/google') ||
-              !googleLoginScript.includes('NightCastGoogleAuth')) {
-            throw new Error('Canonical login must use Google sign-in and exchange the Google ID token with the NightCast API.');
+              !googleLoginScript.includes('NightCastGoogleAuth') ||
+              !googleLoginScript.includes('plugin.exchangeToken({ idToken })')) {
+            throw new Error('Canonical login must use the native Google plugin and native NightCast token exchange on Android.');
+          }
+          if (!fs.existsSync('login/index.html')) {
+            throw new Error('Canonical /login page must be packaged for the local Android WebView.');
           }
           if (!legacySmsPage.includes('url=/login') ||
               !legacySmsScript.includes('new URL("/login"')) {

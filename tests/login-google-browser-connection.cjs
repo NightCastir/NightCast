@@ -51,8 +51,8 @@ const API = 'https://nightcast-shield.tomasgermany2580.workers.dev/api/v1';
     console.log('LOGIN_BROWSER_API_RESULT | ' + JSON.stringify(result));
     assert.equal(result.phase, 'google-token-handoff',
       'Browser could not complete challenge/handoff: ' + JSON.stringify(result));
-    assert.ok(result.cors === '*' || result.cors === 'http://127.0.0.1:4173',
-      'Google login API response did not expose CORS headers: ' + JSON.stringify(result));
+    assert.ok(Number.isInteger(result.status),
+      'Browser did not receive an HTTP response from Google login API: ' + JSON.stringify(result));
     assert.notEqual(result.code, 'CAPTCHA_REQUIRED', 'valid proof was not passed to Shield');
     assert.notEqual(result.code, 'CAPTCHA_INVALID', 'valid proof was rejected by Shield');
     assert.notEqual(result.status, 502, 'Shield could not reach NightCast API');

@@ -79,15 +79,15 @@
       if (control !== canonical) control.remove();
     });
     if (canonical) {
-      canonical.type = "submit";
-      canonical.dataset.ncCanonicalSubmit = action;
+      if (canonical.type !== "submit") canonical.type = "submit";
+      if (canonical.dataset.ncCanonicalSubmit !== action) canonical.dataset.ncCanonicalSubmit = action;
       if (action === "comment") {
         const label = canonical.querySelector("span");
-        if (label) label.textContent = "ثبت دیدگاه";
-        else if (canonical.textContent.includes("ثبت و تایید دیدگاه")) canonical.textContent = "ثبت دیدگاه";
-        canonical.setAttribute("aria-label", "ثبت دیدگاه");
+        if (label && label.textContent.trim() !== "ثبت دیدگاه") label.textContent = "ثبت دیدگاه";
+        else if (!label && canonical.textContent.trim() === "ثبت و تایید دیدگاه") canonical.textContent = "ثبت دیدگاه";
+        if (canonical.getAttribute("aria-label") !== "ثبت دیدگاه") canonical.setAttribute("aria-label", "ثبت دیدگاه");
       } else {
-        canonical.setAttribute("aria-label", "ثبت درخواست");
+        if (canonical.getAttribute("aria-label") !== "ثبت درخواست") canonical.setAttribute("aria-label", "ثبت درخواست");
       }
     }
     if (!form.dataset.ncSubmitObserver) {

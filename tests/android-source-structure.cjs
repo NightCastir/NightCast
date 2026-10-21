@@ -24,6 +24,9 @@ assert.match(auth, /public void signIn\(PluginCall call\)/);
 assert.match(auth, /public void exchangeToken\(PluginCall call\)/, 'Native Android must exchange the Google token without WebView CORS');
 assert.ok(auth.includes('/public/openid/google'), 'Native exchange must use the canonical NightCast Google login endpoint');
 assert.match(fs.readFileSync('users/js/login.js', 'utf8'), /plugin\.exchangeToken\(\{ idToken \}\)/, 'Android login must use native token exchange rather than WebView fetch');
+const loginJs = fs.readFileSync('users/js/login.js', 'utf8');
+assert.doesNotMatch(loginJs, /if\s*\(\s*token\s*&&\s*user\s*\)\s*\{[\s\S]{0,350}window\.location\.replace/, 'Opening the explicit login page must not auto-redirect away based on possibly stale localStorage');
+assert.match(loginJs, /keeping sign-in button visible/, 'Android login must retain a visible sign-in button when the native bridge is missing');
 assert.match(workflow, /GENERATED_CONFIG="android\/app\/src\/main\/assets\/capacitor\.config\.json"/, 'CI must verify the configuration copied into the built Android project');
 
 console.log('PASS | One tracked Capacitor entry configuration');

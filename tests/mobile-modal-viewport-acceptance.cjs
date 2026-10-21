@@ -77,6 +77,26 @@ assert.ok(selectors[target], 'Unknown NIGHTCAST_MODAL_TARGET: ' + target);
         }
 
         if (target === 'comment' || target === 'suggestion') {
+          // Simulate a legacy script injecting the second submit control users reported.
+          await page.evaluate(kind => {
+            const form = document.getElementById(kind === 'comment' ? 'ncCommentsForm' : 'bookSummaryRequestForm');
+            if (!form) throw new Error('Form missing for duplicate-submit regression test');
+            const duplicate = document.createElement('button');
+            duplicate.type = 'submit';
+            duplicate.className = 'nc-legacy-duplicate-submit-test';
+            duplicate.textContent = kind === 'comment' ? 'ثبت و تایید دیدگاه' : 'ارسال درخواست پادکست پیشنهادی';
+            form.appendChild(duplicate);
+          }, target);
+          await page.waitForFunction(kind => {
+            const form = document.getElementById(kind === 'comment' ? 'ncCommentsForm' : 'bookSummaryRequestForm');
+            return form && form.querySelectorAll('button[type="submit"], input[type="submit"], button:not([type])').length === 1;
+          }, target, { timeout: 3000 });
+          const remainingSubmitControls = await page.locator(target === 'comment'
+            ? '#ncCommentsForm button[type="submit"], #ncCommentsForm input[type="submit"], #ncCommentsForm button:not([type])'
+            : '#bookSummaryRequestForm button[type="submit"], #bookSummaryRequestForm input[type="submit"], #bookSummaryRequestForm button:not([type])').count();
+          check(target + ' removes dynamically injected duplicate submit control', remainingSubmitControls === 1,
+            'remaining submit controls=' + remainingSubmitControls);
+
           const extraCaptchaButtons = await page.locator(target === 'comment'
             ? '#ncCommentsModal [data-nc-shield-continue]'
             : '#bookSummaryRequestModal [data-nc-shield-continue]').count();

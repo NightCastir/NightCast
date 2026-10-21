@@ -302,19 +302,21 @@ const Login = {
             return;
         }
 
-        /* Keep CAPTCHA as the single primary action until Google needs a fallback button. */
-        container.style.display = "none";
-        container.setAttribute("aria-hidden", "true");
+        /*
+         * Keep the Google action visible from the first render. The previous
+         * implementation hid this container and then inserted the fallback
+         * button inside it, so both the fallback and Google's rendered button
+         * remained invisible whenever GIS loaded slowly or successfully.
+         */
+        container.style.display = "flex";
+        container.removeAttribute("aria-hidden");
 
         /*
-         * Show a usable, visible placeholder immediately. GIS replaces it
-         * with Google's official button once the external library is ready.
-         * This prevents a blank login panel when Google's script is delayed.
+         * Show an immediate fallback while Google Identity Services loads.
+         * Once GIS is ready, setupGoogle replaces it with Google's official
+         * button in this same visible container.
          */
         if (!this.isAndroidApp()) {
-            /* Keep one clear primary action: the CAPTCHA continue button. */
-            container.style.display = "none";
-            container.setAttribute("aria-hidden", "true");
             container.innerHTML = "";
             const fallback = document.createElement("button");
             fallback.type = "button";

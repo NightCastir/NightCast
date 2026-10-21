@@ -77,7 +77,7 @@ function serveFile(requestPath, response) {
     });
     const runtimeErrors = [];
     page.on('pageerror', error => runtimeErrors.push(error.message));
-    await page.route('https://nightcast-api.tomasgermany2580.workers.dev/**', async route => {
+    await page.route('https://nightcast-shield.tomasgermany2580.workers.dev/**', async route => {
       const pathname = new URL(route.request().url()).pathname;
       if (pathname.endsWith('/public/podcasts')) {
         return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(fixture) });

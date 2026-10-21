@@ -15,7 +15,7 @@
                     "/users/data/podcasts.json",
 
                 API_BASE:
-                    "https://nightcast-api.tomasgermany2580.workers.dev/api/v1",
+                    "https://nightcast-shield.tomasgermany2580.workers.dev/api/v1",
 
                 CACHE_KEY:
                     "NightCastPodcastCache",
@@ -1134,7 +1134,9 @@ LOGOUT
 
                                 description: String(
                                     data?.description || ""
-                                ).trim()
+                                ).trim(),
+
+                                captcha: window.NightCastShield.getProof("suggestion")
                             })
                         }
                     );
@@ -1162,12 +1164,10 @@ LOGOUT
                     }
 
                     if (!response.ok) {
-
+                        if (response.status === 403 && window.NightCastShield) await window.NightCastShield.refresh("suggestion");
                         return {
                             success: false,
-                            message:
-                                result?.message ||
-                                "ثبت درخواست انجام نشد."
+                            message: result?.message || "ثبت درخواست انجام نشد."
                         };
                     }
 

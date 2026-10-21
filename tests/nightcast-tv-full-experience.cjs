@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const { chromium } = require('playwright');
 
 const SITE = 'https://nightcast.ir';
-const API = 'https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=1';
+const API = 'https://nightcast-shield.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=1';
 
 async function main() {
   const browser = await chromium.launch({ headless: true });

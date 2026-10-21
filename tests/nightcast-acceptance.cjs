@@ -255,7 +255,7 @@ report('0.5. Font Awesome uses self-hosted assets without CDN fallback', iconCdn
     // an uncaught internal assertion when the remote edge closes a streamed socket.
     try {
       const apiStartedAt = Date.now();
-      const apiUrl = 'https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=5';
+      const apiUrl = 'https://nightcast-shield.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=5';
       const apiResult = spawnSync('curl', [
         '--silent', '--show-error', '--fail', '--max-time', '12',
         '--write-out', '__HTTP_STATUS__%{http_code}', '-H', 'Accept: application/json', apiUrl
@@ -281,9 +281,9 @@ report('0.5. Font Awesome uses self-hosted assets without CDN fallback', iconCdn
       const staticFallback = JSON.parse(fs.readFileSync('users/data/podcasts.json', 'utf8'));
       const samplePodcastId = staticFallback.podcasts?.find(podcast => podcast?.status === 'active')?.id;
       const readOnlyEndpoints = [
-        { name: '2.1. Public podcast stats API responds successfully', url: 'https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts/stats', shape: payload => payload?.stats && typeof payload.stats === 'object' },
-        { name: '2.2. Public podcast comments API responds successfully', url: 'https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts/' + encodeURIComponent(samplePodcastId) + '/comments', shape: payload => Array.isArray(payload?.comments) },
-        { name: '2.3. Public podcast search API responds successfully', url: 'https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts/search?q=' + encodeURIComponent('\u067e\u0646\u062c\u0645\u06cc\u0646'), shape: payload => Array.isArray(payload?.podcasts) && payload.podcasts.length > 0 }
+        { name: '2.1. Public podcast stats API responds successfully', url: 'https://nightcast-shield.tomasgermany2580.workers.dev/api/v1/public/podcasts/stats', shape: payload => payload?.stats && typeof payload.stats === 'object' },
+        { name: '2.2. Public podcast comments API responds successfully', url: 'https://nightcast-shield.tomasgermany2580.workers.dev/api/v1/public/podcasts/' + encodeURIComponent(samplePodcastId) + '/comments', shape: payload => Array.isArray(payload?.comments) },
+        { name: '2.3. Public podcast search API responds successfully', url: 'https://nightcast-shield.tomasgermany2580.workers.dev/api/v1/public/podcasts/search?q=' + encodeURIComponent('\u067e\u0646\u062c\u0645\u06cc\u0646'), shape: payload => Array.isArray(payload?.podcasts) && payload.podcasts.length > 0 }
       ];
       for (const endpoint of readOnlyEndpoints) {
         try {
@@ -402,7 +402,7 @@ report('0.5. Font Awesome uses self-hosted assets without CDN fallback', iconCdn
       }
     ];
 
-    await page.route('https://nightcast-api.tomasgermany2580.workers.dev/**', async route => {
+    await page.route('https://nightcast-shield.tomasgermany2580.workers.dev/**', async route => {
       apiMockHits++;
       const url = new URL(route.request().url());
       const pathname = url.pathname;

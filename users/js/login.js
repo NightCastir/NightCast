@@ -25,7 +25,7 @@ Google:
 ================================================== */
 
 const API_URL =
-"https://nightcast-api.tomasgermany2580.workers.dev/api/v1";
+"https://nightcast-shield.tomasgermany2580.workers.dev/api/v1";
 
 
 const GOOGLE_CLIENT_ID =
@@ -987,7 +987,7 @@ const Login = {
                     {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ idToken }),
+                        body: JSON.stringify({ idToken, captcha: window.NightCastShield.getProof("login") }),
                         signal: controller.signal
                     }
                 );
@@ -1031,6 +1031,10 @@ const Login = {
             CHECK API RESULT
             ==========================================
             */
+
+            if (!result.ok && result.status === 403 && window.NightCastShield) {
+                await window.NightCastShield.refresh("login");
+            }
 
             if(
                 !result.ok ||

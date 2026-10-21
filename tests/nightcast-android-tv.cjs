@@ -4,7 +4,7 @@ const fs = require('node:fs');
 fs.mkdirSync('artifacts', { recursive: true });
 
 const BASE = process.env.NIGHTCAST_BASE_URL || 'https://nightcast.ir';
-const API_URL = process.env.NIGHTCAST_API_URL || 'https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=5';
+const API_URL = process.env.NIGHTCAST_API_URL || 'https://nightcast-shield.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=5';
 const results = [];
 function check(name, ok, detail = '') {
   results.push({ name, ok: !!ok, detail });

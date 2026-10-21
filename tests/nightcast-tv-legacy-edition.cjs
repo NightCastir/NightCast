@@ -7,7 +7,7 @@ const path = require('node:path');
 const { chromium } = require('playwright');
 
 const ROOT = process.cwd();
-const API = 'https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=1';
+const API = 'https://nightcast-shield.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=1';
 
 async function main() {
   const source = fs.readFileSync('tv-lite.html', 'utf8');

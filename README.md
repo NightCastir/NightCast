@@ -235,7 +235,7 @@ Important: The presence of these secrets in GitHub does not prove that release s
 - تجربه کاربران و پادکست‌ها: پوشه `users/` همراه با HTML، CSS، JavaScript و داده `users/data/podcasts.json` و XML.
 - احراز هویت جداگانه در مسیرهای ریشه و کاربران: `js/auth.js`، `users/js/auth.js` و فایل‌های ورود زیر `auth/` و `users/`.
 - کلاینت API: `users/js/api.js` که به آدرس Worker زیر درخواست می‌فرستد:
-  `https://nightcast-api.tomasgermany2580.workers.dev/api/v1`
+  `https://nightcast-shield.tomasgermany2580.workers.dev/api/v1`
 - تجربه وب به‌صورت مرورگری ارائه می‌شود؛ manifest و Service Worker های PWA حذف شده‌اند تا سایت به‌عنوان وب‌سایت عادی باز شود.
 - Android: Capacitor 7 در `package.json` و Workflow ساخت APK در `.github/workflows/build-android.yml`.
 - رسانه: فایل‌های صوتی و کاورها از مخزن جداگانه `NightCast-Media` بارگیری می‌شوند.

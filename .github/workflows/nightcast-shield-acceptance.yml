@@ -1,0 +1,100 @@
+name: NightCast Shield CAPTCHA Acceptance
+
+on:
+  push:
+    branches:
+      - feat/nightcast-shield-captcha
+      - main
+    paths:
+      - 'index.html'
+      - 'users/login.html'
+      - 'js/nightcast-shield.js'
+      - 'css/nightcast-shield.css'
+      - 'js/nightcast-app.js'
+      - 'js/nightcast-player.js'
+      - 'users/js/login.js'
+      - 'js/auth.js'
+      - 'users/js/api.js'
+      - 'tv-lite.html'
+      - 'workers/nightcast-shield.js'
+      - 'tests/nightcast-shield-acceptance.cjs'
+      - '.github/workflows/nightcast-shield-acceptance.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'users/login.html'
+      - 'js/nightcast-shield.js'
+      - 'css/nightcast-shield.css'
+      - 'js/nightcast-app.js'
+      - 'js/nightcast-player.js'
+      - 'users/js/login.js'
+      - 'js/auth.js'
+      - 'users/js/api.js'
+      - 'tv-lite.html'
+      - 'workers/nightcast-shield.js'
+      - 'tests/nightcast-shield-acceptance.cjs'
+      - '.github/workflows/nightcast-shield-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-integrity:
+    name: Static wiring and JavaScript syntax
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Parse changed JavaScript
+        run: |
+          node --check js/nightcast-shield.js
+          node --check workers/nightcast-shield.js
+          node --check users/js/login.js
+          node --check js/nightcast-app.js
+          node --check js/nightcast-player.js
+      - name: Verify CAPTCHA wiring
+        run: node tests/nightcast-shield-acceptance.cjs --static
+
+  login-captcha:
+    name: Login CAPTCHA and single-use verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node tests/nightcast-shield-acceptance.cjs
+        env:
+          NIGHTCAST_SHIELD_ACTION: login
+
+  comments-captcha:
+    name: Comments CAPTCHA and single-use verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node tests/nightcast-shield-acceptance.cjs
+        env:
+          NIGHTCAST_SHIELD_ACTION: comment
+
+  suggestions-captcha:
+    name: Podcast suggestion CAPTCHA and single-use verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node tests/nightcast-shield-acceptance.cjs
+        env:
+          NIGHTCAST_SHIELD_ACTION: suggestion

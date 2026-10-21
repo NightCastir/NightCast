@@ -1,0 +1,42 @@
+name: NightCast Google Login API Handoff Acceptance
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'users/login.html'
+      - 'users/js/login.js'
+      - 'users/js/auth.js'
+      - 'js/nightcast-shield.js'
+      - 'tests/login-google-live-origin.cjs'
+      - '.github/workflows/login-google-api-handoff-acceptance.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'users/login.html'
+      - 'users/js/login.js'
+      - 'users/js/auth.js'
+      - 'js/nightcast-shield.js'
+      - 'tests/login-google-live-origin.cjs'
+      - '.github/workflows/login-google-api-handoff-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  google-api-handoff:
+    name: Live-origin CORS, CAPTCHA proof and Google token validation handoff
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Verify live origin reaches Google token validation
+        run: node tests/login-google-live-origin.cjs

@@ -1,0 +1,59 @@
+name: NightCast Google Login Mobile UI Acceptance
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'users/login.html'
+      - 'users/css/**'
+      - 'css/nightcast-modal-viewport.css'
+      - 'css/nightcast-shield.css'
+      - 'js/nightcast-shield.js'
+      - 'users/js/login.js'
+      - 'tests/mobile-modal-viewport-acceptance.cjs'
+      - '.github/workflows/login-google-mobile-ui-acceptance.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'users/login.html'
+      - 'users/css/**'
+      - 'css/nightcast-modal-viewport.css'
+      - 'css/nightcast-shield.css'
+      - 'js/nightcast-shield.js'
+      - 'users/js/login.js'
+      - 'tests/mobile-modal-viewport-acceptance.cjs'
+      - '.github/workflows/login-google-mobile-ui-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  login-mobile-ui:
+    name: Login primary action visibility and mobile viewport fit
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Start local static server
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/nightcast-login-http.log 2>&1 &
+          for _ in $(seq 1 40); do
+            if curl --silent --fail http://127.0.0.1:4173/users/login.html >/dev/null; then
+              exit 0
+            fi
+            sleep 0.25
+          done
+          cat /tmp/nightcast-login-http.log
+          exit 1
+      - name: Test login controls across narrow and short viewports
+        run: node tests/mobile-modal-viewport-acceptance.cjs
+        env:
+          NIGHTCAST_MODAL_TARGET: login

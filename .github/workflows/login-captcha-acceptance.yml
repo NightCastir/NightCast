@@ -1,0 +1,40 @@
+name: NightCast Login CAPTCHA Acceptance
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'users/login.html'
+      - 'users/js/login.js'
+      - 'js/nightcast-shield.js'
+      - 'workers/nightcast-shield.js'
+      - 'tests/nightcast-shield-acceptance.cjs'
+      - '.github/workflows/login-captcha-acceptance.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'users/login.html'
+      - 'users/js/login.js'
+      - 'js/nightcast-shield.js'
+      - 'workers/nightcast-shield.js'
+      - 'tests/nightcast-shield-acceptance.cjs'
+      - '.github/workflows/login-captcha-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  login-captcha:
+    name: Login challenge, wrong answer, valid proof and replay protection
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate live login CAPTCHA contract
+        run: node tests/nightcast-shield-acceptance.cjs
+        env:
+          NIGHTCAST_SHIELD_ACTION: login

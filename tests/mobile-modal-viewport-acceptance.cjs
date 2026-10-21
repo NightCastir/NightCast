@@ -45,7 +45,15 @@ assert.ok(selectors[target], 'Unknown NIGHTCAST_MODAL_TARGET: ' + target);
           body: JSON.stringify({ success: true, id: '1234567890abcdef1234567890abcdef', question: '3 + 4 = ?', action: actionName })
         });
       });
-      await page.route('https://accounts.google.com/**', route => route.abort().catch(() => {}));
+      if (target === 'login') {
+        await page.route('https://accounts.google.com/gsi/client?hl=fa', route => route.fulfill({
+          status: 200,
+          contentType: 'application/javascript',
+          body: `window.google={accounts:{id:{initialize(){},renderButton(container){const button=document.createElement('button');button.type='button';button.textContent='ادامه از طریق گوگل';button.style.minHeight='44px';button.style.width='320px';container.appendChild(button);},prompt(){}}}};`
+        }));
+      } else {
+        await page.route('https://accounts.google.com/**', route => route.abort().catch(() => {}));
+      }
       await page.addInitScript(() => {
         if (location.origin === 'http://127.0.0.1:4173' && (location.pathname === '/' || location.pathname === '/index.html' || location.pathname === '/podcasts/')) {
           localStorage.setItem('NightCastToken', 'nightcast-mobile-layout-test');

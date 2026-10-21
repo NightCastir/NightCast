@@ -5,8 +5,8 @@ const config: CapacitorConfig = {
   appName: 'NightCast',
   webDir: 'www',
   server: {
-    // Single source of truth for the Android WebView entry point.
-    url: 'https://www.nightcast.ir',
+    // Production Android must load bundled assets so the Capacitor native bridge
+    // and NightCastGoogleAuth plugin are available. server.url is for live reload only.
     cleartext: false,
     androidScheme: 'https',
     allowNavigation: ['www.nightcast.ir', 'nightcast.ir']

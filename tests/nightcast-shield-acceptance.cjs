@@ -76,6 +76,13 @@ function staticChecks() {
   assert.match(loginJs, /getProof\("login"\)/);
   assert.match(worker, /CAPTCHA_STORE/);
   assert.match(worker, /protectedAction/);
+  assert.match(widget, /data-nc-shield-continue/);
+  assert.match(widget, /requestSubmit\(\)/);
+  assert.match(loginJs, /continueWithCaptcha/);
+  assert.match(index, /id="ncCommentsSubmit"/);
+  assert.match(index, /id="bookSummaryRequestSubmit"/);
+  assert.match(read('css/nightcast-shield.css'), /--nc-theme-primary/);
+  assert.match(read('css/nightcast-shield.css'), /max-width:480px/);
   assert.doesNotMatch(widget, /google\.com\/recaptcha|hcaptcha\.com|turnstile\.cloudflare\.com/i);
   console.log('PASS | static wiring for login, comments, suggestion, and self-hosted Shield');
 }

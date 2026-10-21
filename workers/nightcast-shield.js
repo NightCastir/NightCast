@@ -19,7 +19,6 @@ async function hmac(value, secret) {
 }
 function protectedAction(path, method) {
   if (method !== "POST") return null;
-  if (path === "/api/v1/public/openid/google") return "login";
   if (path.endsWith("/comments")) return "comment";
   if (path.endsWith("/book-summary-requests")) return "suggestion";
   return null;
@@ -69,7 +68,7 @@ export default {
       if (!env.CAPTCHA_STORE || !env.NIGHTCAST_CAPTCHA_SECRET || !env.NIGHTCAST_CAPTCHA_PEPPER) return json({ success: false, message: "سامانه تأیید امنیتی موقتاً آماده نیست." }, 503);
       const body = await request.json().catch(() => ({}));
       const action = String(body.action || "");
-      if (!["login", "comment", "suggestion"].includes(action)) return json({ success: false, message: "نوع درخواست معتبر نیست." }, 400);
+      if (!["comment", "suggestion"].includes(action)) return json({ success: false, message: "نوع درخواست معتبر نیست." }, 400);
       const ip = request.headers.get("cf-connecting-ip") || "unknown";
       const ipHash = await hmac(ip, env.NIGHTCAST_CAPTCHA_SECRET);
       const rateId = env.CAPTCHA_STORE.idFromName("rate:" + ipHash);

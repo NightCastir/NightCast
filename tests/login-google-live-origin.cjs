@@ -68,8 +68,9 @@ const API = 'https://nightcast-shield.tomasgermany2580.workers.dev/api/v1';
     console.log('LIVE_ORIGIN_LOGIN_RESULT | ' + JSON.stringify(result));
     assert.equal(result.phase, 'google-token-handoff',
       'The live website could not complete the CAPTCHA-to-login API handoff: ' + JSON.stringify(result));
-    assert.equal(result.allowOrigin, result.origin,
-      'The live API response must explicitly allow the NightCast website origin: ' + JSON.stringify(result));
+    // Fetch exposes only CORS-safelisted response headers to page JavaScript;
+    // Access-Control-Allow-Origin is intentionally not readable via response.headers.
+    // Reaching upstream token validation from the live origin is the browser-level CORS proof.
     assert.equal(result.status, 401,
       'An intentionally invalid Google token should reach the upstream validator and return HTTP 401: ' + JSON.stringify(result));
     assert.match(result.message || '', /invalid google token/i,

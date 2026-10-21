@@ -245,3 +245,16 @@ html body .player .player-inner .controls > #prevBtn{order:1!important}
 html body .player .player-inner .controls > #playButton{order:2!important}
 html body .player .player-inner .controls > #nextBtn{order:3!important}
 html body .player .player-inner .controls > .nc-audio-visualizer-wrap--next{order:4!important}
+
+
+/* Numeric feedback while an MP3 is connecting/buffering. Keep it lightweight and theme-safe. */
+.player{position:fixed}
+.nc-audio-load-feedback{position:absolute;z-index:5;inset-inline:16px;bottom:5px;display:none;pointer-events:none;font-family:inherit}
+.nc-audio-load-feedback.is-visible{display:block}
+.nc-audio-load-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:3px;font-size:10px;line-height:1.25;color:#cfe5ff;text-shadow:0 1px 5px rgba(0,0,0,.6)}
+.nc-audio-load-percent{direction:rtl;flex:0 0 auto;font-variant-numeric:tabular-nums;font-weight:800;color:#f0d49a}
+.nc-audio-load-track{height:3px;width:100%;overflow:hidden;border-radius:999px;background:rgba(220,235,255,.18);box-shadow:0 0 0 1px rgba(255,255,255,.04)}
+.nc-audio-load-fill{display:block;width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,#63d9ff,#a8a4ff 58%,#f0d49a);box-shadow:0 0 9px rgba(99,217,255,.65);transition:width .22s ease}
+.nc-audio-load-feedback:not(.is-visible) .nc-audio-load-meta{display:none}
+@media(max-width:640px){.nc-audio-load-feedback{inset-inline:12px;bottom:4px}.nc-audio-load-meta{font-size:9px}}
+@media(prefers-reduced-motion:reduce){.nc-audio-load-fill{transition:none}}

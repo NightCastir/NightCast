@@ -18,8 +18,8 @@ assert.match(login, /const captchaProof\s*=\s*this\.getCaptchaProof\(\)/,
   'Google token handoff must use proof recovery rather than dereferencing NightCastShield directly');
 assert.match(login, /clearCaptchaProof\s*\(\)/,
   'Single-use proof must be cleared after the server responds');
-assert.match(html, /login\.js\?v=20261021-google-return-proof1/,
-  'Login page must use the cache-busted fix');
+assert.match(html, /login\.js\?v=20261022-visible-captcha-gated-google2/,
+  'Login page must use the current cache-busted gated-login controller');
 assert.doesNotMatch(login, /window\.NightCastShield\.getProof\(["']login["']\)/,
   'Unsafe direct Shield getProof dereference remains');
 

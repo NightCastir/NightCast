@@ -1,10 +1,11 @@
-name: NightCast Google Login Return Proof Acceptance
+name: NightCast Google Return Without CAPTCHA Acceptance
 
 on:
   push:
     branches: [main]
     paths:
       - 'users/login.html'
+      - 'workers/nightcast-shield.js'
       - 'users/js/login.js'
       - 'tests/login-google-return-proof-acceptance.cjs'
       - 'tests/login-google-return-proof-static-acceptance.cjs'

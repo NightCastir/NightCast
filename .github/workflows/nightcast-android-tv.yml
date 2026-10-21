@@ -54,7 +54,7 @@ jobs:
       - name: Verify published routes in Chromium and smoke-test live podcast API
         env:
           NIGHTCAST_BASE_URL: https://nightcast.ir
-          NIGHTCAST_API_URL: https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=5
+          NIGHTCAST_API_URL: https://nightcast-shield.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=1&limit=5
           STRICT_LIVE_ROUTES: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: |
           node <<'NODE'

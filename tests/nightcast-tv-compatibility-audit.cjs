@@ -1,5 +1,5 @@
 const SITE = 'https://nightcast.ir';
-const API = 'https://nightcast-api.tomasgermany2580.workers.dev/api/v1';
+const API = 'https://nightcast-shield.tomasgermany2580.workers.dev/api/v1';
 const findings = [];
 const checks = [];
 const add = (name, ok, detail) => {

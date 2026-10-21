@@ -2,6 +2,11 @@
   "use strict";
   const API_BASE = "https://nightcast-shield.tomasgermany2580.workers.dev/api/v1";
   const widgets = new Map();
+  const labels = {
+    login: { action: "ادامه با Google", hint: "پس از پاسخ، ادامه ورود با Google را انتخاب کنید." },
+    comment: { action: "تأیید و ثبت دیدگاه", hint: "پاسخ را وارد کنید و برای ثبت دیدگاه ادامه دهید." },
+    suggestion: { action: "تأیید و ثبت درخواست", hint: "پاسخ را وارد کنید و درخواست خود را ثبت کنید." }
+  };
 
   async function load(widget) {
     const action = widget.dataset.ncShield;
@@ -9,9 +14,12 @@
     const question = widget.querySelector("[data-nc-shield-question]");
     const answer = widget.querySelector("[data-nc-shield-answer]");
     const refresh = widget.querySelector("[data-nc-shield-refresh]");
+    const proceed = widget.querySelector("[data-nc-shield-continue]");
     refresh.disabled = true;
+    proceed.disabled = true;
+    widget.dataset.state = "loading";
     status.textContent = "در حال دریافت پرسش امنیتی…";
-    widgets.set(action, { loading: true });
+    widgets.set(action, { loading: true, widget });
     try {
       const response = await fetch(API_BASE + "/captcha/challenge", {
         method: "POST",
@@ -25,13 +33,16 @@
       question.textContent = data.question;
       answer.value = "";
       answer.disabled = false;
-      status.textContent = "برای ادامه، پاسخ را وارد کنید.";
+      proceed.disabled = false;
+      widget.dataset.state = "ready";
+      status.textContent = labels[action].hint;
       status.dataset.state = "ready";
     } catch (error) {
       widgets.set(action, null);
       question.textContent = "پرسش فعلاً در دسترس نیست";
       status.textContent = error.message || "اتصال را بررسی کنید و دوباره تلاش کنید.";
       status.dataset.state = "error";
+      widget.dataset.state = "error";
       answer.disabled = true;
     } finally {
       refresh.disabled = false;
@@ -51,13 +62,50 @@
     return { id: current.id, answer };
   }
 
+  function setStatus(widget, message, state) {
+    const status = widget.querySelector("[data-nc-shield-status]");
+    if (status) {
+      status.textContent = message;
+      status.dataset.state = state || "ready";
+    }
+  }
+
+  async function continueAction(widget) {
+    const action = widget.dataset.ncShield;
+    const proceed = widget.querySelector("[data-nc-shield-continue]");
+    try {
+      getProof(action);
+      if (action === "login") {
+        setStatus(widget, "در حال ادامه ورود با Google…", "ready");
+        if (window.NightCastLogin && typeof window.NightCastLogin.continueWithCaptcha === "function") {
+          await window.NightCastLogin.continueWithCaptcha();
+          return;
+        }
+        setStatus(widget, "سرویس ورود هنوز آماده نیست؛ چند لحظه دیگر تلاش کنید.", "error");
+        return;
+      }
+      const form = widget.closest("form");
+      if (!form) throw new Error("فرم مربوط به این عملیات پیدا نشد؛ صفحه را تازه‌سازی کنید.");
+      if (typeof form.requestSubmit === "function") form.requestSubmit();
+      else {
+        const submit = form.querySelector('button[type="submit"],input[type="submit"]');
+        if (submit) submit.click();
+        else throw new Error("دکمه ثبت فرم پیدا نشد.");
+      }
+    } catch (error) {
+      setStatus(widget, error.message || "لطفاً پاسخ را بررسی کنید و دوباره تلاش کنید.", "error");
+    } finally {
+      if (proceed) proceed.disabled = false;
+    }
+  }
+
   function init() {
     document.querySelectorAll("[data-nc-shield]").forEach(widget => {
       const action = widget.dataset.ncShield;
-      if (!["login", "comment", "suggestion"].includes(action)) return;
+      if (!labels[action]) return;
       const title = document.createElement("div");
       title.className = "nc-shield-title";
-      title.innerHTML = '<span aria-hidden="true">🛡️</span><span>تأیید امنیتی NightCast</span>';
+      title.innerHTML = '<span class="nc-shield-emblem" aria-hidden="true">✦</span><span>تأیید امنیتی NightCast</span>';
       const questionRow = document.createElement("div");
       questionRow.className = "nc-shield-question-row";
       const question = document.createElement("strong");
@@ -77,19 +125,35 @@
       input.placeholder = "مثلاً ۹";
       input.setAttribute("aria-label", "پاسخ پرسش امنیتی");
       input.dataset.ncShieldAnswer = "";
+      input.addEventListener("keydown", event => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          const proceed = widget.querySelector("[data-nc-shield-continue]");
+          if (proceed && !proceed.disabled) proceed.click();
+        }
+      });
       label.append(labelText, input);
+      const actions = document.createElement("div");
+      actions.className = "nc-shield-actions";
+      const proceed = document.createElement("button");
+      proceed.type = "button";
+      proceed.className = "nc-shield-continue";
+      proceed.dataset.ncShieldContinue = "";
+      proceed.textContent = labels[action].action;
+      proceed.addEventListener("click", () => continueAction(widget));
       const refresh = document.createElement("button");
       refresh.type = "button";
       refresh.className = "nc-shield-refresh";
       refresh.dataset.ncShieldRefresh = "";
       refresh.textContent = "پرسش تازه";
       refresh.addEventListener("click", () => load(widget));
+      actions.append(proceed, refresh);
       const status = document.createElement("p");
       status.className = "nc-shield-status";
       status.dataset.ncShieldStatus = "";
       status.setAttribute("role", "status");
       status.setAttribute("aria-live", "polite");
-      widget.replaceChildren(title, questionRow, label, refresh, status);
+      widget.replaceChildren(title, questionRow, label, actions, status);
       load(widget);
     });
   }

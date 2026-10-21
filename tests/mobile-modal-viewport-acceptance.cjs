@@ -11,8 +11,8 @@ const viewports = [
 ];
 const selectors = {
   login: { url: '/users/login.html', actions: [{ selector: 'body.cosmic-login [data-nc-shield-continue]', label: 'login CAPTCHA continue' }], scroll: 'document.scrollingElement' },
-  comment: { url: '/', actions: [{ selector: '#ncCommentsModal [data-nc-shield-continue]', label: 'comment CAPTCHA continue' }, { selector: '#ncCommentsSubmit', label: 'comment submit' }], scroll: '#ncCommentsModal' },
-  suggestion: { url: '/', actions: [{ selector: '#bookSummaryRequestModal [data-nc-shield-continue]', label: 'suggestion CAPTCHA continue' }, { selector: '#bookSummaryRequestSubmit', label: 'suggestion submit' }], scroll: '#bookSummaryRequestModal .book-summary-request-panel' }
+  comment: { url: '/', actions: [{ selector: '#ncCommentsSubmit', label: 'single comment submit' }], scroll: '#ncCommentsModal' },
+  suggestion: { url: '/', actions: [{ selector: '#bookSummaryRequestSubmit', label: 'single suggestion submit' }], scroll: '#bookSummaryRequestModal .book-summary-request-panel' }
 };
 assert.ok(selectors[target], 'Unknown NIGHTCAST_MODAL_TARGET: ' + target);
 
@@ -74,6 +74,14 @@ assert.ok(selectors[target], 'Unknown NIGHTCAST_MODAL_TARGET: ' + target);
             modal.setAttribute('aria-hidden', 'false');
             document.body.classList.add('nc-comments-open');
           });
+        }
+
+        if (target === 'comment' || target === 'suggestion') {
+          const extraCaptchaButtons = await page.locator(target === 'comment'
+            ? '#ncCommentsModal [data-nc-shield-continue]'
+            : '#bookSummaryRequestModal [data-nc-shield-continue]').count();
+          check(target + ' has exactly one submission action after CAPTCHA', extraCaptchaButtons === 0,
+            'extra CAPTCHA submit buttons=' + extraCaptchaButtons);
         }
 
         for (const actionSpec of selectors[target].actions) {

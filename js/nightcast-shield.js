@@ -4,8 +4,8 @@
   const widgets = new Map();
   const labels = {
     login: { action: "ادامه با Google", hint: "پس از پاسخ، ادامه ورود با Google را انتخاب کنید." },
-    comment: { action: "تأیید و ثبت دیدگاه", hint: "پاسخ را وارد کنید و برای ثبت دیدگاه ادامه دهید." },
-    suggestion: { action: "تأیید و ثبت درخواست", hint: "پاسخ را وارد کنید و درخواست خود را ثبت کنید." }
+    comment: { hint: "پاسخ را وارد کنید؛ سپس فقط یک بار روی «ثبت دیدگاه» بزنید." },
+    suggestion: { hint: "پاسخ را وارد کنید؛ سپس فقط یک بار روی «ثبت درخواست» بزنید." }
   };
 
   async function load(widget) {

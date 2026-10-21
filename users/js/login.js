@@ -39,7 +39,53 @@ const GOOGLE_CLIENT_ID =
 const Login = {
 
     googleReady:false,
+    captchaProof:null,
+    captchaProofStorageKey:"nightcast.login.captchaProof.v1",
 
+    /* ==================================================
+       CAPTCHA PROOF SURVIVES GOOGLE RETURN / WEBVIEW RESUME
+    ================================================== */
+    rememberCaptchaProof(proof){
+        if (!proof || typeof proof.id !== "string" || !proof.id || typeof proof.answer !== "string" || !proof.answer) {
+            throw new Error("پاسخ امنیتی معتبر نیست؛ لطفاً پرسش امنیتی را دوباره پاسخ دهید.");
+        }
+        this.captchaProof = { id: proof.id, answer: proof.answer };
+        try {
+            sessionStorage.setItem(this.captchaProofStorageKey, JSON.stringify(this.captchaProof));
+        } catch (error) {
+            console.warn("Could not persist login CAPTCHA proof for Google return.", error);
+        }
+        return this.captchaProof;
+    },
+
+    getCaptchaProof(){
+        if (this.captchaProof && this.captchaProof.id && this.captchaProof.answer) {
+            return this.captchaProof;
+        }
+        try {
+            const saved = sessionStorage.getItem(this.captchaProofStorageKey);
+            if (saved) {
+                const proof = JSON.parse(saved);
+                if (proof && typeof proof.id === "string" && proof.id && typeof proof.answer === "string" && proof.answer) {
+                    this.captchaProof = { id: proof.id, answer: proof.answer };
+                    return this.captchaProof;
+                }
+                sessionStorage.removeItem(this.captchaProofStorageKey);
+            }
+        } catch (error) {
+            console.warn("Could not restore login CAPTCHA proof after Google return.", error);
+        }
+        const shield = window.NightCastShield;
+        if (shield && typeof shield.getProof === "function") {
+            return this.rememberCaptchaProof(shield.getProof("login"));
+        }
+        throw new Error("پاسخ امنیتی پس از بازگشت از Google در دسترس نیست. لطفاً پرسش امنیتی را تازه کنید و دوباره ادامه دهید.");
+    },
+
+    clearCaptchaProof(){
+        this.captchaProof = null;
+        try { sessionStorage.removeItem(this.captchaProofStorageKey); } catch (_) {}
+    },
 
     /* ==================================================
        POST-LOGIN RETURN TARGET
@@ -370,7 +416,11 @@ const Login = {
     ================================================== */
     async continueWithCaptcha(){
         try {
-            window.NightCastShield.getProof("login");
+            const shield = window.NightCastShield;
+            if (!shield || typeof shield.getProof !== "function") {
+                throw new Error("سامانه تأیید امنیتی بارگذاری نشده است. صفحه را تازه‌سازی کنید و دوباره تلاش کنید.");
+            }
+            this.rememberCaptchaProof(shield.getProof("login"));
         } catch(error) {
             this.showError(error.message || "لطفاً ابتدا پاسخ پرسش امنیتی را وارد کنید.");
             return;
@@ -1029,9 +1079,13 @@ const Login = {
             ==========================================
             */
 
-            /* Read CAPTCHA proof before the fetch try/catch so a missing or expired
-               challenge is never mislabeled as an internet/network failure. */
-            const captchaProof = window.NightCastShield.getProof("login");
+            /*
+             * Google may open an account chooser or resume this page after a
+             * redirect/WebView pause. The in-memory Shield widget is not a
+             * reliable source after that transition; restore the exact proof
+             * captured before Google was opened, then fall back to the live widget.
+             */
+            const captchaProof = this.getCaptchaProof();
             this.showLoader();
 
 
@@ -1115,7 +1169,14 @@ const Login = {
             ==========================================
             */
 
-            if (!result.ok && result.status === 403 && window.NightCastShield) {
+            if (result.ok || result.status === 401 || result.status === 403) {
+                // The proof is single-use at the Shield/API boundary. Never reuse
+                // it after the server has returned an authoritative HTTP response.
+                this.clearCaptchaProof();
+            }
+
+            if (!result.ok && result.status === 403 && window.NightCastShield &&
+                typeof window.NightCastShield.refresh === "function") {
                 await window.NightCastShield.refresh("login");
             }
 

@@ -108,7 +108,7 @@ jobs:
           for f in style.css app.js favicon.ico favicon.png favicon.png logo.png; do
             [ ! -f "$f" ] || cp "$f" www/
           done
-          for d in css js assets auth .well-known; do
+          for d in css js assets auth login .well-known; do
             [ ! -d "$d" ] || cp -R "$d" www/
           done
           [ ! -d users ] || cp -R users/. www/users/

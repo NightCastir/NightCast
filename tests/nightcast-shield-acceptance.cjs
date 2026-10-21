@@ -80,7 +80,7 @@ function staticChecks() {
   assert.match(widget, /requestSubmit\(\)/);
   assert.match(widget, /normalizeSubmitControls/);
   assert.match(widget, /ncCanonicalSubmit/);
-  assert.match(index, /nightcast-shield\\.js\\?v=3/);
+  assert.match(index, /nightcast-shield\.js\?v=3/);
   assert.match(index, /id="ncCommentsSubmit"[^>]*type="submit"|id="ncCommentsSubmit"[^>]*type="submit"/);
   assert.match(index, /id="bookSummaryRequestSubmit"/);
   assert.match(loginJs, /continueWithCaptcha/);

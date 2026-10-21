@@ -355,6 +355,55 @@ const Login = {
 
 
     /* ==================================================
+       CAPTCHA → GOOGLE CONTINUE
+    ================================================== */
+    async continueWithCaptcha(){
+        try {
+            window.NightCastShield.getProof("login");
+        } catch(error) {
+            this.showError(error.message || "لطفاً ابتدا پاسخ پرسش امنیتی را وارد کنید.");
+            return;
+        }
+
+        if (this.isAndroidApp()) {
+            const nativeButton = document.getElementById("nativeGoogleLogin");
+            if (nativeButton) {
+                nativeButton.click();
+                return;
+            }
+            this.showError("دکمه ورود Google هنوز آماده نیست. چند لحظه صبر کنید و دوباره تلاش کنید.");
+            return;
+        }
+
+        if (window.google && window.google.accounts && window.google.accounts.id) {
+            const status = document.querySelector('[data-nc-shield="login"] [data-nc-shield-status]');
+            window.google.accounts.id.prompt((notification) => {
+                if (notification && (notification.isNotDisplayed() || notification.isSkippedMoment())) {
+                    if (status) {
+                        status.textContent = "پاسخ امنیتی آماده است؛ برای تکمیل ورود، دکمه رسمی Google را انتخاب کنید.";
+                        status.dataset.state = "ready";
+                    }
+                    const container = document.getElementById("googleLoginButton");
+                    if (container) {
+                        container.scrollIntoView({ behavior: "smooth", block: "center" });
+                        const button = container.querySelector("button");
+                        if (button) button.focus({ preventScroll: true });
+                    }
+                }
+            });
+            return;
+        }
+
+        const status = document.querySelector('[data-nc-shield="login"] [data-nc-shield-status]');
+        if (status) {
+            status.textContent = "سرویس Google هنوز آماده نیست. چند لحظه صبر کنید یا دکمه Google پایین صفحه را انتخاب کنید.";
+            status.dataset.state = "error";
+        }
+        const container = document.getElementById("googleLoginButton");
+        if (container) container.scrollIntoView({ behavior: "smooth", block: "center" });
+    },
+
+    /* ==================================================
        BROWSER GOOGLE GIS
     ================================================== */
 

@@ -3316,6 +3316,16 @@ if (bookSummaryRequestForm) {
                     }
 
 
+                    try {
+                        window.NightCastShield.getProof("suggestion");
+                    } catch (error) {
+                        showBookSummaryRequestMessage(
+                            error.message || "لطفاً پاسخ پرسش امنیتی را وارد کنید.",
+                            "error"
+                        );
+                        return;
+                    }
+
                     const originalButtonHTML =
                         bookSummaryRequestSubmit.innerHTML;
 
@@ -3361,21 +3371,20 @@ if (bookSummaryRequestForm) {
                         }
 
 
-                        showBookSummaryRequestMessage(
-                            result.message ||
-                            "درخواست شما با موفقیت ثبت شد.",
-                            "success"
-                        );
-
-
                         bookSummaryRequestForm.reset();
 
-
-                        setTimeout(() => {
-
-                            closeBookSummaryRequestModal();
-
-                        }, 1800);
+                        if (window.NightCastSuccessDialog && typeof window.NightCastSuccessDialog.show === "function") {
+                            await window.NightCastSuccessDialog.show({
+                                title: "درخواست ثبت شد",
+                                message: result.message || "درخواست پادکست پیشنهادی شما با موفقیت ثبت شد. از پیشنهاد ارزشمندتان سپاسگزاریم."
+                            });
+                        } else {
+                            showBookSummaryRequestMessage(
+                                result.message || "درخواست شما با موفقیت ثبت شد.",
+                                "success"
+                            );
+                        }
+                        closeBookSummaryRequestModal();
 
 
                     }

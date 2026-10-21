@@ -30,7 +30,7 @@ jobs:
         run: |
           set -eu
           for attempt in $(seq 1 60); do
-            html="$(curl --silent --show-error --location --max-time 15 'https://nightcast.ir/users/login.html?nc_deploy_check=\${GITHUB_SHA}' || true)"
+            html="$(curl --silent --show-error --location --max-time 15 "https://nightcast.ir/users/login.html?nc_deploy_check=$GITHUB_SHA" || true)"
             if printf '%s' "$html" | grep -Fq "$EXPECTED_SCRIPT"; then
               echo "PASS | live login HTML references the fixed Google visibility script | attempt=$attempt"
               exit 0
@@ -53,4 +53,4 @@ jobs:
       - name: Assert deployed Google action is visibly rendered
         run: node tests/login-page-load-acceptance.cjs
         env:
-          NIGHTCAST_LOGIN_URL: 'https://nightcast.ir/users/login.html?nc_live_check=\${GITHUB_SHA}'
+          NIGHTCAST_LOGIN_URL: "https://nightcast.ir/users/login.html?nc_live_check=$GITHUB_SHA"

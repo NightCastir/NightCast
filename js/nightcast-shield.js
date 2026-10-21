@@ -62,6 +62,44 @@
     return { id: current.id, answer };
   }
 
+  function normalizeSubmitControls(action, widget) {
+    const form = widget.closest("form");
+    if (!form) return;
+    const scope = form.closest(".nc-comments-card, .book-summary-request-modal, .book-summary-request") || form;
+    const canonicalId = action === "comment" ? "ncCommentsSubmit" :
+      action === "suggestion" ? "bookSummaryRequestSubmit" : null;
+    if (!canonicalId) return;
+    let canonical = document.getElementById(canonicalId);
+    const controls = Array.from(scope.querySelectorAll('button[type="submit"], input[type="submit"], button:not([type])'));
+    if (!canonical || !form.contains(canonical)) {
+      canonical = controls.find(control => form.contains(control)) || null;
+      if (canonical) canonical.id = canonicalId;
+    }
+    controls.forEach(control => {
+      if (control !== canonical) control.remove();
+    });
+    if (canonical) {
+      if (canonical.type !== "submit") canonical.type = "submit";
+      if (canonical.dataset.ncCanonicalSubmit !== action) canonical.dataset.ncCanonicalSubmit = action;
+      if (action === "comment") {
+        const label = canonical.querySelector("span");
+        if (label && label.textContent.trim() !== "ثبت دیدگاه") label.textContent = "ثبت دیدگاه";
+        else if (!label && canonical.textContent.trim() === "ثبت و تایید دیدگاه") canonical.textContent = "ثبت دیدگاه";
+        if (canonical.getAttribute("aria-label") !== "ثبت دیدگاه") canonical.setAttribute("aria-label", "ثبت دیدگاه");
+      } else {
+        if (canonical.getAttribute("aria-label") !== "ثبت درخواست") canonical.setAttribute("aria-label", "ثبت درخواست");
+      }
+    }
+    if (!form.dataset.ncSubmitObserver) {
+      form.dataset.ncSubmitObserver = "true";
+      const observer = new MutationObserver(() => {
+        const currentWidget = form.querySelector('[data-nc-shield="comment"], [data-nc-shield="suggestion"]');
+        if (currentWidget) normalizeSubmitControls(currentWidget.dataset.ncShield, currentWidget);
+      });
+      observer.observe(form, { childList: true, subtree: true });
+    }
+  }
+
   function setStatus(widget, message, state) {
     const status = widget.querySelector("[data-nc-shield-status]");
     if (status) {
@@ -162,6 +200,7 @@
       status.setAttribute("role", "status");
       status.setAttribute("aria-live", "polite");
       widget.replaceChildren(title, questionRow, label, actions, status);
+      normalizeSubmitControls(action, widget);
       load(widget);
     });
   }

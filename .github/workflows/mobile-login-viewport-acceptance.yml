@@ -16,6 +16,8 @@ on:
       - 'js/nightcast-shield.js'
       - 'tests/mobile-modal-viewport-acceptance.cjs'
       - 'tests/login-google-browser-connection.cjs'
+      - 'tests/login-google-live-origin.cjs'
+      - 'tests/single-submit-controls-acceptance.cjs'
       - 'tests/nightcast-success-dialog.cjs'
       - '.github/workflows/mobile-login-viewport-acceptance.yml'
   pull_request:
@@ -55,6 +57,8 @@ jobs:
         run: |
           npm install --no-save playwright
           npx playwright install --with-deps chromium
+      - name: Verify exactly one submit control for comment and suggestion
+        run: node tests/single-submit-controls-acceptance.cjs
       - name: Start local static server
         run: |
           python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/nightcast-modal-http.log 2>&1 &
@@ -68,6 +72,8 @@ jobs:
           exit 1
       - name: Verify browser CORS and Google login API handoff
         run: node tests/login-google-browser-connection.cjs
+      - name: Verify live nightcast.ir origin reaches Google login API
+        run: node tests/login-google-live-origin.cjs
       - name: Test login modal on narrow and short viewports
         run: node tests/mobile-modal-viewport-acceptance.cjs
         env:

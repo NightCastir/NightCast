@@ -641,6 +641,13 @@
                     input?.focus();
                     return;
                 }
+                let captchaProof;
+                try {
+                    captchaProof = window.NightCastShield.getProof("comment");
+                } catch (error) {
+                    setCommentsNotice(error.message || "لطفاً پاسخ پرسش امنیتی را وارد کنید.", "error");
+                    return;
+                }
                 if (submit) {
                     submit.disabled = true;
                     submit.querySelector("span").textContent = "در حال ثبت…";
@@ -650,7 +657,7 @@
                     const response = await fetch(CONFIG.API_BASE + "/public/podcasts/" + encodeURIComponent(id) + "/comments", {
                         method:"POST",
                         headers:{"Accept":"application/json","Content-Type":"application/json","Authorization":"Bearer " + getToken()},
-                        body:JSON.stringify({body, captcha: window.NightCastShield.getProof("comment")})
+                        body:JSON.stringify({body, captcha: captchaProof})
                     });
                     const data = await response.json().catch(() => ({}));
                     if (response.status === 401 || data.code === "LOGIN_REQUIRED") {
@@ -664,8 +671,16 @@
                     input.value = "";
                     const count = document.getElementById("ncCommentsCharCount");
                     if (count) count.textContent = "0 / 1000";
-                    setCommentsNotice("دیدگاه شما با موفقیت ثبت شد.", "success");
+                    setCommentsNotice("");
                     await loadPodcastComments(id);
+                    if (window.NightCastSuccessDialog && typeof window.NightCastSuccessDialog.show === "function") {
+                        await window.NightCastSuccessDialog.show({
+                            title: "دیدگاه ثبت شد",
+                            message: "دیدگاه شما با موفقیت ثبت شد. از اینکه در گفت‌وگوی NightCast شرکت می‌کنید سپاسگزاریم."
+                        });
+                    } else {
+                        setCommentsNotice("دیدگاه شما با موفقیت ثبت شد.", "success");
+                    }
                 } catch (error) {
                     setCommentsNotice(error.message || "ثبت دیدگاه انجام نشد. دوباره تلاش کنید.", "error");
                 } finally {

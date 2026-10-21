@@ -1,0 +1,308 @@
+name: NightCast — Cafe Bazaar Release APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_release_build:
+        description: "Build a signed Release APK for manual upload to Cafe Bazaar"
+        required: true
+        type: choice
+        options:
+          - "Build signed Release APK"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightcast-bazaar-release
+  cancel-in-progress: false
+
+jobs:
+  build-bazaar-release:
+    name: Build and verify signed Bazaar APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout main source
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Validate release signing secrets
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          for secret_name in ANDROID_KEYSTORE_BASE64 KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD; do
+            if [ -z "${!secret_name:-}" ]; then
+              echo "::error::Required repository secret is missing: ${secret_name}"
+              exit 1
+            fi
+          done
+          echo "TRUE | All required signing secrets are configured (values are not printed)."
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Verify project and release version
+        id: version
+        run: |
+          set -euo pipefail
+          test -s capacitor.config.ts
+          test -s version.json
+          test -s index.html
+          test -s android-template/src/main/java/ir/nightcast/app/MainActivity.java
+          test -s android-template/src/main/java/ir/nightcast/app/NightCastGoogleAuth.java
+          node <<'NODE'
+          const fs = require('node:fs');
+          const v = JSON.parse(fs.readFileSync('version.json', 'utf8')).version;
+          if (!/^\d+\.\d+\.\d+$/.test(String(v || ''))) throw new Error('version.json must contain a semantic version such as 5.2.6');
+          const c = fs.readFileSync('capacitor.config.ts', 'utf8');
+          for (const [label, pattern] of [
+            ['application ID', /appId:\s*'ir\.nightcast\.app'/],
+            ['official website URL', /url:\s*'https:\/\/www\.nightcast\.ir'/],
+            ['HTTPS scheme', /androidScheme:\s*'https'/]
+          ]) if (!pattern.test(c)) throw new Error('Invalid Capacitor setting: ' + label);
+          const [a,b,d] = v.split('.').map(Number);
+          const code = a * 10000 + b * 100 + d;
+          if (!Number.isSafeInteger(code) || code < 1) throw new Error('Invalid Android versionCode');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `version=${v}\nversion_code=${code}\n`);
+          console.log(`TRUE | Version ${v} | Android versionCode ${code}`);
+          NODE
+
+      - name: Install Node dependencies
+        run: |
+          set -euo pipefail
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          accept-android-sdk-licenses: true
+          packages: ""
+
+      - name: Install Android SDK packages
+        run: |
+          set -euo pipefail
+          sdkmanager --licenses >/dev/null
+          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" "ndk;27.0.11718014"
+
+      - name: Prepare website assets for Capacitor
+        run: |
+          set -euo pipefail
+          rm -rf www
+          mkdir -p www/users
+          cp index.html www/index.html
+          cp version.json www/version.json
+          for f in style.css app.js favicon.ico favicon.png favicon.png logo.png; do
+            [ ! -f "$f" ] || cp "$f" www/
+          done
+          for d in css js assets auth .well-known; do
+            [ ! -d "$d" ] || cp -R "$d" www/
+          done
+          [ ! -d users ] || cp -R users/. www/users/
+          find . -maxdepth 1 -type f -name '*.html' ! -name 'index.html' -exec cp {} www/ \;
+          test -s www/index.html
+          test -s www/users/index.html
+          echo "TRUE | Website entry point and user pages staged."
+
+      - name: Add Android platform
+        run: npx cap add android
+
+      - name: Set Android version and application identity
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+          RELEASE_VERSION_CODE: ${{ steps.version.outputs.version_code }}
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import os, re
+          from pathlib import Path
+          p = Path('android/app/build.gradle')
+          if not p.exists(): raise SystemExit('android/app/build.gradle was not generated')
+          text = p.read_text()
+          if not re.search(r'applicationId\s+["\']ir\.nightcast\.app["\']', text):
+              raise SystemExit('Unexpected or missing applicationId; refusing to build the wrong app')
+          m = re.search(r'(defaultConfig\s*\{)(.*?)(^\s*\})', text, re.S | re.M)
+          if not m: raise SystemExit('defaultConfig block not found')
+          block = re.sub(r'(?m)^\s*versionCode\s+.*\n?', '', m.group(2))
+          block = re.sub(r'(?m)^\s*versionName\s+.*\n?', '', block)
+          block = f'\n        versionCode {os.environ["RELEASE_VERSION_CODE"]}\n        versionName "{os.environ["RELEASE_VERSION"]}"\n' + block
+          text = text[:m.start(2)] + block + text[m.end(2):]
+          p.write_text(text)
+          print('TRUE | applicationId ir.nightcast.app')
+          print('TRUE | versionName ' + os.environ['RELEASE_VERSION'])
+          print('TRUE | versionCode ' + os.environ['RELEASE_VERSION_CODE'])
+          PY
+
+      - name: Configure NightCast launcher icon
+        run: |
+          set -euo pipefail
+          src="assets/icons/icon-512.png"
+          test -s "$src"
+          res="android/app/src/main/res"
+          mkdir -p "$res/drawable-nodpi" "$res/mipmap-anydpi-v26" "$res/values"
+          cp "$src" "$res/drawable-nodpi/nightcast_icon.png"
+          cat > "$res/mipmap-anydpi-v26/ic_launcher.xml" <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+              <background android:drawable="@color/nightcast_icon_background" />
+              <foreground android:drawable="@drawable/nightcast_icon" />
+          </adaptive-icon>
+          EOF
+          cp "$res/mipmap-anydpi-v26/ic_launcher.xml" "$res/mipmap-anydpi-v26/ic_launcher_round.xml"
+          cat > "$res/values/nightcast_icon_colors.xml" <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources><color name="nightcast_icon_background">#050A16</color></resources>
+          EOF
+
+      - name: Install native Google Sign-In implementation
+        run: |
+          set -euo pipefail
+          src="android-template/src/main/java/ir/nightcast/app"
+          dst="android/app/src/main/java/ir/nightcast/app"
+          mkdir -p "$dst"
+          cp "$src/MainActivity.java" "$dst/MainActivity.java"
+          cp "$src/NightCastGoogleAuth.java" "$dst/NightCastGoogleAuth.java"
+          grep -q 'registerPlugin(NightCastGoogleAuth.class)' "$dst/MainActivity.java"
+          grep -q '@CapacitorPlugin(name = "NightCastGoogleAuth")' "$dst/NightCastGoogleAuth.java"
+
+      - name: Configure Google Credential Manager dependencies
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          p = Path('android/app/build.gradle')
+          s = p.read_text()
+          marker = 'dependencies {'
+          if marker not in s: raise SystemExit('Gradle dependencies block not found')
+          deps = [
+            'implementation "androidx.credentials:credentials:1.6.0"',
+            'implementation "androidx.credentials:credentials-play-services-auth:1.6.0"',
+            'implementation "com.google.android.libraries.identity.googleid:googleid:1.2.0"',
+          ]
+          missing = [d for d in deps if d not in s]
+          if missing: s = s.replace(marker, marker + '\n' + '\n'.join('    ' + d for d in missing), 1)
+          p.write_text(s)
+          PY
+
+      - name: Sync Capacitor and verify remote website configuration
+        run: |
+          set -euo pipefail
+          npx cap sync android
+          cfg="android/app/src/main/assets/capacitor.config.json"
+          test -s "$cfg"
+          node - "$cfg" <<'NODE'
+          const fs = require('node:fs');
+          const c = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+          if (c.appId !== 'ir.nightcast.app') throw new Error('Unexpected appId');
+          if (!c.server || c.server.url !== 'https://www.nightcast.ir') throw new Error('APK must load the official HTTPS NightCast website');
+          if (c.server.androidScheme !== 'https') throw new Error('HTTPS scheme missing');
+          const a = c.server.allowNavigation || [];
+          if (!a.includes('www.nightcast.ir') || !a.includes('nightcast.ir')) throw new Error('NightCast navigation allowlist is incomplete');
+          console.log('TRUE | Packaged app loads https://www.nightcast.ir over HTTPS');
+          NODE
+
+      - name: Decode release signing key
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/nightcast-release.keystore"
+          test -s "$RUNNER_TEMP/nightcast-release.keystore"
+          echo "TRUE | Release keystore decoded to temporary runner storage."
+
+      - name: Build signed Release APK
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          chmod +x android/gradlew
+          cd android
+          ./gradlew :app:assembleRelease \
+            -Pandroid.injected.signing.store.file="$RUNNER_TEMP/nightcast-release.keystore" \
+            -Pandroid.injected.signing.store.password="$KEYSTORE_PASSWORD" \
+            -Pandroid.injected.signing.key.alias="$KEY_ALIAS" \
+            -Pandroid.injected.signing.key.password="$KEY_PASSWORD" \
+            --stacktrace --no-daemon
+
+      - name: Verify APK package, version, signature and compatibility
+        env:
+          EXPECTED_VERSION: ${{ steps.version.outputs.version }}
+          EXPECTED_CODE: ${{ steps.version.outputs.version_code }}
+        run: |
+          set -euo pipefail
+          APK="android/app/build/outputs/apk/release/app-release.apk"
+          test -s "$APK"
+          AAPT="$ANDROID_HOME/build-tools/34.0.0/aapt"
+          APKSIGNER="$ANDROID_HOME/build-tools/34.0.0/apksigner"
+          ZIPALIGN="$ANDROID_HOME/build-tools/34.0.0/zipalign"
+          test -x "$AAPT" && test -x "$APKSIGNER" && test -x "$ZIPALIGN"
+          BADGING="$("$AAPT" dump badging "$APK")"
+          printf '%s\n' "$BADGING" | grep -F "name='ir.nightcast.app'" >/dev/null
+          printf '%s\n' "$BADGING" | grep -F "versionCode='$EXPECTED_CODE' versionName='$EXPECTED_VERSION'" >/dev/null
+          "$APKSIGNER" verify --verbose "$APK"
+          "$ZIPALIGN" -c -v 4 "$APK"
+          MIN_SDK="$(printf '%s\n' "$BADGING" | sed -n "s/.*sdkVersion:'\([^']*\)'.*/\1/p" | head -n1)"
+          echo "APK=$APK" >> "$GITHUB_ENV"
+          echo "MIN_SDK=$MIN_SDK" >> "$GITHUB_ENV"
+          echo "TRUE | package=ir.nightcast.app"
+          echo "TRUE | versionName=$EXPECTED_VERSION versionCode=$EXPECTED_CODE"
+          echo "TRUE | APK signature verified and APK zip alignment valid"
+          echo "Minimum Android SDK: $MIN_SDK"
+
+      - name: Rename Bazaar upload APK
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          mkdir -p dist/bazaar
+          cp "$APK" "dist/bazaar/NightCast-Bazaar-v${RELEASE_VERSION}.apk"
+          sha256sum "dist/bazaar/NightCast-Bazaar-v${RELEASE_VERSION}.apk" | tee dist/bazaar/SHA256SUMS.txt
+          ls -lh dist/bazaar/
+
+      - name: Upload signed Bazaar Release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: NightCast-Bazaar-Release-APK-v${{ steps.version.outputs.version }}
+          path: |
+            dist/bazaar/NightCast-Bazaar-v${{ steps.version.outputs.version }}.apk
+            dist/bazaar/SHA256SUMS.txt
+          retention-days: 90
+          if-no-files-found: error
+
+      - name: Publish build summary
+        if: always()
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          VERSION_CODE: ${{ steps.version.outputs.version_code }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          {
+            echo "## NightCast — Cafe Bazaar Release APK"
+            echo ""
+            echo "- Build status: **$JOB_STATUS**"
+            echo "- App ID: `ir.nightcast.app`"
+            echo "- Website: `https://www.nightcast.ir`"
+            echo "- Version: `$VERSION`"
+            echo "- Android versionCode: `$VERSION_CODE`"
+            echo "- Output: signed Release APK (not Debug)"
+            echo "- Artifact: `NightCast-Bazaar-Release-APK-v$VERSION`"
+            echo ""
+            echo "This workflow does not publish or commit the APK automatically. Download the artifact and upload it manually to Cafe Bazaar."
+          } >> "$GITHUB_STEP_SUMMARY"

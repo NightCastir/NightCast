@@ -1,0 +1,56 @@
+name: NightCast Live Google Login Button Acceptance
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'users/login.html'
+      - 'users/js/login.js'
+      - 'users/css/login.css'
+      - 'tests/login-page-load-acceptance.cjs'
+      - '.github/workflows/login-google-live-button-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-google-button:
+    name: Verify deployed Continue with Google action is visible
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Wait for GitHub Pages to publish the fixed login script reference
+        env:
+          EXPECTED_SCRIPT: '20261021-google-visible5'
+        run: |
+          set -eu
+          for attempt in $(seq 1 60); do
+            html="$(curl --silent --show-error --location --max-time 15 'https://nightcast.ir/users/login.html?nc_deploy_check=\${GITHUB_SHA}' || true)"
+            if printf '%s' "$html" | grep -Fq "$EXPECTED_SCRIPT"; then
+              echo "PASS | live login HTML references the fixed Google visibility script | attempt=$attempt"
+              exit 0
+            fi
+            echo "WAIT | live login deployment not yet updated | attempt=$attempt"
+            sleep 10
+          done
+          echo "FAIL | deployed login HTML did not publish expected cache key"
+          exit 1
+      - name: Install Playwright and Chromium with retry
+        run: |
+          for attempt in 1 2 3; do
+            if npm install --no-save playwright; then
+              break
+            fi
+            if [ "$attempt" -eq 3 ]; then exit 1; fi
+            sleep 5
+          done
+          npx playwright install --with-deps chromium
+      - name: Assert deployed Google action is visibly rendered
+        run: node tests/login-page-load-acceptance.cjs
+        env:
+          NIGHTCAST_LOGIN_URL: 'https://nightcast.ir/users/login.html?nc_live_check=\${GITHUB_SHA}'

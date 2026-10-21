@@ -27,18 +27,30 @@ assert.ok(selectors[target], 'Unknown NIGHTCAST_MODAL_TARGET: ' + target);
     for (const viewport of viewports) {
       const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height }, reducedMotion: 'reduce' });
       await page.route('https://nightcast-shield.tomasgermany2580.workers.dev/api/v1/captcha/challenge', async route => {
+        const headers = {
+          'access-control-allow-origin': '*',
+          'access-control-allow-methods': 'POST, OPTIONS',
+          'access-control-allow-headers': 'Content-Type, Accept'
+        };
+        if (route.request().method() === 'OPTIONS') {
+          await route.fulfill({ status: 204, headers });
+          return;
+        }
         let actionName = target;
         try { actionName = route.request().postDataJSON().action || target; } catch (_) {}
         await route.fulfill({
           status: 200,
+          headers,
           contentType: 'application/json',
           body: JSON.stringify({ success: true, id: '1234567890abcdef1234567890abcdef', question: '3 + 4 = ?', action: actionName })
         });
       });
       await page.route('https://accounts.google.com/**', route => route.abort().catch(() => {}));
       await page.addInitScript(() => {
-        localStorage.setItem('NightCastToken', 'nightcast-mobile-layout-test');
-        localStorage.setItem('NightCastUser', JSON.stringify({ id: 991, name: 'Responsive test' }));
+        if (location.origin === 'http://127.0.0.1:4173') {
+          localStorage.setItem('NightCastToken', 'nightcast-mobile-layout-test');
+          localStorage.setItem('NightCastUser', JSON.stringify({ id: 991, name: 'Responsive test' }));
+        }
       });
 
       try {

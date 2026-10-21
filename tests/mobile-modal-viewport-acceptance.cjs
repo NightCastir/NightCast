@@ -25,22 +25,7 @@ assert.ok(selectors[target], 'Unknown NIGHTCAST_MODAL_TARGET: ' + target);
   };
   try {
     for (const viewport of viewports) {
-      const context = await browser.newContext({
-        viewport: { width: viewport.width, height: viewport.height },
-        reducedMotion: 'reduce',
-        serviceWorkers: 'block'
-      });
-      const page = await context.newPage();
-      // Keep viewport acceptance deterministic: local app assets and the mocked Shield API
-      // are allowed; unrelated third-party fonts/widgets must not stall DOMContentLoaded.
-      await page.route('**/*', async route => {
-        const url = new URL(route.request().url());
-        if (url.origin === baseURL || url.hostname === 'nightcast-shield.tomasgermany2580.workers.dev') {
-          await route.continue();
-        } else {
-          await route.abort().catch(() => {});
-        }
-      });
+      const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height }, reducedMotion: 'reduce' });
       await page.route('https://nightcast-shield.tomasgermany2580.workers.dev/api/v1/captcha/challenge', async route => {
         const headers = {
           'access-control-allow-origin': '*',
@@ -69,7 +54,7 @@ assert.ok(selectors[target], 'Unknown NIGHTCAST_MODAL_TARGET: ' + target);
       });
 
       try {
-        await page.goto(baseURL + selectors[target].url, { waitUntil: 'commit', timeout: 20000 });
+        await page.goto(baseURL + selectors[target].url, { waitUntil: 'domcontentloaded', timeout: 20000 });
         if (target === 'suggestion') {
           if (viewport.width <= 600) {
             await page.locator('#ncMenuToggle').waitFor({ state: 'visible', timeout: 12000 });
@@ -92,7 +77,7 @@ assert.ok(selectors[target], 'Unknown NIGHTCAST_MODAL_TARGET: ' + target);
         }
 
         if (target === 'comment' || target === 'suggestion') {
-          // Simulate a legacy script injecting the second submit control users reported.
+          // Reproduce the duplicate-submit regression reported on the live forms.
           await page.evaluate(kind => {
             const form = document.getElementById(kind === 'comment' ? 'ncCommentsForm' : 'bookSummaryRequestForm');
             if (!form) throw new Error('Form missing for duplicate-submit regression test');

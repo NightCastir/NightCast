@@ -103,42 +103,20 @@ const Login = {
 
 
         /*
-        ==========================================
-        EXISTING SESSION
-        ==========================================
-        */
-
-        if(token && user){
-
-            console.log(
-                "Existing NightCast session found."
-            );
-
-
-            window.location.replace(
-                this.getPostLoginDestination()
-            );
-
-
-            return;
-
+         * Do not auto-redirect away from an explicit login page just because
+         * localStorage contains old session values. Those values may be stale,
+         * malformed, or left over from a previous app/site version; redirecting
+         * here can make the login page appear blank and return to the prior page.
+         * Keep the sign-in control available and let a fresh Google login replace
+         * the stored NightCast session.
+         */
+        if (token && user) {
+            console.log("Existing NightCast session values found; explicit login remains available.");
+        } else {
+            console.log("No NightCast session found.");
         }
 
-
-        /*
-        ==========================================
-        NO SESSION
-        ==========================================
-        */
-
-        console.log(
-            "No NightCast session found."
-        );
-
-
         this.bindEvents();
-
-
         this.initGoogle();
 
     },
@@ -487,26 +465,16 @@ const Login = {
         ==========================================
         */
 
-        const plugin =
-            this.getNativeGooglePlugin();
+        const plugin = this.getNativeGooglePlugin();
 
-
-        if(!plugin){
-
-            console.error(
-                "NightCastGoogleAuth native plugin is not available."
-            );
-
-
-            this.showError(
-                "امکان ورود با Google در نسخه Android فراهم نیست. لطفاً نسخه برنامه را به‌روزرسانی کنید."
-            );
-
-
-            return;
-
+        /*
+         * Never hide the only sign-in button when the native bridge is missing.
+         * This can happen in older APKs or embedded browsers. Keep the control
+         * visible; nativeGoogleSignIn() will explain the issue when tapped.
+         */
+        if (!plugin) {
+            console.error("NightCastGoogleAuth native plugin is not available; keeping sign-in button visible.");
         }
-
 
         /*
         ==========================================

@@ -239,7 +239,6 @@ jobs:
           const required = [
             ["appId", /appId:\s*'ir\.nightcast\.app'/],
             ["appName", /appName:\s*'NightCast'/],
-            ["remote entry URL", /url:\s*'https:\/\/www\.nightcast\.ir'/],
             ["HTTPS scheme", /androidScheme:\s*'https'/],
             ["www hostname allowlist", /allowNavigation:\s*\[[^\]]*'www\.nightcast\.ir'/s],
             ["apex hostname allowlist", /allowNavigation:\s*\[[^\]]*'nightcast\.ir'/s]
@@ -828,8 +827,7 @@ jobs:
 
           npx cap sync android
 
-          # Capacitor must carry the canonical remote website settings into
-          # the actual Android package. Checking only the source JSON is not enough.
+          # Verify the packaged production config uses local bundled assets so native plugins work.
           GENERATED_CONFIG="android/app/src/main/assets/capacitor.config.json"
           test -s "$GENERATED_CONFIG"
           node - "$GENERATED_CONFIG" <<'NODE'
@@ -837,18 +835,16 @@ jobs:
           const file = process.argv[2];
           const config = JSON.parse(fs.readFileSync(file, 'utf8'));
           const server = config.server || {};
-          const allowed = server.allowNavigation || [];
-          if (server.url !== 'https://www.nightcast.ir') {
-            throw new Error('Generated Android config does not load https://www.nightcast.ir');
+          if (server.url) {
+            throw new Error('Production APK must not set server.url; bundle local assets for native Google sign-in.');
           }
           if (server.androidScheme !== 'https') {
             throw new Error('Generated Android config must use the HTTPS scheme');
           }
-          if (!allowed.includes('www.nightcast.ir') || !allowed.includes('nightcast.ir')) {
-            throw new Error('Generated Android config must allow both NightCast hostnames in the WebView');
+          if (config.appId !== 'ir.nightcast.app') {
+            throw new Error('Generated Android config has an unexpected application ID.');
           }
-          console.log('TRUE | Packaged Android config loads the live NightCast website.');
-          console.log('TRUE | Both NightCast hostnames remain in the app WebView.');
+          console.log('TRUE | Packaged Android config uses bundled assets and retains the native bridge.');
           NODE
 
 

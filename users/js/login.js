@@ -1066,8 +1066,17 @@ const Login = {
                 if (requestError && requestError.name === "AbortError") {
                     throw new Error("پاسخ سرور ورود بیش از ۱۲ ثانیه طول کشید. لطفاً دوباره تلاش کنید.");
                 }
-                console.error("NightCast login fetch failed before an HTTP response was received.", requestError);
-                throw new Error("پاسخی از سرویس ورود دریافت نشد. اگر اینترنت برقرار است، لطفاً چند لحظه دیگر تلاش کنید؛ در صورت تکرار، سرویس ورود ممکن است موقتاً در دسترس نباشد.");
+                console.error("NightCast login fetch failed before an HTTP response was received.", {
+                    name: requestError && requestError.name,
+                    message: requestError && requestError.message,
+                    online: navigator.onLine,
+                    origin: window.location.origin,
+                    endpoint: API_URL + "/public/openid/google"
+                });
+                if (navigator.onLine === false) {
+                    throw new Error("اتصال اینترنت دستگاه قطع است. پس از برقراری اینترنت دوباره تلاش کنید.");
+                }
+                throw new Error("پاسخی از سرویس ورود دریافت نشد. ممکن است ارتباط امن بین این صفحه و سرویس ورود، یا خود سرویس ورود، موقتاً دچار مشکل شده باشد. چند لحظه دیگر دوباره تلاش کنید.");
             } finally {
                 window.clearTimeout(requestTimeout);
             }

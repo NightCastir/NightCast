@@ -302,6 +302,10 @@ const Login = {
             return;
         }
 
+        /* Keep CAPTCHA as the single primary action until Google needs a fallback button. */
+        container.style.display = "none";
+        container.setAttribute("aria-hidden", "true");
+
         /*
          * Show a usable, visible placeholder immediately. GIS replaces it
          * with Google's official button once the external library is ready.

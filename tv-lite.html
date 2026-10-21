@@ -172,7 +172,7 @@ button:hover,.action:hover{border-color:#f4d69c}
   }
   function loadAdditionalPages(page, total, collected) {
     var request = new XMLHttpRequest();
-    var url = 'https://nightcast-api.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=' + page + '&limit=5';
+    var url = 'https://nightcast-shield.tomasgermany2580.workers.dev/api/v1/public/podcasts?page=' + page + '&limit=5';
     request.open('GET', url, true);
     request.timeout = 12000;
     request.onreadystatechange = function () {

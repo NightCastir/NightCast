@@ -977,54 +977,55 @@ const Login = {
             ==========================================
             */
 
-            const controller = new AbortController();
-            const requestTimeout = window.setTimeout(() => controller.abort(), 12000);
-
-            let result;
-            try {
-                result = await fetch(
-                    API_URL + "/public/openid/google",
-                    {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ idToken }),
-                        signal: controller.signal
-                    }
-                );
-            } catch (requestError) {
-                if (requestError && requestError.name === "AbortError") {
-                    throw new Error("پاسخ سرور ورود بیش از ۱۲ ثانیه طول کشید. لطفاً دوباره تلاش کنید.");
-                }
-                throw new Error("ارتباط با سرور ورود برقرار نشد. اینترنت را بررسی کرده و دوباره تلاش کنید.");
-            } finally {
-                window.clearTimeout(requestTimeout);
-            }
-
-
-            /*
-            ==========================================
-            READ RESPONSE
-            ==========================================
-            */
-
             let data;
+            let httpOk = true;
 
+            if (this.isAndroidApp()) {
+                // Android uses native HTTPS networking for the session exchange.
+                // This avoids WebView CORS and keeps the Google flow inside the app.
+                const plugin = this.getNativeGooglePlugin();
+                if (!plugin || typeof plugin.exchangeToken !== "function") {
+                    throw new Error("ورود امن اندروید در این نسخه فعال نیست. لطفاً برنامه را به‌روزرسانی کنید.");
+                }
 
-            try{
-
-                data =
-                    await result.json();
-
+                try {
+                    data = await plugin.exchangeToken({ idToken });
+                } catch (nativeError) {
+                    throw new Error("ارتباط امن با سرور ورود برقرار نشد. اینترنت را بررسی کرده و دوباره تلاش کنید.");
+                }
+                httpOk = !!data && (!data.httpStatus || (data.httpStatus >= 200 && data.httpStatus < 300));
+            } else {
+                const controller = new AbortController();
+                const requestTimeout = window.setTimeout(() => controller.abort(), 12000);
+                let result;
+                try {
+                    result = await fetch(
+                        API_URL + "/public/openid/google",
+                        {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ idToken }),
+                            signal: controller.signal
+                        }
+                    );
+                    httpOk = result.ok;
+                    try {
+                        data = await result.json();
+                    } catch (_) {
+                        throw new Error("پاسخ معتبر از NightCast دریافت نشد.");
+                    }
+                } catch (requestError) {
+                    if (requestError && requestError.name === "AbortError") {
+                        throw new Error("پاسخ سرور ورود بیش از ۱۲ ثانیه طول کشید. لطفاً دوباره تلاش کنید.");
+                    }
+                    if (requestError && requestError.message === "پاسخ معتبر از NightCast دریافت نشد.") {
+                        throw requestError;
+                    }
+                    throw new Error("ارتباط با سرور ورود برقرار نشد. اینترنت را بررسی کرده و دوباره تلاش کنید.");
+                } finally {
+                    window.clearTimeout(requestTimeout);
+                }
             }
-
-            catch(error){
-
-                throw new Error(
-                    "پاسخ معتبر از NightCast دریافت نشد."
-                );
-
-            }
-
 
             /*
             ==========================================
@@ -1033,7 +1034,8 @@ const Login = {
             */
 
             if(
-                !result.ok ||
+                !httpOk ||
+                !data ||
                 !data.success
             ){
 

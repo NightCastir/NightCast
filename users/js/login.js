@@ -812,32 +812,22 @@ const Login = {
             );
 
 
-            let message =
-                "خطا در ورود با Google";
+            let message = error && error.message
+                ? String(error.message)
+                : (typeof error === "string" ? error : "خطا در ورود با Google");
 
-
-            if(
-                error &&
-                error.message
-            ){
-
-                message =
-                    error.message;
-
-            }
-            else if(
-                typeof error === "string"
-            ){
-
-                message =
-                    error;
-
+            const normalized = message.toLowerCase();
+            if (normalized.includes("cancel")) {
+                message = "ورود لغو شد. هر زمان آماده بودید، دوباره تلاش کنید.";
+            } else if (normalized.includes("no google credential") || normalized.includes("no credential")) {
+                message = "حساب Google در این دستگاه پیدا نشد. یک حساب Google اضافه کنید و دوباره تلاش کنید.";
+            } else if (normalized.includes("could not contact") || normalized.includes("network") || normalized.includes("timeout") || normalized.includes("timed out")) {
+                message = "ارتباط با سرویس ورود برقرار نشد. اتصال اینترنت را بررسی کرده و دوباره تلاش کنید.";
+            } else if (normalized.includes("google sign-in failed") || normalized.includes("credential processing failed")) {
+                message = "ورود با Google کامل نشد. لطفاً دوباره تلاش کنید.";
             }
 
-
-            this.showError(
-                message
-            );
+            this.showError(message);
 
 
             /*

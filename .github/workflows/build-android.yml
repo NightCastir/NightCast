@@ -299,6 +299,7 @@ jobs:
           node -e 'const fs=require("node:fs"); const v=require("./version.json").version; fs.writeFileSync("www/js/nightcast-version.js", "window.NIGHTCAST_APP_VERSION = " + JSON.stringify(v) + ";" + String.fromCharCode(10));'
           cp -r assets www/ 2>/dev/null || true
           cp -r auth www/ 2>/dev/null || true
+          cp -r login www/ 2>/dev/null || true
           cp -r .well-known www/ 2>/dev/null || true
 
 

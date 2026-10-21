@@ -308,6 +308,9 @@ const Login = {
          * This prevents a blank login panel when Google's script is delayed.
          */
         if (!this.isAndroidApp()) {
+            /* Keep one clear primary action: the CAPTCHA continue button. */
+            container.style.display = "none";
+            container.setAttribute("aria-hidden", "true");
             container.innerHTML = "";
             const fallback = document.createElement("button");
             fallback.type = "button";
@@ -348,7 +351,9 @@ const Login = {
             clearInterval(checker);
             if (!this.googleReady) {
                 console.error("Google Identity timeout: GIS script did not become ready.");
-                this.showError("دکمه ورود نمایش داده شده، اما سرویس Google پاسخ نمی‌دهد. اتصال اینترنت یا مسدودکننده محتوا را بررسی کنید.");
+                container.style.display = "";
+                container.removeAttribute("aria-hidden");
+                this.showError("سرویس Google دیر پاسخ داد. اکنون می‌توانید دکمه رسمی Google را انتخاب کنید.");
             }
         }, 10000);
     },
@@ -380,11 +385,13 @@ const Login = {
             window.google.accounts.id.prompt((notification) => {
                 if (notification && (notification.isNotDisplayed() || notification.isSkippedMoment())) {
                     if (status) {
-                        status.textContent = "پاسخ امنیتی آماده است؛ برای تکمیل ورود، دکمه رسمی Google را انتخاب کنید.";
+                        status.textContent = "برای تکمیل ورود، دکمه رسمی Google را انتخاب کنید.";
                         status.dataset.state = "ready";
                     }
                     const container = document.getElementById("googleLoginButton");
                     if (container) {
+                        container.style.display = "";
+                        container.removeAttribute("aria-hidden");
                         container.scrollIntoView({ behavior: "smooth", block: "center" });
                         const button = container.querySelector("button");
                         if (button) button.focus({ preventScroll: true });
@@ -396,11 +403,15 @@ const Login = {
 
         const status = document.querySelector('[data-nc-shield="login"] [data-nc-shield-status]');
         if (status) {
-            status.textContent = "سرویس Google هنوز آماده نیست. چند لحظه صبر کنید یا دکمه Google پایین صفحه را انتخاب کنید.";
+            status.textContent = "سرویس Google هنوز آماده نیست؛ دکمه Google را برای تلاش دوباره انتخاب کنید.";
             status.dataset.state = "error";
         }
         const container = document.getElementById("googleLoginButton");
-        if (container) container.scrollIntoView({ behavior: "smooth", block: "center" });
+        if (container) {
+            container.style.display = "";
+            container.removeAttribute("aria-hidden");
+            container.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
     },
 
     /* ==================================================
@@ -1012,11 +1023,15 @@ const Login = {
             ==========================================
             */
 
+            /* Read CAPTCHA proof before the fetch try/catch so a missing or expired
+               challenge is never mislabeled as an internet/network failure. */
+            const captchaProof = window.NightCastShield.getProof("login");
             this.showLoader();
 
 
             console.log(
-                "Sending Google ID Token to NightCast Worker..."
+                "Sending Google ID Token to NightCast Worker...",
+                { endpoint: API_URL + "/public/openid/google", origin: window.location.origin }
             );
 
 
@@ -1035,8 +1050,11 @@ const Login = {
                     API_URL + "/public/openid/google",
                     {
                         method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ idToken, captcha: window.NightCastShield.getProof("login") }),
+                        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                        mode: "cors",
+                        credentials: "omit",
+                        cache: "no-store",
+                        body: JSON.stringify({ idToken, captcha: captchaProof }),
                         signal: controller.signal
                     }
                 );
@@ -1044,7 +1062,8 @@ const Login = {
                 if (requestError && requestError.name === "AbortError") {
                     throw new Error("پاسخ سرور ورود بیش از ۱۲ ثانیه طول کشید. لطفاً دوباره تلاش کنید.");
                 }
-                throw new Error("ارتباط با سرور ورود برقرار نشد. اینترنت را بررسی کرده و دوباره تلاش کنید.");
+                console.error("NightCast login fetch failed before an HTTP response was received.", requestError);
+                throw new Error("پاسخی از سرویس ورود دریافت نشد. اگر اینترنت برقرار است، لطفاً چند لحظه دیگر تلاش کنید؛ در صورت تکرار، سرویس ورود ممکن است موقتاً در دسترس نباشد.");
             } finally {
                 window.clearTimeout(requestTimeout);
             }

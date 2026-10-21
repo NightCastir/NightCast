@@ -14,7 +14,7 @@
   <script src="/js/nightcast-theme.js?v=2" defer></script>
     <link rel="stylesheet" href="/assets/fonts/vazirmatn.css">
   <link rel="stylesheet" href="/assets/vendor/fontawesome/css/all.min.css">
-  <link rel="stylesheet" href="/css/nightcast-shield.css?v=3">
+  <link rel="stylesheet" href="/css/nightcast-shield.css?v=4">
   <link rel="stylesheet" href="/css/nightcast-modal-viewport.css?v=2">
 </head>
 <body class="cosmic-login">
@@ -51,7 +51,13 @@
         <p class="hero-text">رادیو NightCast؛ پلی به سوی جهان صداها</p>
       </div>
 
-      <div class="nc-shield-widget" data-nc-shield="login"></div>
+      <div class="nc-shield-widget" data-nc-shield="login" aria-label="تأیید امنیتی NightCast">
+        <div class="nc-shield-title"><span class="nc-shield-emblem" aria-hidden="true">✦</span><span>تأیید امنیتی NightCast</span></div>
+        <div class="nc-shield-question-row"><strong data-nc-shield-question>در حال دریافت پرسش امنیتی…</strong></div>
+        <label class="nc-shield-answer-label"><span>پاسخ</span><input type="text" inputmode="numeric" autocomplete="off" maxlength="2" placeholder="مثلاً ۹" aria-label="پاسخ پرسش امنیتی" data-nc-shield-answer disabled></label>
+        <div class="nc-shield-actions"><button type="button" class="nc-shield-continue" data-nc-shield-continue disabled>ادامه با Google</button><button type="button" class="nc-shield-refresh" data-nc-shield-refresh>پرسش تازه</button></div>
+        <p class="nc-shield-status" data-nc-shield-status role="status" aria-live="polite">در حال آماده‌سازی پرسش امنیتی…</p>
+      </div>
       <div id="googleLoginButton" class="google-login-container" aria-label="ورود با Google"></div>
       <div id="loginMessage" class="login-status" role="alert" aria-live="polite"></div>
 
@@ -62,8 +68,8 @@
   </main>
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="/js/nightcast-shield.js?v=3"></script>
-  <script src="/users/js/login.js?v=20261021-google-return-proof1"></script>
+  <script src="/js/nightcast-shield.js?v=4"></script>
+  <script src="/users/js/login.js?v=20261022-visible-captcha-gated-google2"></script>
 
 <script>
 /* NightCast app-like interaction layer; retire legacy PWA registrations. */

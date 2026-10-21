@@ -16,7 +16,7 @@
     const refresh = widget.querySelector("[data-nc-shield-refresh]");
     const proceed = widget.querySelector("[data-nc-shield-continue]");
     refresh.disabled = true;
-    proceed.disabled = true;
+    if (proceed) proceed.disabled = true;
     widget.dataset.state = "loading";
     status.textContent = "در حال دریافت پرسش امنیتی…";
     widgets.set(action, { loading: true, widget });
@@ -33,7 +33,7 @@
       question.textContent = data.question;
       answer.value = "";
       answer.disabled = false;
-      proceed.disabled = false;
+      if (proceed) proceed.disabled = false;
       widget.dataset.state = "ready";
       status.textContent = labels[action].hint;
       status.dataset.state = "ready";
@@ -129,25 +129,33 @@
         if (event.key === "Enter") {
           event.preventDefault();
           const proceed = widget.querySelector("[data-nc-shield-continue]");
-          if (proceed && !proceed.disabled) proceed.click();
+          if (action === "login" && proceed && !proceed.disabled) proceed.click();
+          else if (action !== "login") {
+            const form = widget.closest("form");
+            if (form && typeof form.requestSubmit === "function") form.requestSubmit();
+          }
         }
       });
       label.append(labelText, input);
       const actions = document.createElement("div");
       actions.className = "nc-shield-actions";
-      const proceed = document.createElement("button");
-      proceed.type = "button";
-      proceed.className = "nc-shield-continue";
-      proceed.dataset.ncShieldContinue = "";
-      proceed.textContent = labels[action].action;
-      proceed.addEventListener("click", () => continueAction(widget));
+      let proceed = null;
+      if (action === "login") {
+        proceed = document.createElement("button");
+        proceed.type = "button";
+        proceed.className = "nc-shield-continue";
+        proceed.dataset.ncShieldContinue = "";
+        proceed.textContent = labels[action].action;
+        proceed.addEventListener("click", () => continueAction(widget));
+      }
       const refresh = document.createElement("button");
       refresh.type = "button";
       refresh.className = "nc-shield-refresh";
       refresh.dataset.ncShieldRefresh = "";
       refresh.textContent = "پرسش تازه";
       refresh.addEventListener("click", () => load(widget));
-      actions.append(proceed, refresh);
+      if (proceed) actions.appendChild(proceed);
+      actions.appendChild(refresh);
       const status = document.createElement("p");
       status.className = "nc-shield-status";
       status.dataset.ncShieldStatus = "";

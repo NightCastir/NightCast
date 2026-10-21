@@ -10,7 +10,7 @@ const viewports = [
   { width: 844, height: 390, label: 'short landscape' }
 ];
 const selectors = {
-  login: { url: '/users/login.html', action: '[data-nc-shield-continue]', scroll: 'document.scrollingElement' },
+  login: { url: '/users/login.html', action: 'body.cosmic-login [data-nc-shield-continue]', scroll: 'document.scrollingElement' },
   comment: { url: '/', action: '#ncCommentsSubmit', scroll: '#ncCommentsModal' },
   suggestion: { url: '/', action: '#bookSummaryRequestSubmit', scroll: '#bookSummaryRequestModal .book-summary-request-panel' }
 };
@@ -47,7 +47,7 @@ assert.ok(selectors[target], 'Unknown NIGHTCAST_MODAL_TARGET: ' + target);
       });
       await page.route('https://accounts.google.com/**', route => route.abort().catch(() => {}));
       await page.addInitScript(() => {
-        if (location.origin === 'http://127.0.0.1:4173') {
+        if (location.origin === 'http://127.0.0.1:4173' && (location.pathname === '/' || location.pathname === '/index.html' || location.pathname === '/podcasts/')) {
           localStorage.setItem('NightCastToken', 'nightcast-mobile-layout-test');
           localStorage.setItem('NightCastUser', JSON.stringify({ id: 991, name: 'Responsive test' }));
         }
@@ -56,8 +56,16 @@ assert.ok(selectors[target], 'Unknown NIGHTCAST_MODAL_TARGET: ' + target);
       try {
         await page.goto(baseURL + selectors[target].url, { waitUntil: 'domcontentloaded', timeout: 20000 });
         if (target === 'suggestion') {
-          await page.locator('#requestBookSummaryBtn').waitFor({ state: 'visible', timeout: 12000 });
-          await page.locator('#requestBookSummaryBtn').click();
+          if (viewport.width <= 600) {
+            await page.locator('#ncMenuToggle').waitFor({ state: 'visible', timeout: 12000 });
+            await page.locator('#ncMenuToggle').click();
+            const mobileSuggestion = page.locator('[data-request-book-summary]');
+            await mobileSuggestion.waitFor({ state: 'visible', timeout: 8000 });
+            await mobileSuggestion.click();
+          } else {
+            await page.locator('#requestBookSummaryBtn').waitFor({ state: 'visible', timeout: 12000 });
+            await page.locator('#requestBookSummaryBtn').click();
+          }
           await page.locator('#bookSummaryRequestModal:not([hidden])').waitFor({ state: 'visible', timeout: 8000 });
         } else if (target === 'comment') {
           await page.evaluate(() => {

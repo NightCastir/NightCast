@@ -26,6 +26,16 @@ assert.ok(selectors[target], 'Unknown NIGHTCAST_MODAL_TARGET: ' + target);
   try {
     for (const viewport of viewports) {
       const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height }, reducedMotion: 'reduce' });
+      // Keep viewport acceptance deterministic: local app assets and the mocked Shield API
+      // are allowed; unrelated third-party fonts/widgets must not stall DOMContentLoaded.
+      await page.route('**/*', async route => {
+        const url = new URL(route.request().url());
+        if (url.origin === baseURL || url.hostname === 'nightcast-shield.tomasgermany2580.workers.dev') {
+          await route.continue();
+        } else {
+          await route.abort().catch(() => {});
+        }
+      });
       await page.route('https://nightcast-shield.tomasgermany2580.workers.dev/api/v1/captcha/challenge', async route => {
         const headers = {
           'access-control-allow-origin': '*',

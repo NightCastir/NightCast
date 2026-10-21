@@ -1564,6 +1564,66 @@ LOGOUT
             }
 
 
+            /* MP3 loading feedback: distinguish initial buffering from playback progress. */
+            const ncLoadFeedback = (() => {
+                if (!els.player) return null;
+                let node = document.getElementById("ncAudioLoadFeedback");
+                if (!node) {
+                    node = document.createElement("div");
+                    node.id = "ncAudioLoadFeedback";
+                    node.className = "nc-audio-load-feedback";
+                    node.setAttribute("role", "status");
+                    node.setAttribute("aria-live", "polite");
+                    node.innerHTML = '<div class="nc-audio-load-meta"><span class="nc-audio-load-label">در حال آماده‌سازی فایل صوتی…</span><span class="nc-audio-load-percent">۰٪</span></div><div class="nc-audio-load-track" role="progressbar" aria-label="پیشرفت بارگذاری فایل صوتی" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="nc-audio-load-fill"></span></div>';
+                    els.player.appendChild(node);
+                }
+                return {
+                    root: node,
+                    label: node.querySelector(".nc-audio-load-label"),
+                    percent: node.querySelector(".nc-audio-load-percent"),
+                    track: node.querySelector(".nc-audio-load-track"),
+                    fill: node.querySelector(".nc-audio-load-fill")
+                };
+            })();
+            function ncSetAudioLoadFeedback(percent, label, visible) {
+                if (!ncLoadFeedback) return;
+                const safe = Math.max(0, Math.min(100, Math.round(Number(percent) || 0)));
+                ncLoadFeedback.root.classList.toggle("is-visible", !!visible);
+                if (label) ncLoadFeedback.label.textContent = label;
+                ncLoadFeedback.percent.textContent = new Intl.NumberFormat("fa-IR", { maximumFractionDigits: 0 }).format(safe) + "٪";
+                ncLoadFeedback.fill.style.width = safe + "%";
+                ncLoadFeedback.track.setAttribute("aria-valuenow", String(safe));
+            }
+            function ncUpdateAudioLoadProgress() {
+                if (!ncLoadFeedback || !state.current) return;
+                const audio = els.audio;
+                let ratio = 0;
+                try {
+                    if (audio.duration > 0 && audio.buffered.length) {
+                        ratio = Math.max(0, Math.min(1, audio.buffered.end(audio.buffered.length - 1) / audio.duration));
+                    }
+                } catch (_) {}
+                const percent = Math.round(ratio * 100);
+                const ready = audio.readyState >= 3;
+                if (ready || (!audio.paused && !audio.seeking && audio.readyState >= 2)) {
+                    ncSetAudioLoadFeedback(100, "فایل آماده پخش است", false);
+                } else {
+                    ncSetAudioLoadFeedback(percent, percent ? "در حال دریافت فایل صوتی…" : "در حال اتصال و بارگذاری فایل صوتی…", true);
+                }
+            }
+            ["loadstart", "progress", "loadedmetadata", "loadeddata", "canplay", "canplaythrough", "waiting", "playing", "seeking", "seeked"].forEach(eventName => {
+                els.audio.addEventListener(eventName, () => {
+                    if (eventName === "playing" || eventName === "canplaythrough") {
+                        ncSetAudioLoadFeedback(100, "فایل آماده پخش است", false);
+                    } else {
+                        ncUpdateAudioLoadProgress();
+                    }
+                });
+            });
+            els.audio.addEventListener("error", () => {
+                if (ncLoadFeedback && state.current) ncSetAudioLoadFeedback(0, "بارگذاری فایل ناموفق بود؛ در حال تلاش مجدد…", true);
+            });
+
             function updateCardPlaying() {
                 const currentId = state.current ? Number(state.current.id) : null;
                 const isPlaying = !!currentId && !els.audio.paused && !els.audio.ended;

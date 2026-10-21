@@ -17,6 +17,7 @@ on:
       - 'tests/mobile-modal-viewport-acceptance.cjs'
       - 'tests/login-google-browser-connection.cjs'
       - 'tests/login-google-live-origin.cjs'
+      - 'tests/single-submit-controls-acceptance.cjs'
       - 'tests/nightcast-success-dialog.cjs'
       - '.github/workflows/mobile-login-viewport-acceptance.yml'
   pull_request:
@@ -56,6 +57,8 @@ jobs:
         run: |
           npm install --no-save playwright
           npx playwright install --with-deps chromium
+      - name: Verify exactly one submit control for comment and suggestion
+        run: node tests/single-submit-controls-acceptance.cjs
       - name: Start local static server
         run: |
           python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/nightcast-modal-http.log 2>&1 &

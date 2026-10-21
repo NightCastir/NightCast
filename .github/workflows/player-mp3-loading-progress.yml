@@ -1,0 +1,34 @@
+name: NightCast MP3 Loading Progress Acceptance
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "js/nightcast-app.js"
+      - "css/nightcast-player-finish.css"
+      - "index.html"
+      - "tests/player-mp3-loading-progress.cjs"
+      - ".github/workflows/player-mp3-loading-progress.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightcast-mp3-loading-progress-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  mp3-loading-progress:
+    name: Validate MP3 loading progress UI
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout NightCast
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run acceptance checks
+        run: node tests/player-mp3-loading-progress.cjs

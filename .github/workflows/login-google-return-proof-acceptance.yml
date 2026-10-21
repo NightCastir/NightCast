@@ -1,0 +1,56 @@
+name: NightCast Google Login Return Proof Acceptance
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'users/login.html'
+      - 'users/js/login.js'
+      - 'tests/login-google-return-proof-acceptance.cjs'
+      - '.github/workflows/login-google-return-proof-acceptance.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'users/login.html'
+      - 'users/js/login.js'
+      - 'tests/login-google-return-proof-acceptance.cjs'
+      - '.github/workflows/login-google-return-proof-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  google-return-proof:
+    name: Recover CAPTCHA proof after Google returns to Login
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Wait for the live site to publish the return-proof fix
+        env:
+          EXPECTED_SCRIPT: '20261021-google-return-proof1'
+        run: |
+          set -eu
+          for attempt in $(seq 1 60); do
+            html="$(curl --silent --show-error --location --max-time 15 "https://nightcast.ir/users/login.html?nc_deploy_check=$GITHUB_SHA" || true)"
+            if printf '%s' "$html" | grep -Fq "$EXPECTED_SCRIPT"; then
+              echo "PASS | live login HTML references return-proof fix | attempt=$attempt"
+              exit 0
+            fi
+            echo "WAIT | waiting for live login deployment | attempt=$attempt"
+            sleep 10
+          done
+          echo "FAIL | live site did not publish return-proof cache key"
+          exit 1
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Simulate Google return after in-memory Shield global is lost
+        run: node tests/login-google-return-proof-acceptance.cjs
+        env:
+          NIGHTCAST_LOGIN_URL: "https://nightcast.ir/users/login.html?nc_google_return_check=$GITHUB_SHA"

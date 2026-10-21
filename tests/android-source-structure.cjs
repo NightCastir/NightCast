@@ -22,7 +22,7 @@ assert.match(auth, /^package ir\.nightcast\.app;/m);
 assert.match(auth, /@CapacitorPlugin\(name = "NightCastGoogleAuth"\)/);
 assert.match(auth, /public void signIn\(PluginCall call\)/);
 assert.match(auth, /public void exchangeToken\(PluginCall call\)/, 'Native Android must exchange the Google token without WebView CORS');
-assert.match(auth, /public/openid/google/, 'Native exchange must use the canonical NightCast Google login endpoint');
+assert.ok(auth.includes('/public/openid/google'), 'Native exchange must use the canonical NightCast Google login endpoint');
 assert.match(fs.readFileSync('users/js/login.js', 'utf8'), /plugin\.exchangeToken\(\{ idToken \}\)/, 'Android login must use native token exchange rather than WebView fetch');
 assert.match(workflow, /GENERATED_CONFIG="android\/app\/src\/main\/assets\/capacitor\.config\.json"/, 'CI must verify the configuration copied into the built Android project');
 

@@ -20,7 +20,7 @@
 
     <copyright>NightCast</copyright>
 
-    <lastBuildDate>Wed, 21 Oct 2026 09:11:15 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 21 Oct 2026 09:24:44 GMT</lastBuildDate>
 
     <generator>NightCast RSS Generator</generator>
 
@@ -128,7 +128,7 @@
 
         
         <itunes:image
-            href="https://raw.githubusercontent.com/NightCastir/NightCast-Media/refs/heads/main/covers/nct_14050729.png"
+            href="https://raw.githubusercontent.com/NightCastir/NightCast-Media/main/covers/nct_14050729.png"
         />
         
 
@@ -145,7 +145,7 @@
         </link>
 
         <enclosure
-            url="https://github.com/NightCastir/NightCast-Media/raw/refs/heads/main/audio/nct_14050729.mp3"
+            url="https://raw.githubusercontent.com/NightCastir/NightCast-Media/main/audio/nct_14050729.mp3"
             length="0"
             type="audio/mpeg"
         />

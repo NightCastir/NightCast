@@ -22,7 +22,7 @@ const API = {
 
     BASE_URL :
 
-    "https://nightcast-api.tomasgermany2580.workers.dev/api/v1",
+    "https://nightcast-shield.tomasgermany2580.workers.dev/api/v1",
 
 
 

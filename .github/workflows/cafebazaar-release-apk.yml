@@ -96,7 +96,7 @@ jobs:
         run: |
           set -euo pipefail
           sdkmanager --licenses >/dev/null
-          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" "ndk;27.0.11718014"
+          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" "platforms;android-35" "build-tools;35.0.0" "ndk;27.0.11718014"
 
       - name: Prepare website assets for Capacitor
         run: |

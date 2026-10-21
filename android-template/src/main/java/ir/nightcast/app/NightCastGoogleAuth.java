@@ -189,6 +189,12 @@ public class NightCastGoogleAuth extends Plugin {
             return;
         }
 
+        final Activity activity = getActivity();
+        if (activity == null) {
+            call.reject("Android Activity is not available.");
+            return;
+        }
+
         Thread worker = new Thread(() -> {
             HttpURLConnection connection = null;
             try {
@@ -240,14 +246,14 @@ public class NightCastGoogleAuth extends Plugin {
                     }
                 }
 
-                getActivity().runOnUiThread(() -> call.resolve(response));
+                activity.runOnUiThread(() -> call.resolve(response));
             } catch (Exception error) {
                 String message = error.getMessage();
                 if (message == null || message.trim().isEmpty()) {
                     message = "Could not contact the NightCast login service.";
                 }
                 final String safeMessage = message;
-                getActivity().runOnUiThread(() -> {
+                activity.runOnUiThread(() -> {
                     JSObject response = new JSObject();
                     response.put("success", false);
                     response.put("message", safeMessage);

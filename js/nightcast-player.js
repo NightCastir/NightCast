@@ -650,14 +650,17 @@
                     const response = await fetch(CONFIG.API_BASE + "/public/podcasts/" + encodeURIComponent(id) + "/comments", {
                         method:"POST",
                         headers:{"Accept":"application/json","Content-Type":"application/json","Authorization":"Bearer " + getToken()},
-                        body:JSON.stringify({body})
+                        body:JSON.stringify({body, captcha: window.NightCastShield.getProof("comment")})
                     });
                     const data = await response.json().catch(() => ({}));
                     if (response.status === 401 || data.code === "LOGIN_REQUIRED") {
                         setCommentsNotice("نشست کاربری شما معتبر نیست. لطفاً دوباره وارد شوید.", "error");
                         return;
                     }
-                    if (!response.ok || !data.success) throw new Error(data.message || "ثبت دیدگاه انجام نشد.");
+                    if (!response.ok || !data.success) {
+                        if (response.status === 403 && window.NightCastShield) await window.NightCastShield.refresh("comment");
+                        throw new Error(data.message || "ثبت دیدگاه انجام نشد.");
+                    }
                     input.value = "";
                     const count = document.getElementById("ncCommentsCharCount");
                     if (count) count.textContent = "0 / 1000";

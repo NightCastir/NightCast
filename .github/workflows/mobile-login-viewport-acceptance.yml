@@ -9,6 +9,8 @@ on:
       - 'css/nightcast-shield.css'
       - 'js/nightcast-shield.js'
       - 'tests/mobile-modal-viewport-acceptance.cjs'
+      - 'tests/login-google-browser-connection.cjs'
+      - 'tests/nightcast-success-dialog.cjs'
       - '.github/workflows/mobile-login-viewport-acceptance.yml'
   pull_request:
     branches: [main]
@@ -52,6 +54,8 @@ jobs:
           done
           cat /tmp/nightcast-modal-http.log
           exit 1
+      - name: Verify browser CORS and Google login API handoff
+        run: node tests/login-google-browser-connection.cjs
       - name: Test login modal on narrow and short viewports
         run: node tests/mobile-modal-viewport-acceptance.cjs
         env:

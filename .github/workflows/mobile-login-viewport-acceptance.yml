@@ -1,0 +1,68 @@
+name: NightCast Mobile Login Modal Acceptance
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'users/login.html'
+      - 'css/nightcast-modal-viewport.css'
+      - 'css/nightcast-shield.css'
+      - 'js/nightcast-shield.js'
+      - 'tests/mobile-modal-viewport-acceptance.cjs'
+      - '.github/workflows/mobile-login-viewport-acceptance.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'users/login.html'
+      - 'css/nightcast-modal-viewport.css'
+      - 'css/nightcast-shield.css'
+      - 'js/nightcast-shield.js'
+      - 'tests/mobile-modal-viewport-acceptance.cjs'
+      - '.github/workflows/mobile-login-viewport-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mobile-viewport:
+    name: Login CAPTCHA and Google sign-in action
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Start local static server
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/nightcast-modal-http.log 2>&1 &
+          for _ in $(seq 1 40); do
+            if curl --silent --fail http://127.0.0.1:4173/index.html >/dev/null; then
+              exit 0
+            fi
+            sleep 0.25
+          done
+          cat /tmp/nightcast-modal-http.log
+          exit 1
+      - name: Test login modal on narrow and short viewports
+        run: node tests/mobile-modal-viewport-acceptance.cjs
+        env:
+          NIGHTCAST_MODAL_TARGET: login
+      - name: Publish viewport test summary
+        if: always()
+        run: |
+          {
+            echo "## NightCast Mobile Login Modal Acceptance"
+            echo ""
+            echo "- Target: login"
+            echo "- Viewports: 320×568, 360×640, 390×844, 844×390"
+            echo "- Checks primary action visibility, disabled/hidden state, and horizontal containment."
+          } >> "$GITHUB_STEP_SUMMARY"

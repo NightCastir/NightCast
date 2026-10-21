@@ -1,8 +1,8 @@
 name: Build NightCast Android APK
 
 concurrency:
-  group: nightcast-android-${{ github.ref }}
-  cancel-in-progress: true
+  group: nightcast-android-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
 
 on:
   push:

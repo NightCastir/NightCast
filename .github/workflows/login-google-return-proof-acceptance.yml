@@ -15,6 +15,7 @@ on:
       - 'users/login.html'
       - 'users/js/login.js'
       - 'tests/login-google-return-proof-acceptance.cjs'
+      - 'tests/login-google-return-proof-static-acceptance.cjs'
       - '.github/workflows/login-google-return-proof-acceptance.yml'
   workflow_dispatch:
 
@@ -49,7 +50,7 @@ jobs:
             echo "WAIT | waiting for live login deployment | attempt=$attempt"
             sleep 10
           done
-          echo "FAIL | live site did not publish return-proof cache key"
+          echo "FAIL | live login HTML did not publish return-proof cache key"
           exit 1
       - name: Install Playwright and Chromium
         if: github.event_name != 'pull_request'
@@ -60,4 +61,4 @@ jobs:
         if: github.event_name != 'pull_request'
         run: node tests/login-google-return-proof-acceptance.cjs
         env:
-          NIGHTCAST_LOGIN_URL: "https://nightcast.ir/users/login.html?nc_google_return_check=$GITHUB_SHA"          NIGHTCAST_LOGIN_URL: "https://nightcast.ir/users/login.html?nc_google_return_check=$GITHUB_SHA"
+          NIGHTCAST_LOGIN_URL: "https://nightcast.ir/users/login.html?nc_google_return_check=$GITHUB_SHA"

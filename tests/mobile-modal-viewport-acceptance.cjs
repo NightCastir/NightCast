@@ -135,6 +135,30 @@ assert.ok(selectors[target], 'Unknown NIGHTCAST_MODAL_TARGET: ' + target);
         check(target + ' layout has a bounded horizontal footprint at ' + viewport.width + 'x' + viewport.height,
           layout.found && layout.width > 0 && layout.left >= -1 && layout.right <= viewport.width + 1,
           JSON.stringify(layout));
+
+        if (target === 'comment' || target === 'suggestion') {
+          await page.evaluate(() => {
+            if (window.NightCastSuccessDialog) {
+              window.NightCastSuccessDialog.show({
+                title: 'ثبت شد',
+                message: 'درخواست شما با موفقیت ثبت شد.'
+              });
+            }
+          });
+          const successDialog = page.locator('#ncSuccessDialog');
+          await successDialog.waitFor({ state: 'visible', timeout: 3000 });
+          await successDialog.locator('.nc-success-dialog__close').waitFor({ state: 'visible', timeout: 3000 });
+          const successGeometry = await successDialog.locator('.nc-success-dialog__panel').evaluate(el => {
+            const r = el.getBoundingClientRect();
+            return { width: Math.round(r.width), left: Math.round(r.left), right: Math.round(r.right),
+              viewportWidth: innerWidth, visible: r.width > 0 && r.height > 0 && r.right > 0 && r.left < innerWidth };
+          });
+          check(target + ' success confirmation dialog fits ' + viewport.width + 'x' + viewport.height,
+            successGeometry.visible && successGeometry.left >= -1 && successGeometry.right <= viewport.width + 1,
+            JSON.stringify(successGeometry));
+          await successDialog.locator('.nc-success-dialog__close').click();
+          await successDialog.waitFor({ state: 'hidden', timeout: 3000 });
+        }
       } catch (error) {
         check(target + ' browser scenario at ' + viewport.width + 'x' + viewport.height, false, error.message);
       } finally {

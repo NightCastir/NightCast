@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - feat/cinematic-cosmos-redesign
+      - fix/club-static-source-validation
   pull_request:
     branches:
       - main

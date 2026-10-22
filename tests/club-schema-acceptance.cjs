@@ -9,6 +9,10 @@ const redemptionMigration = fs.readFileSync('migrations/club/0003_atomic_reward_
 const page = fs.readFileSync('club.html', 'utf8');
 const css = fs.readFileSync('css/nightcast-club.css', 'utf8');
 const client = fs.readFileSync('js/nightcast-club.js', 'utf8');
+const listener = fs.readFileSync('js/nightcast-club-listener.js', 'utf8');
+const home = fs.readFileSync('index.html', 'utf8');
+const adminPage = fs.readFileSync('club-admin.html', 'utf8');
+const adminClient = fs.readFileSync('js/club-admin.js', 'utf8');
 const themeCss = fs.readFileSync('css/nightcast-themes.css', 'utf8');
 const themeJs = fs.readFileSync('js/nightcast-theme.js', 'utf8');
 
@@ -60,14 +64,25 @@ check('client never fabricates reward values and handles missing API honestly', 
   assert.match(client, /request\('\/club\/summary'\)/);
   assert.match(client, /loadSection\('\/club\/missions'/);
   assert.match(client, /loadSection\('\/club\/badges'/);
+  assert.match(client, /loadSection\('\/club\/rewards'/);
+  assert.match(client, /\/club\/missions\//);
+  assert.match(client, /\/club\/rewards\//);
   assert.match(client, /loadSection\('\/club\/ledger\?limit=20'/);
   assert.match(client, /summary\.badges_earned/);
   assert.match(client, /summary\.next_level/);
   assert.match(client, /API باشگاه هنوز در Worker مستقر نشده است/);
   assert.match(client, /No client-side points, XP, missions or rewards are fabricated/);
   assert.doesNotMatch(client, /clubPoints\s*[:=]\s*[0-9]+/);
-  assert.match(page, /nightcast-club\.css\?v=2/);
-  assert.match(page, /nightcast-club\.js\?v=3/);
+  assert.match(client, /nightcast-club-api\.tomasgermany2580\.workers\.dev\/api\/v1/);
+  assert.match(page, /nightcast-club\.css\?v=3/);
+  assert.match(page, /nightcast-club\.js\?v=5/);
+  assert.match(page, /clubRewards/);
+  assert.match(listener, /nightcast-club-api\.tomasgermany2580\.workers\.dev/);
+  assert.match(listener, /nightcast:podcastchange/);
+  assert.match(listener, /sequence_number/);
+  assert.match(home, /nightcast-club-listener\.js\?v=1/);
+  assert.match(adminClient, /nightcast-club-api\.tomasgermany2580\.workers\.dev/);
+  assert.match(adminPage, /club-admin\.js\?v=2/);
 });
 check('both migrations apply cleanly against the existing user/podcast table contract', function () {
   const sql = 'PRAGMA foreign_keys=ON; CREATE TABLE users(id INTEGER PRIMARY KEY); CREATE TABLE podcasts(id INTEGER PRIMARY KEY);' + migration + sequenceMigration + redemptionMigration + ' SELECT name FROM sqlite_master WHERE type="table";';

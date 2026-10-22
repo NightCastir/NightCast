@@ -60,6 +60,7 @@ CREATE TABLE IF NOT EXISTS club_notifications (
 CREATE INDEX IF NOT EXISTS idx_club_notifications_user_created ON club_notifications(user_id, created_at DESC);
 
 ALTER TABLE club_profiles ADD COLUMN timezone TEXT;
+ALTER TABLE club_profiles ADD COLUMN last_seen_podcast_id INTEGER NOT NULL DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS club_notification_dispatch_log (
   user_id INTEGER NOT NULL,

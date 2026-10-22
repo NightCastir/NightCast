@@ -32,6 +32,20 @@ function randomId() {
   return crypto.randomUUID();
 }
 
+function isTrustedPushEndpoint(value) {
+  try {
+    const parsed = new URL(String(value));
+    if (parsed.protocol !== "https:" || parsed.username || parsed.password || parsed.port) return false;
+    const host = parsed.hostname.toLowerCase();
+    return host === "fcm.googleapis.com" ||
+      host === "updates.push.services.mozilla.com" ||
+      host.endsWith(".push.services.mozilla.com") ||
+      host.endsWith(".notify.windows.com") ||
+      host === "web.push.apple.com" ||
+      host.endsWith(".push.apple.com");
+  } catch (_) { return false; }
+}
+
 async function sha256(value) {
   const bytes = new TextEncoder().encode(value);
   const digest = await crypto.subtle.digest("SHA-256", bytes);
@@ -701,6 +715,7 @@ export async function handleClubApi({ request, url, DB, json, checkAuth, env }) 
       const body = await request.json().catch(()=>({}));
       const subscription = body.subscription;
       if (!subscription || typeof subscription.endpoint!=="string" || subscription.endpoint.length>2048 ||
+          !isTrustedPushEndpoint(subscription.endpoint) ||
           !subscription.keys || typeof subscription.keys.p256dh!=="string" || typeof subscription.keys.auth!=="string") {
         return fail(json,400,"اطلاعات اشتراک اعلان معتبر نیست.","club_push_invalid_subscription");
       }

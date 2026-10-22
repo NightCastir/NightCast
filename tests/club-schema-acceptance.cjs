@@ -58,3 +58,12 @@ check('migration applies cleanly against the existing user/podcast table contrac
   const output = execFileSync('python3', ['-c', 'import sqlite3,sys; c=sqlite3.connect(\":memory:\"); c.executescript(sys.stdin.read()); print(\"OK\")'], { input: sql, encoding: 'utf8' });
   assert.match(output, /OK/);
 });
+
+check('tracked API worker snapshot preserves existing D1 and auth integration points', function () {
+  const worker = fs.readFileSync('workers/nightcast-api.js', 'utf8');
+  assert.match(worker, /const DB = env\.NightCastBinding/);
+  assert.match(worker, /async function checkAuth\(\)/);
+  assert.match(worker, /\/api\/v1\/public\/openid\/google/);
+  assert.match(worker, /FROM user_sessions/);
+  assert.match(worker, /FROM admin_sessions/);
+});

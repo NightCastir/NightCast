@@ -9,7 +9,7 @@ VALUES (101,'fixture-claim-mission','once',1,'completed',CURRENT_TIMESTAMP);
 INSERT INTO club_point_ledger(user_id,delta,source_type,idempotency_key,status)
 VALUES (101,50,'fixture','club-fixture-credit','posted');
 INSERT INTO club_rewards(id,title_fa,description_fa,reward_type,cost_points,stock_remaining,max_per_user,is_active,created_by)
-VALUES ('fixture-cancel-reward','پاداش لغو آزمایشی','Fixture reward','coupon',10,1,5,1,'integration-test');
+VALUES ('fixture-cancel-reward','پاداش لغو آزمایشی','Fixture reward','coupon',10,3,5,1,'integration-test');
 INSERT INTO club_reward_redemptions(id,user_id,reward_id,cost_points,idempotency_key,status)
 VALUES ('fixture-cancel-redemption',101,'fixture-cancel-reward',10,'club-fixture-redemption-cancel','pending');
 INSERT INTO club_reward_redemptions(id,user_id,reward_id,cost_points,idempotency_key,status)

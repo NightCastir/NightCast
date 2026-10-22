@@ -65,6 +65,30 @@
     sendEvent();
     timer = window.setInterval(sendEvent, 65000);
   }
+  function awardDailyCheckin() {
+    var auth = token();
+    if (!auth) return;
+    fetch('https://club-api.nightcast.ir/api/v1/club/checkin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': 'Bearer ' + auth },
+      credentials: 'omit',
+      cache: 'no-store',
+      body: '{}'
+    }).then(function (response) {
+      return response.json().catch(function () { return {}; }).then(function (data) {
+        if (!response.ok || !data.success || data.duplicate || !Number(data.points_awarded)) return;
+        var toast = document.createElement('div');
+        toast.setAttribute('role', 'status');
+        toast.setAttribute('aria-live', 'polite');
+        toast.textContent = '✨ خوش آمدی! ' + Number(data.points_awarded) + ' امتیاز حضور روزانه به باشگاهت اضافه شد.';
+        toast.style.cssText = 'position:fixed;z-index:2147483000;right:16px;bottom:calc(110px + env(safe-area-inset-bottom,0px));max-width:min(420px,calc(100vw - 32px));padding:14px 18px;border:1px solid rgba(116,220,180,.6);border-radius:16px;background:rgba(8,30,36,.96);color:#f2fff9;box-shadow:0 12px 40px #0006;font:600 14px/1.8 Vazirmatn,sans-serif;direction:rtl;opacity:0;transform:translateY(10px);transition:opacity .25s,transform .25s';
+        document.body.appendChild(toast);
+        window.requestAnimationFrame(function () { toast.style.opacity = '1'; toast.style.transform = 'translateY(0)'; });
+        window.setTimeout(function () { toast.style.opacity = '0'; toast.style.transform = 'translateY(10px)'; window.setTimeout(function () { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 300); }, 5500);
+        window.dispatchEvent(new CustomEvent('nightcast:club-points-awarded', { detail: { source: 'daily_checkin', points: Number(data.points_awarded) } }));
+      });
+    }).catch(function () { /* no client-side credit on API/network failure */ });
+  }
   function init() {
     audio = document.getElementById('audioPlayer');
     if (!audio) return;

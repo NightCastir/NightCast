@@ -63,7 +63,7 @@
     sequence = 0;
     active = true;
     sendEvent();
-    timer = window.setInterval(sendEvent, 60000);
+    timer = window.setInterval(sendEvent, 65000);
   }
   function init() {
     audio = document.getElementById('audioPlayer');

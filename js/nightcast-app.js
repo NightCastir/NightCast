@@ -2309,6 +2309,9 @@ LOGOUT
 
                 els.audio.load();
 
+                window.dispatchEvent(new CustomEvent("nightcast:podcastchange", {
+                    detail: { podcastId: Number(p.id) }
+                }));
 
                 els.audio
                     .play()

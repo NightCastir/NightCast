@@ -1804,6 +1804,16 @@ LOGOUT
                LOAD PODCASTS
             ========================================================= */
 
+            function openSharedPodcastFromUrl() {
+                if (window.__NC_SHARED_PODCAST_OPENED) return;
+                const requested = new URLSearchParams(window.location.search).get("podcast");
+                if (!requested) return;
+                const podcast = state.all.find(item => String(item.id) === requested || String(item.slug || "") === requested);
+                if (!podcast) return;
+                window.__NC_SHARED_PODCAST_OPENED = true;
+                window.setTimeout(() => openPodcastDetails(podcast.id), 80);
+            }
+
             async function loadPodcasts() {
 
                 const cacheKey = CONFIG.CACHE_KEY;
@@ -1823,6 +1833,7 @@ LOGOUT
                     updatePodcastCollectionSchema(cached);
                     applyView();
                     window.__NC_CACHED_CATALOG_RENDERED = true;
+                    openSharedPodcastFromUrl();
                 } else {
                     skeletons();
                 }
@@ -1931,6 +1942,7 @@ LOGOUT
                     // Keep already-rendered podcast cards stable when the API refresh completes.
                     // Replacing the entire grid here caused cards to disappear/reappear during scroll.
                     applyView({ preserveExisting: true });
+                    openSharedPodcastFromUrl();
 
                 } catch (err) {
                     console.error("NightCast Feed Error:", err);
@@ -1941,6 +1953,7 @@ LOGOUT
                         updateLatest(cached);
                         updatePodcastCollectionSchema(cached);
                         applyView();
+                        openSharedPodcastFromUrl();
                         return;
                     }
 

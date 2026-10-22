@@ -239,6 +239,11 @@
                     باشگاه شنوندگان
                 </a>
 
+                <a class="nav-link"
+                   href="/quiz">
+                    سؤال چهارگزینه‌ای
+                </a>
+
                 <button type="button"
                         class="nav-link nav-link-button"
                         id="requestBookSummaryBtn"
@@ -329,6 +334,8 @@
             <a href="/about"><span class="nc-drawer-icon"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></span><span><strong>درباره ما</strong><small>داستان و مأموریت ما</small></span><i class="fa-solid fa-arrow-left nc-drawer-arrow" aria-hidden="true"></i></a>
             <a href="/contact"><span class="nc-drawer-icon"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i></span><span><strong>تماس با ما</strong><small>در ارتباط بمانیم</small></span><i class="fa-solid fa-arrow-left nc-drawer-arrow" aria-hidden="true"></i></a>
             <a href="/club"><span class="nc-drawer-icon"><i class="fa-solid fa-star" aria-hidden="true"></i></span><span><strong>باشگاه شنوندگان</strong><small>امتیاز، مأموریت و پاداش</small></span><i class="fa-solid fa-arrow-left nc-drawer-arrow" aria-hidden="true"></i></a>
+            <a href="/quiz"><span class="nc-drawer-icon"><i class="fa-solid fa-brain" aria-hidden="true"></i></span><span><strong>سؤال چهارگزینه‌ای</strong><small>چالش روزانه و امتیاز</small></span><i class="fa-solid fa-arrow-left nc-drawer-arrow" aria-hidden="true"></i></a>
+            <a href="/leaderboard"><span class="nc-drawer-icon"><i class="fa-solid fa-trophy" aria-hidden="true"></i></span><span><strong>برترین شنوندگان</strong><small>مدال طلا، نقره و برنز</small></span><i class="fa-solid fa-arrow-left nc-drawer-arrow" aria-hidden="true"></i></a>
             <button type="button" data-request-book-summary class="nc-drawer-action" aria-haspopup="dialog"><span class="nc-drawer-icon"><i class="fa-solid fa-headphones" aria-hidden="true"></i></span><span><strong>پیشنهاد پادکست دلخواه</strong><small>کتاب پیشنهادی خودت را معرفی کن</small></span><i class="fa-solid fa-arrow-left nc-drawer-arrow" aria-hidden="true"></i></button>
         </nav>
         <div class="nc-drawer-foot"><span class="nc-live-dot"></span> صدای ایده‌های ماندگار</div>
@@ -1166,7 +1173,7 @@
                         <div class="nc-now-book" id="ncNowBook" hidden></div>
                     </div>
                 </div>
-                <div class="nc-now-actions"><button type="button" class="nc-like-button nc-now-like" id="ncNowLike" data-like-surface="now-playing" aria-label="افزودن به علاقه‌مندی‌ها" aria-pressed="false" hidden><i class="fa-regular fa-heart" aria-hidden="true"></i><span>علاقه‌مندی</span></button><button type="button" class="nc-like-button nc-now-comments" id="ncNowComments" aria-label="دیدگاه‌های این پادکست"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>دیدگاه‌ها</span></button></div>
+                <div class="nc-now-actions"><button type="button" class="nc-like-button nc-now-like" id="ncNowLike" data-like-surface="now-playing" aria-label="افزودن به علاقه‌مندی‌ها" aria-pressed="false" hidden><i class="fa-regular fa-heart" aria-hidden="true"></i><span>علاقه‌مندی</span></button><button type="button" class="nc-like-button nc-now-comments" id="ncNowComments" aria-label="دیدگاه‌های این پادکست"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>دیدگاه‌ها</span></button><button type="button" class="nc-like-button nc-now-share" id="ncNowShare" aria-label="اشتراک‌گذاری پادکست"><i class="fa-solid fa-share-nodes" aria-hidden="true"></i><span>اشتراک</span></button></div>
                 <div class="nc-now-controls">
                     <button type="button" class="nc-now-control" id="ncNowPrev" aria-label="پادکست قبلی"><i class="fa-solid fa-backward-step"></i></button>
                     <button type="button" class="nc-now-control primary" id="ncNowToggle" aria-label="پخش یا توقف"><i class="fa-solid fa-play"></i></button>
@@ -1192,8 +1199,9 @@
 
     <script src="/js/nightcast-theme.js?v=6" defer></script>
     <script src="/js/nightcast-shield.js?v=4" defer></script>
-    <script src="/js/nightcast-app.js?v=4" defer></script>
-<script src="/js/nightcast-club-listener.js?v=1" defer></script>
+    <script src="/js/nightcast-app.js?v=5" defer></script>
+<script src="/js/nightcast-club-listener.js?v=2" defer></script>
+<script src="/js/nightcast-referrals.js?v=1" defer></script>
     <script src="/js/nightcast-spider-visualizer.js?v=1" defer></script>
     <script src="/js/nightcast-theme-experience.js?v=4" defer></script>
 

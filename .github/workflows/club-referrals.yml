@@ -1,0 +1,53 @@
+name: NightCast Club Referral Rewards
+on:
+  push:
+    branches: [main, feat/nightcast-club-engagement-v1]
+    paths:
+      - 'data/club-quiz-questions.json'
+      - 'migrations/club/0004_engagement.sql'
+      - 'tests/club-engagement-acceptance.cjs'
+      - 'workers/club-api.js'
+      - 'js/nightcast-app.js'
+      - 'js/nightcast-club-listener.js'
+      - 'js/nightcast-quiz.js'
+      - 'quiz.html'
+      - 'leaderboard.html'
+      - 'js/nightcast-leaderboard.js'
+      - 'js/nightcast-referrals.js'
+      - '.github/workflows/club-referrals.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'data/club-quiz-questions.json'
+      - 'migrations/club/0004_engagement.sql'
+      - 'tests/club-engagement-acceptance.cjs'
+      - 'workers/club-api.js'
+      - 'js/nightcast-app.js'
+      - 'js/nightcast-club-listener.js'
+      - 'js/nightcast-quiz.js'
+      - 'quiz.html'
+      - 'leaderboard.html'
+      - 'js/nightcast-leaderboard.js'
+      - 'js/nightcast-referrals.js'
+      - '.github/workflows/club-referrals.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  referrals-contract:
+    name: NightCast Club Referral Rewards contract acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Python for SQLite migration tests
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Validate referrals contract and schema constraints
+        env:
+          CLUB_FEATURE: 'referrals'
+        run: node tests/club-engagement-acceptance.cjs

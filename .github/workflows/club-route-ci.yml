@@ -33,10 +33,15 @@ jobs:
         run: node tests/club-schema-acceptance.cjs
       - name: Verify route authorization and transactional redemption
         run: node tests/club-api-acceptance.cjs
-      - name: Check Worker and admin console syntax
+      - name: Check Worker and engagement client syntax
         run: |
           node --check workers/club-api.js
           node --check js/club-admin.js
+          node --check js/nightcast-quiz.js
+          node --check js/nightcast-leaderboard.js
+          node --check js/nightcast-club-listener.js
+      - name: Validate daily engagement schema and question bank
+        run: node tests/club-engagement-acceptance.cjs
       - name: Smoke test deployed production Club API authorization and CORS
         shell: bash
         run: |

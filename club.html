@@ -14,6 +14,7 @@
   <script src="/js/nightcast-theme.js?v=2" defer></script>
   <script src="/js/auth.js" defer></script>
   <script src="/js/nightcast-club.js?v=8" defer></script>
+  <script src="/js/nightcast-referrals.js?v=1" defer></script>
 </head>
 <body class="nc-club-page">
   <header class="nc-club-header">
@@ -25,6 +26,8 @@
       <a href="/podcasts">پادکست‌ها</a>
       <a href="/about">درباره ما</a>
       <a href="/contact">تماس</a>
+      <a href="/quiz">پرسش روزانه</a>
+      <a href="/leaderboard">برترین شنوندگان</a>
     </nav>
     <button class="nc-club-theme-button" type="button" id="clubThemeButton" aria-label="تغییر تم سایت">
       <i class="fa-solid fa-palette" aria-hidden="true"></i><span>تم سایت</span>
@@ -77,6 +80,13 @@
     <section class="nc-club-section nc-club-history" aria-labelledby="clubHistoryTitle">
       <div class="nc-club-section-heading"><div><small>شفاف و قابل‌پیگیری</small><h2 id="clubHistoryTitle">تاریخچه امتیازها</h2></div><span class="nc-club-section-mark"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i></span></div>
       <div class="nc-club-list" id="clubLedger"><p class="nc-club-empty">تراکنش‌ها فقط از دفتر ثبت سمت سرور نمایش داده خواهند شد.</p></div>
+    </section>
+    <section class="nc-club-section" aria-labelledby="clubInviteTitle">
+      <div class="nc-club-section-heading"><div><small>فرهنگ را با دوستانت شریک شو</small><h2 id="clubInviteTitle">دعوت از دوستان</h2></div><span class="nc-club-section-mark"><i class="fa-solid fa-user-group" aria-hidden="true"></i></span></div>
+      <p>لینک اختصاصی خودت را بساز و برای دوستانت بفرست. وقتی دوستت با این کد وارد حساب شود، امتیاز معرفی برای تو ثبت می‌شود.</p>
+      <button type="button" class="nc-club-theme-button" id="clubInviteButton"><i class="fa-solid fa-share-nodes" aria-hidden="true"></i><span>ساخت لینک دعوت و اشتراک‌گذاری</span></button>
+      <p id="clubInviteStatus" role="status" aria-live="polite">برای ساخت لینک اختصاصی وارد حساب شو.</p>
+      <code id="clubInviteCode" hidden></code>
     </section>
     <p class="nc-club-footnote">امتیازها و دستاوردها باید از فعالیت معتبر سمت سرور تأیید شوند؛ بازکردن صفحه یا فشردن یک دکمه به‌تنهایی امتیازی ایجاد نمی‌کند.</p>
   </main>

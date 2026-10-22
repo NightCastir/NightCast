@@ -2920,6 +2920,7 @@ LOGOUT
             document.getElementById("ncNowToggle")?.addEventListener("click", togglePlay);
             document.getElementById("ncNowPrev")?.addEventListener("click", () => nextPodcast(-1));
             document.getElementById("ncNowNext")?.addEventListener("click", () => nextPodcast(1));
+            document.getElementById("ncNowShare")?.addEventListener("click", () => { if (state.current) sharePodcast(state.current.id); else toast("ابتدا یک پادکست انتخاب کنید."); });
             document.getElementById("ncPlayerLike")?.addEventListener("click", () => { if (state.current) toggleFavorite(state.current.id); });
             document.getElementById("ncNowLike")?.addEventListener("click", () => { if (state.current) toggleFavorite(state.current.id); });
             document.getElementById("ncNowProgress")?.addEventListener("input", e => {

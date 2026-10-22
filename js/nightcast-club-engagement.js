@@ -127,7 +127,7 @@
         var reg = await navigator.serviceWorker.ready;
         var sub = await reg.pushManager.getSubscription();
         if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(keyInfo.public_key) });
-        await request('/notifications/subscribe','POST',{subscription:sub.toJSON()});
+        await request('/notifications/subscribe','POST',{subscription:sub.toJSON(),timezone:(Intl.DateTimeFormat().resolvedOptions().timeZone||'Asia/Tehran')});
         toast('اشتراک اعلان این دستگاه ثبت شد.');
       } catch (_) { toast('فعال‌سازی اعلان‌ها انجام نشد؛ اتصال و مجوز اعلان را بررسی کن.'); }
     });

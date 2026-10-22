@@ -1,0 +1,33 @@
+name: NightCast Admin Email Authorization
+
+on:
+  push:
+    branches:
+      - feat/admin-email-allowlist
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  admin-email-authorization:
+    name: Admin allowlist and access-gate checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Test admin email allowlist and UI gates
+        run: node tests/club-admin-email-gate-acceptance.cjs
+
+      - name: Validate GitHub Actions workflow semantics
+        run: go run github.com/rhysd/actionlint/cmd/actionlint@latest -color

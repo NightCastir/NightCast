@@ -732,9 +732,9 @@ jobs:
               '<uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />',
           ):
               if permission not in text:
-                  text=text.replace("<application", permission+"\\n    <application", 1)
-          receiver='''\\n    <receiver android:name=".NightCastRadioWidgetProvider" android:label="NightCast Radio" android:exported="true"><intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter><meta-data android:name="android.appwidget.provider" android:resource="@xml/nightcast_radio_widget_info" /></receiver>\\n'''
-          service='''\\n    <service android:name=".NightCastPlaybackService" android:exported="false" android:foregroundServiceType="mediaPlayback" />\\n'''
+                  text=text.replace("<application", permission+"\n    <application", 1)
+          receiver='''\n    <receiver android:name=".NightCastRadioWidgetProvider" android:label="NightCast Radio" android:exported="true"><intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter><meta-data android:name="android.appwidget.provider" android:resource="@xml/nightcast_radio_widget_info" /></receiver>\n'''
+          service='''\n    <service android:name=".NightCastPlaybackService" android:exported="false" android:foregroundServiceType="mediaPlayback" />\n'''
           if "NightCastRadioWidgetProvider" not in text: text=text.replace("</application>",receiver+"</application>",1)
           if "NightCastPlaybackService" not in text: text=text.replace("</application>",service+"</application>",1)
           if "NightCastRadioWidgetProvider" not in text or "NightCastPlaybackService" not in text or "FOREGROUND_SERVICE_MEDIA_PLAYBACK" not in text:

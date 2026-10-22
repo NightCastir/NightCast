@@ -7,6 +7,9 @@ on:
     paths:
       - 'js/nightcast-club-engagement.js'
       - 'workers/club-api.js'
+      - 'workers/club-api-entry.js'
+      - 'workers/club-notification-dispatch.js'
+      - 'migrations/club/0004_daily_engagement_quiz_referrals_notifications.sql'
       - 'tests/club-quiz-reminder-acceptance.cjs'
   pull_request:
     branches:

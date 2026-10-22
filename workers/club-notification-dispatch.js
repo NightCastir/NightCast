@@ -33,6 +33,18 @@ async function sendOne(DB, env, subscriptionRow, message) {
   }
 }
 
+function localClock(date, timezone) {
+  let zone = timezone || "Asia/Tehran";
+  let parts;
+  try {
+    parts = new Intl.DateTimeFormat("en-GB", { timeZone: zone, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" }).formatToParts(date);
+  } catch (_) {
+    parts = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Tehran", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" }).formatToParts(date);
+  }
+  const value = (type) => (parts.find((part) => part.type === type) || {}).value || "00";
+  return { day: value("year") + "-" + value("month") + "-" + value("day"), hour: Number(value("hour")), minute: Number(value("minute")), second: Number(value("second")) };
+}
+
 export async function dispatchClubNotifications(env) {
   const DB = env.NightCastBinding;
   if (!DB || !env.VAPID_PUBLIC_KEY || !env.VAPID_PRIVATE_KEY || !env.VAPID_SUBJECT) return;
@@ -65,21 +77,19 @@ export async function dispatchClubNotifications(env) {
     }
   }
 
-  // One late-evening reminder per account/day. The open app also renders a live local-midnight countdown.
-  const hour = new Date().getUTCHours();
-  if (hour < 17 || hour > 23) return;
-  const day = new Date().toISOString().slice(0, 10);
-  const users = await DB.prepare(`SELECT DISTINCT p.user_id FROM club_profiles p
-    JOIN club_push_subscriptions s ON s.user_id=p.user_id
-    WHERE p.notifications_enabled=1 AND NOT EXISTS
-      (SELECT 1 FROM club_quiz_sessions q WHERE q.user_id=p.user_id AND q.day_key=? AND q.answered_at IS NOT NULL)`).bind(day).all();
-  const seconds = Math.max(0, Math.floor((Date.UTC(new Date().getUTCFullYear(),new Date().getUTCMonth(),new Date().getUTCDate()+1)-Date.now())/1000));
-  const countdown = String(Math.floor(seconds/3600)).padStart(2,"0")+":"+String(Math.floor(seconds%3600/60)).padStart(2,"0");
+  // Refresh the same tagged notification once per hour in the listener's local evening.
+  // Reusing a tag replaces the previous tray item instead of creating notification spam.
+  const users = await DB.prepare("SELECT DISTINCT p.user_id,p.timezone FROM club_profiles p JOIN club_push_subscriptions s ON s.user_id=p.user_id WHERE p.notifications_enabled=1 AND NOT EXISTS (SELECT 1 FROM club_quiz_sessions q WHERE q.user_id=p.user_id AND q.answered_at IS NOT NULL AND q.shown_at >= datetime('now','-24 hours'))").all();
   for (const user of users.results || []) {
-    const result = await DB.prepare("INSERT OR IGNORE INTO club_notification_dispatch_log(user_id,notification_type,day_key) VALUES(?,'quiz_reminder',?)").bind(user.user_id,day).run();
+    const clock = localClock(new Date(), user.timezone);
+    if (clock.hour < 21 || clock.hour > 23) continue;
+    const seconds = Math.max(0, 86400 - (clock.hour * 3600 + clock.minute * 60 + clock.second));
+    const countdown = String(Math.floor(seconds / 3600)).padStart(2, "0") + ":" + String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
+    const reminderType = "quiz_reminder_" + clock.hour;
+    const result = await DB.prepare("INSERT OR IGNORE INTO club_notification_dispatch_log(user_id,notification_type,day_key) VALUES(?,?,?)").bind(user.user_id, reminderType, clock.day).run();
     if (!Number(result?.meta?.changes || 0)) continue;
     const subs = await DB.prepare("SELECT id,user_id,subscription_json FROM club_push_subscriptions WHERE user_id=?").bind(user.user_id).all();
-    const payload = { title:"فرصت سؤال روز NightCast 🎁", body:"فرصت باقی‌مانده: "+countdown+"؛ هنوز فرصت داری به سؤال روز پاسخ بدهی و جایزه بگیری.", url:"/quiz", tag:"nightcast-quiz-reminder-"+day };
-    for (const row of subs.results || []) await sendOne(DB,env,row,payload);
+    const payload = { title: "فرصت سؤال روز NightCast 🎁", body: "فرصت باقی‌مانده: " + countdown + "؛ هنوز فرصت داری به سؤال روز پاسخ بدهی و جایزه بگیری.", url: "/quiz", tag: "nightcast-quiz-reminder-" + clock.day, renotify: false };
+    for (const row of subs.results || []) await sendOne(DB, env, row, payload);
   }
 }

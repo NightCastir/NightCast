@@ -58,9 +58,16 @@ check('club styles use theme tokens and support reduced motion', function () {
 });
 check('client never fabricates reward values and handles missing API honestly', function () {
   assert.match(client, /request\('\/club\/summary'\)/);
+  assert.match(client, /request\('\/club\/missions'\)/);
+  assert.match(client, /request\('\/club\/badges'\)/);
+  assert.match(client, /request\('\/club\/ledger\?limit=20'\)/);
+  assert.match(client, /summary\.badges_earned/);
+  assert.match(client, /summary\.next_level/);
   assert.match(client, /API باشگاه هنوز در Worker مستقر نشده است/);
   assert.match(client, /No client-side points, XP, missions or rewards are fabricated/);
   assert.doesNotMatch(client, /clubPoints\s*[:=]\s*[0-9]+/);
+  assert.match(page, /nightcast-club\.css\?v=2/);
+  assert.match(page, /nightcast-club\.js\?v=3/);
 });
 check('both migrations apply cleanly against the existing user/podcast table contract', function () {
   const sql = 'PRAGMA foreign_keys=ON; CREATE TABLE users(id INTEGER PRIMARY KEY); CREATE TABLE podcasts(id INTEGER PRIMARY KEY);' + migration + sequenceMigration + redemptionMigration + ' SELECT name FROM sqlite_master WHERE type="table";';

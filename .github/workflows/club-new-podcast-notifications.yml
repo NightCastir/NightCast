@@ -1,0 +1,32 @@
+name: NightCast New Podcast Notifications Acceptance
+
+on:
+  push:
+    branches:
+      - feat/listener-club-quiz-notifications
+    paths:
+      - 'sw.js'
+      - 'js/nightcast-club-engagement.js'
+      - 'workers/club-api.js'
+      - 'tests/club-new-podcast-notifications.cjs'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate NightCast New Podcast Notifications Acceptance
+        run: node tests/club-new-podcast-notifications.cjs

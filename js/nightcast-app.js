@@ -216,6 +216,15 @@
             window.NightCastPodcastBridge = Object.freeze({
                 getPodcasts: () => state.all,
                 getCurrentPodcast: () => state.current,
+                handleWidgetAction: action => {
+                    if (!state.current && !state.all.length) return false;
+                    if (action === "play") { if (!state.current) playPodcast(state.all[0].id); else if (els.audio.paused) togglePlay(); }
+                    else if (action === "pause") { if (!els.audio.paused) els.audio.pause(); }
+                    else if (action === "next") { if (state.all.length > 1) nextPodcast(1); }
+                    else if (action === "previous") { if (state.all.length > 1) nextPodcast(-1); }
+                    else return false;
+                    return true;
+                },
                 apiBase: CONFIG.API_BASE,
                 loginPage: CONFIG.LOGIN_PAGE,
                 getToken: () => getToken(),
@@ -2180,17 +2189,26 @@ LOGOUT
                 render(performance.now());
             }
 
+            function syncNativeWidgetState() {
+                const plugin=window.Capacitor?.Plugins?.NightCastWidgetBridge;
+                if(!plugin?.updatePlaybackState)return;
+                const current=state.current;
+                plugin.updatePlaybackState({title:current?.title||"NightCast Radio",artist:current?.author_name||"رادیوی فرهنگی NightCast",isPlaying:!!current&&!els.audio.paused&&!els.audio.ended,canSkip:state.all.length>1}).catch(()=>{});
+            }
             els.audio.addEventListener("play", () => {
                 if (ncAudioContext?.state === "suspended") ncAudioContext.resume().catch(() => {});
                 drawAudioVisualizer();
+                syncNativeWidgetState();
             });
             els.audio.addEventListener("pause", () => {
                 cancelAnimationFrame(ncVisualizerFrame);
                 drawAudioVisualizer();
+                syncNativeWidgetState();
             });
             els.audio.addEventListener("ended", () => {
                 cancelAnimationFrame(ncVisualizerFrame);
                 drawAudioVisualizer();
+                syncNativeWidgetState();
             });
             els.audio.addEventListener("error", () => {
                 /* If a cross-origin source rejects CORS mode, retry ordinary playback without breaking the player. */

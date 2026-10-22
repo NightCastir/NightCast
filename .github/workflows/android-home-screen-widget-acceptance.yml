@@ -1,0 +1,39 @@
+name: Android Home Screen Radio Widget Acceptance
+on:
+  push:
+    branches: [main, "feat/**"]
+    paths: ["android-template/**","js/nightcast-app.js",".github/workflows/build-android.yml",".github/workflows/android-home-screen-widget-acceptance.yml","tests/android-home-screen-widget-acceptance.cjs"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  widget-acceptance:
+    name: Native widget structure and bridge checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: "22"}
+      - name: Check JavaScript syntax
+        run: node --check js/nightcast-app.js
+      - name: Run widget acceptance assertions
+        run: node tests/android-home-screen-widget-acceptance.cjs
+      - name: Validate generated Android resource XML templates
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+          import re
+          workflow=Path(".github/workflows/build-android.yml").read_text()
+          xml_blocks=re.findall(r'cat > "\$RES/[^"]+\.xml" <<\'[^\']+\'\n(.*?)\n\s+[A-Z_]+\n',workflow,re.S)
+          if len(xml_blocks)<5: raise SystemExit(f"Expected widget XML resource templates; found {len(xml_blocks)}")
+          for i,block in enumerate(xml_blocks):
+              ET.fromstring("\n".join(line[10:] if line.startswith("          ") else line for line in block.splitlines()))
+              print(f"PASS | widget resource XML template {i+1}")
+          PY
+      - name: Run existing Android source regression checks
+        run: node tests/android-source-structure.cjs

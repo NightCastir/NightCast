@@ -2,7 +2,7 @@ name: Build NightCast Android APK
 
 concurrency:
   group: nightcast-android-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 on:
   push:
@@ -703,9 +703,25 @@ jobs:
             </LinearLayout>
           </LinearLayout>
           WIDGET_LAYOUT
+          cat > "$RES/layout/widget_nightcast_radio_small.xml" <<'WIDGET_SMALL'
+          <?xml version="1.0" encoding="utf-8"?>
+          <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/widget_root" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/nightcast_widget_background" android:gravity="center_vertical" android:orientation="horizontal" android:padding="8dp">
+            <ImageView android:layout_width="32dp" android:layout_height="32dp" android:contentDescription="NightCast" android:scaleType="fitCenter" android:src="@drawable/nightcast_widget_logo"/>
+            <LinearLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center_vertical" android:orientation="vertical" android:paddingStart="6dp" android:paddingEnd="3dp">
+              <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="NightCast Radio" android:textColor="#FFFFFF" android:textSize="11sp" android:textStyle="bold"/>
+              <TextView android:id="@+id/widget_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:ellipsize="end" android:maxLines="1" android:text="NightCast Radio" android:textColor="#F0F4FF" android:textSize="10sp"/>
+              <TextView android:id="@+id/widget_artist" android:layout_width="match_parent" android:layout_height="wrap_content" android:ellipsize="end" android:maxLines="1" android:text="رادیوی فرهنگی NightCast" android:textColor="#B7C5E8" android:textSize="9sp"/>
+              <TextView android:id="@+id/widget_status" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="متوقف شده" android:textColor="#9FBBFF" android:textSize="9sp"/>
+            </LinearLayout>
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+              <TextView android:id="@+id/widget_play" android:layout_width="30dp" android:layout_height="30dp" android:background="@drawable/nightcast_widget_primary_button" android:gravity="center" android:text="▶" android:textColor="#FFFFFF" android:textSize="13sp"/>
+              <TextView android:id="@+id/widget_pause" android:layout_width="30dp" android:layout_height="30dp" android:layout_marginStart="4dp" android:background="@drawable/nightcast_widget_button" android:gravity="center" android:text="Ⅱ" android:textColor="#FFFFFF" android:textSize="12sp"/>
+            </LinearLayout>
+          </LinearLayout>
+          WIDGET_SMALL
           cat > "$RES/xml/nightcast_radio_widget_info.xml" <<'WIDGET_INFO'
           <?xml version="1.0" encoding="utf-8"?>
-          <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android" android:description="@string/nightcast_widget_description" android:initialLayout="@layout/widget_nightcast_radio" android:minWidth="250dp" android:minHeight="120dp" android:previewImage="@drawable/nightcast_widget_logo" android:resizeMode="horizontal|vertical" android:updatePeriodMillis="0" android:widgetCategory="home_screen"/>
+          <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android" android:description="@string/nightcast_widget_description" android:initialLayout="@layout/widget_nightcast_radio" android:minWidth="180dp" android:minHeight="70dp" android:previewImage="@drawable/nightcast_widget_logo" android:resizeMode="horizontal|vertical" android:updatePeriodMillis="0" android:widgetCategory="home_screen"/>
           WIDGET_INFO
           cat > "$RES/drawable/nightcast_widget_background.xml" <<'WIDGET_BG'
           <?xml version="1.0" encoding="utf-8"?>
@@ -730,6 +746,7 @@ jobs:
           for permission in (
               '<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />',
               '<uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />',
+              '<uses-permission android:name="android.permission.WAKE_LOCK" />',
           ):
               if permission not in text:
                   text=text.replace("<application", permission+"\n    <application", 1)

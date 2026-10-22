@@ -15,6 +15,7 @@ import android.media.session.MediaSession;
 import android.media.session.PlaybackState;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.PowerManager;
 
 /**
  * Fallback playback engine for widget actions after the WebView activity process has gone away.
@@ -70,6 +71,7 @@ public final class NightCastPlaybackService extends Service {
   releasePlayer();currentUrl=url;prepared=false;
   try{
    player=new MediaPlayer();
+   player.setWakeMode(getApplicationContext(),PowerManager.PARTIAL_WAKE_LOCK);
    player.setAudioAttributes(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build());
    player.setOnPreparedListener(mp->{prepared=true;mp.start();setState(true);});
    player.setOnCompletionListener(mp->{setState(false);releasePlayer();});

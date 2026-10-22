@@ -13,6 +13,7 @@ const listener = fs.readFileSync('js/nightcast-club-listener.js', 'utf8');
 const home = fs.readFileSync('index.html', 'utf8');
 const adminPage = fs.readFileSync('club-admin.html', 'utf8');
 const adminClient = fs.readFileSync('js/club-admin.js', 'utf8');
+const clubEntry = fs.readFileSync('workers/club-api-entry.js', 'utf8');
 const themeCss = fs.readFileSync('css/nightcast-themes.css', 'utf8');
 const themeJs = fs.readFileSync('js/nightcast-theme.js', 'utf8');
 
@@ -115,6 +116,14 @@ except sqlite3.IntegrityError:
  print("DUPLICATE_BLOCKED")`;
   const output = execFileSync('python3', ['-c', py], { input: sql, encoding: 'utf8' });
   assert.match(output, /DUPLICATE_BLOCKED/);
+});
+check('dedicated production entry point reuses valid shared sessions and does not expose token creation', function () {
+  assert.match(clubEntry, /handleClubApi/);
+  assert.match(clubEntry, /env\.NightCastBinding/);
+  assert.match(clubEntry, /FROM user_sessions/);
+  assert.match(clubEntry, /FROM admin_sessions/);
+  assert.match(clubEntry, /julianday\(.*expires_at\).*julianday\('now'\)/);
+  assert.doesNotMatch(clubEntry, /INSERT INTO user_sessions|INSERT INTO admin_sessions/);
 });
 check('tracked API worker snapshot preserves existing D1 and auth integration points', function () {
   const worker = fs.readFileSync('workers/nightcast-api.js', 'utf8');

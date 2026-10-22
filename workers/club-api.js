@@ -544,6 +544,7 @@ export async function handleClubApi({ request, url, DB, json, checkAuth, env }) 
         .bind("club-daily-visit:"+auth.userId+":"+day).first();
       const latest = await DB.prepare("SELECT COALESCE(MAX(id),0) AS id FROM podcasts WHERE status='published'").first();
       const latestId = Number(latest?.id || 0);
+      await DB.prepare("INSERT OR IGNORE INTO club_profiles(user_id) VALUES(?)").bind(auth.userId).run();
       const profile = await DB.prepare("SELECT COALESCE(last_seen_podcast_id,0) AS last_seen_podcast_id FROM club_profiles WHERE user_id=?").bind(auth.userId).first();
       const lastSeen = Number(profile?.last_seen_podcast_id || 0);
       let newPodcasts = [];

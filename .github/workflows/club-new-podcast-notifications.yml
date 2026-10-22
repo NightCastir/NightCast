@@ -8,6 +8,7 @@ on:
       - 'sw.js'
       - 'js/nightcast-club-engagement.js'
       - 'workers/club-api.js'
+      - 'migrations/club/0004_daily_engagement_quiz_referrals_notifications.sql'
       - 'workers/club-api-entry.js'
       - 'workers/club-notification-dispatch.js'
       - 'package.json'

@@ -91,8 +91,8 @@
     }).catch(function () {});
     window.addEventListener('nightcast:catalog-ready', notifyNewPodcasts, { once: true });
     if (window.__NC_CACHED_CATALOG_RENDERED) notifyNewPodcasts();
-    request('/quiz/today').then(function (data) {
-      if (data && data.session && !data.session.answered && !window.location.pathname.startsWith('/quiz')) midnightCountdown();
+    request('/quiz/status').then(function (data) {
+      if (data && data.needs_quiz && !window.location.pathname.startsWith('/quiz')) midnightCountdown();
     }).catch(function () {});
     var button = document.getElementById('ncEnableNotifications');
     if (button) button.addEventListener('click', async function () {

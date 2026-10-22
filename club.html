@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#050816">
+  <meta name="description" content="باشگاه شنوندگان NightCast؛ پیشرفت شنیداری، مأموریت‌ها و دستاوردهای فرهنگی">
+  <title>باشگاه شنوندگان | NightCast</title>
+  <link rel="stylesheet" href="/assets/fonts/vazirmatn.css">
+  <link rel="stylesheet" href="/assets/vendor/fontawesome/css/all.min.css">
+  <link rel="stylesheet" href="/css/nightcast-themes.css?v=21">
+  <link rel="stylesheet" href="/css/nightcast-moonlight-contrast.css?v=3">
+  <link rel="stylesheet" href="/css/nightcast-club.css?v=3">
+  <script src="/js/nightcast-theme.js?v=2" defer></script>
+  <script src="/js/auth.js" defer></script>
+  <script src="/js/nightcast-club.js?v=7" defer></script>
+</head>
+<body class="nc-club-page">
+  <header class="nc-club-header">
+    <a class="nc-club-brand" href="/podcasts" aria-label="بازگشت به NightCast">
+      <img src="/assets/icons/icon-512.png" alt="" width="42" height="42">
+      <span><strong>NightCast</strong><small>CLUB · باشگاه شنوندگان</small></span>
+    </a>
+    <nav aria-label="ناوبری باشگاه">
+      <a href="/podcasts">پادکست‌ها</a>
+      <a href="/about">درباره ما</a>
+      <a href="/contact">تماس</a>
+    </nav>
+    <button class="nc-club-theme-button" type="button" id="clubThemeButton" aria-label="تغییر تم سایت">
+      <i class="fa-solid fa-palette" aria-hidden="true"></i><span>تم سایت</span>
+    </button>
+  </header>
+
+  <main class="nc-club-main">
+    <section class="nc-club-hero" aria-labelledby="clubTitle">
+      <div class="nc-club-hero-copy">
+        <p class="nc-club-eyebrow">YOUR LISTENING JOURNEY</p>
+        <h1 id="clubTitle">هر شنیدن، یک قدم در کهکشان فرهنگ</h1>
+        <p>پیشرفت شنیداری‌ات را دنبال کن، مأموریت‌های فرهنگی را کشف کن و دستاوردهایت را بساز.</p>
+        <div class="nc-club-status" id="clubConnectionStatus" role="status" aria-live="polite">در حال بررسی حساب و اتصال امن باشگاه…</div>
+      </div>
+      <div class="nc-club-orbit" aria-hidden="true"><span class="orbit orbit-a"></span><span class="orbit orbit-b"></span><span class="orbit-core"><img src="/assets/icons/icon-512.png" alt=""></span></div>
+    </section>
+
+    <section class="nc-club-summary" aria-label="خلاصه پیشرفت">
+      <article class="nc-club-stat nc-club-points"><span class="nc-club-stat-icon"><i class="fa-solid fa-star" aria-hidden="true"></i></span><div><small>امتیاز قابل‌خرج</small><strong id="clubPoints">—</strong><span>Club Points</span></div></article>
+      <article class="nc-club-stat nc-club-xp"><span class="nc-club-stat-icon"><i class="fa-solid fa-sparkles" aria-hidden="true"></i></span><div><small>تجربه تجمعی</small><strong id="clubXp">—</strong><span>XP</span></div></article>
+      <article class="nc-club-stat"><span class="nc-club-stat-icon"><i class="fa-solid fa-headphones" aria-hidden="true"></i></span><div><small>پادکست‌های تکمیل‌شده</small><strong id="clubPodcasts">—</strong><span>شنیدن معتبر</span></div></article>
+      <article class="nc-club-stat"><span class="nc-club-stat-icon"><i class="fa-solid fa-award" aria-hidden="true"></i></span><div><small>نشان‌های کسب‌شده</small><strong id="clubBadges">—</strong><span>دستاوردها</span></div></article>
+    </section>
+
+    <section class="nc-club-level-panel" aria-labelledby="clubLevelTitle">
+      <div class="nc-club-level-emblem"><i class="fa-solid fa-moon" aria-hidden="true"></i></div>
+      <div class="nc-club-level-content">
+        <div class="nc-club-level-heading"><div><small>سطح فعلی</small><h2 id="clubLevelTitle">در انتظار اطلاعات حساب</h2></div><strong id="clubLevelNumber">—</strong></div>
+        <div class="nc-club-progress-track" role="progressbar" aria-label="پیشرفت تا سطح بعدی" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="clubLevelProgress"><span id="clubLevelProgressFill"></span></div>
+        <p id="clubLevelHint">پس از اتصال امن به حساب، پیشرفت واقعی اینجا نمایش داده می‌شود.</p>
+      </div>
+    </section>
+
+    <div class="nc-club-columns">
+      <section class="nc-club-section" aria-labelledby="clubMissionsTitle">
+        <div class="nc-club-section-heading"><div><small>قدم بعدی تو</small><h2 id="clubMissionsTitle">مأموریت‌های شنیداری</h2></div><span class="nc-club-section-mark"><i class="fa-solid fa-compass" aria-hidden="true"></i></span></div>
+        <div class="nc-club-list" id="clubMissions"><p class="nc-club-empty">مأموریت‌ها پس از اتصال API باشگاه بارگذاری می‌شوند.</p></div>
+      </section>
+      <section class="nc-club-section" aria-labelledby="clubBadgesTitle">
+        <div class="nc-club-section-heading"><div><small>ردپای سفر تو</small><h2 id="clubBadgesTitle">نشان‌ها و دستاوردها</h2></div><span class="nc-club-section-mark"><i class="fa-solid fa-medal" aria-hidden="true"></i></span></div>
+        <div class="nc-club-list" id="clubRecentBadges"><p class="nc-club-empty">دستاوردهای واقعی حساب در این بخش نمایش داده می‌شوند.</p></div>
+      </section>
+    </div>
+
+    <section class="nc-club-section nc-club-rewards" aria-labelledby="clubRewardsTitle">
+      <div class="nc-club-section-heading"><div><small>امتیازهایت را به تجربه تبدیل کن</small><h2 id="clubRewardsTitle">فروشگاه پاداش‌ها</h2></div><span class="nc-club-section-mark"><i class="fa-solid fa-gift" aria-hidden="true"></i></span></div>
+      <div class="nc-club-list" id="clubRewards"><p class="nc-club-empty">پاداش‌های قابل دریافت پس از اتصال امن به API نمایش داده می‌شوند.</p></div>
+    </section>
+
+    <section class="nc-club-section nc-club-history" aria-labelledby="clubHistoryTitle">
+      <div class="nc-club-section-heading"><div><small>شفاف و قابل‌پیگیری</small><h2 id="clubHistoryTitle">تاریخچه امتیازها</h2></div><span class="nc-club-section-mark"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i></span></div>
+      <div class="nc-club-list" id="clubLedger"><p class="nc-club-empty">تراکنش‌ها فقط از دفتر ثبت سمت سرور نمایش داده خواهند شد.</p></div>
+    </section>
+    <p class="nc-club-footnote">امتیازها و دستاوردها باید از فعالیت معتبر سمت سرور تأیید شوند؛ بازکردن صفحه یا فشردن یک دکمه به‌تنهایی امتیازی ایجاد نمی‌کند.</p>
+  </main>
+  <footer class="nc-club-footer"><a href="/podcasts">بازگشت به رادیوی NightCast</a><span>NightCast Club · فرهنگ در مدار صدا</span></footer>
+</body>
+</html>

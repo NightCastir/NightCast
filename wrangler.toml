@@ -1,0 +1,11 @@
+# Reproducible source configuration for the existing NightCast API Worker.
+# Production deployment is intentionally not automatic. Keep secrets managed in Cloudflare.
+name = "nightcast-api"
+main = "workers/nightcast-api.js"
+compatibility_date = "2026-07-28"
+workers_dev = false
+
+[[d1_databases]]
+binding = "NightCastBinding"
+database_name = "nightcast-db"
+database_id = "21cb51d1-8484-4f3e-90b6-ada3228506d6"

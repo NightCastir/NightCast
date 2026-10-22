@@ -1,0 +1,64 @@
+name: NightCast Club Worker and Isolated D1 Integration
+
+on:
+  push:
+    branches:
+      - feat/nightcast-club-foundation
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  isolated-worker-d1:
+    name: Local Worker plus full auth and podcast schema
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Create isolated local D1 base schema
+        run: npx --yes wrangler@4 d1 execute nightcast-club-test --local --config wrangler.club-test.toml --file=tests/fixtures/club-d1-base.sql
+      - name: Apply club migrations to isolated D1
+        run: |
+          npx --yes wrangler@4 d1 execute nightcast-club-test --local --config wrangler.club-test.toml --file=migrations/club/0001_club_foundation.sql
+          npx --yes wrangler@4 d1 execute nightcast-club-test --local --config wrangler.club-test.toml --file=migrations/club/0002_listening_sequence_guard.sql
+          npx --yes wrangler@4 d1 execute nightcast-club-test --local --config wrangler.club-test.toml --file=migrations/club/0003_atomic_reward_redemption.sql
+      - name: Seed test-only enabled flags and lifecycle fixtures
+        run: npx --yes wrangler@4 d1 execute nightcast-club-test --local --config wrangler.club-test.toml --file=tests/fixtures/club-d1-enable-test-features.sql
+      - name: Start the isolated API Worker
+        shell: bash
+        run: |
+          npx --yes wrangler@4 dev --local --config wrangler.club-test.toml --port 8799 > /tmp/nightcast-club-worker.log 2>&1 &
+          echo $! > /tmp/nightcast-club-worker.pid
+          ready=0
+          attempt=1
+          while [ "$attempt" -le 40 ]; do
+            echo "Waiting for isolated API Worker (attempt ${attempt}/40)"
+            code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8799/api/v1/club/summary || true)
+            if [ "$code" = "401" ]; then ready=1; break; fi
+            sleep 2
+            attempt=$((attempt + 1))
+          done
+          if [ "$ready" != "1" ]; then cat /tmp/nightcast-club-worker.log; exit 1; fi
+      - name: Test authenticated routes and full mission/reward lifecycle
+        run: node tests/club-api-d1-integration.cjs
+      - name: Stress daily caps and concurrent stock redemption
+        run: node tests/club-api-concurrency-acceptance.cjs
+      - name: Stop only this workflow's local test Worker
+        if: always()
+        shell: bash
+        run: |
+          if [ -f /tmp/nightcast-club-worker.pid ]; then kill "$(cat /tmp/nightcast-club-worker.pid)" 2>/dev/null || true; fi
+          if [ -f /tmp/nightcast-club-worker.log ]; then tail -n 80 /tmp/nightcast-club-worker.log; fi

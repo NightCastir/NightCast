@@ -1,0 +1,76 @@
+/* NightCast Club — all color decisions come from the active NightCast theme tokens. */
+.nc-club-page{min-height:100vh;margin:0;font-family:Vazirmatn,Arial,sans-serif;color:var(--nc-theme-text);background:var(--nc-theme-bg)}
+.nc-club-page *{box-sizing:border-box}
+.nc-club-header{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 32px;padding:14px clamp(16px,4vw,56px);border-bottom:1px solid var(--nc-theme-border);background:color-mix(in srgb,var(--nc-theme-surface) 88%,transparent)}
+.nc-club-brand{display:flex;align-items:center;gap:11px;color:var(--nc-theme-text);text-decoration:none;min-width:0}
+.nc-club-brand img{display:block;object-fit:contain;flex:0 0 auto}
+.nc-club-brand strong,.nc-club-brand small{display:block}
+.nc-club-brand strong{font-size:1.08rem;letter-spacing:.04em}
+.nc-club-brand small{font-size:.68rem;color:var(--nc-theme-muted);margin-top:2px}
+.nc-club-header nav{display:flex;align-items:center;gap:clamp(10px,2.5vw,28px)}
+.nc-club-header nav a,.nc-club-footer a{font-size:.9rem;color:var(--nc-theme-muted);text-decoration:none}
+.nc-club-header nav a:hover,.nc-club-footer a:hover{color:var(--nc-theme-primary)}
+.nc-club-theme-button{display:flex;align-items:center;gap:8px;border:1px solid var(--nc-theme-border);border-radius:999px;background:var(--nc-theme-surface);color:var(--nc-theme-text);padding:10px 14px;font:inherit;cursor:pointer}
+.nc-club-main{width:calc(100% - 32px);max-width:1180px;width:min(1180px,calc(100% - 32px));margin:0 auto;padding:28px 0 48px}
+.nc-club-hero{position:relative;display:flex;align-items:center;justify-content:space-between;gap:28px;min-height:270px;padding:32px;padding:clamp(24px,5vw,56px);overflow:hidden;border:1px solid var(--nc-theme-border);border-radius:28px;background:radial-gradient(ellipse at 83% 45%,var(--nc-theme-glow),transparent 47%),linear-gradient(135deg,var(--nc-theme-surface),var(--nc-theme-bg));}
+.nc-club-hero-copy{position:relative;z-index:1;max-width:700px}
+.nc-club-eyebrow{font-size:.72rem;letter-spacing:.18em;color:var(--nc-theme-primary);font-weight:700;margin:0 0 14px}
+.nc-club-hero h1{max-width:650px;font-size:2.3rem;font-size:clamp(1.7rem,4vw,3.2rem);line-height:1.5;margin:0 0 12px;color:var(--nc-theme-text)}
+.nc-club-hero-copy>p:not(.nc-club-eyebrow){max-width:620px;line-height:2;color:var(--nc-theme-muted);margin:0}
+.nc-club-status{display:inline-flex;align-items:center;gap:8px;margin-top:20px;padding:9px 13px;border:1px solid var(--nc-theme-border);border-radius:12px;background:var(--nc-theme-surface-2);color:var(--nc-theme-muted);font-size:.84rem;line-height:1.7}
+.nc-club-status.is-error{color:var(--nc-theme-text);border-color:var(--nc-theme-primary)}
+.nc-club-orbit{position:relative;flex:0 0 210px;width:210px;height:210px;display:flex;align-items:center;justify-content:center}
+.nc-club-orbit .orbit{position:absolute;display:block;border:1px solid var(--nc-theme-border);border-radius:50%;width:190px;height:82px;transform:rotate(-35deg)}
+.nc-club-orbit .orbit-b{width:190px;height:125px;transform:rotate(55deg);border-color:color-mix(in srgb,var(--nc-theme-primary) 55%,var(--nc-theme-border))}
+.nc-club-orbit .orbit-core{display:flex;align-items:center;justify-content:center;width:92px;height:92px;border-radius:50%;background:var(--nc-theme-surface);box-shadow:0 0 55px var(--nc-theme-glow);border:1px solid var(--nc-theme-border)}
+.nc-club-orbit .orbit-core img{width:64px;height:64px;object-fit:contain}
+.nc-club-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:18px 0}
+.nc-club-stat{display:flex;align-items:center;gap:14px;min-width:0;padding:20px 17px;border:1px solid var(--nc-theme-border);border-radius:20px;background:var(--nc-theme-surface)}
+.nc-club-stat-icon{width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;border-radius:14px;background:var(--nc-theme-surface-2);color:var(--nc-theme-primary);font-size:1.1rem}
+.nc-club-stat small,.nc-club-stat strong,.nc-club-stat div>span{display:block}
+.nc-club-stat small{color:var(--nc-theme-muted);font-size:.78rem;line-height:1.8}
+.nc-club-stat strong{font-size:1.7rem;line-height:1.5;color:var(--nc-theme-text);font-variant-numeric:tabular-nums}
+.nc-club-stat div>span{font-size:.7rem;color:var(--nc-theme-muted)}
+.nc-club-level-panel{display:flex;align-items:center;gap:20px;padding:22px;border:1px solid var(--nc-theme-border);border-radius:22px;background:var(--nc-theme-surface)}
+.nc-club-level-emblem{display:flex;align-items:center;justify-content:center;width:62px;height:62px;flex:0 0 auto;border-radius:50%;border:1px solid var(--nc-theme-border);background:var(--nc-theme-surface-2);color:var(--nc-theme-primary);font-size:1.55rem}
+.nc-club-level-content{flex:1;min-width:0}
+.nc-club-level-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.nc-club-level-heading small,.nc-club-level-heading h2{display:block;margin:0}
+.nc-club-level-heading small{font-size:.76rem;color:var(--nc-theme-muted)}
+.nc-club-level-heading h2{font-size:1.15rem;margin-top:4px;color:var(--nc-theme-text)}
+.nc-club-level-heading>strong{font-size:1.3rem;color:var(--nc-theme-primary)}
+.nc-club-progress-track{height:9px;margin-top:17px;overflow:hidden;border-radius:99px;background:var(--nc-theme-surface-2);border:1px solid var(--nc-theme-border)}
+.nc-club-progress-track span{display:block;width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--nc-theme-primary),var(--nc-theme-secondary));transition:width .35s ease}
+.nc-club-level-content>p{font-size:.8rem;color:var(--nc-theme-muted);margin:9px 0 0;line-height:1.8}
+.nc-club-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:18px}
+.nc-club-section{min-width:0;padding:22px;border:1px solid var(--nc-theme-border);border-radius:22px;background:var(--nc-theme-surface)}
+.nc-club-section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px}
+.nc-club-section-heading small{display:block;color:var(--nc-theme-muted);font-size:.76rem}
+.nc-club-section-heading h2{margin:4px 0 0;color:var(--nc-theme-text);font-size:1.18rem}
+.nc-club-section-mark{display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:14px;background:var(--nc-theme-surface-2);color:var(--nc-theme-primary)}
+.nc-club-list{display:flex;flex-direction:column;gap:10px}
+.nc-club-empty{margin:0;padding:16px;border:1px dashed var(--nc-theme-border);border-radius:14px;color:var(--nc-theme-muted);font-size:.86rem;line-height:1.9}
+.nc-club-history{margin-top:18px}
+.nc-club-footnote{color:var(--nc-theme-muted);font-size:.78rem;line-height:1.9;margin:16px 4px 0}
+.nc-club-footer{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:20px 32px;padding:20px clamp(16px,4vw,56px);border-top:1px solid var(--nc-theme-border);color:var(--nc-theme-muted);font-size:.78rem}
+@media(max-width:900px){.nc-club-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.nc-club-orbit{flex-basis:160px;width:160px;height:160px}.nc-club-orbit .orbit{width:150px}.nc-club-orbit .orbit-core{width:76px;height:76px}.nc-club-orbit .orbit-core img{width:54px;height:54px}}
+@media(max-width:640px){.nc-club-header{flex-wrap:wrap;padding:12px 16px}.nc-club-header nav{order:3;width:100%;justify-content:space-between;padding-top:8px;border-top:1px solid var(--nc-theme-border)}.nc-club-header nav a{font-size:.8rem}.nc-club-theme-button{padding:9px 11px}.nc-club-main{width:calc(100% - 24px);padding-top:14px}.nc-club-hero{min-height:0;padding:23px 20px;border-radius:22px}.nc-club-orbit{display:none}.nc-club-hero h1{font-size:1.65rem}.nc-club-summary{gap:9px;margin:12px 0}.nc-club-stat{padding:13px 11px;gap:9px;border-radius:16px}.nc-club-stat-icon{width:36px;height:36px;border-radius:11px;font-size:.95rem}.nc-club-stat small{font-size:.69rem}.nc-club-stat strong{font-size:1.45rem}.nc-club-level-panel{padding:16px;gap:12px}.nc-club-level-emblem{width:46px;height:46px;font-size:1.15rem}.nc-club-columns{grid-template-columns:1fr;gap:12px;margin-top:12px}.nc-club-section{padding:17px;border-radius:18px}.nc-club-history{margin-top:12px}.nc-club-footer{padding:17px 16px}}
+@media(prefers-reduced-motion:reduce){.nc-club-progress-track span{transition:none}}
+@media(min-width:1400px){.nc-club-main{width:min(1240px,calc(100% - 72px))}}
+
+
+/* Live API-backed Club rows */
+.nc-club-data-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:14px 15px;border:1px solid var(--nc-theme-border);border-radius:15px;background:var(--nc-theme-panel,rgba(255,255,255,.035));min-width:0}
+.nc-club-data-main{min-width:0;flex:1}
+.nc-club-data-title{margin:0;color:var(--nc-theme-text);font-size:.96rem;font-weight:750;line-height:1.7;overflow-wrap:anywhere}
+.nc-club-data-detail{margin:5px 0 0;color:var(--nc-theme-muted);font-size:.82rem;line-height:1.9;overflow-wrap:anywhere}
+.nc-club-data-badge{flex:0 0 auto;max-width:42%;padding:5px 9px;border:1px solid var(--nc-theme-border);border-radius:999px;color:var(--nc-theme-text);font-size:.72rem;line-height:1.6;text-align:center;overflow-wrap:anywhere}
+@media(max-width:520px){.nc-club-data-row{gap:8px;padding:12px}.nc-club-data-badge{max-width:38%;font-size:.68rem}}
+
+
+.nc-club-action-button{align-self:center;flex:0 0 auto;border:1px solid var(--club-accent,#8278ff);border-radius:999px;padding:9px 15px;background:linear-gradient(135deg,rgba(130,120,255,.22),rgba(72,190,209,.12));color:var(--club-text,#f3f5ff);font:inherit;font-size:.86rem;font-weight:700;cursor:pointer;transition:transform .18s ease,border-color .18s ease,opacity .18s ease}
+.nc-club-action-button:hover:not(:disabled){transform:translateY(-1px);border-color:var(--club-accent-strong,#a9a2ff)}
+.nc-club-action-button:focus-visible{outline:2px solid var(--club-accent,#8278ff);outline-offset:3px}
+.nc-club-action-button:disabled{opacity:.48;cursor:not-allowed}
+.nc-club-rewards{margin-top:18px}
+@media(max-width:640px){.nc-club-action-button{width:100%;margin-top:8px}.nc-club-data-row{align-items:stretch;flex-wrap:wrap}.nc-club-data-main{min-width:0;flex:1 1 100%}}

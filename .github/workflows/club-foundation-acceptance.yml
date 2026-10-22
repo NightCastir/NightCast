@@ -1,0 +1,34 @@
+name: NightCast Club Foundation Acceptance
+
+on:
+  push:
+    branches:
+      - feat/nightcast-club-foundation
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  club-foundation:
+    name: Club schema and theme compatibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify migration and theme acceptance
+        run: node tests/club-schema-acceptance.cjs
+      - name: Verify club API authorization and transactional redemption
+        run: node tests/club-api-acceptance.cjs
+      - name: Check club API module syntax
+        run: node --check workers/club-api.js
+      - name: Bundle the existing API Worker without deploying
+        run: npx --yes wrangler@4 deploy --dry-run

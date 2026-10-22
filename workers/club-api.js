@@ -702,6 +702,9 @@ export async function handleClubApi({ request, url, DB, json, checkAuth, env }) 
       if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
       const body = await request.json().catch(()=>({}));
       const subscription = body.subscription;
+      let timezone = String(body.timezone || "Asia/Tehran").slice(0,80);
+      try { new Intl.DateTimeFormat("en-US", { timeZone: timezone }).format(new Date()); }
+      catch (_) { timezone = "Asia/Tehran"; }
       if (!subscription || typeof subscription.endpoint!=="string" || subscription.endpoint.length>2048 ||
           !isTrustedPushEndpoint(subscription.endpoint) ||
           !subscription.keys || typeof subscription.keys.p256dh!=="string" || typeof subscription.keys.auth!=="string") {
@@ -712,8 +715,8 @@ export async function handleClubApi({ request, url, DB, json, checkAuth, env }) 
         VALUES(?,?,?,?,?,?) ON CONFLICT(endpoint_hash) DO UPDATE SET user_id=excluded.user_id,
         subscription_json=excluded.subscription_json,user_agent=excluded.user_agent,updated_at=CURRENT_TIMESTAMP`)
         .bind(randomId(),auth.userId,endpointHash,subscription.endpoint,JSON.stringify(subscription),String(request.headers.get("User-Agent")||"").slice(0,300)).run();
-      await DB.prepare("INSERT OR IGNORE INTO club_profiles(user_id,notifications_enabled) VALUES(?,1)").bind(auth.userId).run();
-      await DB.prepare("UPDATE club_profiles SET notifications_enabled=1,updated_at=CURRENT_TIMESTAMP WHERE user_id=?").bind(auth.userId).run();
+      await DB.prepare("INSERT OR IGNORE INTO club_profiles(user_id,notifications_enabled,timezone) VALUES(?,1,?)").bind(auth.userId,timezone).run();
+      await DB.prepare("UPDATE club_profiles SET notifications_enabled=1,timezone=?,updated_at=CURRENT_TIMESTAMP WHERE user_id=?").bind(timezone,auth.userId).run();
       return json({success:true,subscribed:true});
     }
 

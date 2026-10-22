@@ -5,6 +5,7 @@ const { execFileSync } = require('node:child_process');
 
 const migration = fs.readFileSync('migrations/club/0001_club_foundation.sql', 'utf8');
 const sequenceMigration = fs.readFileSync('migrations/club/0002_listening_sequence_guard.sql', 'utf8');
+const redemptionMigration = fs.readFileSync('migrations/club/0003_atomic_reward_redemption.sql', 'utf8');
 const page = fs.readFileSync('club.html', 'utf8');
 const css = fs.readFileSync('css/nightcast-club.css', 'utf8');
 const client = fs.readFileSync('js/nightcast-club.js', 'utf8');
@@ -62,12 +63,12 @@ check('client never fabricates reward values and handles missing API honestly', 
   assert.doesNotMatch(client, /clubPoints\s*[:=]\s*[0-9]+/);
 });
 check('both migrations apply cleanly against the existing user/podcast table contract', function () {
-  const sql = 'PRAGMA foreign_keys=ON; CREATE TABLE users(id INTEGER PRIMARY KEY); CREATE TABLE podcasts(id INTEGER PRIMARY KEY);' + migration + sequenceMigration + ' SELECT name FROM sqlite_master WHERE type="table";';
+  const sql = 'PRAGMA foreign_keys=ON; CREATE TABLE users(id INTEGER PRIMARY KEY); CREATE TABLE podcasts(id INTEGER PRIMARY KEY);' + migration + sequenceMigration + redemptionMigration + ' SELECT name FROM sqlite_master WHERE type="table";';
   const output = execFileSync('python3', ['-c', 'import sqlite3,sys; c=sqlite3.connect(\":memory:\"); c.executescript(sys.stdin.read()); print(\"OK\")'], { input: sql, encoding: 'utf8' });
   assert.match(output, /OK/);
 });
 check('listening sequence unique index rejects a replayed sequence within the same session', function () {
-  const sql = 'PRAGMA foreign_keys=ON; CREATE TABLE users(id INTEGER PRIMARY KEY); CREATE TABLE podcasts(id INTEGER PRIMARY KEY);' + migration + sequenceMigration;
+  const sql = 'PRAGMA foreign_keys=ON; CREATE TABLE users(id INTEGER PRIMARY KEY); CREATE TABLE podcasts(id INTEGER PRIMARY KEY);' + migration + sequenceMigration + redemptionMigration;
   const py = `import sqlite3,sys
 c=sqlite3.connect(":memory:")
 c.executescript(sys.stdin.read())

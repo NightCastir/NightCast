@@ -82,16 +82,16 @@ check('client never fabricates reward values and handles missing API honestly', 
   assert.match(client, /API باشگاه هنوز در Worker مستقر نشده است/);
   assert.match(client, /No client-side points, XP, missions or rewards are fabricated/);
   assert.doesNotMatch(client, /clubPoints\s*[:=]\s*[0-9]+/);
-  assert.match(client, /nightcast-club-api\.tomasgermany2580\.workers\.dev\/api\/v1/);
+  assert.match(client, /nightcast\.ir\/api\/v1/);
   assert.match(page, /nightcast-club\.css\?v=3/);
-  assert.match(page, /nightcast-club\.js\?v=6/);
+  assert.match(page, /nightcast-club\.js\?v=7/);
   assert.match(page, /clubRewards/);
-  assert.match(listener, /nightcast-club-api\.tomasgermany2580\.workers\.dev/);
+  assert.match(listener, /nightcast\.ir/);
   assert.match(listener, /nightcast:podcastchange/);
   assert.match(listener, /sequence_number/);
   assert.match(home, /nightcast-club-listener\.js\?v=1/);
   assert.match(home, /nightcast-app\.js\?v=4/);
-  assert.match(adminClient, /nightcast-club-api\.tomasgermany2580\.workers\.dev/);
+  assert.match(adminClient, /nightcast\.ir/);
   assert.match(adminPage, /club-admin\.js\?v=2/);
 });
 check('both migrations apply cleanly against the existing user/podcast table contract', function () {

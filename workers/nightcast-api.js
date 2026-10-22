@@ -19,7 +19,7 @@ export default {
                 "*",
 
             "Access-Control-Allow-Headers":
-                "Content-Type, Authorization",
+                "Content-Type, Authorization, Idempotency-Key",
 
             "Access-Control-Allow-Methods":
                 "GET, POST, PUT, DELETE, OPTIONS"

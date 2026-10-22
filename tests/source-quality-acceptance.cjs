@@ -63,8 +63,7 @@ for (const file of walk(process.cwd())) {
 }
 
 for (const [kind, count] of Object.entries(counts)) {
-  console.log((failures.some(item => item.startsWith(kind + '/')) ? 'CHECK' : 'INFO') +
-    ' | ' + kind + ' files inspected: ' + count);
+  console.log('INFO | ' + kind + ' files inspected: ' + count);
 }
 for (const failure of failures) console.error('FAIL | ' + failure);
 console.log('SUMMARY | ' + (failures.length === 0 ? 'PASS' : 'FAIL') +

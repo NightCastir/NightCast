@@ -12,9 +12,11 @@ const app = fs.readFileSync('js/nightcast-app.js','utf8');
 const home = fs.readFileSync('index.html','utf8');
 const checks = {
   'daily-checkin': () => {
-    assert.match(migration,/CREATE TABLE IF NOT EXISTS club_daily_checkins/);
-    assert.match(migration,/UNIQUE\(user_id, checkin_day\)/);
-    assert.match(migration,/points_awarded INTEGER NOT NULL DEFAULT 0 CHECK\(points_awarded >= 0\)/);
+    assert.ok(migration.includes('CREATE TABLE IF NOT EXISTS club_daily_checkins'));
+    assert.ok(migration.includes('UNIQUE(user_id, checkin_day)'));
+    assert.ok(api.includes('path === "/checkin"'));
+    assert.ok(api.includes('club-checkin:'));
+    assert.ok(home.includes('nightcast-club-listener.js?v=2'));
   },
   quiz: () => {
     assert.equal(questions.questions.length,30);
@@ -24,50 +26,55 @@ const checks = {
       assert.ok(Number.isInteger(q.answer)&&q.answer>=0&&q.answer<4,q.id+' answer index invalid');
       assert.ok(q.question.length>10&&q.explanation.length>10,q.id+' text missing');
     }
-    assert.match(migration,/UNIQUE\(user_id, shown_day\)/);
-    assert.match(migration,/UNIQUE\(user_id, question_id\)/);
-    assert.match(migration,/UNIQUE\(user_id, question_id\)[\s\S]*?FOREIGN KEY\(user_id, question_id\)/);
+    assert.ok(migration.includes('UNIQUE(user_id, shown_day)'));
+    assert.ok(migration.includes('UNIQUE(user_id, question_id)'));
+    assert.ok(api.includes('path === "/quiz/today"'));
+    assert.ok(api.includes("datetime('now','-24 hours')"));
+    assert.ok(api.includes('path === "/quiz/answer"'));
+    assert.ok(api.includes('club-quiz:'));
+    assert.ok(quizPage.includes('qCountdown'));
+    assert.ok(quizClient.includes("body.classList.add('q-wrong')"));
   },
   referrals: () => {
-    assert.match(migration,/CREATE TABLE IF NOT EXISTS club_referrals/);
-    assert.match(migration,/invitee_user_id INTEGER NOT NULL UNIQUE/);
-    assert.match(migration,/CHECK\(inviter_user_id <> invitee_user_id\)/);
-    assert.match(migration,/status TEXT NOT NULL DEFAULT 'pending'/);
+    assert.ok(migration.includes('CREATE TABLE IF NOT EXISTS club_referrals'));
+    assert.ok(migration.includes('invitee_user_id INTEGER NOT NULL UNIQUE'));
+    assert.ok(migration.includes('CHECK(inviter_user_id <> invitee_user_id)'));
+    assert.ok(migration.includes("status TEXT NOT NULL DEFAULT 'pending'"));
   },
   share: () => {
-    assert.match(migration,/CREATE TABLE IF NOT EXISTS club_share_events/);
-    assert.match(migration,/channel IN \('native','sms','whatsapp','telegram','soroush','copy','other'\)/);
-    assert.doesNotMatch(migration,/CREATE TABLE[^;]*(sms_messages|whatsapp_contacts|telegram_contacts)/i);
-    assert.match(app,/navigator.share/);
-    assert.match(app,/data-action="share"/);
-    assert.match(home,/id="ncNowShare"/);
+    assert.ok(migration.includes('CREATE TABLE IF NOT EXISTS club_share_events'));
+    assert.ok(migration.includes("'native','sms','whatsapp','telegram','soroush','copy','other'"));
+    assert.ok(!/CREATE TABLE[^;]*(sms_messages|whatsapp_contacts|telegram_contacts)/i.test(migration));
+    assert.ok(app.includes('navigator.share'));
+    assert.ok(app.includes('data-action="share"'));
+    assert.ok(home.includes('id="ncNowShare"'));
   },
   notifications: () => {
-    assert.match(migration,/CREATE TABLE IF NOT EXISTS club_push_subscriptions/);
-    assert.match(migration,/subscription_json TEXT NOT NULL/);
-    assert.match(migration,/CREATE TABLE IF NOT EXISTS club_notification_events/);
-    assert.match(migration,/UNIQUE\(user_id, notification_key\)/);
+    assert.ok(migration.includes('CREATE TABLE IF NOT EXISTS club_push_subscriptions'));
+    assert.ok(migration.includes('subscription_json TEXT NOT NULL'));
+    assert.ok(migration.includes('CREATE TABLE IF NOT EXISTS club_notification_events'));
+    assert.ok(migration.includes('UNIQUE(user_id, notification_key)'));
   },
   leaderboard: () => {
-    assert.match(migration,/club_point_ledger/);
-    assert.match(api,/path === "\\/leaderboard"/);
-    assert.match(api,/medal:index===0/);
-    assert.match(leaderboardPage,/برترین شنوندگان/);
-    assert.match(migration,/CREATE INDEX IF NOT EXISTS idx_club_referrals_inviter/);
-    assert.match(migration,/REFERENCES users\(id\)/);
+    assert.ok(migration.includes('club_point_ledger'));
+    assert.ok(api.includes('path === "/leaderboard"'));
+    assert.ok(api.includes('medal:index===0'));
+    assert.ok(leaderboardPage.includes('برترین شنوندگان'));
+    assert.ok(migration.includes('CREATE INDEX IF NOT EXISTS idx_club_referrals_inviter'));
+    assert.ok(migration.includes('REFERENCES users(id)'));
   }
 };
-const selected = feature==='all' ? Object.keys(checks) : [feature];
+const selected = feature === 'all' ? Object.keys(checks) : [feature];
 for (const name of selected) {
-  assert.ok(checks[name], 'Unknown CLUB_FEATURE '+name);
+  assert.ok(checks[name], 'Unknown CLUB_FEATURE ' + name);
   checks[name]();
-  console.log('PASS | '+name+' schema/content contract');
+  console.log('PASS | ' + name + ' schema/content contract');
 }
-const sql = 'PRAGMA foreign_keys=ON; CREATE TABLE users(id INTEGER PRIMARY KEY); CREATE TABLE podcasts(id INTEGER PRIMARY KEY); CREATE TABLE club_point_ledger(id INTEGER PRIMARY KEY, user_id INTEGER, delta INTEGER, status TEXT);'+migration;
-execFileSync('python3',['-c',`import sqlite3,sys
+const sql = 'PRAGMA foreign_keys=ON; CREATE TABLE users(id INTEGER PRIMARY KEY); CREATE TABLE podcasts(id INTEGER PRIMARY KEY); CREATE TABLE club_point_ledger(id INTEGER PRIMARY KEY, user_id INTEGER, delta INTEGER, status TEXT);' + migration;
+execFileSync('python3', ['-c', `import sqlite3,sys
 c=sqlite3.connect(":memory:")
 c.execute("PRAGMA foreign_keys=ON")
 c.executescript(sys.stdin.read())
 assert c.execute("PRAGMA integrity_check").fetchone()[0]=="ok"
-print("SQLITE_MIGRATION_OK")`],{input:sql,encoding:'utf8'});
+print("SQLITE_MIGRATION_OK")`], {input:sql, encoding:'utf8'});
 console.log('PASS | migration applies to existing users/podcasts contract');

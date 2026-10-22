@@ -77,7 +77,7 @@ try:
  c.execute("INSERT INTO club_activity_events(id,user_id,event_type,session_key_hash,sequence_number,idempotency_key) VALUES(?,?,?,?,?,?)", ("e2",7,"listen","session-hash",1,"idem-2"))
  raise SystemExit("duplicate sequence unexpectedly accepted")
 except sqlite3.IntegrityError:
- print("DUPLICATE_BLOCKED")`
+ print("DUPLICATE_BLOCKED")`;
   const output = execFileSync('python3', ['-c', py], { input: sql, encoding: 'utf8' });
   assert.match(output, /DUPLICATE_BLOCKED/);
 });

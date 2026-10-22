@@ -1,0 +1,9 @@
+name = "nightcast-club-d1-integration"
+main = "tests/club-api-d1-worker.mjs"
+compatibility_date = "2026-07-28"
+workers_dev = false
+
+[[d1_databases]]
+binding = "NightCastBinding"
+database_name = "nightcast-club-test"
+database_id = "00000000-0000-4000-8000-000000000001"

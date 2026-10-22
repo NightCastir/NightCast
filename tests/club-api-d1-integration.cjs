@@ -17,7 +17,7 @@ async function main() {
   r = await call('/summary', { headers: member });
   assert.equal(r.status, 200);
   assert.equal(r.data.enabled, true);
-  assert.equal(r.data.points, 50);
+  assert.equal(r.data.points, 30, 'two seeded pending redemptions already debit ten points each');
 
   r = await call('/admin/overview', { headers: member });
   assert.equal(r.status, 403, 'member token must not access admin dashboard');

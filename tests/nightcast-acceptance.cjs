@@ -70,20 +70,36 @@ function silentWavDataUri() {
       malformedStyleFiles.length ? malformedStyleFiles.join(', ') : htmlFilesToValidate.join(', '));
 
     const jsFailures = [];
-    const jsFiles = walkFiles('.', /\.js$/i);
+    const jsFiles = walkFiles('.', /\\.(?:js|mjs|cjs)$/i);
     for (const file of jsFiles) {
+      const source = fs.readFileSync(file, 'utf8');
       try {
-        const source = fs.readFileSync(file, 'utf8');
-        if (file.replace(/\\\\/g, '/').endsWith('/workers/nightcast-shield.js')) {
-          const checked = spawnSync(process.execPath, ['--input-type=module', '--check'], { input: source, encoding: 'utf8' });
-          if (checked.status !== 0) throw new Error(checked.stderr || 'ES module syntax check failed');
-        } else {
-          new vm.Script(source, { filename: file });
+        // Node's own parser understands both script and module syntax; vm.Script
+        // incorrectly rejects valid import/export statements in ESM workers.
+        const fileCheck = spawnSync(process.execPath, ['--check', file], {
+          encoding: 'utf8',
+          maxBuffer: 1024 * 1024
+        });
+        if (fileCheck.status === 0) continue;
+
+        // Retry explicitly as ESM for ambiguous .js files and package setups.
+        // Real syntax errors fail both modes and remain blocking.
+        const moduleCheck = spawnSync(process.execPath, ['--input-type=module', '--check'], {
+          input: source,
+          encoding: 'utf8',
+          maxBuffer: 1024 * 1024
+        });
+        if (moduleCheck.status !== 0) {
+          const fileError = (fileCheck.stderr || fileCheck.stdout || '').trim();
+          const moduleError = (moduleCheck.stderr || moduleCheck.stdout || '').trim();
+          throw new Error('script parse: ' + (fileError || 'failed') + ' | module parse: ' + (moduleError || 'failed'));
         }
-      } catch (error) { jsFailures.push(file + ': ' + error.message); }
+      } catch (error) {
+        jsFailures.push(file + ': ' + error.message);
+      }
     }
     report('0.1. JavaScript files pass syntax parsing', jsFailures.length === 0,
-      jsFailures.slice(0, 8).join(' || ') || 'Parsed ' + jsFiles.length + ' JavaScript files');
+      jsFailures.slice(0, 12).join(' || ') || 'Parsed ' + jsFiles.length + ' JavaScript, MJS and CJS files using Node syntax checks');
 
     const cssFailures = [];
     const cssFiles = walkFiles('.', /\.css$/i);

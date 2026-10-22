@@ -69,6 +69,13 @@
     }
     tick(); window.setInterval(tick, 1000);
   }
+  function urlBase64ToUint8Array(value) {
+    var padding = '='.repeat((4 - value.length % 4) % 4);
+    var base64 = (value + padding).replace(/-/g, '+').replace(/_/g, '/');
+    var raw = window.atob(base64), output = new Uint8Array(raw.length);
+    for (var i = 0; i < raw.length; ++i) output[i] = raw.charCodeAt(i);
+    return output;
+  }
   function start() {
     if (!token()) return;
     request('/daily-visit','POST',{}).then(function (data) {
@@ -96,14 +103,13 @@
       try {
         var permission = await Notification.requestPermission();
         if (permission !== 'granted') { toast('اجازه اعلان‌ها داده نشد.'); return; }
+        var keyInfo = await request('/notifications/vapid-public-key');
+        if (!keyInfo.configured || !keyInfo.public_key) { toast('اعلان پس‌زمینه هنوز پیکربندی نشده است؛ کلید عمومی VAPID در Worker موجود نیست.'); return; }
         var reg = await navigator.serviceWorker.ready;
         var sub = await reg.pushManager.getSubscription();
-        if (sub) {
-          await request('/notifications/subscribe','POST',{subscription:sub.toJSON()});
-          toast('اعلان‌ها فعال شدند؛ برای اعلان پوش واقعی، کلیدهای VAPID و ارسال سمت سرور نیز باید در Worker پیکربندی شوند.');
-        } else {
-          toast('برای اعلان پوش در پس‌زمینه، کلید عمومی VAPID باید در تنظیمات امن برنامه پیکربندی شود.');
-        }
+        if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(keyInfo.public_key) });
+        await request('/notifications/subscribe','POST',{subscription:sub.toJSON()});
+        toast('اشتراک اعلان این دستگاه ثبت شد.');
       } catch (_) { toast('فعال‌سازی اعلان‌ها انجام نشد؛ اتصال و مجوز اعلان را بررسی کن.'); }
     });
   }

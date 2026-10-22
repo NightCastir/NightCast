@@ -9,6 +9,7 @@ const quizPage = fs.readFileSync('quiz.html','utf8');
 const quizClient = fs.readFileSync('js/nightcast-quiz.js','utf8');
 const leaderboardPage = fs.readFileSync('leaderboard.html','utf8');
 const app = fs.readFileSync('js/nightcast-app.js','utf8');
+const referrals = fs.readFileSync('js/nightcast-referrals.js','utf8');
 const home = fs.readFileSync('index.html','utf8');
 const checks = {
   'daily-checkin': () => {
@@ -37,6 +38,11 @@ const checks = {
   },
   referrals: () => {
     assert.ok(migration.includes('CREATE TABLE IF NOT EXISTS club_referrals'));
+    assert.ok(migration.includes('CREATE TABLE IF NOT EXISTS club_invite_codes'));
+    assert.ok(api.includes('path === "/referrals/code"'));
+    assert.ok(api.includes('path === "/referrals/claim"'));
+    assert.ok(referrals.includes('NightCastReferralPending'));
+    assert.ok(referrals.includes('referral-invitee-'));
     assert.ok(migration.includes('invitee_user_id INTEGER NOT NULL UNIQUE'));
     assert.ok(migration.includes('CHECK(inviter_user_id <> invitee_user_id)'));
     assert.ok(migration.includes("status TEXT NOT NULL DEFAULT 'pending'"));
@@ -47,6 +53,8 @@ const checks = {
     assert.ok(!/CREATE TABLE[^;]*(sms_messages|whatsapp_contacts|telegram_contacts)/i.test(migration));
     assert.ok(app.includes('navigator.share'));
     assert.ok(app.includes('data-action="share"'));
+    assert.ok(app.includes('/club/share-events'));
+    assert.ok(api.includes('path === "/share-events"'));
     assert.ok(home.includes('id="ncNowShare"'));
   },
   notifications: () => {
@@ -54,6 +62,8 @@ const checks = {
     assert.ok(migration.includes('subscription_json TEXT NOT NULL'));
     assert.ok(migration.includes('CREATE TABLE IF NOT EXISTS club_notification_events'));
     assert.ok(migration.includes('UNIQUE(user_id, notification_key)'));
+    assert.ok(api.includes('path === "/notifications"'));
+    assert.ok(referrals.includes('setInterval(pollNotifications,60000)'));
   },
   leaderboard: () => {
     assert.ok(api.includes('club_point_ledger'));

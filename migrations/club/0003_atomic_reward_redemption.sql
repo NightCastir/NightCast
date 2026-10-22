@@ -7,7 +7,8 @@ CREATE TRIGGER IF NOT EXISTS club_redemption_validate
 BEFORE INSERT ON club_reward_redemptions
 BEGIN
   SELECT CASE
-    WHEN COALESCE((SELECT setting_value FROM club_settings WHERE setting_key = 'rewards_enabled'), 'false') <> 'true'
+    WHEN COALESCE((SELECT setting_value FROM club_settings WHERE setting_key = 'club_enabled'), 'false') <> 'true'
+      OR COALESCE((SELECT setting_value FROM club_settings WHERE setting_key = 'rewards_enabled'), 'false') <> 'true'
     THEN RAISE(ABORT, 'club_rewards_disabled')
   END;
   SELECT CASE

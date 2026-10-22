@@ -42,7 +42,7 @@ const checks = {
     assert.ok(api.includes('path === "/referrals/code"'));
     assert.ok(api.includes('path === "/referrals/claim"'));
     assert.ok(referrals.includes('NightCastReferralPending'));
-    assert.ok(referrals.includes('referral-invitee-'));
+    assert.ok(api.includes('referral-invitee-'));
     assert.ok(migration.includes('invitee_user_id INTEGER NOT NULL UNIQUE'));
     assert.ok(migration.includes('CHECK(inviter_user_id <> invitee_user_id)'));
     assert.ok(migration.includes("status TEXT NOT NULL DEFAULT 'pending'"));

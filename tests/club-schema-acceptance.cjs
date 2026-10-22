@@ -90,10 +90,10 @@ check('client never fabricates reward values and handles missing API honestly', 
   assert.match(listener, /club-api\.nightcast\.ir/);
   assert.match(listener, /nightcast:podcastchange/);
   assert.match(listener, /sequence_number/);
-  assert.match(home, /nightcast-club-listener\.js\?v=1/);
-  assert.match(home, /nightcast-app\.js\?v=4/);
-  assert.ok(home.includes('<script src="/js/nightcast-app.js?v=4" defer></script>'));
-  assert.ok(home.includes('<script src="/js/nightcast-club-listener.js?v=1" defer></script>'));
+  assert.match(home, /nightcast-club-listener\.js\?v=2/);
+  assert.match(home, /nightcast-app\.js\?v=5/);
+  assert.ok(home.includes('<script src="/js/nightcast-app.js?v=5" defer></script>'));
+  assert.ok(home.includes('<script src="/js/nightcast-club-listener.js?v=2" defer></script>'));
   assert.match(adminClient, /club-api\.nightcast\.ir/);
   assert.match(adminPage, /club-admin\.js\?v=2/);
 });

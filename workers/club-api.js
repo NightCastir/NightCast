@@ -1,3 +1,4 @@
+import quizBank from "../data/club-quiz-questions.json";
 /**
  * NightCast Club API route module.
  *
@@ -108,6 +109,111 @@ export async function handleClubApi({ request, url, DB, json, checkAuth }) {
   const method = request.method.toUpperCase();
 
   try {
+    if (path === "/checkin" && method === "POST") {
+      const auth = await requireMember(checkAuth);
+      if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
+      if ((await setting(DB, "club_enabled")) !== "true" || (await setting(DB, "earning_enabled")) !== "true") {
+        return fail(json, 503, "امتیازگیری باشگاه در حال حاضر غیرفعال است.", "club_earning_disabled");
+      }
+      const day = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Tehran", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+      const prior = await DB.prepare("SELECT points_awarded,created_at FROM club_daily_checkins WHERE user_id=? AND checkin_day=?").bind(auth.userId, day).first();
+      if (prior) return json({ success: true, duplicate: true, points_awarded: Number(prior.points_awarded), checkin_day: day });
+      const points = 2;
+      try {
+        await DB.batch([
+          DB.prepare("INSERT INTO club_daily_checkins(user_id,checkin_day,points_awarded) VALUES(?,?,?)").bind(auth.userId, day, points),
+          DB.prepare("INSERT INTO club_point_ledger(user_id,delta,source_type,source_id,idempotency_key,status,metadata_json,created_by) VALUES(?,?,'daily_checkin',?,?, 'posted',?,'system')")
+            .bind(auth.userId, points, day, "club-checkin:" + auth.userId + ":" + day, JSON.stringify({ checkin_day: day }))
+        ]);
+      } catch (error) {
+        const duplicate = await DB.prepare("SELECT points_awarded FROM club_daily_checkins WHERE user_id=? AND checkin_day=?").bind(auth.userId, day).first();
+        if (duplicate) return json({ success: true, duplicate: true, points_awarded: Number(duplicate.points_awarded), checkin_day: day });
+        throw error;
+      }
+      return json({ success: true, duplicate: false, points_awarded: points, checkin_day: day }, 201);
+    }
+
+    if (path === "/quiz/today" && method === "GET") {
+      const auth = await requireMember(checkAuth);
+      if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
+      if ((await setting(DB, "club_enabled")) !== "true" || (await setting(DB, "earning_enabled")) !== "true") {
+        return fail(json, 503, "بخش پرسش روزانه در حال حاضر غیرفعال است.", "club_quiz_disabled");
+      }
+      const recent = await DB.prepare("SELECT question_id,shown_at FROM club_quiz_impressions WHERE user_id=? AND shown_at>=datetime('now','-24 hours') ORDER BY shown_at DESC LIMIT 1").bind(auth.userId).first();
+      if (recent) {
+        const answered = await DB.prepare("SELECT selected_option,is_correct,points_awarded,answered_at FROM club_quiz_answers WHERE user_id=? AND question_id=?").bind(auth.userId, recent.question_id).first();
+        const q = quizBank.questions.find(item => item.id === recent.question_id);
+        if (!q) return fail(json, 500, "پرسش ثبت‌شده در بانک نسخه فعلی وجود ندارد.", "club_quiz_bank_mismatch");
+        return json({ success: true, already_shown: true, answered: !!answered, question: { id:q.id,category:q.category,question:q.question,options:q.options }, answer: answered ? { selected_option:Number(answered.selected_option),is_correct:Number(answered.is_correct)===1,points_awarded:Number(answered.points_awarded),explanation:q.explanation,correct_option:q.answer } : null, shown_at:recent.shown_at });
+      }
+      const seen = await DB.prepare("SELECT question_id FROM club_quiz_impressions WHERE user_id=?").bind(auth.userId).all();
+      const seenIds = new Set((seen.results || []).map(row => String(row.question_id)));
+      const available = quizBank.questions.filter(q => !seenIds.has(q.id));
+      if (!available.length) return json({ success: true, exhausted: true, message: "همه پرسش‌های فعلی را پاسخ داده‌اید؛ به‌زودی پرسش‌های تازه اضافه می‌شوند." });
+      const question = available[Math.floor(Math.random() * available.length)];
+      const day = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Tehran", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+      try {
+        await DB.prepare("INSERT INTO club_quiz_impressions(user_id,question_id,shown_day) VALUES(?,?,?)").bind(auth.userId, question.id, day).run();
+      } catch (error) {
+        const concurrent = await DB.prepare("SELECT question_id,shown_at FROM club_quiz_impressions WHERE user_id=? AND shown_at>=datetime('now','-24 hours') ORDER BY shown_at DESC LIMIT 1").bind(auth.userId).first();
+        if (concurrent) return fail(json, 409, "پرسش روزانه همین حالا برای این حساب ثبت شده است؛ صفحه را تازه‌سازی کنید.", "club_quiz_already_shown");
+        throw error;
+      }
+      return json({ success: true, already_shown: false, answered: false, question: { id:question.id,category:question.category,question:question.question,options:question.options }, shown_at:new Date().toISOString() }, 201);
+    }
+
+    if (path === "/quiz/answer" && method === "POST") {
+      const auth = await requireMember(checkAuth);
+      if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
+      if ((await setting(DB, "club_enabled")) !== "true" || (await setting(DB, "earning_enabled")) !== "true") {
+        return fail(json, 503, "بخش پرسش روزانه در حال حاضر غیرفعال است.", "club_quiz_disabled");
+      }
+      const body = await request.json().catch(() => ({}));
+      const questionId = String(body.question_id || "");
+      const selected = safeInt(body.selected_option, 0, 3);
+      if (!/^[a-z0-9_-]{1,40}$/.test(questionId) || selected === null) return fail(json, 400, "گزینه انتخاب‌شده معتبر نیست.", "club_quiz_invalid_answer");
+      const impression = await DB.prepare("SELECT id FROM club_quiz_impressions WHERE user_id=? AND question_id=?").bind(auth.userId, questionId).first();
+      if (!impression) return fail(json, 409, "این پرسش برای حساب شما ثبت نشده است.", "club_quiz_not_shown");
+      const existing = await DB.prepare("SELECT selected_option,is_correct,points_awarded FROM club_quiz_answers WHERE user_id=? AND question_id=?").bind(auth.userId, questionId).first();
+      if (existing) {
+        const q = quizBank.questions.find(item => item.id === questionId);
+        return json({ success: true, duplicate: true, locked: true, selected_option:Number(existing.selected_option), is_correct:Number(existing.is_correct)===1, points_awarded:Number(existing.points_awarded), correct_option:q ? q.answer : null, explanation:q ? q.explanation : "" });
+      }
+      const question = quizBank.questions.find(item => item.id === questionId);
+      if (!question) return fail(json, 404, "پرسش در بانک نسخه فعلی پیدا نشد.", "club_quiz_unknown_question");
+      const correct = selected === question.answer;
+      const points = correct ? 5 : 0;
+      try {
+        const statements = [
+          DB.prepare("INSERT INTO club_quiz_answers(user_id,question_id,selected_option,is_correct,points_awarded) VALUES(?,?,?,?,?)").bind(auth.userId, questionId, selected, correct ? 1 : 0, points)
+        ];
+        if (points) statements.push(DB.prepare("INSERT INTO club_point_ledger(user_id,delta,source_type,source_id,idempotency_key,status,metadata_json,created_by) VALUES(?,?,'daily_quiz',?,?,'posted',?,'system')")
+          .bind(auth.userId, points, questionId, "club-quiz:" + auth.userId + ":" + questionId, JSON.stringify({ question_id:questionId })));
+        await DB.batch(statements);
+      } catch (error) {
+        const prior = await DB.prepare("SELECT selected_option,is_correct,points_awarded FROM club_quiz_answers WHERE user_id=? AND question_id=?").bind(auth.userId, questionId).first();
+        if (prior) return fail(json, 409, "پاسخ این پرسش قبلاً ثبت شده و قابل تغییر نیست.", "club_quiz_answer_locked");
+        throw error;
+      }
+      return json({ success:true, locked:true, selected_option:selected, is_correct:correct, points_awarded:points, correct_option:question.answer, explanation:question.explanation });
+    }
+
+    if (path === "/leaderboard" && method === "GET") {
+      const auth = await requireMember(checkAuth);
+      if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
+      const result = await DB.prepare(`SELECT u.id,COALESCE(NULLIF(cp.display_name,''),u.username,'شنونده') AS display_name,
+          COALESCE(SUM(CASE WHEN l.status='posted' THEN l.delta ELSE 0 END),0) AS points
+        FROM users u
+        LEFT JOIN club_profiles cp ON cp.user_id=u.id
+        LEFT JOIN club_point_ledger l ON l.user_id=u.id
+        WHERE COALESCE(cp.leaderboard_opt_out,0)=0
+        GROUP BY u.id,cp.display_name,u.username
+        HAVING COALESCE(SUM(CASE WHEN l.status='posted' THEN l.delta ELSE 0 END),0)>0
+        ORDER BY points DESC,u.id ASC LIMIT 100`).all();
+      const entries = (result.results || []).map((row,index)=>({ rank:index+1, medal:index===0?"gold":index===1?"silver":index===2?"bronze":null, display_name:String(row.display_name || "شنونده").slice(0,80), points:Number(row.points || 0), is_self:Number(row.id)===auth.userId }));
+      return json({ success:true, entries });
+    }
+
     if (path.startsWith("/admin/")) {
       const auth = await requireAdmin(checkAuth);
       if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_admin_required");

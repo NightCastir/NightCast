@@ -651,7 +651,7 @@ export async function handleClubApi({ request, url, DB, json, checkAuth, env }) 
             AND (SELECT setting_value FROM club_settings WHERE setting_key='club_enabled')='true'
             AND (SELECT setting_value FROM club_settings WHERE setting_key='earning_enabled')='true'`)
             .bind(Number(inviter.user_id),points,id, id,JSON.stringify({invited_user_id:auth.userId}),points),
-          DB.prepare("INSERT OR IGNORE INTO club_notifications(id,user_id,notification_type,title,body,url,dedupe_key) VALUES(?,?,'referral_reward','دعوت موفق بود!','دوستی با کد دعوت تو به NightCast پیوست؛ امتیاز تازه‌ای دریافت کردی.','/club','club-referral-notice:' || ?)").bind(randomId(),Number(inviter.user_id),id)
+          DB.prepare("INSERT OR IGNORE INTO club_notifications(id,user_id,notification_type,title,body,url,dedupe_key) VALUES(?,?,'referral_reward','دعوت موفق بود!',?,'/club','club-referral-notice:' || ?)").bind(randomId(),Number(inviter.user_id),points + " امتیاز به امتیازات اضافه شد؛ دوستت به NightCast پیوست.",id)
         ]);
       } catch (error) {
         const prior = await DB.prepare("SELECT id FROM club_referrals WHERE invited_user_id=?").bind(auth.userId).first();

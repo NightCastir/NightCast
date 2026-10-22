@@ -40,7 +40,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          base="https://nightcast.ir"
+          base="https://club-api.nightcast.ir"
           status=$(curl --retry 3 --retry-delay 2 --retry-all-errors -sS -o /tmp/club-summary.json -w '%{http_code}' "$base/api/v1/club/summary")
           if [ "$status" != "401" ]; then
             echo "Expected unauthenticated Club summary to return 401, got $status"

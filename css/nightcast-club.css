@@ -57,3 +57,12 @@
 @media(max-width:640px){.nc-club-header{flex-wrap:wrap;padding:12px 16px}.nc-club-header nav{order:3;width:100%;justify-content:space-between;padding-top:8px;border-top:1px solid var(--nc-theme-border)}.nc-club-header nav a{font-size:.8rem}.nc-club-theme-button{padding:9px 11px}.nc-club-main{width:calc(100% - 24px);padding-top:14px}.nc-club-hero{min-height:0;padding:23px 20px;border-radius:22px}.nc-club-orbit{display:none}.nc-club-hero h1{font-size:1.65rem}.nc-club-summary{gap:9px;margin:12px 0}.nc-club-stat{padding:13px 11px;gap:9px;border-radius:16px}.nc-club-stat-icon{width:36px;height:36px;border-radius:11px;font-size:.95rem}.nc-club-stat small{font-size:.69rem}.nc-club-stat strong{font-size:1.45rem}.nc-club-level-panel{padding:16px;gap:12px}.nc-club-level-emblem{width:46px;height:46px;font-size:1.15rem}.nc-club-columns{grid-template-columns:1fr;gap:12px;margin-top:12px}.nc-club-section{padding:17px;border-radius:18px}.nc-club-history{margin-top:12px}.nc-club-footer{padding:17px 16px}}
 @media(prefers-reduced-motion:reduce){.nc-club-progress-track span{transition:none}}
 @media(min-width:1400px){.nc-club-main{width:min(1240px,calc(100% - 72px))}}
+
+
+/* Live API-backed Club rows */
+.nc-club-data-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:14px 15px;border:1px solid var(--nc-theme-border);border-radius:15px;background:var(--nc-theme-panel,rgba(255,255,255,.035));min-width:0}
+.nc-club-data-main{min-width:0;flex:1}
+.nc-club-data-title{margin:0;color:var(--nc-theme-text);font-size:.96rem;font-weight:750;line-height:1.7;overflow-wrap:anywhere}
+.nc-club-data-detail{margin:5px 0 0;color:var(--nc-theme-muted);font-size:.82rem;line-height:1.9;overflow-wrap:anywhere}
+.nc-club-data-badge{flex:0 0 auto;max-width:42%;padding:5px 9px;border:1px solid var(--nc-theme-border);border-radius:999px;color:var(--nc-theme-text);font-size:.72rem;line-height:1.6;text-align:center;overflow-wrap:anywhere}
+@media(max-width:520px){.nc-club-data-row{gap:8px;padding:12px}.nc-club-data-badge{max-width:38%;font-size:.68rem}}

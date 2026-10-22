@@ -29,7 +29,7 @@ public final class NightCastPlaybackService extends Service {
  static volatile boolean isActive=false,isPlaying=false;
  private MediaPlayer player;
  private MediaSession session;
- private boolean prepared=false;
+ private boolean prepared=false,playWhenPrepared=true;
  private String title="NightCast Radio",artist="رادیوی فرهنگی NightCast",currentUrl="";
  @Override public void onCreate(){
   super.onCreate();isActive=true;createChannel();
@@ -49,7 +49,7 @@ public final class NightCastPlaybackService extends Service {
  }
  private SharedPreferences prefs(){return getSharedPreferences(NightCastRadioWidgetProvider.PREFS,Context.MODE_PRIVATE);}
  private void handle(String action){
-  if("pause".equals(action)){if(player!=null&&prepared&&player.isPlaying())player.pause();setState(false);return;}
+  if("pause".equals(action)){if(player!=null){if(prepared&&player.isPlaying())player.pause();else if(!prepared)playWhenPrepared=false;}setState(false);return;}
   if("stop".equals(action)){releasePlayer();setState(false);stopForeground(true);stopSelf();return;}
   if("next".equals(action)||"previous".equals(action)){
    SharedPreferences p=prefs();boolean forward="next".equals(action);String queueJson=p.getString("queue_json","[]");int currentIndex=p.getInt("queue_index",-1);
@@ -76,17 +76,18 @@ public final class NightCastPlaybackService extends Service {
   }
   if("play".equals(action)){
    if(player!=null&&prepared){if(!player.isPlaying()){player.start();setState(true);}return;}
+   if(player!=null&&!prepared){playWhenPrepared=true;return;}
    SharedPreferences p=prefs();currentUrl=p.getString("current_url","");title=p.getString("title","NightCast Radio");artist=p.getString("artist","رادیوی فرهنگی NightCast");
    if(currentUrl.trim().isEmpty()){setState(false);stopForeground(true);stopSelf();return;}playUrl(currentUrl);
   }
  }
  private void playUrl(String url){
-  releasePlayer();currentUrl=url;prepared=false;
+  releasePlayer();currentUrl=url;prepared=false;playWhenPrepared=true;
   try{
    player=new MediaPlayer();
    player.setWakeMode(getApplicationContext(),PowerManager.PARTIAL_WAKE_LOCK);
    player.setAudioAttributes(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build());
-   player.setOnPreparedListener(mp->{prepared=true;mp.start();setState(true);});
+   player.setOnPreparedListener(mp->{prepared=true;if(playWhenPrepared){mp.start();setState(true);}else setState(false);});
    player.setOnCompletionListener(mp->{setState(false);releasePlayer();});
    player.setOnErrorListener((mp,what,extra)->{setState(false);releasePlayer();stopForeground(true);stopSelf();return true;});
    player.setDataSource(url);setState(false);player.prepareAsync();
@@ -114,7 +115,7 @@ public final class NightCastPlaybackService extends Service {
  }
  private void createChannel(){if(Build.VERSION.SDK_INT>=26){NotificationChannel ch=new NotificationChannel(CHANNEL,"NightCast playback",NotificationManager.IMPORTANCE_LOW);ch.setDescription("پخش صوتی NightCast");((NotificationManager)getSystemService(NOTIFICATION_SERVICE)).createNotificationChannel(ch);}}
  private int pendingFlags(){int f=PendingIntent.FLAG_UPDATE_CURRENT;if(Build.VERSION.SDK_INT>=23)f|=PendingIntent.FLAG_IMMUTABLE;return f;}
- private void releasePlayer(){if(player!=null){try{player.reset();player.release();}catch(Exception ignored){}player=null;}prepared=false;}
+ private void releasePlayer(){if(player!=null){try{player.reset();player.release();}catch(Exception ignored){}player=null;}prepared=false;playWhenPrepared=false;}
  @Override public void onDestroy(){isActive=false;isPlaying=false;releasePlayer();NightCastRadioWidgetProvider.updateAll(this,prefs().getString("title","NightCast Radio"),prefs().getString("artist","رادیوی فرهنگی NightCast"),false,!prefs().getString("previous_url","").isEmpty()||!prefs().getString("next_url","").isEmpty());NotificationManager nm=(NotificationManager)getSystemService(NOTIFICATION_SERVICE);if(nm!=null)nm.cancel(NOTIFICATION_ID);if(session!=null){session.setActive(false);session.release();session=null;}super.onDestroy();}
  @Override public IBinder onBind(Intent intent){return null;}
 }

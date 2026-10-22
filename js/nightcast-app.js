@@ -2212,16 +2212,16 @@ LOGOUT
                 const plugin=window.Capacitor?.Plugins?.NightCastWidgetBridge;
                 if(!plugin?.updatePlaybackState)return;
                 const current=state.current;
-                const index=current?state.all.findIndex(item=>Number(item.id)===Number(current.id)):-1;
-                const previous=index>0?state.all[index-1]:null;
-                const next=index>=0&&index<state.all.length-1?state.all[index+1]:null;
                 const queue=state.all.map(item=>({
                     id:String(item.id??""),title:item.title||"NightCast Radio",artist:item.author_name||"رادیوی فرهنگی NightCast",
                     url:item.audio_url||""
                 })).filter(item=>item.url);
+                const queueIndex=queue.findIndex(item=>item.id===String(current?.id??""));
+                const previous=queueIndex>0?queue[queueIndex-1]:null;
+                const next=queueIndex>=0&&queueIndex<queue.length-1?queue[queueIndex+1]:null;
                 plugin.updatePlaybackState({
                     title:current?.title||"NightCast Radio",artist:current?.author_name||"رادیوی فرهنگی NightCast",
-                    currentUrl:current?.audio_url||"",currentId:current?.id==null?"":String(current.id),currentIndex:index,
+                    currentUrl:current?.audio_url||"",currentId:current?.id==null?"":String(current.id),currentIndex:queueIndex,
                     queue,previousUrl:previous?.audio_url||"",nextUrl:next?.audio_url||"",
                     previousTitle:previous?.title||"",nextTitle:next?.title||"",
                     isPlaying:!!current&&!els.audio.paused&&!els.audio.ended,canSkip:!!(previous||next)

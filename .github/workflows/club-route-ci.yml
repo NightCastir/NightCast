@@ -1,0 +1,40 @@
+name: NightCast Club Route Syntax and Bundle CI
+
+on:
+  push:
+    branches:
+      - feat/nightcast-club-foundation
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  club-route-ci:
+    name: Route tests, syntax, and Wrangler bundle
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Set up Python for SQLite contract tests
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Verify club schema and migration contract
+        run: node tests/club-schema-acceptance.cjs
+      - name: Verify route authorization and transactional redemption
+        run: node tests/club-api-acceptance.cjs
+      - name: Check Worker and admin console syntax
+        run: |
+          node --check workers/club-api.js
+          node --check js/club-admin.js
+      - name: Bundle production Worker without deploying
+        run: npx --yes wrangler@4 deploy --dry-run

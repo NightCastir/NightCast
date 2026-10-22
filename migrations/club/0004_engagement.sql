@@ -28,6 +28,12 @@ CREATE TABLE IF NOT EXISTS club_quiz_answers (
   UNIQUE(user_id, question_id),
   FOREIGN KEY(user_id, question_id) REFERENCES club_quiz_impressions(user_id, question_id) ON DELETE CASCADE
 );
+CREATE TABLE IF NOT EXISTS club_invite_codes (
+  user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  invite_code TEXT NOT NULL UNIQUE,
+  code_hash TEXT NOT NULL UNIQUE,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
 CREATE TABLE IF NOT EXISTS club_referrals (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   inviter_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,

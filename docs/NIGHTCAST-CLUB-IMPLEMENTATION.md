@@ -18,9 +18,13 @@ This branch establishes the first versioned schema and a theme-aware dashboard s
 
 - `migrations/club/0001_club_foundation.sql`: versioned schema for point and XP ledgers, listening events, settings, levels, missions, user mission periods, badges, rewards/redemptions, profiles, and audit logs. Unique idempotency keys are defined on ledgers and redemptions. No auth table is created.
 - `migrations/club/0002_listening_sequence_guard.sql`: adds per-event sequence numbers and server receipt timestamps, with a partial unique index to reject repeated positive sequence numbers for the same user/session.
+- `migrations/club/0003_atomic_reward_redemption.sql`: validates feature flags, reward availability, stock, per-user limits, and balance inside SQLite triggers; the redemption, stock decrement, debit ledger, and audit record are one atomic statement.
+- `workers/club-api.js`: API module for summary, ledgers, missions, badges, rewards, listening events, reward redemption, and admin creation of inactive missions/rewards. It receives the existing Worker `checkAuth()` resolver; it does not create a parallel login/session system.
+- `workers/nightcast-api.js`: restored as a complete tracked source snapshot from the current Cloudflare Worker and wired to the club module before legacy route dispatch. The import is bundled by Wrangler; this repository source is not yet deployed to Production.
+- `wrangler.toml`: records the existing Worker name, compatibility date, and D1 binding for reproducible bundling/deployment. Secrets remain managed in Cloudflare; no automatic production deployment is configured.
 - `club.html`, `css/nightcast-club.css`, `js/nightcast-club.js`: Persian RTL dashboard shell with responsive layout and theme-token styling.
 - `_redirects` and `index.html`: canonical `/club` route and a primary-navigation entry.
-- `tests/club-schema-acceptance.cjs` and `.github/workflows/club-foundation-acceptance.yml`: static/schema acceptance checks and a dedicated CI workflow.
+- `tests/club-schema-acceptance.cjs`, `tests/club-api-acceptance.cjs`, and `.github/workflows/club-foundation-acceptance.yml`: schema/theme checks, route authorization tests, replay checks, atomic redemption tests, and a Wrangler dry-run bundle check.
 
 ## Isolated D1 validation completed
 
@@ -36,17 +40,17 @@ The migration inserts conservative settings with `club_enabled=false`, `earning_
 
 ## Remaining implementation blockers
 
-1. The current deployed Worker snapshot is now tracked at `workers/nightcast-api.js`, but the repository still needs a verified Wrangler configuration and reproducible deploy workflow that preserves the existing D1 binding, secret bindings, and compatibility settings.
-2. Add and test server routes for club summary, ledger, missions, badges, rewards, listening events, and admin management. All routes must use the existing `checkAuth()` result and server-side role checks.
-3. Implement transactional/atomic earning and redemption logic. A UI click must never mint points. D1 batch/unique constraints and conditional writes must be tested under duplicate and concurrent requests.
-4. Connect real player telemetry to server-validated listening sessions; client-supplied time is not proof of human attention. Apply caps and anomaly checks.
-5. Expand isolated D1 testing to foreign-key behavior, atomic reward redemption, concurrent writes, and the full API integration before any Production migration.
-6. Run the new GitHub Actions workflow and the existing NightCast acceptance workflows; inspect actual results before marking the feature ready.
-7. Verify the complete page in all eight themes, including the light Moonlight theme, and run responsive checks including older Android TV browsers.
+1. The API module is wired into the tracked Worker source, but it has not been deployed to the Cloudflare Production Worker. Keep the club and earning/reward flags disabled until CI and integration tests pass.
+2. Apply migrations `0001`–`0003` to an isolated D1 database with the full existing auth/user/podcast schema, then run route tests against that isolated binding. Do not apply these migrations to Production yet.
+3. Extend testing to concurrent requests across different sessions, daily cap races, mission progression/claiming, and fulfillment/cancellation workflows.
+4. Connect the live player to the listening-event contract. Client-reported playback cannot prove human attention; use server receipt times, sequence guards, caps, and anomaly review.
+5. Run the new GitHub Actions workflow, including Wrangler dry-run bundling, and the existing NightCast acceptance workflows; inspect actual results before marking the feature ready.
+6. Verify the page in all eight themes, including light Moonlight, and test older Android TV browsers.
 
 ## Status
 
 - Implemented in branch: schema draft, dashboard shell, canonical route, navigation entry, theme-token styling, honest API-unavailable state, and acceptance test workflow.
 - Isolated D1 schema smoke test: passed (13 tables; seven levels; earning disabled; duplicate idempotency key rejected; temporary fixture cleaned).
-- Not yet implemented: live club API routes, active earning, missions/rewards lifecycle, server-side level calculation, admin panel, production migration, and deployment.
-- Not deployed to Production by this checkpoint.
+- Implemented in the branch but not yet deployed: authenticated API route module, listening event sequence validation, idempotent ledger writes, and trigger-backed atomic reward redemption. Missions/rewards are created inactive; there is no public feature-flag endpoint.
+- Not yet implemented: mission progression/claim lifecycle, reward fulfillment/cancellation workflow, complete admin panel, and concurrent cap/race tests.
+- Not deployed to Production by this checkpoint. Earning and rewards remain disabled by default.

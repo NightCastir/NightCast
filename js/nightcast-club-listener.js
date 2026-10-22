@@ -1,7 +1,7 @@
 /* NightCast Club listening event bridge. The server, never this script, decides what earns points. */
 (function () {
   'use strict';
-  var API = 'https://nightcast.ir/api/v1/club/listen-events';
+  var API = 'https://club-api.nightcast.ir/api/v1/club/listen-events';
   var TOKEN_KEY = 'NightCastToken';
   var audio = null;
   var podcastId = 0;

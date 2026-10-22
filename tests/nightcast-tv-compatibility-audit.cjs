@@ -15,14 +15,7 @@ async function get(url) {
   return { response, body: await response.text() };
 }
 async function getPublishedHome() {
-  var latest;
-  for (var attempt = 1; attempt <= 18; attempt++) {
-    latest = await get(SITE + '/');
-    if (!latest.response.ok || latest.body.indexOf('window.location.replace("/tv-lite.html') < 0) return latest;
-    console.log('WAIT | Cloudflare deployment not visible yet | attempt ' + attempt + '/18');
-    await new Promise(function (resolve) { setTimeout(resolve, 10000); });
-  }
-  return latest;
+  return get(SITE + '/');
 }
 (async () => {
   const { response: homeResponse, body: html } = await getPublishedHome();
@@ -75,9 +68,13 @@ async function getPublishedHome() {
       add('Clean route ' + route + ' resolves', false, e.message);
     }
   }
-  add('Full NightCast page is retained for TV', html.indexOf('/tv-lite.html') < 0 &&
-    html.indexOf('Keep the full NightCast experience') >= 0,
-    'Main page no longer redirects TV visitors to the reduced tv-lite experience');
+  const tv = await get(SITE + '/tv-lite.html');
+  const tvHasNavigation = ['view-podcasts', 'view-about', 'view-contact'].every(id => tv.body.indexOf('id="' + id + '"') >= 0);
+  const tvHasCatalog = tv.body.indexOf('id="podcast-list"') >= 0 && tv.body.indexOf('class="grid"') >= 0;
+  const tvHasPlayer = tv.body.indexOf('id="audio"') >= 0 && tv.body.indexOf('id="now-playing"') >= 0;
+  add('Dedicated TV experience responds', tv.response.ok && tvHasNavigation && tvHasCatalog && tvHasPlayer,
+    'HTTP ' + tv.response.status + '; navigation=' + tvHasNavigation + ', catalog grid=' + tvHasCatalog + ', player=' + tvHasPlayer);
+
   add('Full desktop feature scripts remain referenced', ['/js/nightcast-app.js', '/js/nightcast-player.js', '/js/nightcast-theme.js']
     .every(path => html.indexOf(path) >= 0),
     'Core app, player, and theme scripts remain part of the full homepage');

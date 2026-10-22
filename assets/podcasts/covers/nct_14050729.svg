@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200" role="img" aria-labelledby="title desc">
+  <title id="title">ابتدا همه قوانین را زیر پا بگذارید</title>
+  <desc id="desc">کاور NightCast درباره شناخت استعدادها و مدیریت متفاوت</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#07152b"/><stop offset=".55" stop-color="#18224b"/><stop offset="1" stop-color="#351d4e"/></linearGradient>
+    <radialGradient id="glow"><stop offset="0" stop-color="#f0bd68" stop-opacity=".8"/><stop offset="1" stop-color="#f0bd68" stop-opacity="0"/></radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe7a6"/><stop offset="1" stop-color="#c78d3c"/></linearGradient>
+  </defs>
+  <rect width="1200" height="1200" rx="42" fill="url(#bg)"/>
+  <circle cx="910" cy="255" r="300" fill="url(#glow)" opacity=".42"/>
+  <g fill="none" stroke="#f7d99b" stroke-opacity=".3"><circle cx="910" cy="255" r="205" stroke-width="2"/><circle cx="910" cy="255" r="260" stroke-width="1.5" stroke-dasharray="5 18"/><ellipse cx="910" cy="255" rx="310" ry="105" transform="rotate(-28 910 255)" stroke-width="2"/></g>
+  <g fill="#fff2c9"><circle cx="735" cy="116" r="4"/><circle cx="1036" cy="168" r="5"/><circle cx="1092" cy="364" r="3"/><circle cx="818" cy="435" r="4"/><circle cx="635" cy="260" r="3"/><circle cx="1012" cy="473" r="2.5"/></g>
+  <path d="M92 570 H1108" stroke="url(#gold)" stroke-width="3" opacity=".9"/>
+  <rect x="92" y="95" width="245" height="56" rx="28" fill="#fff" fill-opacity=".09" stroke="#f0c778" stroke-opacity=".65"/>
+  <text x="214" y="132" text-anchor="middle" font-family="Vazirmatn, Tahoma, sans-serif" font-size="25" fill="#ffe7ae">NIGHTCAST • کتاب صوتی</text>
+  <text x="1100" y="675" text-anchor="end" direction="rtl" unicode-bidi="plaintext" font-family="Vazirmatn, Tahoma, sans-serif" font-size="69" font-weight="700" fill="#fff8e9">ابتدا همه قوانین را</text>
+  <text x="1100" y="765" text-anchor="end" direction="rtl" unicode-bidi="plaintext" font-family="Vazirmatn, Tahoma, sans-serif" font-size="82" font-weight="800" fill="url(#gold)">زیر پا بگذارید</text>
+  <text x="1100" y="835" text-anchor="end" direction="rtl" unicode-bidi="plaintext" font-family="Vazirmatn, Tahoma, sans-serif" font-size="32" fill="#d6d9ee">شناخت استعدادها و مدیریت متفاوت</text>
+  <path d="M92 905 H470" stroke="#f0c778" stroke-width="3" stroke-linecap="round"/>
+  <text x="1100" y="963" text-anchor="end" direction="rtl" unicode-bidi="plaintext" font-family="Vazirmatn, Tahoma, sans-serif" font-size="29" fill="#f2e8d5">مارکوس باکینگهام / کورت کافمن</text>
+  <g transform="translate(92 1060)"><circle cx="22" cy="22" r="22" fill="url(#gold)"/><path d="M15 12 L34 22 L15 32 Z" fill="#17203f"/><text x="62" y="31" font-family="Vazirmatn, Tahoma, sans-serif" font-size="28" font-weight="700" fill="#fff8e9">NightCast</text></g>
+  <text x="1108" y="1110" text-anchor="end" font-family="Vazirmatn, Tahoma, sans-serif" font-size="22" fill="#c3c9e2">بشنو • بیندیش • دوباره ببین</text>
+</svg>

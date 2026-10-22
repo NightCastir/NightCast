@@ -62,7 +62,9 @@ function makeDb(settings = {}) {
 }
 
 async function apiTests() {
-  const encoded = Buffer.from(source).toString('base64');
+  const questionBank = JSON.stringify(JSON.parse(fs.readFileSync('data/club/daily-questions.json', 'utf8')));
+  const runnableSource = source.replace('import QUESTION_BANK from "../data/club/daily-questions.json";', 'const QUESTION_BANK = ' + questionBank + ';');
+  const encoded = Buffer.from(runnableSource).toString('base64');
   const { handleClubApi } = await import('data:text/javascript;base64,' + encoded);
   const urlFor = path => new URL('https://nightcast.ir/api/v1/club' + path);
   const req = (path, method = 'GET', body = undefined) => new Request('https://nightcast.ir/api/v1/club' + path, {

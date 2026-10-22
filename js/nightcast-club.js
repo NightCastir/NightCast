@@ -8,6 +8,7 @@
   var THEMES = ['midnight-cosmos', 'moonlight', 'aurora', 'studio-noir', 'deep-ocean', 'royal-gold', 'neon-city', 'persian-heritage'];
   var THEME_NAMES = ['کیهان نیمه‌شب', 'مهتاب', 'شفق قطبی', 'استودیوی سیاه', 'اقیانوس عمیق', 'طلایی سلطنتی', 'شهر نئون', 'میراث ایرانی'];
   var THEME_COLORS = ['#050816', '#F5F7FB', '#071410', '#101112', '#061826', '#0B0B0D', '#100817', '#101A32'];
+  var clubFlags = { enabled: false, earning_enabled: false, rewards_enabled: false };
 
   function byId(id) { return document.getElementById(id); }
   function setText(id, value) {
@@ -59,6 +60,27 @@
       });
     });
   }
+  function mutate(path, body) {
+    var token = safeToken();
+    if (!token) return Promise.reject(new Error('برای این عملیات باید وارد حساب شوید.'));
+    return fetch(API_BASE + path, {
+      method: 'POST',
+      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      credentials: 'omit',
+      cache: 'no-store',
+      body: JSON.stringify(body || {})
+    }).then(function (response) {
+      return response.json().catch(function () { return {}; }).then(function (data) {
+        if (!response.ok) {
+          var error = new Error(data.message || ('HTTP ' + response.status));
+          error.status = response.status;
+          error.code = data.code;
+          throw error;
+        }
+        return data;
+      });
+    });
+  }
   function clearAndAppend(id, nodes, emptyText) {
     var target = byId(id);
     if (!target) return;
@@ -103,6 +125,11 @@
   }
   function applySummary(data) {
     var summary = data && (data.summary || data.data || data);
+    clubFlags = {
+      enabled: summary.enabled === true,
+      earning_enabled: summary.earning_enabled === true,
+      rewards_enabled: summary.rewards_enabled === true
+    };
     if (!summary || typeof summary !== 'object') throw new Error('پاسخ خلاصه باشگاه معتبر نیست.');
     setText('clubPoints', summary.points);
     setText('clubXp', summary.xp);
@@ -134,6 +161,15 @@
       ? ('تا سطح «' + nextLevel.title_fa + '»، ' + Math.max(0, nextMin - xp) + ' XP باقی مانده است.')
       : (level ? 'به بالاترین سطح تعریف‌شده رسیده‌ای.' : 'سطح‌ها هنوز در سامانه تعریف نشده‌اند.'));
   }
+  function makeActionButton(label, disabled, onClick) {
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'nc-club-action-button';
+    button.textContent = label;
+    button.disabled = !!disabled;
+    if (onClick) button.addEventListener('click', onClick);
+    return button;
+  }
   function renderMissions(data) {
     var rows = (data && data.missions) || [];
     clearAndAppend('clubMissions', rows.map(function (mission) {
@@ -144,8 +180,37 @@
         ' · پاداش: ' + Number(mission.reward_points || 0) + ' امتیاز / ' + Number(mission.reward_xp || 0) + ' XP';
       var state = mission.user_status === 'claimed' ? 'دریافت شده' :
         mission.user_status === 'completed' ? 'آماده دریافت' : 'در حال انجام';
-      return makeRow(mission.title_fa, detail, state);
+      var row = makeRow(mission.title_fa, detail, state);
+      if (mission.user_status === 'completed') {
+        row.appendChild(makeActionButton(clubFlags.earning_enabled ? 'دریافت پاداش' : 'دریافت پاداش غیرفعال', !clubFlags.earning_enabled, function () {
+          mutate('/club/missions/' + encodeURIComponent(mission.id) + '/claim', {}).then(function () {
+            status('پاداش مأموریت ثبت شد؛ در حال تازه‌سازی اطلاعات…', false);
+            start();
+          }).catch(function (error) { status(error.message || 'دریافت پاداش انجام نشد.', true); });
+        }));
+      }
+      return row;
     }), 'در حال حاضر مأموریت فعالی برای این حساب وجود ندارد.');
+  }
+  function renderRewards(data) {
+    var rows = (data && data.rewards) || [];
+    clearAndAppend('clubRewards', rows.map(function (reward) {
+      var stock = reward.stock_remaining === null || reward.stock_remaining === undefined ? 'موجودی محدود نشده' : 'موجودی: ' + Number(reward.stock_remaining);
+      var detail = (reward.description_fa || '') + ' · هزینه: ' + Number(reward.cost_points || 0) + ' امتیاز · ' + stock;
+      var row = makeRow(reward.title_fa, detail, reward.reward_type || 'پاداش');
+      row.appendChild(makeActionButton(clubFlags.rewards_enabled ? 'دریافت پاداش' : 'به‌زودی فعال می‌شود', !clubFlags.rewards_enabled, function () {
+        if (!window.confirm('برای ثبت درخواست این پاداش، امتیازها از موجودی شما کسر می‌شوند. ادامه می‌دهید؟')) return;
+        mutate('/club/rewards/' + encodeURIComponent(reward.id) + '/redeem', { idempotency_key: createId() }).then(function () {
+          status('درخواست دریافت پاداش ثبت شد؛ موجودی و تاریخچه در حال تازه‌سازی است.', false);
+          start();
+        }).catch(function (error) { status(error.message || 'ثبت درخواست پاداش انجام نشد.', true); });
+      }));
+      return row;
+    }), 'فعلاً پاداش فعالی برای دریافت تعریف نشده است.');
+  }
+  function createId() {
+    if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID();
+    return 'nc-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 14);
   }
   function renderBadges(data) {
     var rows = (data && data.badges) || [];
@@ -177,6 +242,7 @@
     clearAndAppend('clubMissions', [], 'برای بارگذاری مأموریت‌ها اتصال معتبر به API لازم است.');
     clearAndAppend('clubRecentBadges', [], 'برای بارگذاری دستاوردها اتصال معتبر به API لازم است.');
     clearAndAppend('clubLedger', [], 'برای بارگذاری تاریخچه اتصال معتبر به API لازم است.');
+    clearAndAppend('clubRewards', [], 'برای بارگذاری پاداش‌ها اتصال معتبر به API لازم است.');
   }
   function loadSection(path, render, sectionName) {
     return request(path).then(function (data) {
@@ -186,7 +252,8 @@
       var message = error.status === 404
         ? 'مسیر ' + sectionName + ' در Worker پاسخ نمی‌دهد.'
         : 'بارگذاری ' + sectionName + ' ناموفق بود.';
-      clearAndAppend(sectionName === 'مأموریت‌ها' ? 'clubMissions' : sectionName === 'نشان‌ها' ? 'clubRecentBadges' : 'clubLedger', [], message);
+      var targetId = sectionName === 'مأموریت‌ها' ? 'clubMissions' : sectionName === 'نشان‌ها' ? 'clubRecentBadges' : sectionName === 'پاداش‌ها' ? 'clubRewards' : 'clubLedger';
+      clearAndAppend(targetId, [], message);
       return false;
     });
   }
@@ -212,12 +279,13 @@
       var results = [
         loadSection('/club/missions', renderMissions, 'مأموریت‌ها'),
         loadSection('/club/badges', renderBadges, 'نشان‌ها'),
+        loadSection('/club/rewards', renderRewards, 'پاداش‌ها'),
         loadSection('/club/ledger?limit=20', renderLedger, 'تاریخچه')
       ];
       return Promise.all(results);
     }).then(function (results) {
       if (results && results.every(function (ok) { return ok; })) {
-        status('حساب متصل است؛ خلاصه، مأموریت‌ها، نشان‌ها و تاریخچه از API دریافت شدند.', false);
+        status('حساب متصل است؛ خلاصه، مأموریت‌ها، نشان‌ها، پاداش‌ها و تاریخچه از API دریافت شدند.', false);
       } else if (results) {
         status('خلاصه حساب دریافت شد، اما بارگذاری یک یا چند بخش کامل نشد.', true);
       }

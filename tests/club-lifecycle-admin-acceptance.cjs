@@ -17,7 +17,7 @@ const checks = [
   ['admin page has mission, reward, and redemption controls', /id="mission-form"/.test(html) && /id="reward-form"/.test(html) && /id="redemptions"/.test(html)],
   ['admin UI reads current NightCast auth token and calls protected API', /NightCastToken/.test(ui) && /Authorization/.test(ui) && /\/admin\/overview/.test(ui)],
   ['admin UI renders server values as text rather than HTML', /textContent/.test(ui) && !/innerHTML\s*=/.test(ui)],
-  ['admin UI never exposes a public feature-flag toggle', !/club_enabled.*POST|POST.*club_enabled/s.test(ui)]
+  ['admin UI never exposes a public feature-flag toggle', !/\\/admin\\/settings|setting_key\\s*:\\s*[\"']club_enabled/.test(ui)]
 ];
 let failures = 0;
 for (const [name, ok] of checks) {

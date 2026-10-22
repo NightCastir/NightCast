@@ -4,6 +4,9 @@
   var API_BASE = 'https://nightcast-shield.tomasgermany2580.workers.dev/api/v1';
   var TOKEN_KEY = 'NightCastToken';
   var STATUS_ID = 'clubConnectionStatus';
+  var THEMES = ['midnight-cosmos', 'moonlight', 'aurora', 'studio-noir', 'deep-ocean', 'royal-gold', 'neon-city', 'persian-heritage'];
+  var THEME_NAMES = ['کیهان نیمه‌شب', 'مهتاب', 'شفق قطبی', 'استودیوی سیاه', 'اقیانوس عمیق', 'طلایی سلطنتی', 'شهر نئون', 'میراث ایرانی'];
+  var THEME_COLORS = ['#050816', '#F5F7FB', '#071410', '#101112', '#061826', '#0B0B0D', '#100817', '#101A32'];
 
   function byId(id) { return document.getElementById(id); }
   function setText(id, value) { var node = byId(id); if (node) node.textContent = value == null ? '—' : String(value); }
@@ -15,6 +18,23 @@
   }
   function safeToken() {
     try { return window.localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
+  }
+  function cycleTheme() {
+    var current = 'midnight-cosmos';
+    try { current = window.localStorage.getItem('nightcast-theme') || current; } catch (e) {}
+    var index = THEMES.indexOf(current);
+    var next = THEMES[(index + 1 + THEMES.length) % THEMES.length];
+    document.documentElement.setAttribute('data-theme', next);
+    document.documentElement.style.colorScheme = next === 'moonlight' ? 'light' : 'dark';
+    var metas = document.querySelectorAll('meta[name="theme-color"]');
+    for (var i = 0; i < metas.length; i++) metas[i].setAttribute('content', THEME_COLORS[THEMES.indexOf(next)]);
+    try { window.localStorage.setItem('nightcast-theme', next); } catch (e) {}
+    if (typeof window.CustomEvent === 'function') {
+      document.dispatchEvent(new CustomEvent('nightcast:themechange', { detail: { id: next } }));
+    }
+    var button = byId('clubThemeButton');
+    if (button) button.setAttribute('aria-label', 'تم فعال: ' + THEME_NAMES[THEMES.indexOf(next)] + '؛ برای تغییر، دوباره فشار بده');
+    status('تم فعال: ' + THEME_NAMES[THEMES.indexOf(next)], false);
   }
   function request(path) {
     var token = safeToken();
@@ -68,15 +88,7 @@
   }
   function start() {
     var themeButton = byId('clubThemeButton');
-    if (themeButton) themeButton.addEventListener('click', function () {
-      var choices = document.querySelectorAll('[data-theme-choice]');
-      if (choices.length) {
-        var first = choices[0];
-        if (first && first.focus) first.focus();
-      } else {
-        status('برای تغییر تم، از انتخاب‌گر تم اصلی NightCast استفاده کن.', false);
-      }
-    });
+    if (themeButton) themeButton.addEventListener('click', cycleTheme);
     if (!safeToken()) {
       status('برای مشاهده پیشرفت شخصی، ابتدا با حساب NightCast وارد شو.', true);
       var login = document.createElement('a');
@@ -101,5 +113,5 @@
     });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
-  else start();
+  else start;
 }());

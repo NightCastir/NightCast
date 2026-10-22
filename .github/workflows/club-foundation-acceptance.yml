@@ -26,3 +26,7 @@ jobs:
           node-version: '22'
       - name: Verify migration and theme acceptance
         run: node tests/club-schema-acceptance.cjs
+      - name: Verify club API authorization and transactional redemption
+        run: node tests/club-api-acceptance.cjs
+      - name: Check club API module syntax
+        run: node --check workers/club-api.js

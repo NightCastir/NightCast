@@ -2,7 +2,7 @@
 const fs=require('node:fs');const assert=require('node:assert/strict');const read=p=>fs.readFileSync(p,'utf8');
 const main=read('android-template/src/main/java/ir/nightcast/app/MainActivity.java'),provider=read('android-template/src/main/java/ir/nightcast/app/NightCastRadioWidgetProvider.java'),bridge=read('android-template/src/main/java/ir/nightcast/app/NightCastWidgetBridge.java'),service=read('android-template/src/main/java/ir/nightcast/app/NightCastPlaybackService.java'),wf=read('.github/workflows/build-android.yml'),app=read('js/nightcast-app.js');
 const checks=[
-['native AppWidgetProvider',provider.includes('extends AppWidgetProvider')],
+['native AppWidgetProvider',provider.includes('extends AppWidgetProvider')],['activity lifecycle override matches Capacitor visibility',/public void onDestroy\(\)/.test(main)],
 ['all widget controls are declared in generated layouts',['widget_play','widget_pause','widget_previous','widget_next'].every(x=>wf.includes('@+id/'+x))&&wf.includes('widget_nightcast_radio_small.xml')],
 ['widget is resizable and home-screen only',wf.includes('android:widgetCategory="home_screen"')&&wf.includes('android:resizeMode="horizontal|vertical"')&&wf.includes('android:minWidth="180dp"')],
 ['native bridge registered',main.includes('registerPlugin(NightCastWidgetBridge.class)')],

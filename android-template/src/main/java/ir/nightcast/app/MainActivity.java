@@ -63,7 +63,7 @@ public class MainActivity extends BridgeActivity {
         }
     }
 
- @Override protected void onDestroy(){activityAlive=false;widgetHandler.removeCallbacksAndMessages(null);super.onDestroy();}
+ @Override public void onDestroy(){activityAlive=false;widgetHandler.removeCallbacksAndMessages(null);super.onDestroy();}
  @Override protected void onNewIntent(Intent intent){super.onNewIntent(intent);setIntent(intent);captureWidgetAction(intent);}
  private void captureWidgetAction(Intent i){
   if(i==null)return;String a=i.getAction();

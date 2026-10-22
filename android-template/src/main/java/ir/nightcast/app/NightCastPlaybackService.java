@@ -16,6 +16,8 @@ import android.media.session.PlaybackState;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * Fallback playback engine for widget actions after the WebView activity process has gone away.
@@ -50,14 +52,25 @@ public final class NightCastPlaybackService extends Service {
   if("pause".equals(action)){if(player!=null&&prepared&&player.isPlaying())player.pause();setState(false);return;}
   if("stop".equals(action)){releasePlayer();setState(false);stopForeground(true);stopSelf();return;}
   if("next".equals(action)||"previous".equals(action)){
-   SharedPreferences p=prefs();boolean forward="next".equals(action);String key=forward?"next_url":"previous_url";String url=p.getString(key,"");
+   SharedPreferences p=prefs();boolean forward="next".equals(action);String queueJson=p.getString("queue_json","[]");int currentIndex=p.getInt("queue_index",-1);
+   try{
+    JSONArray queue=new JSONArray(queueJson);int targetIndex=currentIndex+(forward?1:-1);
+    if(currentIndex>=0&&targetIndex>=0&&targetIndex<queue.length()){
+     JSONObject item=queue.getJSONObject(targetIndex);String url=item.optString("url","");
+     if(!url.trim().isEmpty()){
+      JSONObject previous=targetIndex>0?queue.getJSONObject(targetIndex-1):null;JSONObject next=targetIndex<queue.length()-1?queue.getJSONObject(targetIndex+1):null;
+      title=item.optString("title","NightCast Radio");artist=item.optString("artist",p.getString("artist","رادیوی فرهنگی NightCast"));
+      p.edit().putInt("queue_index",targetIndex).putString("current_id",item.optString("id","")).putString("current_url",url).putString("title",title).putString("artist",artist)
+       .putString("previous_url",previous==null?"":previous.optString("url","")).putString("previous_title",previous==null?"":previous.optString("title",""))
+       .putString("next_url",next==null?"":next.optString("url","")).putString("next_title",next==null?"":next.optString("title","")).apply();
+      currentUrl=url;playUrl(url);return;
+     }
+    }
+   }catch(Exception ignored){}
+   String url=p.getString(forward?"next_url":"previous_url","");
    if(url!=null&&!url.trim().isEmpty()){
-    String oldUrl=p.getString("current_url",currentUrl);String oldTitle=p.getString("title",title);String oldArtist=p.getString("artist",artist);
-    title=p.getString(forward?"next_title":"previous_title","NightCast Radio");artist=oldArtist;
-    SharedPreferences.Editor edit=p.edit().putString("current_url",url).putString("title",title).putString("artist",artist);
-    if(forward){edit.putString("previous_url",oldUrl).putString("previous_title",oldTitle).putString("next_url","").putString("next_title","");}
-    else{edit.putString("next_url",oldUrl).putString("next_title",oldTitle).putString("previous_url","").putString("previous_title","");}
-    edit.apply();currentUrl=url;playUrl(url);
+    title=p.getString(forward?"next_title":"previous_title","NightCast Radio");artist=p.getString("artist","رادیوی فرهنگی NightCast");
+    p.edit().putString("current_url",url).putString("title",title).putString("artist",artist).apply();currentUrl=url;playUrl(url);
    }else setState(false);
    return;
   }

@@ -18,7 +18,7 @@ const checks=[
 ['widget controls route through receiver and background service',provider.includes('startForegroundService(service)')&&provider.includes('ACTION_CONTROL')&&provider.indexOf('if(NightCastPlaybackService.isActive)')<provider.indexOf('if(MainActivity.activityAlive)')],
 ['native service exposes active playback state and commands',bridge.includes('getPlaybackState(PluginCall call)')&&bridge.includes('controlNativePlayback(PluginCall call)')],
 ['app synchronizes native service state without duplicate HTML audio',app.includes('syncNativePlaybackFromService()')&&app.includes('nativePlugin?.stopNativePlayback?.()')],
-['native service has media transport controls',service.includes('onSkipToNext')&&service.includes('onSkipToPrevious')&&service.includes('onPause')],
+['native service has media transport controls',service.includes('onSkipToNext')&&service.includes('onSkipToPrevious')&&service.includes('onPause')],['native fallback retains queue navigation after more than one skip',service.includes('queue_json')&&service.includes('targetIndex=currentIndex')&&bridge.includes('putString("queue_json"')&&app.includes('queue,previousUrl:previous?.audio_url')],['compact/expanded widget hides unavailable directional controls',provider.includes('hasPrevious?android.view.View.VISIBLE')&&provider.includes('hasNext?android.view.View.VISIBLE')],
 ['network and media errors clear playing state',service.includes('setOnErrorListener')&&service.includes('stopSelf()')]
 ];
 for(const [name,ok] of checks)console.log((ok?'PASS':'FAIL')+' | '+name);assert.ok(checks.every(([,ok])=>ok),'Widget acceptance failed');

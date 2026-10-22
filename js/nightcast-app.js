@@ -2215,9 +2215,14 @@ LOGOUT
                 const index=current?state.all.findIndex(item=>Number(item.id)===Number(current.id)):-1;
                 const previous=index>0?state.all[index-1]:null;
                 const next=index>=0&&index<state.all.length-1?state.all[index+1]:null;
+                const queue=state.all.map(item=>({
+                    id:String(item.id??""),title:item.title||"NightCast Radio",artist:item.author_name||"رادیوی فرهنگی NightCast",
+                    url:item.audio_url||""
+                })).filter(item=>item.url);
                 plugin.updatePlaybackState({
                     title:current?.title||"NightCast Radio",artist:current?.author_name||"رادیوی فرهنگی NightCast",
-                    currentUrl:current?.audio_url||"",previousUrl:previous?.audio_url||"",nextUrl:next?.audio_url||"",
+                    currentUrl:current?.audio_url||"",currentId:current?.id==null?"":String(current.id),currentIndex:index,
+                    queue,previousUrl:previous?.audio_url||"",nextUrl:next?.audio_url||"",
                     previousTitle:previous?.title||"",nextTitle:next?.title||"",
                     isPlaying:!!current&&!els.audio.paused&&!els.audio.ended,canSkip:!!(previous||next)
                 }).catch(()=>{});

@@ -75,7 +75,7 @@ check('client never fabricates reward values and handles missing API honestly', 
   assert.doesNotMatch(client, /clubPoints\s*[:=]\s*[0-9]+/);
   assert.match(client, /nightcast-club-api\.tomasgermany2580\.workers\.dev\/api\/v1/);
   assert.match(page, /nightcast-club\.css\?v=3/);
-  assert.match(page, /nightcast-club\\.js\\?v=6/);
+  assert.match(page, /nightcast-club\.js\?v=6/);
   assert.match(page, /clubRewards/);
   assert.match(listener, /nightcast-club-api\.tomasgermany2580\.workers\.dev/);
   assert.match(listener, /nightcast:podcastchange/);

@@ -555,7 +555,8 @@ export async function handleClubApi({ request, url, DB, json, checkAuth }) {
       }
       const question = (QUESTION_BANK.questions||[]).find(q=>q.id===session?.question_id);
       if (!session || !question) return fail(json,500,"پرسش امروز بارگذاری نشد.","club_quiz_question_unavailable");
-      return json({success:true,question:{id:question.id,topic:question.topic,question:question.question,options:question.options},
+      return json({success:true,question:{id:question.id,topic:question.topic,question:question.question,options:question.options,
+          ...(session.answered_at ? {correct_index:Number(question.correctIndex),explanation:question.explanation} : {})},
         session:{day:session.day_key,shown_at:session.shown_at,answered:!!session.answered_at,
           selected_index:session.selected_index===null?null:Number(session.selected_index),
           correct:session.correct===null?null:Number(session.correct)===1,
@@ -643,9 +644,9 @@ export async function handleClubApi({ request, url, DB, json, checkAuth }) {
       const limit = safeInt(url.searchParams.get("limit")||"50",1,100)||50;
       const rows = await DB.prepare(`SELECT u.id,COALESCE(cp.display_name,u.full_name,u.username,'شنونده') AS display_name,
         COALESCE(SUM(l.delta),0) AS points
-        FROM users u JOIN club_profiles cp ON cp.user_id=u.id
+        FROM users u LEFT JOIN club_profiles cp ON cp.user_id=u.id
         LEFT JOIN club_point_ledger l ON l.user_id=u.id AND l.status='posted'
-        WHERE cp.leaderboard_opt_out=0 GROUP BY u.id,cp.display_name,u.full_name,u.username
+        WHERE COALESCE(cp.leaderboard_opt_out,0)=0 GROUP BY u.id,cp.display_name,u.full_name,u.username
         ORDER BY points DESC,u.id ASC LIMIT ?`).bind(limit).all();
       return json({success:true,leaderboard:(rows.results||[]).map((row,index)=>({...row,rank:index+1,medal:index===0?"🥇":index===1?"🥈":index===2?"🥉":null,points:Number(row.points||0)}))});
     }

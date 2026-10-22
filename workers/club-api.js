@@ -532,8 +532,10 @@ export async function handleClubApi({ request, url, DB, json, checkAuth, env }) 
       if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
       const day = utcDay();
       const reward = safeInt(await setting(DB, "daily_visit_reward_points", "2"), 0, 1000) || 0;
-      const visitInsert = await DB.prepare("INSERT OR IGNORE INTO club_daily_visits(user_id,visit_day) VALUES(?,?)").bind(auth.userId, day).run();
-      const firstVisit = Number(visitInsert?.meta?.changes || 0) > 0;
+      const existingVisit = await DB.prepare("SELECT 1 AS visited FROM club_daily_visits WHERE user_id=? AND visit_day=?").bind(auth.userId, day).first();
+      await DB.prepare("INSERT OR IGNORE INTO club_daily_visits(user_id,visit_day) VALUES(?,?)").bind(auth.userId, day).run();
+      // Determine first visit from persisted state, not driver-specific D1 meta.changes.
+      const firstVisit = !existingVisit;
       await DB.prepare(`INSERT OR IGNORE INTO club_point_ledger(user_id,delta,source_type,source_id,idempotency_key,status,metadata_json)
         SELECT ?,?,'daily_visit',?,'club-daily-visit:' || ? || ':' || ?,'posted',?
         WHERE ? > 0 AND (SELECT setting_value FROM club_settings WHERE setting_key='club_enabled')='true'

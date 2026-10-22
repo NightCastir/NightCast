@@ -70,20 +70,33 @@ function silentWavDataUri() {
       malformedStyleFiles.length ? malformedStyleFiles.join(', ') : htmlFilesToValidate.join(', '));
 
     const jsFailures = [];
-    const jsFiles = walkFiles('.', /\.js$/i);
+    const jsFiles = walkFiles('.', /\\.(?:js|mjs|cjs)$/i);
     for (const file of jsFiles) {
+      const source = fs.readFileSync(file, 'utf8');
       try {
-        const source = fs.readFileSync(file, 'utf8');
-        if (file.replace(/\\\\/g, '/').includes('/workers/')) {
-          const checked = spawnSync(process.execPath, ['--input-type=module', '--check'], { input: source, encoding: 'utf8' });
-          if (checked.status !== 0) throw new Error(checked.stderr || 'ES module syntax check failed');
-        } else {
-          new vm.Script(source, { filename: file });
+        // Node's parser understands both CommonJS and ESM. vm.Script alone
+        // rejects valid import/export syntax in module-based Cloudflare Workers.
+        const fileCheck = spawnSync(process.execPath, ['--check', file], {
+          encoding: 'utf8',
+          maxBuffer: 1024 * 1024
+        });
+        if (fileCheck.status === 0) continue;
+        const moduleCheck = spawnSync(process.execPath, ['--input-type=module', '--check'], {
+          input: source,
+          encoding: 'utf8',
+          maxBuffer: 1024 * 1024
+        });
+        if (moduleCheck.status !== 0) {
+          const scriptError = (fileCheck.stderr || fileCheck.stdout || 'script parse failed').trim();
+          const moduleError = (moduleCheck.stderr || moduleCheck.stdout || 'module parse failed').trim();
+          throw new Error('script parse: ' + scriptError + ' | module parse: ' + moduleError);
         }
-      } catch (error) { jsFailures.push(file + ': ' + error.message); }
+      } catch (error) {
+        jsFailures.push(file + ': ' + error.message);
+      }
     }
     report('0.1. JavaScript files pass syntax parsing', jsFailures.length === 0,
-      jsFailures.slice(0, 8).join(' || ') || 'Parsed ' + jsFiles.length + ' JavaScript files');
+      jsFailures.slice(0, 12).join(' || ') || 'Parsed ' + jsFiles.length + ' JavaScript, MJS and CJS files using Node syntax checks');
 
     const cssFailures = [];
     const cssFiles = walkFiles('.', /\.css$/i);

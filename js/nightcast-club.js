@@ -1,4 +1,4 @@
-/* NightCast Club dashboard client. Data is rendered only from authenticated API responses. */
+/* NightCast Club dashboard client. No client-side points, XP, missions or rewards are fabricated. */
 (function () {
   'use strict';
   /* Keep this endpoint aligned with js/auth.js until the Worker custom-domain route is verified. */

@@ -129,8 +129,9 @@ function redemptionSqlTest() {
   const py = `import sqlite3,sys
 c=sqlite3.connect(":memory:")
 c.execute("PRAGMA foreign_keys=ON")
+c.executescript("CREATE TABLE users(id INTEGER PRIMARY KEY, username TEXT); CREATE TABLE podcasts(id INTEGER PRIMARY KEY); CREATE TABLE user_sessions(id INTEGER PRIMARY KEY, user_id INTEGER); CREATE TABLE admin_sessions(id INTEGER PRIMARY KEY, user_id INTEGER);")
 c.executescript(sys.stdin.read())
-c.execute("INSERT INTO users(id) VALUES(7)")
+c.execute("INSERT INTO users(id,username) VALUES(7,'fixture-listener')")
 c.execute("UPDATE club_settings SET setting_value='true' WHERE setting_key IN ('club_enabled','rewards_enabled')")
 c.execute("INSERT INTO club_point_ledger(user_id,delta,source_type,idempotency_key) VALUES(7,20,'fixture','fixture-credit')")
 c.execute("INSERT INTO club_rewards(id,title_fa,reward_type,cost_points,stock_remaining,max_per_user,is_active) VALUES('r1','پاداش آزمایشی','coupon',10,3,3,1)")

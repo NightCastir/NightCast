@@ -305,9 +305,13 @@
                 const raw = String(value || "");
                 try {
                     const url = new URL(raw, window.location.href);
-                    if (url.hostname === "raw.githubusercontent.com" && url.pathname.startsWith("/NightCastir/NightCast-Media/main/covers/")) {
-                        const filename = decodeURIComponent(url.pathname.split("/").pop());
-                        if (/^[A-Za-z0-9._-]+$/.test(filename)) return "/assets/podcasts/covers/" + filename;
+                    if (url.hostname === "raw.githubusercontent.com" && url.pathname.startsWith("/NightCastir/NightCast-Media/")) {
+                        const match = url.pathname.match(/\\/(?:refs\\/heads\\/)?main\\/covers\\/([^/]+)$/);
+                        const filename = match ? decodeURIComponent(match[1]) : "";
+                        if (/^[A-Za-z0-9._-]+$/.test(filename)) {
+                            if (filename === "nct_14050729.png") return placeholder;
+                            return "/assets/podcasts/covers/" + filename;
+                        }
                     }
                 } catch (_) {}
                 return raw;

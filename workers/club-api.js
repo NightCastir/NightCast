@@ -268,7 +268,7 @@ export async function handleClubApi({ request, url, DB, json, checkAuth }) {
             AND (SELECT setting_value FROM club_settings WHERE setting_key='earning_enabled')='true'
             AND ?='accepted' AND ? >= 60
             AND (SELECT COALESCE(SUM(delta),0) FROM club_point_ledger
-                 WHERE user_id=? AND status='posted' AND date(created_at)=date('now'))
+                 WHERE user_id=? AND status='posted' AND delta>0 AND date(created_at)=date('now'))
               < CAST(COALESCE((SELECT setting_value FROM club_settings WHERE setting_key='daily_points_cap'),'100') AS INTEGER)`)
           .bind(auth.userId, id, id, JSON.stringify({ podcast_id: podcastId }), status, acceptedSeconds, auth.userId),
         DB.prepare(`INSERT INTO club_experience_ledger
@@ -278,7 +278,7 @@ export async function handleClubApi({ request, url, DB, json, checkAuth }) {
             AND (SELECT setting_value FROM club_settings WHERE setting_key='earning_enabled')='true'
             AND ?='accepted' AND ? >= 60
             AND (SELECT COALESCE(SUM(delta),0) FROM club_experience_ledger
-                 WHERE user_id=? AND status='posted' AND date(created_at)=date('now'))
+                 WHERE user_id=? AND status='posted' AND delta>0 AND date(created_at)=date('now'))
               < CAST(COALESCE((SELECT setting_value FROM club_settings WHERE setting_key='daily_xp_cap'),'250') AS INTEGER)`)
           .bind(auth.userId, id, id, JSON.stringify({ podcast_id: podcastId }), status, acceptedSeconds, auth.userId)
       ];

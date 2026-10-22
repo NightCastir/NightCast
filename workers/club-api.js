@@ -613,7 +613,8 @@ export async function handleClubApi({ request, url, DB, json, checkAuth, env }) 
       if (session.answered_at) return json({success:true,duplicate:true,locked:true,selected_index:Number(session.selected_index),correct:Number(session.correct)===1,
         correct_index:question.correctIndex,explanation:question.explanation,reward_points:Number(session.reward_points||0)});
       const correct = selected===Number(question.correctIndex);
-      const reward = correct ? (safeInt(await setting(DB,"daily_quiz_reward_points","5"),0,1000)||5) : 0;
+      const canEarn = (await setting(DB,"club_enabled"))==="true" && (await setting(DB,"earning_enabled"))==="true";
+      const reward = correct && canEarn ? (safeInt(await setting(DB,"daily_quiz_reward_points","5"),0,1000)||5) : 0;
       await DB.batch([
         DB.prepare("UPDATE club_quiz_sessions SET answered_at=CURRENT_TIMESTAMP,selected_index=?,correct=?,reward_points=? WHERE id=? AND answered_at IS NULL")
           .bind(selected,correct?1:0,reward,session.id),

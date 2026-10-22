@@ -33,6 +33,7 @@ This branch establishes the first versioned schema and a theme-aware dashboard s
 - Confirmed the unique idempotency constraint rejects a duplicate `club_point_ledger.idempotency_key` (D1 returned a UNIQUE constraint error on the second insert).
 - Inserted a temporary test user and listening event in D1 `test`, confirmed a second event using the same user/session/sequence was rejected with `UNIQUE constraint failed`, then removed both fixture rows and verified both fixture counts were zero.
 - Applied the atomic redemption triggers from `0003` to the isolated D1 `test` database. A successful redemption reduced balance from 20 to 10, decremented stock from 3 to 2, and created one audit row. Reusing the same idempotency key was rejected without another debit/stock change; insufficient balance and disabled rewards were also rejected. All temporary users, rewards, redemptions, ledger rows and audit rows were removed; the three feature flags were reset to `false`.
+- Exercised the listening-event INSERT and conditional point/XP ledger SQL against D1 `test`: the event and both ledgers inserted successfully with earning flags temporarily enabled. All fixture rows were removed and flags reset to `false` afterward.
 - Removed the temporary user and ledger fixture after the check; verified the fixture user count returned to zero. The schema remains in the isolated `test` database for further integration tests.
 
 ## Production safety

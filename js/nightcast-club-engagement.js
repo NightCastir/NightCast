@@ -88,6 +88,14 @@
     if (!token()) return;
     request('/daily-visit','POST',{}).then(function (data) {
       if (Number(data.points_awarded) > 0) toast('🌟 به خاطر بازدید امروز، ' + data.points_awarded + ' امتیاز گرفتی!');
+      var fresh = Array.isArray(data.new_podcasts) ? data.new_podcasts : [];
+      if (fresh.length) {
+        var newest = fresh[0];
+        showNotification('پادکست تازه در NightCast 🎧',
+          fresh.length === 1 ? 'اپیزود تازه «' + String(newest.title || 'پادکست جدید') + '» از آخرین بازدیدت منتشر شده است.' : fresh.length + ' پادکست تازه از آخرین بازدیدت منتشر شده‌اند.',
+          '/?podcast=' + encodeURIComponent(newest.slug || newest.id || ''));
+        toast(fresh.length === 1 ? '🎧 از آخرین بازدیدت یک پادکست تازه منتشر شده است.' : '🎧 ' + fresh.length + ' پادکست تازه از آخرین بازدیدت منتشر شده‌اند.');
+      }
     }).catch(function () {});
     var savedRef = '';
     try { savedRef = localStorage.getItem('nc-pending-referral-code') || ''; } catch (_) {}
@@ -95,9 +103,6 @@
       if (data && !data.duplicate) toast('🎉 کد دعوت ثبت شد؛ به NightCast خوش آمدی!');
       try { localStorage.removeItem('nc-pending-referral-code'); } catch (_) {}
     }).catch(function () {});
-    window.addEventListener('nightcast:catalog-ready', notifyNewPodcasts, { once: true });
-    if (window.__NC_CACHED_CATALOG_RENDERED) notifyNewPodcasts();
-    window.setTimeout(function () { if (!window.__NC_CACHED_CATALOG_RENDERED) notifyNewPodcasts(); }, 3500);
     var seenNotifications = {};
     function pollNotifications() {
       request('/notifications').then(function (data) {

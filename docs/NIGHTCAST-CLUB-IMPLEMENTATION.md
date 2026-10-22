@@ -56,3 +56,24 @@ The migration inserts conservative settings with `club_enabled=false`, `earning_
 - Implemented in the branch but not yet deployed: authenticated API route module, listening event sequence validation, idempotent ledger writes, and trigger-backed atomic reward redemption. Missions/rewards are created inactive; there is no public feature-flag endpoint.
 - Not yet implemented: mission progression/claim lifecycle, reward fulfillment/cancellation workflow, complete admin panel, and concurrent cap/race tests.
 - Not deployed to Production by this checkpoint. Earning and rewards remain disabled by default.
+
+
+## Club API lifecycle implementation
+
+The feature branch now includes the following server-checked routes in `workers/club-api.js`:
+
+- Member routes: `GET /api/v1/club/summary`, `ledger`, `missions`, `badges`, `rewards`; `POST /listen-events`, `/missions/:id/claim`, and `/rewards/:id/redeem`.
+- Admin routes: `GET /admin/overview`; create and activate/deactivate mission/reward routes; `POST /admin/redemptions/:id/fulfill` and `/cancel`.
+- The admin console is `/club-admin.html` and reads the existing `NightCastToken`; the API still enforces the admin role. New missions and rewards are created inactive.
+- Accepted listen events update cadence-aware mission progress in the same D1 batch as the event and earning ledgers. Mission claims use unique point/XP idempotency keys. Cancellation refunds are idempotent and restore finite stock once; fulfillment only transitions pending requests.
+- Daily XP award SQL is clamped to the remaining daily cap, and the D1 concurrency contract test attempts more requests than the points/XP caps allow while racing two redemptions for one remaining stock item.
+
+## Dedicated workflows
+
+Three separate workflows were added without removing or disabling existing workflows:
+
+1. `.github/workflows/club-route-ci.yml` — schema/route acceptance, JavaScript syntax, and Wrangler dry-run bundle.
+2. `.github/workflows/club-api-d1-integration.yml` — isolated local D1 base schema plus all three migrations, test-only feature flags, a local Worker, authenticated route/lifecycle integration tests, and concurrency tests.
+3. `.github/workflows/club-lifecycle-admin-acceptance.yml` — mission/reward lifecycle and admin-console contract checks.
+
+The local D1 fixture and test-only enabled flags live under `tests/fixtures/`; they must never be applied to production. The isolated integration workflow does not deploy the production Worker or mutate production D1. Production feature flags remain controlled by the production D1 settings and should remain disabled until all required CI checks are green and a separately reviewed release is approved.

@@ -66,6 +66,37 @@ async function requireAdmin(checkAuth) {
   return { actor };
 }
 
+async function awardEligibleBadges(DB, userId, sourceId) {
+  const badges = await DB.prepare("SELECT id,criteria_json FROM club_badges WHERE is_active=1").all();
+  const rows = badges.results || [];
+  if (!rows.length) return;
+  const [events, podcasts, points] = await Promise.all([
+    DB.prepare("SELECT COUNT(*) AS total,COALESCE(SUM(accepted_seconds),0) AS seconds FROM club_activity_events WHERE user_id=? AND event_type='listen' AND status='accepted'").bind(userId).first(),
+    DB.prepare("SELECT COUNT(DISTINCT podcast_id) AS total FROM club_activity_events WHERE user_id=? AND event_type='listen' AND status='accepted' AND podcast_id IS NOT NULL").bind(userId).first(),
+    DB.prepare("SELECT COALESCE(SUM(delta),0) AS total FROM club_point_ledger WHERE user_id=? AND status='posted' AND source_type='listening_minute' AND delta>0").bind(userId).first()
+  ]);
+  const metrics = {
+    accepted_listen_events: Number(events?.total || 0),
+    listening_minutes: Math.floor(Number(events?.seconds || 0) / 60),
+    unique_podcasts: Number(podcasts?.total || 0),
+    points_earned: Number(points?.total || 0)
+  };
+  const statements = [];
+  for (const badge of rows) {
+    let criteria;
+    try { criteria = JSON.parse(String(badge.criteria_json || "{}")); } catch (_) { continue; }
+    const type = String(criteria.type || "");
+    const target = Number(criteria.target);
+    if (!Object.prototype.hasOwnProperty.call(metrics, type) ||
+        !Number.isSafeInteger(target) || target < 1 || metrics[type] < target) continue;
+    statements.push(DB.prepare("INSERT OR IGNORE INTO club_user_badges(user_id,badge_id,source_type,source_id) VALUES(?,?,'listening',?)")
+      .bind(userId, badge.id, sourceId));
+    statements.push(DB.prepare("INSERT OR IGNORE INTO club_audit_logs(id,actor_user_id,action,target_type,target_id,metadata_json) VALUES(?,?,'club.badge.earned','club_badge',?,?)")
+      .bind("badge-earned:" + userId + ":" + badge.id, userId, badge.id, JSON.stringify({ source_id: sourceId, criteria: type, target })));
+  }
+  if (statements.length) await DB.batch(statements);
+}
+
 function fail(json, status, message, code) {
   return json({ success: false, message, ...(code ? { code } : {}) }, status);
 }
@@ -423,6 +454,13 @@ export async function handleClubApi({ request, url, DB, json, checkAuth }) {
           return fail(json, 409, "این رویداد قبلاً ثبت شده است.", "club_event_replay");
         }
         throw error;
+      }
+      if (status === "accepted") {
+        try {
+          await awardEligibleBadges(DB, auth.userId, id);
+        } catch (badgeError) {
+          console.error("NightCast Club badge evaluation failed", badgeError);
+        }
       }
       const [pointAward, xpAward] = await Promise.all([
         DB.prepare("SELECT id FROM club_point_ledger WHERE idempotency_key=?").bind("club-listen-point:" + id).first(),

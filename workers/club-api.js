@@ -1,4 +1,4 @@
-import quizBank from "../data/club-quiz-questions.json";
+import quizBank from "../data/club-quiz-questions.json" with { type: "json" };
 /**
  * NightCast Club API route module.
  *

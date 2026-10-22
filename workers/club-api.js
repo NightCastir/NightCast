@@ -297,8 +297,12 @@ export async function handleClubApi({ request, url, DB, json, checkAuth }) {
         }
         throw error;
       }
+      const [pointAward, xpAward] = await Promise.all([
+        DB.prepare("SELECT id FROM club_point_ledger WHERE idempotency_key=?").bind("club-listen-point:" + id).first(),
+        DB.prepare("SELECT id FROM club_experience_ledger WHERE idempotency_key=?").bind("club-listen-xp:" + id).first()
+      ]);
       return json({ success: true, event: { id, status, elapsed_seconds: elapsed, accepted_seconds: acceptedSeconds },
-        points_awarded: status === "accepted" && acceptedSeconds >= 60 && (await setting(DB, "earning_enabled")) === "true" });
+        points_awarded: !!pointAward, xp_awarded: !!xpAward });
     }
 
     const redeemMatch = path.match(/^\/rewards\/([a-zA-Z0-9_-]{1,100})\/redeem$/);

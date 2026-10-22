@@ -102,7 +102,7 @@ function fail(json, status, message, code) {
   return json({ success: false, message, ...(code ? { code } : {}) }, status);
 }
 
-export async function handleClubApi({ request, url, DB, json, checkAuth }) {
+export async function handleClubApi({ request, url, DB, json, checkAuth, env }) {
   if (!url.pathname.startsWith(CLUB_PREFIX)) return null;
 
   const path = url.pathname.slice(CLUB_PREFIX.length) || "/";
@@ -666,6 +666,11 @@ export async function handleClubApi({ request, url, DB, json, checkAuth }) {
       if (id) await DB.prepare("UPDATE club_notifications SET read_at=CURRENT_TIMESTAMP WHERE id=? AND user_id=?").bind(id,auth.userId).run();
       else await DB.prepare("UPDATE club_notifications SET read_at=CURRENT_TIMESTAMP WHERE user_id=? AND read_at IS NULL").bind(auth.userId).run();
       return json({success:true});
+    }
+
+    if (path === "/notifications/vapid-public-key" && method === "GET") {
+      const publicKey = String(env?.VAPID_PUBLIC_KEY || "");
+      return json({success:true,configured:!!publicKey,public_key:publicKey || null});
     }
 
     if (path === "/notifications/subscribe" && method === "POST") {

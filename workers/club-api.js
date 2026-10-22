@@ -542,7 +542,18 @@ export async function handleClubApi({ request, url, DB, json, checkAuth, env }) 
         .bind(auth.userId,reward,day,auth.userId,day,JSON.stringify({day}),reward,auth.userId,day).run();
       const credit = await DB.prepare("SELECT delta FROM club_point_ledger WHERE idempotency_key=?")
         .bind("club-daily-visit:"+auth.userId+":"+day).first();
+      const latest = await DB.prepare("SELECT COALESCE(MAX(id),0) AS id FROM podcasts WHERE status='published'").first();
+      const latestId = Number(latest?.id || 0);
+      const profile = await DB.prepare("SELECT COALESCE(last_seen_podcast_id,0) AS last_seen_podcast_id FROM club_profiles WHERE user_id=?").bind(auth.userId).first();
+      const lastSeen = Number(profile?.last_seen_podcast_id || 0);
+      let newPodcasts = [];
+      if (lastSeen > 0 && latestId > lastSeen) {
+        const result = await DB.prepare("SELECT id,title,slug FROM podcasts WHERE status='published' AND id>? ORDER BY id DESC LIMIT 10").bind(lastSeen).all();
+        newPodcasts = (result.results || []).map(p => ({id:Number(p.id),title:p.title,slug:p.slug}));
+      }
+      await DB.prepare("UPDATE club_profiles SET last_seen_podcast_id=?,updated_at=CURRENT_TIMESTAMP WHERE user_id=?").bind(latestId,auth.userId).run();
       return json({success:true,day,already_visited:!firstVisit,points_awarded:firstVisit?Number(credit?.delta||0):0,
+        new_podcasts:newPodcasts,
         earning_enabled:(await setting(DB,"club_enabled"))==="true" && (await setting(DB,"earning_enabled"))==="true"});
     }
 

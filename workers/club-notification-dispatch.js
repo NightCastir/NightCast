@@ -38,25 +38,31 @@ export async function dispatchClubNotifications(env) {
   if (!DB || !env.VAPID_PUBLIC_KEY || !env.VAPID_PRIVATE_KEY || !env.VAPID_SUBJECT) return;
   const latest = await DB.prepare("SELECT COALESCE(MAX(id),0) AS id FROM podcasts WHERE status='published'").first();
   const latestId = Number(latest?.id || 0);
-  const saved = await DB.prepare("SELECT setting_value FROM club_settings WHERE setting_key='push_last_podcast_id'").first();
-  let lastId = Number(saved?.setting_value || 0);
-  if (!saved || !lastId) {
-    await DB.prepare("INSERT OR REPLACE INTO club_settings(setting_key,setting_value,updated_at,updated_by) VALUES('push_last_podcast_id',?,CURRENT_TIMESTAMP,'push-dispatch')").bind(String(latestId)).run();
-    lastId = latestId;
-  }
-  const fresh = await DB.prepare("SELECT id,title,slug FROM podcasts WHERE status='published' AND id>? ORDER BY id ASC LIMIT 30").bind(lastId).all();
-  for (const podcast of fresh.results || []) {
-    const subs = await DB.prepare("SELECT id,user_id,subscription_json FROM club_push_subscriptions ORDER BY user_id").all();
-    const payload = {
-      title: "پادکست تازه در NightCast 🎧",
-      body: "اپیزود تازه «" + String(podcast.title || "پادکست تازه") + "» منتشر شده؛ همین حالا گوش بده.",
-      url: "/?podcast=" + encodeURIComponent(String(podcast.slug || podcast.id)),
-      tag: "nightcast-podcast-" + podcast.id
-    };
-    let complete = true;
-    for (const row of subs.results || []) if (!(await sendOne(DB, env, row, payload))) complete = false;
-    if (!complete) break;
-    await DB.prepare("UPDATE club_settings SET setting_value=?,updated_at=CURRENT_TIMESTAMP,updated_by='push-dispatch' WHERE setting_key='push_last_podcast_id'").bind(String(podcast.id)).run();
+  const listeners = await DB.prepare("SELECT DISTINCT p.user_id,COALESCE(p.last_seen_podcast_id,0) AS last_seen_podcast_id FROM club_profiles p JOIN club_push_subscriptions s ON s.user_id=p.user_id WHERE p.notifications_enabled=1").all();
+  for (const listener of listeners.results || []) {
+    let lastSeen = Number(listener.last_seen_podcast_id || 0);
+    // First-time subscribers start at the current catalog to avoid a burst of historical alerts.
+    if (!lastSeen) {
+      await DB.prepare("UPDATE club_profiles SET last_seen_podcast_id=?,updated_at=CURRENT_TIMESTAMP WHERE user_id=?").bind(latestId,listener.user_id).run();
+      continue;
+    }
+    if (latestId <= lastSeen) continue;
+    const fresh = await DB.prepare("SELECT id,title,slug FROM podcasts WHERE status='published' AND id>? AND id<=? ORDER BY id ASC LIMIT 30").bind(lastSeen,latestId).all();
+    const subs = await DB.prepare("SELECT id,user_id,subscription_json FROM club_push_subscriptions WHERE user_id=?").bind(listener.user_id).all();
+    for (const podcast of fresh.results || []) {
+      const payload = {
+        title: "پادکست تازه در NightCast 🎧",
+        body: "اپیزود تازه «" + String(podcast.title || "پادکست تازه").slice(0,160) + "» منتشر شده؛ همین حالا گوش بده.",
+        url: "/?podcast=" + encodeURIComponent(String(podcast.slug || podcast.id)),
+        tag: "nightcast-podcast-" + podcast.id
+      };
+      let delivered = true;
+      for (const row of subs.results || []) {
+        if (!(await sendOne(DB,env,row,payload))) delivered = false;
+      }
+      if (!delivered) break;
+      await DB.prepare("UPDATE club_profiles SET last_seen_podcast_id=?,updated_at=CURRENT_TIMESTAMP WHERE user_id=?").bind(Number(podcast.id),listener.user_id).run();
+    }
   }
 
   // One late-evening reminder per account/day. The open app also renders a live local-midnight countdown.

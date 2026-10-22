@@ -591,12 +591,13 @@ export async function handleClubApi({ request, url, DB, json, checkAuth, env }) 
       }
       const question = (QUESTION_BANK.questions||[]).find(q=>q.id===session?.question_id);
       if (!session || !question) return fail(json,500,"پرسش امروز بارگذاری نشد.","club_quiz_question_unavailable");
+      const configuredDailyReward = safeInt(await setting(DB,"daily_quiz_reward_points","5"),0,1000);
       return json({success:true,question:{id:question.id,topic:question.topic,question:question.question,options:question.options,
           ...(session.answered_at ? {correct_index:Number(question.correctIndex),explanation:question.explanation} : {})},
         session:{day:session.day_key,shown_at:session.shown_at,answered:!!session.answered_at,
           selected_index:session.selected_index===null?null:Number(session.selected_index),
           correct:session.correct===null?null:Number(session.correct)===1,
-          reward_points:Number(session.reward_points||0)},daily_reward_points:Number(await setting(DB,"daily_quiz_reward_points","5"))||5});
+          reward_points:Number(session.reward_points||0)},daily_reward_points:configuredDailyReward===null?5:configuredDailyReward});
     }
 
     if (path === "/quiz/answer" && method === "POST") {

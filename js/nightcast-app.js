@@ -1343,6 +1343,28 @@ LOGOUT
 
             let lastPodcastDetailsTrigger = null;
 
+            async function sharePodcast(id) {
+                const podcast = state.all.find(item => Number(item.id) === Number(id));
+                if (!podcast) { toast("ابتدا یک پادکست انتخاب کنید."); return; }
+                const title = String(podcast.title || podcast.book_name || "پادکست NightCast");
+                const slug = String(podcast.slug || podcast.id);
+                const url = "https://nightcast.ir/podcasts#podcast-" + encodeURIComponent(slug);
+                const invitation = "اگر به شنیدن و ایده‌های تازه علاقه داری، این پادکست NightCast را از دست نده: «" + title + "». شاید یک نکته‌اش نگاهت را عوض کند.\n" + url;
+                try {
+                    if (navigator.share) {
+                        await navigator.share({ title: title + " | NightCast", text: invitation, url: url });
+                        toast("پنجره اشتراک‌گذاری دستگاه باز شد؛ مخاطب را خودت انتخاب کن.");
+                    } else if (navigator.clipboard && navigator.clipboard.writeText) {
+                        await navigator.clipboard.writeText(invitation);
+                        toast("متن معرفی و لینک پادکست کپی شد؛ حالا در پیام‌رسان دلخواه بفرست.");
+                    } else {
+                        window.prompt("متن معرفی پادکست را کپی کنید:", invitation);
+                    }
+                } catch (error) {
+                    if (error && error.name !== "AbortError") toast("اشتراک‌گذاری انجام نشد؛ دوباره تلاش کن.");
+                }
+            }
+
             function openPodcastDetails(id) {
                 const podcast = state.all.find(item => Number(item.id) === Number(id));
                 const modal = document.getElementById("ncPodcastDetail");
@@ -1488,6 +1510,7 @@ LOGOUT
                         '<div class="card-footer">' +
                             '<button type="button" class="btn btn-primary" data-action="play" data-id="' + id + '"' + (audio ? "" : " disabled") + '><i class="fa-solid fa-play" aria-hidden="true"></i> پخش</button>' +
                             '<button type="button" class="btn btn-secondary nc-card-details" data-action="details" data-id="' + id + '" aria-label="جزئیات ' + escapeHtml(title) + '"><i class="fa-regular fa-file-lines" aria-hidden="true"></i><span>جزئیات</span></button>' +
+                            '<button type="button" class="btn btn-secondary nc-card-share" data-action="share" data-id="' + id + '" aria-label="اشتراک‌گذاری ' + escapeHtml(title) + '"><i class="fa-solid fa-share-nodes" aria-hidden="true"></i><span>اشتراک</span></button>' +
                             '<button type="button" class="btn btn-secondary nc-card-download" data-action="download" data-id="' + id + '" aria-label="دریافت ' + escapeHtml(title) + '"' + (audio ? "" : " disabled") + '><i class="fa-solid fa-download" aria-hidden="true"></i></button>' +
                             '<button type="button" class="favorite ' + (fav ? "active" : "") + '" data-action="favorite" data-id="' + id + '" aria-label="' + (fav ? "حذف از علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها") + '" aria-pressed="' + (fav ? "true" : "false") + '"><i class="' + (fav ? "fa-solid" : "fa-regular") + ' fa-heart" aria-hidden="true"></i></button>' +
                             '<button type="button" class="nc-comment-action" data-action="comments" data-id="' + id + '" aria-label="مشاهده و ثبت دیدگاه برای ' + escapeHtml(title) + '"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>دیدگاه‌ها</span><b class="nc-card-stat-count" data-comment-count="' + id + '" aria-label="تعداد دیدگاه‌ها">۰</b></button>' +
@@ -2735,6 +2758,10 @@ LOGOUT
         
                     else if (action === "details") {
                         openPodcastDetails(id);
+                    }
+
+                    else if (action === "share") {
+                        sharePodcast(id);
                     }
 
                     else if (action === "close-details") {

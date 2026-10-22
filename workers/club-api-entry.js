@@ -30,7 +30,6 @@ export default {
       if (!token || token.length > 512) return null;
 
       const configuredAdminEmail = String(env.ADMIN_EMAIL || env.ADMIN || "").trim().toLowerCase();
-      if (!configuredAdminEmail) return null;
 
       const admin = await DB.prepare(`
         SELECT admins.id, admins.username, admins.full_name, admins.username AS email
@@ -41,7 +40,8 @@ export default {
         LIMIT 1
       `).bind(token).first();
       if (admin) {
-        const isAllowlisted = String(admin.email || "").trim().toLowerCase() === configuredAdminEmail;
+        const isAllowlisted = Boolean(configuredAdminEmail) &&
+          String(admin.email || "").trim().toLowerCase() === configuredAdminEmail;
         return isAllowlisted ? { ...admin, role: "admin" } : null;
       }
 
@@ -55,7 +55,8 @@ export default {
       `).bind(token).first();
       if (!user) return null;
 
-      const isAllowlisted = String(user.email || "").trim().toLowerCase() === configuredAdminEmail;
+      const isAllowlisted = Boolean(configuredAdminEmail) &&
+        String(user.email || "").trim().toLowerCase() === configuredAdminEmail;
       // Never trust a persisted/client-provided role for the allowlisted admin decision.
       return { ...user, role: isAllowlisted ? "admin" : "user" };
     }

@@ -305,10 +305,12 @@
                 const raw = String(value || "");
                 try {
                     const url = new URL(raw, window.location.href);
-                    if (url.hostname === "raw.githubusercontent.com" && url.pathname.startsWith("/NightCastir/NightCast-Media/")) {
-                        const match = url.pathname.match(/\\/(?:refs\\/heads\\/)?main\\/covers\\/([^/]+)$/);
-                        const filename = match ? decodeURIComponent(match[1]) : "";
-                        if (/^[A-Za-z0-9._-]+$/.test(filename)) {
+                    if (url.hostname === "raw.githubusercontent.com" && url.pathname.indexOf("/NightCastir/NightCast-Media/") >= 0) {
+                        const pathname = url.pathname;
+                        const isCoverPath = pathname.indexOf("/NightCast-Media/main/covers/") >= 0 ||
+                            pathname.indexOf("/NightCast-Media/refs/heads/main/covers/") >= 0;
+                        const filename = decodeURIComponent(pathname.split("/").pop() || "");
+                        if (isCoverPath && /^[A-Za-z0-9._-]+$/.test(filename)) {
                             if (filename === "nct_14050729.png") return placeholder;
                             return "/assets/podcasts/covers/" + filename;
                         }

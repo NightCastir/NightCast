@@ -533,6 +533,17 @@ export async function handleClubApi({ request, url, DB, json, checkAuth, env }) 
         earning_enabled:(await setting(DB,"club_enabled"))==="true" && (await setting(DB,"earning_enabled"))==="true"});
     }
 
+    if (path === "/quiz/status" && method === "GET") {
+      const auth = await requireMember(checkAuth);
+      if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
+      const day = utcDay();
+      const session = await DB.prepare("SELECT question_id,day_key,shown_at,answered_at,selected_index,correct,reward_points FROM club_quiz_sessions WHERE user_id=? AND day_key=?").bind(auth.userId,day).first();
+      return json({success:true,needs_quiz:!session || !session.answered_at,
+        session:session?{day:session.day_key,shown_at:session.shown_at,answered:!!session.answered_at,
+          selected_index:session.selected_index===null?null:Number(session.selected_index),
+          correct:session.correct===null?null:Number(session.correct)===1,reward_points:Number(session.reward_points||0)}:null});
+    }
+
     if (path === "/quiz/today" && method === "GET") {
       const auth = await requireMember(checkAuth);
       if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");

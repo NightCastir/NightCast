@@ -56,7 +56,7 @@ const checks = {
     assert.ok(migration.includes('UNIQUE(user_id, notification_key)'));
   },
   leaderboard: () => {
-    assert.ok(migration.includes('club_point_ledger'));
+    assert.ok(api.includes('club_point_ledger'));
     assert.ok(api.includes('path === "/leaderboard"'));
     assert.ok(api.includes('medal:index===0'));
     assert.ok(leaderboardPage.includes('برترین شنوندگان'));

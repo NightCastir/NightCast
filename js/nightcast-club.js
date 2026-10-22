@@ -259,7 +259,10 @@
   }
   function start() {
     var themeButton = byId('clubThemeButton');
-    if (themeButton) themeButton.addEventListener('click', cycleTheme);
+    if (themeButton && themeButton.getAttribute('data-bound') !== 'true') {
+      themeButton.addEventListener('click', cycleTheme);
+      themeButton.setAttribute('data-bound', 'true');
+    }
     if (!safeToken()) {
       status('برای مشاهده پیشرفت شخصی، ابتدا با حساب NightCast وارد شو.', true);
       var login = document.createElement('a');

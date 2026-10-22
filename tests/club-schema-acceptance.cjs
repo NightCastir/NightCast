@@ -6,6 +6,7 @@ const { execFileSync } = require('node:child_process');
 const migration = fs.readFileSync('migrations/club/0001_club_foundation.sql', 'utf8');
 const sequenceMigration = fs.readFileSync('migrations/club/0002_listening_sequence_guard.sql', 'utf8');
 const redemptionMigration = fs.readFileSync('migrations/club/0003_atomic_reward_redemption.sql', 'utf8');
+const engagementMigration = fs.readFileSync('migrations/club/0004_daily_engagement_quiz_referrals_notifications.sql', 'utf8');
 const page = fs.readFileSync('club.html', 'utf8');
 const css = fs.readFileSync('css/nightcast-club.css', 'utf8');
 const client = fs.readFileSync('js/nightcast-club.js', 'utf8');
@@ -34,6 +35,9 @@ check('sensitive reward and mission features default disabled', function () {
   assert.match(migration, /\('club_enabled', 'false'\)/);
   assert.match(migration, /\('earning_enabled', 'false'\)/);
   assert.match(migration, /\('rewards_enabled', 'false'\)/);
+  assert.match(engagementMigration, /club_quiz_sessions/);
+  assert.match(engagementMigration, /club_referrals/);
+  assert.match(engagementMigration, /club_push_subscriptions/);
 });
 check('seven Persian galaxy levels are seeded', function () {
   assert.equal((migration.match(/^  \([1-7], '/gm) || []).length, 7);
@@ -84,8 +88,8 @@ check('client never fabricates reward values and handles missing API honestly', 
   assert.match(client, /No client-side points, XP, missions or rewards are fabricated/);
   assert.doesNotMatch(client, /clubPoints\s*[:=]\s*[0-9]+/);
   assert.match(client, /club-api\.nightcast\.ir\/api\/v1/);
-  assert.match(page, /nightcast-club\.css\?v=3/);
-  assert.match(page, /nightcast-club\.js\?v=8/);
+  assert.match(page, /nightcast-club\.css\?v=4/);
+  assert.match(page, /nightcast-club\.js\?v=9/);
   assert.match(page, /clubRewards/);
   assert.match(listener, /club-api\.nightcast\.ir/);
   assert.match(listener, /nightcast:podcastchange/);
@@ -98,12 +102,12 @@ check('client never fabricates reward values and handles missing API honestly', 
   assert.match(adminPage, /club-admin\.js\?v=2/);
 });
 check('both migrations apply cleanly against the existing user/podcast table contract', function () {
-  const sql = 'PRAGMA foreign_keys=ON; CREATE TABLE users(id INTEGER PRIMARY KEY); CREATE TABLE podcasts(id INTEGER PRIMARY KEY);' + migration + sequenceMigration + redemptionMigration + ' SELECT name FROM sqlite_master WHERE type="table";';
+  const sql = 'PRAGMA foreign_keys=ON; CREATE TABLE users(id INTEGER PRIMARY KEY); CREATE TABLE podcasts(id INTEGER PRIMARY KEY);' + migration + sequenceMigration + redemptionMigration + engagementMigration + ' SELECT name FROM sqlite_master WHERE type="table";';
   const output = execFileSync('python3', ['-c', 'import sqlite3,sys; c=sqlite3.connect(\":memory:\"); c.executescript(sys.stdin.read()); print(\"OK\")'], { input: sql, encoding: 'utf8' });
   assert.match(output, /OK/);
 });
 check('listening sequence unique index rejects a replayed sequence within the same session', function () {
-  const sql = 'PRAGMA foreign_keys=ON; CREATE TABLE users(id INTEGER PRIMARY KEY); CREATE TABLE podcasts(id INTEGER PRIMARY KEY);' + migration + sequenceMigration + redemptionMigration;
+  const sql = 'PRAGMA foreign_keys=ON; CREATE TABLE users(id INTEGER PRIMARY KEY); CREATE TABLE podcasts(id INTEGER PRIMARY KEY);' + migration + sequenceMigration + redemptionMigration + engagementMigration;
   const py = `import sqlite3,sys
 c=sqlite3.connect(":memory:")
 c.executescript(sys.stdin.read())

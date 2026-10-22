@@ -133,6 +133,19 @@ export async function handleClubApi({ request, url, DB, json, checkAuth }) {
       return json({ success: true, duplicate: false, points_awarded: points, checkin_day: day }, 201);
     }
 
+    if (path === "/quiz/status" && method === "GET") {
+      const auth = await requireMember(checkAuth);
+      if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
+      if ((await setting(DB, "club_enabled")) !== "true" || (await setting(DB, "earning_enabled")) !== "true") {
+        return json({ success:true, enabled:false, should_remind:false });
+      }
+      const recent = await DB.prepare("SELECT question_id,shown_at FROM club_quiz_impressions WHERE user_id=? AND shown_at>=datetime('now','-24 hours') ORDER BY shown_at DESC LIMIT 1").bind(auth.userId).first();
+      const answered = recent ? await DB.prepare("SELECT id FROM club_quiz_answers WHERE user_id=? AND question_id=?").bind(auth.userId, recent.question_id).first() : null;
+      const seen = await DB.prepare("SELECT COUNT(*) AS total FROM club_quiz_impressions WHERE user_id=?").bind(auth.userId).first();
+      const exhausted = Number(seen && seen.total || 0) >= quizBank.questions.length;
+      return json({ success:true, enabled:true, should_remind:!answered && !exhausted, has_question:!!recent, answered:!!answered, exhausted:exhausted });
+    }
+
     if (path === "/quiz/today" && method === "GET") {
       const auth = await requireMember(checkAuth);
       if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");

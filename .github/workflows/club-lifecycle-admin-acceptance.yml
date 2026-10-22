@@ -3,7 +3,6 @@ name: NightCast Club Lifecycle and Admin Console Acceptance
 on:
   push:
     branches:
-      - main
       - feat/nightcast-club-foundation
   pull_request:
     branches:

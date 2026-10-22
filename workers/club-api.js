@@ -615,7 +615,8 @@ export async function handleClubApi({ request, url, DB, json, checkAuth, env }) 
         correct_index:question.correctIndex,explanation:question.explanation,reward_points:Number(session.reward_points||0)});
       const correct = selected===Number(question.correctIndex);
       const canEarn = (await setting(DB,"club_enabled"))==="true" && (await setting(DB,"earning_enabled"))==="true";
-      const reward = correct && canEarn ? (safeInt(await setting(DB,"daily_quiz_reward_points","5"),0,1000)||5) : 0;
+      const configuredQuizReward = safeInt(await setting(DB,"daily_quiz_reward_points","5"),0,1000);
+      const reward = correct && canEarn ? (configuredQuizReward === null ? 5 : configuredQuizReward) : 0;
       await DB.batch([
         DB.prepare("UPDATE club_quiz_sessions SET answered_at=CURRENT_TIMESTAMP,selected_index=?,correct=?,reward_points=? WHERE id=? AND answered_at IS NULL")
           .bind(selected,correct?1:0,reward,session.id),
@@ -657,7 +658,8 @@ export async function handleClubApi({ request, url, DB, json, checkAuth, env }) 
       const existing = await DB.prepare("SELECT id FROM club_referrals WHERE invited_user_id=?").bind(auth.userId).first();
       if (existing) return json({success:true,duplicate:true,message:"دعوت قبلاً برای این حساب ثبت شده است."});
       const id = randomId();
-      const points = safeInt(await setting(DB,"referral_reward_points","20"),0,1000)||20;
+      const configuredReferralReward = safeInt(await setting(DB,"referral_reward_points","20"),0,1000);
+      const points = configuredReferralReward === null ? 20 : configuredReferralReward;
       try {
         await DB.batch([
           DB.prepare("INSERT INTO club_referrals(id,inviter_user_id,invited_user_id,referral_code,reward_points) VALUES(?,?,?,?,?)").bind(id,Number(inviter.user_id),auth.userId,code,points),

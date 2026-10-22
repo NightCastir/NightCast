@@ -59,6 +59,15 @@ CREATE TABLE IF NOT EXISTS club_notifications (
 );
 CREATE INDEX IF NOT EXISTS idx_club_notifications_user_created ON club_notifications(user_id, created_at DESC);
 
+CREATE TABLE IF NOT EXISTS club_notification_dispatch_log (
+  user_id INTEGER NOT NULL,
+  notification_type TEXT NOT NULL,
+  day_key TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (user_id, notification_type, day_key),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS club_push_subscriptions (
   id TEXT PRIMARY KEY,
   user_id INTEGER NOT NULL,
@@ -75,4 +84,5 @@ INSERT OR IGNORE INTO club_settings(setting_key, setting_value) VALUES
   ('daily_visit_reward_points','2'),
   ('daily_quiz_reward_points','5'),
   ('referral_reward_points','20'),
-  ('daily_quiz_enabled','true');
+  ('daily_quiz_enabled','true'),
+  ('push_last_podcast_id','0');

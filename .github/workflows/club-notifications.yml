@@ -6,6 +6,13 @@ on:
       - 'data/club-quiz-questions.json'
       - 'migrations/club/0004_engagement.sql'
       - 'tests/club-engagement-acceptance.cjs'
+      - 'workers/club-api.js'
+      - 'js/nightcast-app.js'
+      - 'js/nightcast-club-listener.js'
+      - 'js/nightcast-quiz.js'
+      - 'quiz.html'
+      - 'leaderboard.html'
+      - 'js/nightcast-leaderboard.js'
       - '.github/workflows/club-notifications.yml'
   pull_request:
     branches: [main]

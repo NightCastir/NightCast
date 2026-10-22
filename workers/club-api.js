@@ -549,19 +549,7 @@ export async function handleClubApi({ request, url, DB, json, checkAuth, env }) 
     if (path === "/quiz/status" && method === "GET") {
       const auth = await requireMember(checkAuth);
       if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
-      const day = utcDay();
-      const session = await DB.prepare("SELECT question_id,day_key,shown_at,answered_at,selected_index,correct,reward_points FROM club_quiz_sessions WHERE user_id=? AND day_key=?").bind(auth.userId,day).first();
-      return json({success:true,needs_quiz:!session || !session.answered_at,
-        session:session?{day:session.day_key,shown_at:session.shown_at,answered:!!session.answered_at,
-          selected_index:session.selected_index===null?null:Number(session.selected_index),
-          correct:session.correct===null?null:Number(session.correct)===1,reward_points:Number(session.reward_points||0)}:null});
-    }
-
-    if (path === "/quiz/status" && method === "GET") {
-      const auth = await requireMember(checkAuth);
-      if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
-      const day = utcDay();
-      const session = await DB.prepare("SELECT question_id,day_key,shown_at,answered_at,selected_index,correct,reward_points FROM club_quiz_sessions WHERE user_id=? AND day_key=?").bind(auth.userId,day).first();
+      const session = await DB.prepare("SELECT question_id,day_key,shown_at,answered_at,selected_index,correct,reward_points FROM club_quiz_sessions WHERE user_id=? AND shown_at >= datetime('now','-24 hours') ORDER BY shown_at DESC LIMIT 1").bind(auth.userId).first();
       return json({success:true,needs_quiz:!session || !session.answered_at,
         session:session?{day:session.day_key,shown_at:session.shown_at,answered:!!session.answered_at,
           selected_index:session.selected_index===null?null:Number(session.selected_index),
@@ -573,7 +561,7 @@ export async function handleClubApi({ request, url, DB, json, checkAuth, env }) 
       if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
       if ((await setting(DB,"daily_quiz_enabled","true")) !== "true") return fail(json,503,"مسابقه روزانه موقتاً غیرفعال است.","club_quiz_disabled");
       const day = utcDay();
-      let session = await DB.prepare("SELECT id,question_id,day_key,shown_at,answered_at,selected_index,correct,reward_points FROM club_quiz_sessions WHERE user_id=? AND day_key=?").bind(auth.userId,day).first();
+      let session = await DB.prepare("SELECT id,question_id,day_key,shown_at,answered_at,selected_index,correct,reward_points FROM club_quiz_sessions WHERE user_id=? AND shown_at >= datetime('now','-24 hours') ORDER BY shown_at DESC LIMIT 1").bind(auth.userId).first();
       if (!session) {
         const seen = await DB.prepare("SELECT question_id FROM club_quiz_sessions WHERE user_id=?").bind(auth.userId).all();
         const seenIds = new Set((seen.results||[]).map(row=>String(row.question_id)));
@@ -607,9 +595,9 @@ export async function handleClubApi({ request, url, DB, json, checkAuth, env }) 
       if (!questionId || selected===null) return fail(json,400,"گزینه انتخاب‌شده معتبر نیست.","club_quiz_invalid_answer");
       const question = (QUESTION_BANK.questions||[]).find(q=>q.id===questionId);
       if (!question) return fail(json,400,"شناسه پرسش معتبر نیست.","club_quiz_invalid_question");
-      const day = utcDay();
-      const session = await DB.prepare("SELECT id,question_id,answered_at,selected_index,correct,reward_points FROM club_quiz_sessions WHERE user_id=? AND day_key=?").bind(auth.userId,day).first();
-      if (!session || session.question_id!==questionId) return fail(json,409,"این پرسش برای حساب شما فعال نیست.","club_quiz_session_mismatch");
+      const session = await DB.prepare("SELECT id,question_id,day_key,answered_at,selected_index,correct,reward_points FROM club_quiz_sessions WHERE user_id=? AND question_id=? AND shown_at >= datetime('now','-24 hours') ORDER BY shown_at DESC LIMIT 1").bind(auth.userId,questionId).first();
+      if (!session) return fail(json,409,"این پرسش برای حساب شما فعال نیست یا مهلت آن گذشته است.","club_quiz_session_mismatch");
+      const day = session.day_key;
       if (session.answered_at) return json({success:true,duplicate:true,locked:true,selected_index:Number(session.selected_index),correct:Number(session.correct)===1,
         correct_index:question.correctIndex,explanation:question.explanation,reward_points:Number(session.reward_points||0)});
       const correct = selected===Number(question.correctIndex);

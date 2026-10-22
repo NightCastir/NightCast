@@ -239,6 +239,10 @@
                     باشگاه شنوندگان
                 </a>
 
+                <a class="nav-link" id="ncAdminDesktopLink" href="/club-admin.html" hidden style="display:none">
+                    مدیریت باشگاه
+                </a>
+
                 <button type="button"
                         class="nav-link nav-link-button"
                         id="requestBookSummaryBtn"
@@ -329,6 +333,7 @@
             <a href="/about"><span class="nc-drawer-icon"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></span><span><strong>درباره ما</strong><small>داستان و مأموریت ما</small></span><i class="fa-solid fa-arrow-left nc-drawer-arrow" aria-hidden="true"></i></a>
             <a href="/contact"><span class="nc-drawer-icon"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i></span><span><strong>تماس با ما</strong><small>در ارتباط بمانیم</small></span><i class="fa-solid fa-arrow-left nc-drawer-arrow" aria-hidden="true"></i></a>
             <a href="/club"><span class="nc-drawer-icon"><i class="fa-solid fa-star" aria-hidden="true"></i></span><span><strong>باشگاه شنوندگان</strong><small>امتیاز، مأموریت و پاداش</small></span><i class="fa-solid fa-arrow-left nc-drawer-arrow" aria-hidden="true"></i></a>
+            <a href="/club-admin.html" id="ncAdminDrawerLink" hidden style="display:none"><span class="nc-drawer-icon"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i></span><span><strong>مدیریت باشگاه</strong><small>پنل امن مدیر</small></span><i class="fa-solid fa-arrow-left nc-drawer-arrow" aria-hidden="true"></i></a>
             <button type="button" data-request-book-summary class="nc-drawer-action" aria-haspopup="dialog"><span class="nc-drawer-icon"><i class="fa-solid fa-headphones" aria-hidden="true"></i></span><span><strong>پیشنهاد پادکست دلخواه</strong><small>کتاب پیشنهادی خودت را معرفی کن</small></span><i class="fa-solid fa-arrow-left nc-drawer-arrow" aria-hidden="true"></i></button>
         </nav>
         <div class="nc-drawer-foot"><span class="nc-live-dot"></span> صدای ایده‌های ماندگار</div>
@@ -1611,6 +1616,63 @@
         const observer = new MutationObserver(removeRetiredPanel);
         observer.observe(document.documentElement, { childList: true, subtree: true });
         window.setTimeout(function () { observer.disconnect(); }, 15000);
+    })();
+    </script>
+    <script>
+    // Admin navigation is revealed only after the Worker verifies the current session's email
+    // against its private ADMIN_EMAIL/ADMIN secret. No allowlist value is sent to the browser.
+    (function () {
+      "use strict";
+      var endpoint = "https://club-api.nightcast.ir/api/v1/club/admin/status";
+      var linkIds = ["ncAdminDesktopLink", "ncAdminDrawerLink"];
+      var lastToken = null;
+      var busy = false;
+      var lastCheckAt = 0;
+      function showLinks(show) {
+        linkIds.forEach(function (id) {
+          var link = document.getElementById(id);
+          if (!link) return;
+          link.hidden = !show;
+          link.style.display = show ? "" : "none";
+        });
+      }
+      function getToken() {
+        try { return localStorage.getItem("NightCastToken") || ""; }
+        catch (e) { return ""; }
+      }
+      function check(force) {
+        var token = getToken();
+        var now = Date.now();
+        if (busy || (!force && token === lastToken && now - lastCheckAt < 60000)) return;
+        lastToken = token;
+        lastCheckAt = now;
+        showLinks(false);
+        if (!token) return;
+        busy = true;
+        fetch(endpoint, {
+          method: "GET",
+          headers: { "Authorization": "Bearer " + token },
+          credentials: "omit",
+          cache: "no-store"
+        }).then(function (response) {
+          return response.json().catch(function () { return {}; }).then(function (data) {
+            showLinks(response.ok && data.isAdmin === true);
+          });
+        }).catch(function () {
+          showLinks(false);
+        }).then(function () {
+          busy = false;
+        });
+      }
+      check(true);
+      window.addEventListener("storage", function (event) {
+        if (!event.key || event.key === "NightCastToken") check(true);
+      });
+      window.addEventListener("focus", function () { check(true); });
+      window.setInterval(function () {
+        if (getToken() !== lastToken) check(true);
+        else check(false);
+      }, 2000);
     })();
     </script>
 </body>

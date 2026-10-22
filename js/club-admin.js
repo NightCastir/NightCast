@@ -146,10 +146,33 @@
     message("توکن ورود NightCast در این مرورگر پیدا نشد. ابتدا با حساب مدیر وارد سایت شوید و سپس این صفحه را دوباره باز کنید.", "error");
     return;
   }
-  load().catch(error => {
+  async function verifyAdminAllowlist() {
+    const response = await fetch(API + "/club/admin/status", {
+      method: "GET",
+      headers: authHeaders(),
+      credentials: "omit",
+      cache: "no-store"
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || data.isAdmin !== true) {
+      const error = new Error(data.code === "admin_allowlist_not_configured"
+        ? "دسترسی مدیر هنوز در تنظیمات امن Worker پیکربندی نشده است."
+        : (data.message || "این صفحه فقط برای مدیر مجاز است."));
+      error.status = response.status;
+      error.code = data.code;
+      throw error;
+    }
+  }
+
+  verifyAdminAllowlist().then(load).catch(error => {
     connection.textContent = error.status === 403 ? "دسترسی غیرمجاز" : "اتصال ناموفق";
     message(error.status === 401 ? "نشست ورود منقضی شده است؛ دوباره وارد شوید." :
-      error.status === 403 ? "این صفحه فقط برای مدیر مجاز است." :
-      "اتصال به API باشگاه ناموفق بود: " + error.message, "error");
+      error.status === 403 ? "ایمیل حساب واردشده با ایمیل مدیر تطابق ندارد. دسترسی رد شد." :
+      error.code === "admin_allowlist_not_configured" ? error.message :
+      "تأیید هویت مدیر یا اتصال به API ناموفق بود: " + error.message, "error");
+    $("dashboard").hidden = true;
+    if (error.status === 403 || error.status === 401) {
+      window.setTimeout(() => window.location.replace("/"), 1800);
+    }
   });
 })();

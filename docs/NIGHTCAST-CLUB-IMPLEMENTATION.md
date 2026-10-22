@@ -16,16 +16,16 @@ This branch establishes the first versioned schema and a theme-aware dashboard s
 
 ## Files introduced in this checkpoint
 
-- `migrations/club/0001_club_foundation.sql`: versioned schema for point and XP ledgers, listening events, settings, levels, missions, user mission periods, badges, rewards/redemptions, profiles, and audit logs. Unique idempotency keys are defined on ledgers and redemptions. No auth table is created.
+- `migrations/club/0001_club_foundation.sql`: versioned schema for point and XP ledgers, listening events, settings, levels, missions, user mission periods, badges, rewards/redemptions, profiles, and audit logs. Unique idempotency keys are defined on ledgers and redemptions. No auth table is created.\n- `migrations/club/0002_listening_sequence_guard.sql`: adds per-event sequence numbers and server receipt timestamps, with a partial unique index to reject repeated positive sequence numbers for the same user/session.
 - `club.html`, `css/nightcast-club.css`, `js/nightcast-club.js`: Persian RTL dashboard shell with responsive layout and theme-token styling.
 - `_redirects` and `index.html`: canonical `/club` route and a primary-navigation entry.
 - `tests/club-schema-acceptance.cjs` and `.github/workflows/club-foundation-acceptance.yml`: static/schema acceptance checks and a dedicated CI workflow.
 
 ## Isolated D1 validation completed
 
-- Applied the migration statement-by-statement to the separate D1 database named `test`, after creating minimal fixture `users` and `podcasts` tables; no Production database was modified.
+- Applied `0001` statement-by-statement to the separate D1 database named `test`, after creating minimal fixture `users` and `podcasts` tables; no Production database was modified. Then applied `0002` to that same isolated test database and verified the new columns and partial unique index exist.
 - Confirmed all 13 `club_*` tables exist, seven levels are seeded, and `club_enabled` / `earning_enabled` remain `false`.
-- Confirmed the unique idempotency constraint rejects a duplicate `club_point_ledger.idempotency_key` (D1 returned a UNIQUE constraint error on the second insert).
+- Confirmed the unique idempotency constraint rejects a duplicate `club_point_ledger.idempotency_key` (D1 returned a UNIQUE constraint error on the second insert).\n- Inserted a temporary test user and listening event in D1 `test`, confirmed a second event using the same user/session/sequence was rejected with `UNIQUE constraint failed`, then removed both fixture rows and verified both fixture counts were zero.
 - Removed the temporary user and ledger fixture after the check; verified the fixture user count returned to zero. The schema remains in the isolated `test` database for further integration tests.
 
 ## Production safety

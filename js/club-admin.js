@@ -123,21 +123,23 @@
   }
   $("mission-form").addEventListener("submit", async event => {
     event.preventDefault();
-    const data = formData(event.currentTarget);
+    const form = event.currentTarget;
+    const data = formData(form);
     data.target_value = Number(data.target_value);
     data.reward_points = Number(data.reward_points || 0);
     data.reward_xp = Number(data.reward_xp || 0);
     await mutate("/admin/missions", data);
-    event.currentTarget.reset();
+    form.reset();
   });
   $("reward-form").addEventListener("submit", async event => {
     event.preventDefault();
-    const data = formData(event.currentTarget);
+    const form = event.currentTarget;
+    const data = formData(form);
     data.cost_points = Number(data.cost_points);
     data.stock_remaining = data.stock_remaining === "" ? null : Number(data.stock_remaining);
     data.max_per_user = data.max_per_user === "" ? null : Number(data.max_per_user);
     await mutate("/admin/rewards", data);
-    event.currentTarget.reset();
+    form.reset();
   });
   if (!token) {
     connection.textContent = "ورود لازم است";

@@ -58,9 +58,9 @@ check('club styles use theme tokens and support reduced motion', function () {
 });
 check('client never fabricates reward values and handles missing API honestly', function () {
   assert.match(client, /request\('\/club\/summary'\)/);
-  assert.match(client, /request\('\/club\/missions'\)/);
-  assert.match(client, /request\('\/club\/badges'\)/);
-  assert.match(client, /request\('\/club\/ledger\?limit=20'\)/);
+  assert.match(client, /loadSection\('\/club\/missions'/);
+  assert.match(client, /loadSection\('\/club\/badges'/);
+  assert.match(client, /loadSection\('\/club\/ledger\?limit=20'/);
   assert.match(client, /summary\.badges_earned/);
   assert.match(client, /summary\.next_level/);
   assert.match(client, /API باشگاه هنوز در Worker مستقر نشده است/);

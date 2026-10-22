@@ -29,24 +29,54 @@ export default {
       const token = authorization.slice(7).trim();
       if (!token || token.length > 512) return null;
 
+      const configuredAdminEmail = String(env.ADMIN_EMAIL || env.ADMIN || "").trim().toLowerCase();
+      if (!configuredAdminEmail) return null;
+
       const admin = await DB.prepare(`
-        SELECT admins.id, admins.username, admins.full_name, 'admin' AS role
+        SELECT admins.id, admins.username, admins.full_name, admins.username AS email
         FROM admin_sessions
         INNER JOIN admins ON admins.id = admin_sessions.admin_id
         WHERE admin_sessions.session_token = ?
           AND julianday(admin_sessions.expires_at) > julianday('now')
         LIMIT 1
       `).bind(token).first();
-      if (admin) return admin;
+      if (admin) {
+        const isAllowlisted = String(admin.email || "").trim().toLowerCase() === configuredAdminEmail;
+        return isAllowlisted ? { ...admin, role: "admin" } : null;
+      }
 
-      return await DB.prepare(`
-        SELECT users.id, users.username, users.full_name, users.role
+      const user = await DB.prepare(`
+        SELECT users.id, users.username, users.full_name, users.email
         FROM user_sessions
         INNER JOIN users ON users.id = user_sessions.user_id
         WHERE user_sessions.session_token = ?
           AND julianday(user_sessions.expires_at) > julianday('now')
         LIMIT 1
-      `).bind(token).first() || null;
+      `).bind(token).first();
+      if (!user) return null;
+
+      const isAllowlisted = String(user.email || "").trim().toLowerCase() === configuredAdminEmail;
+      // Never trust a persisted/client-provided role for the allowlisted admin decision.
+      return { ...user, role: isAllowlisted ? "admin" : "user" };
+    }
+
+    if (url.pathname === "/api/v1/club/admin/status" && request.method === "GET") {
+      try {
+        const configuredAdminEmail = String(env.ADMIN_EMAIL || env.ADMIN || "").trim().toLowerCase();
+        if (!configuredAdminEmail) {
+          return json({ success: true, isAdmin: false, code: "admin_allowlist_not_configured" }, 503);
+        }
+        const actor = await checkAuth();
+        const isAdmin = Boolean(
+          actor &&
+          String(actor.role || "").toLowerCase() === "admin" &&
+          String(actor.email || "").trim().toLowerCase() === configuredAdminEmail
+        );
+        return json({ success: true, isAdmin }, isAdmin ? 200 : (actor ? 403 : 401));
+      } catch (error) {
+        console.error("NightCast admin authorization check failed", error);
+        return json({ success: false, isAdmin: false, code: "admin_authorization_unavailable" }, 500);
+      }
     }
 
     try {

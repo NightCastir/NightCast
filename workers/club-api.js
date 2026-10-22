@@ -11,6 +11,16 @@ const CLUB_PREFIX = "/api/v1/club";
 function utcDay() {
   return new Date().toISOString().slice(0, 10);
 }
+function missionPeriod(cadence) {
+  if (cadence === "once") return "once";
+  if (cadence === "event") return "event";
+  if (cadence === "weekly") {
+    const d = new Date(utcDay() + "T00:00:00Z");
+    d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7));
+    return d.toISOString().slice(0, 10);
+  }
+  return utcDay();
+}
 
 function safeInt(value, min, max) {
   const n = Number(value);
@@ -135,6 +145,64 @@ export async function handleClubApi({ request, url, DB, json, checkAuth }) {
         return json({ success: true, reward: { id, title_fa: title, is_active: false } }, 201);
       }
 
+      if (path === "/admin/overview" && method === "GET") {
+        const [missions, rewards, redemptions, settings] = await Promise.all([
+          DB.prepare("SELECT id,title_fa,cadence,event_type,target_value,reward_points,reward_xp,is_active,starts_at,ends_at,created_at FROM club_missions ORDER BY created_at DESC LIMIT 100").all(),
+          DB.prepare("SELECT id,title_fa,reward_type,cost_points,stock_remaining,max_per_user,is_active,starts_at,ends_at FROM club_rewards ORDER BY created_at DESC LIMIT 100").all(),
+          DB.prepare("SELECT rr.id,rr.user_id,u.username,rr.reward_id,r.title_fa AS reward_title,rr.cost_points,rr.status,rr.delivery_reference,rr.created_at FROM club_reward_redemptions rr JOIN users u ON u.id=rr.user_id JOIN club_rewards r ON r.id=rr.reward_id ORDER BY rr.created_at DESC LIMIT 100").all(),
+          DB.prepare("SELECT setting_key,setting_value FROM club_settings WHERE setting_key IN ('club_enabled','earning_enabled','rewards_enabled','daily_points_cap','daily_xp_cap') ORDER BY setting_key").all()
+        ]);
+        return json({ success: true, missions: missions.results || [], rewards: rewards.results || [],
+          redemptions: redemptions.results || [], settings: settings.results || [] });
+      }
+
+      const missionState = path.match(/^\/admin\/missions\/([a-zA-Z0-9_-]{1,100})\/(activate|deactivate)$/);
+      if (missionState && method === "POST") {
+        const active = missionState[2] === "activate" ? 1 : 0;
+        const result = await DB.prepare("UPDATE club_missions SET is_active=?,updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(active, missionState[1]).run();
+        if (!Number(result?.meta?.changes || 0)) return fail(json, 404, "مأموریت پیدا نشد.", "club_mission_not_found");
+        await DB.prepare("INSERT INTO club_audit_logs(id,action,target_type,target_id,metadata_json) VALUES(?,?,'club_mission',?,?)")
+          .bind(randomId(), active ? "club.mission.activate" : "club.mission.deactivate", missionState[1], JSON.stringify({ active })).run();
+        return json({ success: true, id: missionState[1], is_active: !!active });
+      }
+
+      const rewardState = path.match(/^\/admin\/rewards\/([a-zA-Z0-9_-]{1,100})\/(activate|deactivate)$/);
+      if (rewardState && method === "POST") {
+        const active = rewardState[2] === "activate" ? 1 : 0;
+        const result = await DB.prepare("UPDATE club_rewards SET is_active=?,updated_at=CURRENT_TIMESTAMP WHERE id=?").bind(active, rewardState[1]).run();
+        if (!Number(result?.meta?.changes || 0)) return fail(json, 404, "پاداش پیدا نشد.", "club_reward_not_found");
+        await DB.prepare("INSERT INTO club_audit_logs(id,action,target_type,target_id,metadata_json) VALUES(?,?,'club_reward',?,?)")
+          .bind(randomId(), active ? "club.reward.activate" : "club.reward.deactivate", rewardState[1], JSON.stringify({ active })).run();
+        return json({ success: true, id: rewardState[1], is_active: !!active });
+      }
+
+      const fulfillment = path.match(/^\/admin\/redemptions\/([a-zA-Z0-9_-]{1,100})\/(fulfill|cancel)$/);
+      if (fulfillment && method === "POST") {
+        const id = fulfillment[1], action = fulfillment[2], body = await request.json().catch(() => ({}));
+        const redemption = await DB.prepare("SELECT id,user_id,reward_id,cost_points,status FROM club_reward_redemptions WHERE id=?").bind(id).first();
+        if (!redemption) return fail(json, 404, "درخواست دریافت پاداش پیدا نشد.", "club_redemption_not_found");
+        if (action === "fulfill") {
+          const result = await DB.prepare("UPDATE club_reward_redemptions SET status='fulfilled',fulfilled_at=CURRENT_TIMESTAMP,delivery_reference=? WHERE id=? AND status='pending'")
+            .bind(String(body.delivery_reference || "").slice(0, 240) || null, id).run();
+          if (!Number(result?.meta?.changes || 0)) {
+            if (redemption.status === "fulfilled") return json({ success: true, duplicate: true, status: "fulfilled" });
+            return fail(json, 409, "فقط درخواست در انتظار را می‌توان تحویل‌شده کرد.", "club_redemption_state_conflict");
+          }
+          await DB.prepare("INSERT INTO club_audit_logs(id,action,target_type,target_id,metadata_json) VALUES(?,'club.reward.fulfill','club_reward_redemption',?,?)")
+            .bind(randomId(), id, JSON.stringify({ delivery_reference: body.delivery_reference || null })).run();
+          return json({ success: true, id, status: "fulfilled" });
+        }
+        if (redemption.status === "cancelled") return json({ success: true, duplicate: true, status: "cancelled" });
+        if (redemption.status !== "pending") return fail(json, 409, "فقط درخواست در انتظار را می‌توان لغو کرد.", "club_redemption_state_conflict");
+        await DB.batch([
+          DB.prepare("UPDATE club_reward_redemptions SET status='cancelled' WHERE id=? AND status='pending'").bind(id),
+          DB.prepare("UPDATE club_rewards SET stock_remaining=CASE WHEN stock_remaining IS NULL THEN NULL ELSE stock_remaining+1 END,updated_at=CURRENT_TIMESTAMP WHERE id=? AND EXISTS(SELECT 1 FROM club_reward_redemptions WHERE id=? AND status='cancelled') AND NOT EXISTS(SELECT 1 FROM club_point_ledger WHERE source_type='reward_refund' AND source_id=?)").bind(redemption.reward_id, id, id),
+          DB.prepare("INSERT OR IGNORE INTO club_point_ledger(user_id,delta,source_type,source_id,idempotency_key,status,metadata_json,created_by) SELECT user_id,cost_points,'reward_refund',id,'club-reward-refund:' || id,'posted',json_object('reward_id',reward_id),'admin' FROM club_reward_redemptions WHERE id=? AND status='cancelled'").bind(id),
+          DB.prepare("INSERT OR IGNORE INTO club_audit_logs(id,action,target_type,target_id,metadata_json) SELECT 'refund-audit:' || id,'club.reward.cancel','club_reward_redemption',id,json_object('refund_points',cost_points) FROM club_reward_redemptions WHERE id=? AND status='cancelled'").bind(id)
+        ]);
+        return json({ success: true, id, status: "cancelled", refunded_points: Number(redemption.cost_points) });
+      }
+
       return fail(json, 404, "مسیر مدیریتی باشگاه پیدا نشد.", "club_admin_route_not_found");
     }
 
@@ -178,15 +246,42 @@ export async function handleClubApi({ request, url, DB, json, checkAuth }) {
     if (path === "/missions" && method === "GET") {
       const auth = await requireMember(checkAuth);
       if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
-      const period = utcDay();
       const rows = await DB.prepare(`SELECT m.id,m.title_fa,m.description_fa,m.cadence,m.event_type,
         m.target_value,m.reward_points,m.reward_xp,um.progress_value,um.status AS user_status
-        FROM club_missions m LEFT JOIN club_user_missions um
-          ON um.mission_id=m.id AND um.user_id=? AND um.period_key=?
+        FROM club_missions m LEFT JOIN club_user_missions um ON um.mission_id=m.id AND um.user_id=?
+          AND um.period_key=CASE m.cadence WHEN 'daily' THEN date('now')
+            WHEN 'weekly' THEN date('now','-' || ((CAST(strftime('%w','now') AS INTEGER)+6)%7) || ' days')
+            WHEN 'event' THEN 'event' ELSE 'once' END
         WHERE m.is_active=1 AND (m.starts_at IS NULL OR m.starts_at<=CURRENT_TIMESTAMP)
           AND (m.ends_at IS NULL OR m.ends_at>CURRENT_TIMESTAMP)
-        ORDER BY m.cadence,m.created_at DESC`).bind(auth.userId, period).all();
+        ORDER BY m.cadence,m.created_at DESC`).bind(auth.userId).all();
       return json({ success: true, missions: rows.results || [] });
+    }
+
+    const missionClaim = path.match(/^\/missions\/([a-zA-Z0-9_-]{1,100})\/claim$/);
+    if (missionClaim && method === "POST") {
+      const auth = await requireMember(checkAuth);
+      if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
+      if ((await setting(DB, "club_enabled")) !== "true" || (await setting(DB, "earning_enabled")) !== "true")
+        return fail(json, 503, "دریافت امتیاز مأموریت در حال حاضر غیرفعال است.", "club_earning_disabled");
+      const mission = await DB.prepare("SELECT id,cadence,target_value,reward_points,reward_xp FROM club_missions WHERE id=? AND is_active=1 AND (starts_at IS NULL OR starts_at<=CURRENT_TIMESTAMP) AND (ends_at IS NULL OR ends_at>CURRENT_TIMESTAMP)").bind(missionClaim[1]).first();
+      if (!mission) return fail(json, 404, "مأموریت در دسترس نیست.", "club_mission_unavailable");
+      const period = missionPeriod(mission.cadence);
+      const existing = await DB.prepare("SELECT status,progress_value FROM club_user_missions WHERE user_id=? AND mission_id=? AND period_key=?").bind(auth.userId, mission.id, period).first();
+      if (existing?.status === "claimed") return json({ success: true, duplicate: true, status: "claimed" });
+      if (!existing || Number(existing.progress_value) < Number(mission.target_value) || existing.status !== "completed")
+        return fail(json, 409, "ابتدا باید پیشرفت مأموریت به حد نصاب برسد.", "club_mission_not_complete");
+      const pointKey = "club-mission-points:" + auth.userId + ":" + mission.id + ":" + period;
+      const xpKey = "club-mission-xp:" + auth.userId + ":" + mission.id + ":" + period;
+      await DB.batch([
+        DB.prepare("UPDATE club_user_missions SET status='claimed',claimed_at=CURRENT_TIMESTAMP,updated_at=CURRENT_TIMESTAMP WHERE user_id=? AND mission_id=? AND period_key=? AND status='completed' AND progress_value>=?").bind(auth.userId, mission.id, period, mission.target_value),
+        DB.prepare("INSERT OR IGNORE INTO club_point_ledger(user_id,delta,source_type,source_id,idempotency_key,status,metadata_json) SELECT ?,?,'mission',?,?,'posted',? WHERE ?>0 AND EXISTS(SELECT 1 FROM club_user_missions WHERE user_id=? AND mission_id=? AND period_key=? AND status='claimed')").bind(auth.userId, Number(mission.reward_points), mission.id, pointKey, JSON.stringify({ period }), Number(mission.reward_points), auth.userId, mission.id, period),
+        DB.prepare("INSERT OR IGNORE INTO club_experience_ledger(user_id,delta,source_type,source_id,idempotency_key,status,metadata_json) SELECT ?,?,'mission',?,?,'posted',? WHERE ?>0 AND EXISTS(SELECT 1 FROM club_user_missions WHERE user_id=? AND mission_id=? AND period_key=? AND status='claimed')").bind(auth.userId, Number(mission.reward_xp), mission.id, xpKey, JSON.stringify({ period }), Number(mission.reward_xp), auth.userId, mission.id, period),
+        DB.prepare("INSERT OR IGNORE INTO club_audit_logs(id,actor_user_id,action,target_type,target_id,metadata_json) SELECT ?,?,'club.mission.claim','club_mission',?,? WHERE EXISTS(SELECT 1 FROM club_user_missions WHERE user_id=? AND mission_id=? AND period_key=? AND status='claimed')").bind("mission-claim:" + auth.userId + ":" + mission.id + ":" + period, auth.userId, mission.id, JSON.stringify({ period }), auth.userId, mission.id, period)
+      ]);
+      const claimed = await DB.prepare("SELECT status FROM club_user_missions WHERE user_id=? AND mission_id=? AND period_key=?").bind(auth.userId, mission.id, period).first();
+      if (claimed?.status !== "claimed") return fail(json, 409, "دریافت پاداش مأموریت انجام نشد.", "club_mission_claim_conflict");
+      return json({ success: true, duplicate: false, status: "claimed", points_awarded: Number(mission.reward_points), xp_awarded: Number(mission.reward_xp) });
     }
 
     if (path === "/badges" && method === "GET") {
@@ -282,6 +377,35 @@ export async function handleClubApi({ request, url, DB, json, checkAuth }) {
               < CAST(COALESCE((SELECT setting_value FROM club_settings WHERE setting_key='daily_xp_cap'),'250') AS INTEGER)`)
           .bind(auth.userId, id, id, JSON.stringify({ podcast_id: podcastId }), status, acceptedSeconds, auth.userId)
       ];
+      statements.push(DB.prepare(`INSERT INTO club_user_missions
+        (user_id,mission_id,period_key,progress_value,status,completed_at)
+        SELECT ?,m.id,
+          CASE m.cadence WHEN 'daily' THEN date('now')
+            WHEN 'weekly' THEN date('now','-' || ((CAST(strftime('%w','now') AS INTEGER)+6)%7) || ' days')
+            WHEN 'event' THEN 'event' ELSE 'once' END,
+          CASE WHEN m.event_type='listen_minutes' THEN CAST(? / 60 AS INTEGER) ELSE 1 END,
+          CASE WHEN (CASE WHEN m.event_type='listen_minutes' THEN CAST(? / 60 AS INTEGER) ELSE 1 END) >= m.target_value THEN 'completed' ELSE 'active' END,
+          CASE WHEN (CASE WHEN m.event_type='listen_minutes' THEN CAST(? / 60 AS INTEGER) ELSE 1 END) >= m.target_value THEN CURRENT_TIMESTAMP ELSE NULL END
+        FROM club_missions m
+        WHERE m.is_active=1 AND (m.starts_at IS NULL OR m.starts_at<=CURRENT_TIMESTAMP)
+          AND (m.ends_at IS NULL OR m.ends_at>CURRENT_TIMESTAMP)
+          AND ((m.event_type='listen' AND ?='accepted' AND ?>=60)
+            OR (m.event_type='listen_minutes' AND ?='accepted' AND ?>=60)
+            OR (m.event_type='podcast_play' AND ?=1))
+        ON CONFLICT(user_id,mission_id,period_key) DO UPDATE SET
+          progress_value=MIN((SELECT target_value FROM club_missions WHERE id=club_user_missions.mission_id),
+            club_user_missions.progress_value + excluded.progress_value),
+          status=CASE WHEN club_user_missions.status='claimed' THEN 'claimed'
+            WHEN MIN((SELECT target_value FROM club_missions WHERE id=club_user_missions.mission_id),
+              club_user_missions.progress_value + excluded.progress_value) >=
+              (SELECT target_value FROM club_missions WHERE id=club_user_missions.mission_id)
+            THEN 'completed' ELSE 'active' END,
+          completed_at=CASE WHEN MIN((SELECT target_value FROM club_missions WHERE id=club_user_missions.mission_id),
+            club_user_missions.progress_value + excluded.progress_value) >=
+            (SELECT target_value FROM club_missions WHERE id=club_user_missions.mission_id)
+            THEN COALESCE(club_user_missions.completed_at,CURRENT_TIMESTAMP) ELSE club_user_missions.completed_at END,
+          updated_at=CURRENT_TIMESTAMP`)
+        .bind(auth.userId, acceptedSeconds, acceptedSeconds, acceptedSeconds, status, acceptedSeconds, status, acceptedSeconds, sequence));
       try {
         await DB.batch(statements);
       } catch (error) {

@@ -4,6 +4,12 @@ const { execFileSync } = require('node:child_process');
 const feature = process.env.CLUB_FEATURE || 'all';
 const questions = JSON.parse(fs.readFileSync('data/club-quiz-questions.json','utf8'));
 const migration = fs.readFileSync('migrations/club/0004_engagement.sql','utf8');
+const api = fs.readFileSync('workers/club-api.js','utf8');
+const quizPage = fs.readFileSync('quiz.html','utf8');
+const quizClient = fs.readFileSync('js/nightcast-quiz.js','utf8');
+const leaderboardPage = fs.readFileSync('leaderboard.html','utf8');
+const app = fs.readFileSync('js/nightcast-app.js','utf8');
+const home = fs.readFileSync('index.html','utf8');
 const checks = {
   'daily-checkin': () => {
     assert.match(migration,/CREATE TABLE IF NOT EXISTS club_daily_checkins/);
@@ -32,6 +38,9 @@ const checks = {
     assert.match(migration,/CREATE TABLE IF NOT EXISTS club_share_events/);
     assert.match(migration,/channel IN \('native','sms','whatsapp','telegram','soroush','copy','other'\)/);
     assert.doesNotMatch(migration,/CREATE TABLE[^;]*(sms_messages|whatsapp_contacts|telegram_contacts)/i);
+    assert.match(app,/navigator.share/);
+    assert.match(app,/data-action="share"/);
+    assert.match(home,/id="ncNowShare"/);
   },
   notifications: () => {
     assert.match(migration,/CREATE TABLE IF NOT EXISTS club_push_subscriptions/);
@@ -41,6 +50,9 @@ const checks = {
   },
   leaderboard: () => {
     assert.match(migration,/club_point_ledger/);
+    assert.match(api,/path === "\\/leaderboard"/);
+    assert.match(api,/medal:index===0/);
+    assert.match(leaderboardPage,/برترین شنوندگان/);
     assert.match(migration,/CREATE INDEX IF NOT EXISTS idx_club_referrals_inviter/);
     assert.match(migration,/REFERENCES users\(id\)/);
   }

@@ -68,7 +68,16 @@ check('both migrations apply cleanly against the existing user/podcast table con
 });
 check('listening sequence unique index rejects a replayed sequence within the same session', function () {
   const sql = 'PRAGMA foreign_keys=ON; CREATE TABLE users(id INTEGER PRIMARY KEY); CREATE TABLE podcasts(id INTEGER PRIMARY KEY);' + migration + sequenceMigration;
-  const py = 'import sqlite3,sys; c=sqlite3.connect(\":memory:\"); c.executescript(sys.stdin.read()); c.execute("INSERT INTO users(id) VALUES(7)"); c.execute("INSERT INTO club_activity_events(id,user_id,event_type,session_key_hash,sequence_number,idempotency_key) VALUES(?,?,?,?,?,?)", ("e1",7,"listen","session-hash",1,"idem-1"));\ntry:\n c.execute("INSERT INTO club_activity_events(id,user_id,event_type,session_key_hash,sequence_number,idempotency_key) VALUES(?,?,?,?,?,?)", ("e2",7,"listen","session-hash",1,"idem-2"))\n raise SystemExit("duplicate sequence unexpectedly accepted")\nexcept sqlite3.IntegrityError:\n print("DUPLICATE_BLOCKED")';
+  const py = `import sqlite3,sys
+c=sqlite3.connect(":memory:")
+c.executescript(sys.stdin.read())
+c.execute("INSERT INTO users(id) VALUES(7)")
+c.execute("INSERT INTO club_activity_events(id,user_id,event_type,session_key_hash,sequence_number,idempotency_key) VALUES(?,?,?,?,?,?)", ("e1",7,"listen","session-hash",1,"idem-1"))
+try:
+ c.execute("INSERT INTO club_activity_events(id,user_id,event_type,session_key_hash,sequence_number,idempotency_key) VALUES(?,?,?,?,?,?)", ("e2",7,"listen","session-hash",1,"idem-2"))
+ raise SystemExit("duplicate sequence unexpectedly accepted")
+except sqlite3.IntegrityError:
+ print("DUPLICATE_BLOCKED")`
   const output = execFileSync('python3', ['-c', py], { input: sql, encoding: 'utf8' });
   assert.match(output, /DUPLICATE_BLOCKED/);
 });

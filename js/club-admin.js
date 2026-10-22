@@ -74,7 +74,7 @@
       node("div", "metric", "سقف XP روزانه: " + (flags.daily_xp_cap || "—"))
     );
     showList("missions", snapshot.missions, "مأموریتی ثبت نشده است.", m => item(
-      m.title_fa, m.cadence + " · " + m.event_type + " · هدف " + m.target_value + " · " + m.reward_points + " امتیاز / " + m.reward_xp + " XP,
+      m.title_fa, m.cadence + " · " + m.event_type + " · هدف " + m.target_value + " · " + m.reward_points + " امتیاز / " + m.reward_xp + " XP",
       [button(m.is_active ? "غیرفعال‌کردن" : "فعال‌کردن", "secondary", async () => {
         await mutate("/admin/missions/" + encodeURIComponent(m.id) + "/" + (m.is_active ? "deactivate" : "activate"));
       })], !!m.is_active

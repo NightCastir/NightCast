@@ -13,3 +13,7 @@
 /contact/index.html /contact 301
 /club /club.html 200
 /club/ /club 301
+/quiz /quiz.html 200
+/quiz/ /quiz 301
+/leaderboard /leaderboard.html 200
+/leaderboard/ /leaderboard 301

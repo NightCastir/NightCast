@@ -532,18 +532,17 @@ export async function handleClubApi({ request, url, DB, json, checkAuth, env }) 
       if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
       const day = utcDay();
       const reward = safeInt(await setting(DB, "daily_visit_reward_points", "2"), 0, 1000) || 0;
-      await DB.batch([
-        DB.prepare("INSERT OR IGNORE INTO club_daily_visits(user_id,visit_day) VALUES(?,?)").bind(auth.userId, day),
-        DB.prepare(`INSERT OR IGNORE INTO club_point_ledger(user_id,delta,source_type,source_id,idempotency_key,status,metadata_json)
-          SELECT ?,?,'daily_visit',?,'club-daily-visit:' || ? || ':' || ?,'posted',?
-          WHERE ? > 0 AND (SELECT setting_value FROM club_settings WHERE setting_key='club_enabled')='true'
-            AND (SELECT setting_value FROM club_settings WHERE setting_key='earning_enabled')='true'
-            AND EXISTS(SELECT 1 FROM club_daily_visits WHERE user_id=? AND visit_day=?)`)
-          .bind(auth.userId,reward,day,auth.userId,day,JSON.stringify({day}),reward,auth.userId,day)
-      ]);
+      const visitInsert = await DB.prepare("INSERT OR IGNORE INTO club_daily_visits(user_id,visit_day) VALUES(?,?)").bind(auth.userId, day).run();
+      const firstVisit = Number(visitInsert?.meta?.changes || 0) > 0;
+      await DB.prepare(`INSERT OR IGNORE INTO club_point_ledger(user_id,delta,source_type,source_id,idempotency_key,status,metadata_json)
+        SELECT ?,?,'daily_visit',?,'club-daily-visit:' || ? || ':' || ?,'posted',?
+        WHERE ? > 0 AND (SELECT setting_value FROM club_settings WHERE setting_key='club_enabled')='true'
+          AND (SELECT setting_value FROM club_settings WHERE setting_key='earning_enabled')='true'
+          AND EXISTS(SELECT 1 FROM club_daily_visits WHERE user_id=? AND visit_day=?)`)
+        .bind(auth.userId,reward,day,auth.userId,day,JSON.stringify({day}),reward,auth.userId,day).run();
       const credit = await DB.prepare("SELECT delta FROM club_point_ledger WHERE idempotency_key=?")
         .bind("club-daily-visit:"+auth.userId+":"+day).first();
-      return json({success:true,day,already_visited:!credit,points_awarded:Number(credit?.delta||0),
+      return json({success:true,day,already_visited:!firstVisit,points_awarded:firstVisit?Number(credit?.delta||0):0,
         earning_enabled:(await setting(DB,"club_enabled"))==="true" && (await setting(DB,"earning_enabled"))==="true"});
     }
 

@@ -37,6 +37,15 @@ check('sensitive reward and mission features default disabled', function () {
 check('seven Persian galaxy levels are seeded', function () {
   assert.equal((migration.match(/^  \([1-7], '/gm) || []).length, 7);
 });
+check('earned badges are evaluated only from accepted server-side listening metrics', function () {
+  const api = fs.readFileSync('workers/club-api.js', 'utf8');
+  assert.match(api, /async function awardEligibleBadges/);
+  assert.match(api, /accepted_listen_events/);
+  assert.match(api, /listening_minutes/);
+  assert.match(api, /unique_podcasts/);
+  assert.match(api, /INSERT OR IGNORE INTO club_user_badges/);
+  assert.match(api, /if \(status === "accepted"\)/);
+});
 check('listening sequence migration adds replay protection without trusting client time', function () {
   assert.match(sequenceMigration, /ADD COLUMN sequence_number INTEGER/);
   assert.match(sequenceMigration, /ADD COLUMN received_at TEXT/);
@@ -81,6 +90,7 @@ check('client never fabricates reward values and handles missing API honestly', 
   assert.match(listener, /nightcast:podcastchange/);
   assert.match(listener, /sequence_number/);
   assert.match(home, /nightcast-club-listener\.js\?v=1/);
+  assert.match(home, /nightcast-app\.js\?v=4/);
   assert.match(adminClient, /nightcast-club-api\.tomasgermany2580\.workers\.dev/);
   assert.match(adminPage, /club-admin\.js\?v=2/);
 });

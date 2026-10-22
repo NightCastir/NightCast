@@ -8,6 +8,7 @@ public final class NightCastRadioWidgetProvider extends AppWidgetProvider {
  @Override public void onReceive(Context c,Intent i){
   super.onReceive(c,i);if(i==null||!ACTION_CONTROL.equals(i.getAction()))return;String control=i.getStringExtra(EXTRA_CONTROL);if(control==null)return;
   SharedPreferences p=c.getSharedPreferences(PREFS,Context.MODE_PRIVATE);
+  if(NightCastPlaybackService.isActive){Intent service=new Intent(c,NightCastPlaybackService.class).setAction(control);if(Build.VERSION.SDK_INT>=26)c.startForegroundService(service);else c.startService(service);return;}
   if(MainActivity.activityAlive){String action=MainActivity.ACTION_WIDGET_PLAY;if("pause".equals(control))action=MainActivity.ACTION_WIDGET_PAUSE;else if("next".equals(control))action=MainActivity.ACTION_WIDGET_NEXT;else if("previous".equals(control))action=MainActivity.ACTION_WIDGET_PREVIOUS;Intent a=new Intent(c,MainActivity.class).setAction(action).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);c.startActivity(a);return;}
   if(p.getString("current_url","").trim().isEmpty()){Intent a=new Intent(c,MainActivity.class).setAction(MainActivity.ACTION_WIDGET_PLAY).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP|Intent.FLAG_ACTIVITY_CLEAR_TOP);c.startActivity(a);return;}
   Intent service=new Intent(c,NightCastPlaybackService.class).setAction(control);if(Build.VERSION.SDK_INT>=26)c.startForegroundService(service);else c.startService(service);

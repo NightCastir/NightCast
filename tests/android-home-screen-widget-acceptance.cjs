@@ -15,7 +15,7 @@ const checks=[
 ['foreground playback service uses MediaSession',service.includes('extends Service')&&service.includes('new MediaSession(this')],
 ['foreground media playback notification and type are declared',service.includes('startForeground(NOTIFICATION_ID')&&/foregroundServiceType="mediaPlayback"/.test(wf)&&wf.includes('FOREGROUND_SERVICE_MEDIA_PLAYBACK')&&wf.includes('android.permission.WAKE_LOCK')&&service.includes('setWakeMode')],
 ['widget stores current and adjacent playable URLs',bridge.includes('current_url')&&app.includes('currentUrl:current?.audio_url')],
-['widget controls route through receiver and background service',provider.includes('startForegroundService(service)')&&provider.includes('ACTION_CONTROL')],
+['widget controls route through receiver and background service',provider.includes('startForegroundService(service)')&&provider.includes('ACTION_CONTROL')&&provider.indexOf('if(NightCastPlaybackService.isActive)')<provider.indexOf('if(MainActivity.activityAlive)')],
 ['native service exposes active playback state and commands',bridge.includes('getPlaybackState(PluginCall call)')&&bridge.includes('controlNativePlayback(PluginCall call)')],
 ['app synchronizes native service state without duplicate HTML audio',app.includes('syncNativePlaybackFromService()')&&app.includes('nativePlugin?.stopNativePlayback?.()')],
 ['native service has media transport controls',service.includes('onSkipToNext')&&service.includes('onSkipToPrevious')&&service.includes('onPause')],

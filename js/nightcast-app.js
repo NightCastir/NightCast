@@ -1348,15 +1348,41 @@ LOGOUT
                 if (!podcast) { toast("ابتدا یک پادکست انتخاب کنید."); return; }
                 const title = String(podcast.title || podcast.book_name || "پادکست NightCast");
                 const slug = String(podcast.slug || podcast.id);
-                const url = "https://nightcast.ir/podcasts#podcast-" + encodeURIComponent(slug);
+                let url = "https://nightcast.ir/podcasts#podcast-" + encodeURIComponent(slug);
+                const token = getToken();
+                if (token) {
+                    try {
+                        const referralResponse = await fetch("https://club-api.nightcast.ir/api/v1/club/referrals/code", {
+                            headers: { "Accept": "application/json", "Authorization": "Bearer " + token },
+                            credentials: "omit", cache: "no-store"
+                        });
+                        const referralData = await referralResponse.json().catch(() => ({}));
+                        if (referralResponse.ok && referralData.invite_url) {
+                            const inviteUrl = new URL(referralData.invite_url);
+                            inviteUrl.hash = "podcast-" + encodeURIComponent(slug);
+                            url = inviteUrl.toString();
+                        }
+                    } catch (_) { /* sharing remains available without referral attribution */ }
+                }
                 const invitation = "اگر به شنیدن و ایده‌های تازه علاقه داری، این پادکست NightCast را از دست نده: «" + title + "». شاید یک نکته‌اش نگاهت را عوض کند.\n" + url;
+                const record = function (channel) {
+                    if (!token) return;
+                    fetch("https://club-api.nightcast.ir/api/v1/club/share-events", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", "Accept": "application/json", "Authorization": "Bearer " + token },
+                        credentials: "omit", cache: "no-store",
+                        body: JSON.stringify({ podcast_id: Number(podcast.id), channel: channel })
+                    }).catch(() => {});
+                };
                 try {
                     if (navigator.share) {
                         await navigator.share({ title: title + " | NightCast", text: invitation, url: url });
+                        record("native");
                         toast("پنجره اشتراک‌گذاری دستگاه باز شد؛ مخاطب را خودت انتخاب کن.");
                     } else if (navigator.clipboard && navigator.clipboard.writeText) {
                         await navigator.clipboard.writeText(invitation);
-                        toast("متن معرفی و لینک پادکست کپی شد؛ حالا در پیام‌رسان دلخواه بفرست.");
+                        record("copy");
+                        toast("متن معرفی و لینک اختصاصی کپی شد؛ حالا در پیام‌رسان دلخواه بفرست.");
                     } else {
                         window.prompt("متن معرفی پادکست را کپی کنید:", invitation);
                     }

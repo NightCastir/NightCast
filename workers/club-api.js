@@ -185,7 +185,8 @@ export async function handleClubApi({ request, url, DB, json, checkAuth }) {
           const result = await DB.prepare("UPDATE club_reward_redemptions SET status='fulfilled',fulfilled_at=CURRENT_TIMESTAMP,delivery_reference=? WHERE id=? AND status='pending'")
             .bind(String(body.delivery_reference || "").slice(0, 240) || null, id).run();
           if (!Number(result?.meta?.changes || 0)) {
-            if (redemption.status === "fulfilled") return json({ success: true, duplicate: true, status: "fulfilled" });
+            const current = await DB.prepare("SELECT status FROM club_reward_redemptions WHERE id=?").bind(id).first();
+            if (current?.status === "fulfilled") return json({ success: true, duplicate: true, status: "fulfilled" });
             return fail(json, 409, "فقط درخواست در انتظار را می‌توان تحویل‌شده کرد.", "club_redemption_state_conflict");
           }
           await DB.prepare("INSERT INTO club_audit_logs(id,action,target_type,target_id,metadata_json) VALUES(?,'club.reward.fulfill','club_reward_redemption',?,?)")
@@ -273,7 +274,7 @@ export async function handleClubApi({ request, url, DB, json, checkAuth }) {
         return fail(json, 409, "ابتدا باید پیشرفت مأموریت به حد نصاب برسد.", "club_mission_not_complete");
       const pointKey = "club-mission-points:" + auth.userId + ":" + mission.id + ":" + period;
       const xpKey = "club-mission-xp:" + auth.userId + ":" + mission.id + ":" + period;
-      await DB.batch([
+      const claimBatch = await DB.batch([
         DB.prepare("UPDATE club_user_missions SET status='claimed',claimed_at=CURRENT_TIMESTAMP,updated_at=CURRENT_TIMESTAMP WHERE user_id=? AND mission_id=? AND period_key=? AND status='completed' AND progress_value>=?").bind(auth.userId, mission.id, period, mission.target_value),
         DB.prepare("INSERT OR IGNORE INTO club_point_ledger(user_id,delta,source_type,source_id,idempotency_key,status,metadata_json) SELECT ?,?,'mission',?,?,'posted',? WHERE ?>0 AND EXISTS(SELECT 1 FROM club_user_missions WHERE user_id=? AND mission_id=? AND period_key=? AND status='claimed')").bind(auth.userId, Number(mission.reward_points), mission.id, pointKey, JSON.stringify({ period }), Number(mission.reward_points), auth.userId, mission.id, period),
         DB.prepare("INSERT OR IGNORE INTO club_experience_ledger(user_id,delta,source_type,source_id,idempotency_key,status,metadata_json) SELECT ?,?,'mission',?,?,'posted',? WHERE ?>0 AND EXISTS(SELECT 1 FROM club_user_missions WHERE user_id=? AND mission_id=? AND period_key=? AND status='claimed')").bind(auth.userId, Number(mission.reward_xp), mission.id, xpKey, JSON.stringify({ period }), Number(mission.reward_xp), auth.userId, mission.id, period),
@@ -281,7 +282,10 @@ export async function handleClubApi({ request, url, DB, json, checkAuth }) {
       ]);
       const claimed = await DB.prepare("SELECT status FROM club_user_missions WHERE user_id=? AND mission_id=? AND period_key=?").bind(auth.userId, mission.id, period).first();
       if (claimed?.status !== "claimed") return fail(json, 409, "دریافت پاداش مأموریت انجام نشد.", "club_mission_claim_conflict");
-      return json({ success: true, duplicate: false, status: "claimed", points_awarded: Number(mission.reward_points), xp_awarded: Number(mission.reward_xp) });
+      const duplicate = !Number(claimBatch?.[0]?.meta?.changes || 0);
+      return json({ success: true, duplicate, status: "claimed",
+        points_awarded: duplicate ? 0 : Number(mission.reward_points),
+        xp_awarded: duplicate ? 0 : Number(mission.reward_xp) });
     }
 
     if (path === "/badges" && method === "GET") {

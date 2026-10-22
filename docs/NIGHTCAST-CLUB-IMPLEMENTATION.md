@@ -6,7 +6,7 @@ This branch establishes the first versioned schema and a theme-aware dashboard s
 
 ## Evidence-based architecture decision
 
-- The currently deployed `nightcast-api` Worker has a D1 binding named `NightCastBinding` that points to the existing `nightcast-db` database.
+- The currently deployed `nightcast-api` Worker has a D1 binding named `NightCastBinding` that points to the existing `nightcast-db` database. A source snapshot of the deployed Worker was added at `workers/nightcast-api.js` on this feature branch after scanning it for common inline-secret patterns; the source is now reviewable, but this snapshot is not yet a tested deployment pipeline.
 - That database contains the existing integer-keyed `users` table, `user_sessions`, `admin_sessions`, `podcasts`, `podcast_comments`, `user_favorites`, and `book_summary_requests` tables.
 - The API's `checkAuth()` resolves a Bearer token against `admin_sessions` and then `user_sessions`; the user result includes the existing `users.id`, `username`, `full_name`, and `role`.
 - Google sign-in is handled by the existing `/api/v1/public/openid/google` route. It validates the Google ID token through Google's tokeninfo endpoint, checks verified email and the configured audience, finds or creates the existing user record, and writes a row to `user_sessions`.
@@ -34,7 +34,7 @@ The migration inserts conservative settings with `club_enabled=false`, `earning_
 
 ## Remaining implementation blockers
 
-1. The deployed `nightcast-api` source is currently uploaded directly to Cloudflare and is not tracked as a matching source file in this repository. Establishing a reproducible source-of-truth and deploy path is required before safely adding authenticated API routes.
+1. The current deployed Worker snapshot is now tracked at `workers/nightcast-api.js`, but the repository still needs a verified Wrangler configuration and reproducible deploy workflow that preserves the existing D1 binding, secret bindings, and compatibility settings.
 2. Add and test server routes for club summary, ledger, missions, badges, rewards, listening events, and admin management. All routes must use the existing `checkAuth()` result and server-side role checks.
 3. Implement transactional/atomic earning and redemption logic. A UI click must never mint points. D1 batch/unique constraints and conditional writes must be tested under duplicate and concurrent requests.
 4. Connect real player telemetry to server-validated listening sessions; client-supplied time is not proof of human attention. Apply caps and anomaly checks.

@@ -43,11 +43,13 @@ jobs:
           npx --yes wrangler@4 dev --local --config wrangler.club-test.toml --port 8799 > /tmp/nightcast-club-worker.log 2>&1 &
           echo $! > /tmp/nightcast-club-worker.pid
           ready=0
-          for attempt in $(seq 1 40); do
+          attempt=1
+          while [ "$attempt" -le 40 ]; do
             echo "Waiting for isolated API Worker (attempt ${attempt}/40)"
             code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8799/api/v1/club/summary || true)
             if [ "$code" = "401" ]; then ready=1; break; fi
             sleep 2
+            attempt=$((attempt + 1))
           done
           if [ "$ready" != "1" ]; then cat /tmp/nightcast-club-worker.log; exit 1; fi
       - name: Test authenticated routes and full mission/reward lifecycle

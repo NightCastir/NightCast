@@ -96,6 +96,11 @@
           '/?podcast=' + encodeURIComponent(newest.slug || newest.id || ''));
         toast(fresh.length === 1 ? '🎧 از آخرین بازدیدت یک پادکست تازه منتشر شده است.' : '🎧 ' + fresh.length + ' پادکست تازه از آخرین بازدیدت منتشر شده‌اند.');
       }
+      if (data.tracking_initialized) {
+        window.addEventListener('nightcast:catalog-ready', notifyNewPodcasts, { once: true });
+        if (window.__NC_CACHED_CATALOG_RENDERED) notifyNewPodcasts();
+        window.setTimeout(function () { if (!window.__NC_CACHED_CATALOG_RENDERED) notifyNewPodcasts(); }, 3500);
+      }
     }).catch(function () {});
     var savedRef = '';
     try { savedRef = localStorage.getItem('nc-pending-referral-code') || ''; } catch (_) {}

@@ -1,0 +1,31 @@
+name: NightCast Daily Quiz Question Bank Acceptance
+
+on:
+  push:
+    branches: [feat/listener-club-quiz-notifications]
+    paths:
+      - 'data/club/daily-questions.json'
+      - 'tests/club-question-bank-acceptance.cjs'
+      - '.github/workflows/club-question-bank-acceptance.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'data/club/daily-questions.json'
+      - 'tests/club-question-bank-acceptance.cjs'
+      - '.github/workflows/club-question-bank-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  question-bank:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate unique IDs, allowed topics, four options and answer indexes
+        run: node tests/club-question-bank-acceptance.cjs

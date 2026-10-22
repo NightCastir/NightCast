@@ -2309,9 +2309,18 @@ LOGOUT
 
                 els.audio.load();
 
-                window.dispatchEvent(new CustomEvent("nightcast:podcastchange", {
-                    detail: { podcastId: Number(p.id) }
-                }));
+                try {
+                    var clubPodcastEvent;
+                    if (typeof CustomEvent === "function") {
+                        clubPodcastEvent = new CustomEvent("nightcast:podcastchange", { detail: { podcastId: Number(p.id) } });
+                    } else {
+                        clubPodcastEvent = document.createEvent("CustomEvent");
+                        clubPodcastEvent.initCustomEvent("nightcast:podcastchange", false, false, { podcastId: Number(p.id) });
+                    }
+                    window.dispatchEvent(clubPodcastEvent);
+                } catch (clubEventError) {
+                    /* Tracking is optional and must never interrupt playback on older browsers. */
+                }
 
                 els.audio
                     .play()

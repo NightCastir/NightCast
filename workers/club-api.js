@@ -3,14 +3,10 @@
  *
  * Integration contract: call handleClubApi before the legacy route dispatch, passing the
  * existing checkAuth() resolver. It intentionally does not implement or store authentication.
- * This module is not deployed until the host Worker imports/calls it and the migration set is
- * applied to the intended D1 database.
+ * The tracked Worker source imports/calls this module. Production remains unchanged until an
+ * explicitly reviewed deployment and the migrations are applied to the intended D1 database.
  */
 const CLUB_PREFIX = "/api/v1/club";
-
-function asJson(json, data, status) {
-  return json(data, status);
-}
 
 function utcDay() {
   return new Date().toISOString().slice(0, 10);

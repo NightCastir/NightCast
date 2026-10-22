@@ -1,3 +1,4 @@
+import QUESTION_BANK from "../data/club/daily-questions.json";
 /**
  * NightCast Club API route module.
  *
@@ -509,6 +510,180 @@ export async function handleClubApi({ request, url, DB, json, checkAuth }) {
       }
       const redemption = await DB.prepare("SELECT id,reward_id,cost_points,status,created_at FROM club_reward_redemptions WHERE id=?").bind(id).first();
       return json({ success: true, redemption }, 201);
+    }
+
+
+    if (path === "/daily-visit" && method === "POST") {
+      const auth = await requireMember(checkAuth);
+      if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
+      const day = utcDay();
+      const reward = safeInt(await setting(DB, "daily_visit_reward_points", "2"), 0, 1000) || 0;
+      await DB.batch([
+        DB.prepare("INSERT OR IGNORE INTO club_daily_visits(user_id,visit_day) VALUES(?,?)").bind(auth.userId, day),
+        DB.prepare(`INSERT OR IGNORE INTO club_point_ledger(user_id,delta,source_type,source_id,idempotency_key,status,metadata_json)
+          SELECT ?,?,'daily_visit',?,'club-daily-visit:' || ? || ':' || ?,'posted',?
+          WHERE ? > 0 AND (SELECT setting_value FROM club_settings WHERE setting_key='club_enabled')='true'
+            AND (SELECT setting_value FROM club_settings WHERE setting_key='earning_enabled')='true'
+            AND EXISTS(SELECT 1 FROM club_daily_visits WHERE user_id=? AND visit_day=?)`)
+          .bind(auth.userId,reward,day,auth.userId,day,JSON.stringify({day}),reward,auth.userId,day)
+      ]);
+      const credit = await DB.prepare("SELECT delta FROM club_point_ledger WHERE idempotency_key=?")
+        .bind("club-daily-visit:"+auth.userId+":"+day).first();
+      return json({success:true,day,already_visited:!credit,points_awarded:Number(credit?.delta||0),
+        earning_enabled:(await setting(DB,"club_enabled"))==="true" && (await setting(DB,"earning_enabled"))==="true"});
+    }
+
+    if (path === "/quiz/today" && method === "GET") {
+      const auth = await requireMember(checkAuth);
+      if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
+      if ((await setting(DB,"daily_quiz_enabled","true")) !== "true") return fail(json,503,"مسابقه روزانه موقتاً غیرفعال است.","club_quiz_disabled");
+      const day = utcDay();
+      let session = await DB.prepare("SELECT id,question_id,day_key,shown_at,answered_at,selected_index,correct,reward_points FROM club_quiz_sessions WHERE user_id=? AND day_key=?").bind(auth.userId,day).first();
+      if (!session) {
+        const seen = await DB.prepare("SELECT question_id FROM club_quiz_sessions WHERE user_id=?").bind(auth.userId).all();
+        const seenIds = new Set((seen.results||[]).map(row=>String(row.question_id)));
+        const candidates = (QUESTION_BANK.questions||[]).filter(q=>q && q.id && !seenIds.has(String(q.id)));
+        if (!candidates.length) return json({success:true,exhausted:true,message:"همه پرسش‌های فعلی را پاسخ داده‌ای؛ به‌زودی پرسش‌های تازه اضافه می‌شوند."},200);
+        const question = candidates[Math.floor(Math.random()*candidates.length)];
+        const id = randomId();
+        try {
+          await DB.prepare("INSERT INTO club_quiz_sessions(id,user_id,question_id,day_key) VALUES(?,?,?,?)").bind(id,auth.userId,question.id,day).run();
+        } catch (_) {
+          session = await DB.prepare("SELECT id,question_id,day_key,shown_at,answered_at,selected_index,correct,reward_points FROM club_quiz_sessions WHERE user_id=? AND day_key=?").bind(auth.userId,day).first();
+        }
+        if (!session) session = await DB.prepare("SELECT id,question_id,day_key,shown_at,answered_at,selected_index,correct,reward_points FROM club_quiz_sessions WHERE user_id=? AND day_key=?").bind(auth.userId,day).first();
+      }
+      const question = (QUESTION_BANK.questions||[]).find(q=>q.id===session?.question_id);
+      if (!session || !question) return fail(json,500,"پرسش امروز بارگذاری نشد.","club_quiz_question_unavailable");
+      return json({success:true,question:{id:question.id,topic:question.topic,question:question.question,options:question.options},
+        session:{day:session.day_key,shown_at:session.shown_at,answered:!!session.answered_at,
+          selected_index:session.selected_index===null?null:Number(session.selected_index),
+          correct:session.correct===null?null:Number(session.correct)===1,
+          reward_points:Number(session.reward_points||0)},daily_reward_points:Number(await setting(DB,"daily_quiz_reward_points","5"))||5});
+    }
+
+    if (path === "/quiz/answer" && method === "POST") {
+      const auth = await requireMember(checkAuth);
+      if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
+      const body = await request.json().catch(()=>({}));
+      const questionId = String(body.question_id||"");
+      const selected = safeInt(body.selected_index,0,3);
+      if (!questionId || selected===null) return fail(json,400,"گزینه انتخاب‌شده معتبر نیست.","club_quiz_invalid_answer");
+      const question = (QUESTION_BANK.questions||[]).find(q=>q.id===questionId);
+      if (!question) return fail(json,400,"شناسه پرسش معتبر نیست.","club_quiz_invalid_question");
+      const day = utcDay();
+      const session = await DB.prepare("SELECT id,question_id,answered_at,selected_index,correct,reward_points FROM club_quiz_sessions WHERE user_id=? AND day_key=?").bind(auth.userId,day).first();
+      if (!session || session.question_id!==questionId) return fail(json,409,"این پرسش برای حساب شما فعال نیست.","club_quiz_session_mismatch");
+      if (session.answered_at) return json({success:true,duplicate:true,locked:true,selected_index:Number(session.selected_index),correct:Number(session.correct)===1,
+        correct_index:question.correctIndex,explanation:question.explanation,reward_points:Number(session.reward_points||0)});
+      const correct = selected===Number(question.correctIndex);
+      const reward = correct ? (safeInt(await setting(DB,"daily_quiz_reward_points","5"),0,1000)||5) : 0;
+      await DB.batch([
+        DB.prepare("UPDATE club_quiz_sessions SET answered_at=CURRENT_TIMESTAMP,selected_index=?,correct=?,reward_points=? WHERE id=? AND answered_at IS NULL")
+          .bind(selected,correct?1:0,reward,session.id),
+        DB.prepare(`INSERT OR IGNORE INTO club_point_ledger(user_id,delta,source_type,source_id,idempotency_key,status,metadata_json)
+          SELECT ?,?,'daily_quiz',?,'club-daily-quiz:' || ? || ':' || ?,'posted',?
+          WHERE ?>0 AND (SELECT setting_value FROM club_settings WHERE setting_key='club_enabled')='true'
+            AND (SELECT setting_value FROM club_settings WHERE setting_key='earning_enabled')='true'
+            AND EXISTS(SELECT 1 FROM club_quiz_sessions WHERE id=? AND answered_at IS NOT NULL AND correct=1)`)
+          .bind(auth.userId,reward,questionId,auth.userId,day,JSON.stringify({question_id:questionId,day}),reward,session.id)
+      ]);
+      const saved = await DB.prepare("SELECT selected_index,correct,reward_points FROM club_quiz_sessions WHERE id=?").bind(session.id).first();
+      return json({success:true,locked:true,selected_index:Number(saved.selected_index),correct:Number(saved.correct)===1,
+        correct_index:Number(question.correctIndex),explanation:question.explanation,
+        reward_points:Number(saved.reward_points||0),celebrate:Number(saved.correct)===1});
+    }
+
+    if (path === "/referral" && method === "GET") {
+      const auth = await requireMember(checkAuth);
+      if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
+      let row = await DB.prepare("SELECT code FROM club_referral_codes WHERE user_id=?").bind(auth.userId).first();
+      if (!row) {
+        const code = "NC"+(await sha256(String(auth.userId)+":"+randomId())).slice(0,10).toUpperCase();
+        await DB.prepare("INSERT OR IGNORE INTO club_referral_codes(user_id,code) VALUES(?,?)").bind(auth.userId,code).run();
+        row = await DB.prepare("SELECT code FROM club_referral_codes WHERE user_id=?").bind(auth.userId).first();
+      }
+      const total = await DB.prepare("SELECT COUNT(*) AS total FROM club_referrals WHERE inviter_user_id=?").bind(auth.userId).first();
+      return json({success:true,code:row.code,invite_url:"https://nightcast.ir/?ref="+encodeURIComponent(row.code),successful_invites:Number(total?.total||0)});
+    }
+
+    if (path === "/referral/claim" && method === "POST") {
+      const auth = await requireMember(checkAuth);
+      if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
+      const body = await request.json().catch(()=>({}));
+      const code = String(body.code||"").trim().toUpperCase();
+      if (!/^[A-Z0-9_-]{6,24}$/.test(code)) return fail(json,400,"کد دعوت معتبر نیست.","club_referral_invalid");
+      const inviter = await DB.prepare("SELECT user_id FROM club_referral_codes WHERE code=?").bind(code).first();
+      if (!inviter) return fail(json,404,"کد دعوت پیدا نشد.","club_referral_not_found");
+      if (Number(inviter.user_id)===auth.userId) return fail(json,400,"نمی‌توانی از کد دعوت خودت استفاده کنی.","club_referral_self");
+      const existing = await DB.prepare("SELECT id FROM club_referrals WHERE invited_user_id=?").bind(auth.userId).first();
+      if (existing) return json({success:true,duplicate:true,message:"دعوت قبلاً برای این حساب ثبت شده است."});
+      const id = randomId();
+      const points = safeInt(await setting(DB,"referral_reward_points","20"),0,1000)||20;
+      try {
+        await DB.batch([
+          DB.prepare("INSERT INTO club_referrals(id,inviter_user_id,invited_user_id,referral_code,reward_points) VALUES(?,?,?,?,?)").bind(id,Number(inviter.user_id),auth.userId,code,points),
+          DB.prepare(`INSERT OR IGNORE INTO club_point_ledger(user_id,delta,source_type,source_id,idempotency_key,status,metadata_json)
+            SELECT ?,?,'referral',?,'club-referral-inviter:' || ?,'posted',? WHERE ?>0
+            AND (SELECT setting_value FROM club_settings WHERE setting_key='club_enabled')='true'
+            AND (SELECT setting_value FROM club_settings WHERE setting_key='earning_enabled')='true'`)
+            .bind(Number(inviter.user_id),points,id, id,JSON.stringify({invited_user_id:auth.userId}),points),
+          DB.prepare("INSERT OR IGNORE INTO club_notifications(id,user_id,notification_type,title,body,url,dedupe_key) VALUES(?,?,'referral_reward','دعوت موفق بود!','دوستی با کد دعوت تو به NightCast پیوست؛ امتیاز تازه‌ای دریافت کردی.','/club','club-referral-notice:' || ?)").bind(randomId(),Number(inviter.user_id),id)
+        ]);
+      } catch (error) {
+        const prior = await DB.prepare("SELECT id FROM club_referrals WHERE invited_user_id=?").bind(auth.userId).first();
+        if (prior) return json({success:true,duplicate:true});
+        throw error;
+      }
+      const credit = await DB.prepare("SELECT delta FROM club_point_ledger WHERE idempotency_key=?").bind("club-referral-inviter:"+id).first();
+      return json({success:true,points_awarded:Number(credit?.delta||0),inviter_user_id:Number(inviter.user_id)});
+    }
+
+    if (path === "/leaderboard" && method === "GET") {
+      const limit = safeInt(url.searchParams.get("limit")||"50",1,100)||50;
+      const rows = await DB.prepare(`SELECT u.id,COALESCE(cp.display_name,u.full_name,u.username,'شنونده') AS display_name,
+        COALESCE(SUM(l.delta),0) AS points
+        FROM users u JOIN club_profiles cp ON cp.user_id=u.id
+        LEFT JOIN club_point_ledger l ON l.user_id=u.id AND l.status='posted'
+        WHERE cp.leaderboard_opt_out=0 GROUP BY u.id,cp.display_name,u.full_name,u.username
+        ORDER BY points DESC,u.id ASC LIMIT ?`).bind(limit).all();
+      return json({success:true,leaderboard:(rows.results||[]).map((row,index)=>({...row,rank:index+1,medal:index===0?"🥇":index===1?"🥈":index===2?"🥉":null,points:Number(row.points||0)}))});
+    }
+
+    if (path === "/notifications" && method === "GET") {
+      const auth = await requireMember(checkAuth);
+      if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
+      const rows = await DB.prepare("SELECT id,notification_type,title,body,url,read_at,created_at FROM club_notifications WHERE user_id=? ORDER BY created_at DESC LIMIT 30").bind(auth.userId).all();
+      return json({success:true,notifications:rows.results||[]});
+    }
+
+    if (path === "/notifications/read" && method === "POST") {
+      const auth = await requireMember(checkAuth);
+      if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
+      const body = await request.json().catch(()=>({}));
+      const id = String(body.id||"");
+      if (id) await DB.prepare("UPDATE club_notifications SET read_at=CURRENT_TIMESTAMP WHERE id=? AND user_id=?").bind(id,auth.userId).run();
+      else await DB.prepare("UPDATE club_notifications SET read_at=CURRENT_TIMESTAMP WHERE user_id=? AND read_at IS NULL").bind(auth.userId).run();
+      return json({success:true});
+    }
+
+    if (path === "/notifications/subscribe" && method === "POST") {
+      const auth = await requireMember(checkAuth);
+      if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
+      const body = await request.json().catch(()=>({}));
+      const subscription = body.subscription;
+      if (!subscription || typeof subscription.endpoint!=="string" || subscription.endpoint.length>2048 ||
+          !subscription.keys || typeof subscription.keys.p256dh!=="string" || typeof subscription.keys.auth!=="string") {
+        return fail(json,400,"اطلاعات اشتراک اعلان معتبر نیست.","club_push_invalid_subscription");
+      }
+      const endpointHash = await sha256(subscription.endpoint);
+      await DB.prepare(`INSERT INTO club_push_subscriptions(id,user_id,endpoint_hash,endpoint,subscription_json,user_agent)
+        VALUES(?,?,?,?,?,?) ON CONFLICT(endpoint_hash) DO UPDATE SET user_id=excluded.user_id,
+        subscription_json=excluded.subscription_json,user_agent=excluded.user_agent,updated_at=CURRENT_TIMESTAMP`)
+        .bind(randomId(),auth.userId,endpointHash,subscription.endpoint,JSON.stringify(subscription),String(request.headers.get("User-Agent")||"").slice(0,300)).run();
+      await DB.prepare("INSERT OR IGNORE INTO club_profiles(user_id,notifications_enabled) VALUES(?,1)").bind(auth.userId).run();
+      await DB.prepare("UPDATE club_profiles SET notifications_enabled=1,updated_at=CURRENT_TIMESTAMP WHERE user_id=?").bind(auth.userId).run();
+      return json({success:true,subscribed:true});
     }
 
     return fail(json, 404, "مسیر باشگاه پیدا نشد.", "club_route_not_found");

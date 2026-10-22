@@ -547,6 +547,7 @@ export async function handleClubApi({ request, url, DB, json, checkAuth, env }) 
       await DB.prepare("INSERT OR IGNORE INTO club_profiles(user_id) VALUES(?)").bind(auth.userId).run();
       const profile = await DB.prepare("SELECT COALESCE(last_seen_podcast_id,0) AS last_seen_podcast_id FROM club_profiles WHERE user_id=?").bind(auth.userId).first();
       const lastSeen = Number(profile?.last_seen_podcast_id || 0);
+      const trackingInitialized = lastSeen <= 0;
       let newPodcasts = [];
       if (lastSeen > 0 && latestId > lastSeen) {
         const result = await DB.prepare("SELECT id,title,slug FROM podcasts WHERE status='published' AND id>? ORDER BY id DESC LIMIT 10").bind(lastSeen).all();
@@ -554,7 +555,7 @@ export async function handleClubApi({ request, url, DB, json, checkAuth, env }) 
       }
       await DB.prepare("UPDATE club_profiles SET last_seen_podcast_id=?,updated_at=CURRENT_TIMESTAMP WHERE user_id=?").bind(latestId,auth.userId).run();
       return json({success:true,day,already_visited:!firstVisit,points_awarded:firstVisit?Number(credit?.delta||0):0,
-        new_podcasts:newPodcasts,
+        new_podcasts:newPodcasts,tracking_initialized:trackingInitialized,
         earning_enabled:(await setting(DB,"club_enabled"))==="true" && (await setting(DB,"earning_enabled"))==="true"});
     }
 

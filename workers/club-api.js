@@ -1,10 +1,10 @@
 /**
  * NightCast Club API route module.
  *
- * Integration contract: call handleClubApi before the legacy route dispatch, passing the
- * existing checkAuth() resolver. It intentionally does not implement or store authentication.
- * The tracked Worker source imports/calls this module. Production remains unchanged until an
- * explicitly reviewed deployment and the migrations are applied to the intended D1 database.
+ * Both the tracked legacy API router and the dedicated production entry point may call
+ * handleClubApi with a shared-session checkAuth() resolver. This module does not mint or
+ * store authentication tokens; identity and session validity are resolved from existing D1 tables.
+ * Production entry point: workers/club-api-entry.js; production Worker: nightcast-club-api.
  */
 const CLUB_PREFIX = "/api/v1/club";
 

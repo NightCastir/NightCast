@@ -11,3 +11,5 @@
 /contact /index.html 200
 /contact/ /contact 301
 /contact/index.html /contact 301
+/club /club.html 200
+/club/ /club 301

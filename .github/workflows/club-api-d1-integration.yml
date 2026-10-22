@@ -44,6 +44,7 @@ jobs:
           echo $! > /tmp/nightcast-club-worker.pid
           ready=0
           for attempt in $(seq 1 40); do
+            echo "Waiting for isolated API Worker (attempt ${attempt}/40)"
             code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8799/api/v1/club/summary || true)
             if [ "$code" = "401" ]; then ready=1; break; fi
             sleep 2

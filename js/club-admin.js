@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const API = "https://nightcast-club-api.tomasgermany2580.workers.dev/api/v1";
+  const API = "https://nightcast.ir/api/v1";
   const token = localStorage.getItem("NightCastToken") || "";
   const $ = id => document.getElementById(id);
   const notice = $("notice");

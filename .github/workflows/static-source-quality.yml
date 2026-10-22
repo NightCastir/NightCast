@@ -1,0 +1,37 @@
+name: NightCast Static Source Quality
+
+on:
+  push:
+    branches:
+      - main
+      - feat/cinematic-cosmos-redesign
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-source-quality:
+    name: JavaScript, YAML, JSON and CSS validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install static validation dependencies
+        run: npm install --no-save yaml lightningcss
+
+      - name: Validate JavaScript, YAML, JSON and CSS files
+        run: node tests/source-quality-acceptance.cjs
+
+      - name: Validate GitHub Actions workflow semantics
+        run: go run github.com/rhysd/actionlint/cmd/actionlint@latest -color

@@ -77,20 +77,39 @@
     return output;
   }
   function start() {
+    var params = new URLSearchParams(window.location.search);
+    var ref = params.get('ref');
+    if (ref) {
+      try { localStorage.setItem('nc-pending-referral-code', ref); } catch (_) {}
+      params.delete('ref');
+      var clean = window.location.pathname + (params.toString() ? '?' + params.toString() : '') + window.location.hash;
+      history.replaceState({}, '', clean);
+    }
     if (!token()) return;
     request('/daily-visit','POST',{}).then(function (data) {
       if (Number(data.points_awarded) > 0) toast('🌟 به خاطر بازدید امروز، ' + data.points_awarded + ' امتیاز گرفتی!');
     }).catch(function () {});
-    var params = new URLSearchParams(window.location.search);
-    var ref = params.get('ref');
-    if (ref) request('/referral/claim','POST',{code:ref}).then(function (data) {
+    var savedRef = '';
+    try { savedRef = localStorage.getItem('nc-pending-referral-code') || ''; } catch (_) {}
+    if (savedRef) request('/referral/claim','POST',{code:savedRef}).then(function (data) {
       if (data && !data.duplicate) toast('🎉 کد دعوت ثبت شد؛ به NightCast خوش آمدی!');
-      params.delete('ref');
-      var clean = window.location.pathname + (params.toString() ? '?' + params.toString() : '') + window.location.hash;
-      history.replaceState({}, '', clean);
+      try { localStorage.removeItem('nc-pending-referral-code'); } catch (_) {}
     }).catch(function () {});
     window.addEventListener('nightcast:catalog-ready', notifyNewPodcasts, { once: true });
     if (window.__NC_CACHED_CATALOG_RENDERED) notifyNewPodcasts();
+    window.setTimeout(function () { if (!window.__NC_CACHED_CATALOG_RENDERED) notifyNewPodcasts(); }, 3500);
+    var seenNotifications = {};
+    function pollNotifications() {
+      request('/notifications').then(function (data) {
+        (data.notifications || []).filter(function (item) { return !item.read_at && !seenNotifications[item.id]; }).forEach(function (item) {
+          seenNotifications[item.id] = true;
+          toast(item.notification_type === 'referral_reward' ? '🎉 ' + item.body : item.title + ': ' + item.body);
+          request('/notifications/read','POST',{id:item.id}).catch(function () {});
+        });
+      }).catch(function () {});
+    }
+    pollNotifications();
+    window.setInterval(pollNotifications, 20000);
     request('/quiz/status').then(function (data) {
       if (data && data.needs_quiz && !window.location.pathname.startsWith('/quiz')) midnightCountdown();
     }).catch(function () {});

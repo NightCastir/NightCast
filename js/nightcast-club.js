@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   /* Dedicated production Club Worker; it validates the existing NightCast session token against the shared D1 database. */
-  var API_BASE = 'https://nightcast-club-api.tomasgermany2580.workers.dev/api/v1';
+  var API_BASE = 'https://nightcast.ir/api/v1';
   var TOKEN_KEY = 'NightCastToken';
   var STATUS_ID = 'clubConnectionStatus';
   var THEMES = ['midnight-cosmos', 'moonlight', 'aurora', 'studio-noir', 'deep-ocean', 'royal-gold', 'neon-city', 'persian-heritage'];

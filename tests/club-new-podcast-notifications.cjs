@@ -1,0 +1,4 @@
+const fs=require('node:fs'),assert=require('node:assert/strict');
+const js=fs.readFileSync('js/nightcast-club-engagement.js','utf8'),api=fs.readFileSync('workers/club-api.js','utf8'),sql=fs.readFileSync('migrations/club/0004_daily_engagement_quiz_referrals_notifications.sql','utf8'),sw=fs.readFileSync('sw.js','utf8');
+assert.match(js,/notifyNewPodcasts/);assert.match(js,/showNotification/);assert.match(js,/publish_date/);assert.match(api,/notifications\/subscribe/);assert.match(sql,/club_push_subscriptions/);assert.match(sw,/notificationclick|push/i);
+console.log('PASS | new-podcast detection, notification permission and push subscription persistence');

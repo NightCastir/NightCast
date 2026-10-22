@@ -429,3 +429,13 @@ body.nc-comments-open{overflow:hidden}
 .profile-settings-button strong{font-size:.94rem}
 .profile-settings-button small{font-size:.76rem;line-height:1.6;opacity:.72}
 .profile-settings-button>i:last-child{opacity:.65}
+
+
+.profile-club-link{display:flex;align-items:center;gap:12px;width:100%;margin:14px 0;padding:13px 14px;border:1px solid rgba(130,120,255,.34);border-radius:14px;text-decoration:none;color:inherit;background:linear-gradient(120deg,rgba(130,120,255,.15),rgba(72,190,209,.07));transition:border-color .18s ease,transform .18s ease}
+.profile-club-link:hover{border-color:rgba(150,142,255,.8);transform:translateY(-1px)}
+.profile-club-link:focus-visible{outline:2px solid #a9a2ff;outline-offset:3px}
+.profile-club-link-icon{display:grid;place-items:center;flex:0 0 38px;width:38px;height:38px;border-radius:12px;background:rgba(130,120,255,.2);color:#c2bcff}
+.profile-club-link-copy{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.profile-club-link-copy strong{font-size:.95rem}
+.profile-club-link-copy small{font-size:.78rem;opacity:.72}
+.profile-club-link-arrow{font-size:.75rem;opacity:.65}

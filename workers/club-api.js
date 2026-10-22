@@ -198,6 +198,93 @@ export async function handleClubApi({ request, url, DB, json, checkAuth }) {
       return json({ success:true, locked:true, selected_option:selected, is_correct:correct, points_awarded:points, correct_option:question.answer, explanation:question.explanation });
     }
 
+    if (path === "/referrals/code" && method === "GET") {
+      const auth = await requireMember(checkAuth);
+      if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
+      let row = await DB.prepare("SELECT invite_code FROM club_invite_codes WHERE user_id=?").bind(auth.userId).first();
+      if (!row) {
+        const code = randomId().replace(/-/g, "").slice(0, 10).toUpperCase();
+        const hash = await sha256(code);
+        try {
+          await DB.prepare("INSERT INTO club_invite_codes(user_id,invite_code,code_hash) VALUES(?,?,?)").bind(auth.userId, code, hash).run();
+        } catch (error) {
+          row = await DB.prepare("SELECT invite_code FROM club_invite_codes WHERE user_id=?").bind(auth.userId).first();
+          if (!row) throw error;
+        }
+        if (!row) row = { invite_code: code };
+      }
+      return json({ success:true, invite_code:row.invite_code, invite_url:"https://nightcast.ir/?ref=" + encodeURIComponent(row.invite_code), points_per_referral:10 });
+    }
+
+    if (path === "/referrals/claim" && method === "POST") {
+      const auth = await requireMember(checkAuth);
+      if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
+      if ((await setting(DB, "club_enabled")) !== "true" || (await setting(DB, "earning_enabled")) !== "true") {
+        return fail(json, 503, "دعوت دوستان در حال حاضر غیرفعال است.", "club_referrals_disabled");
+      }
+      const body = await request.json().catch(() => ({}));
+      const code = String(body.code || "").trim().toUpperCase();
+      if (!/^[A-Z0-9]{10}$/.test(code)) return fail(json, 400, "کد دعوت معتبر نیست.", "club_referral_invalid_code");
+      const inviter = await DB.prepare("SELECT user_id,code_hash FROM club_invite_codes WHERE invite_code=?").bind(code).first();
+      if (!inviter) return fail(json, 404, "کد دعوت پیدا نشد.", "club_referral_code_not_found");
+      if (Number(inviter.user_id) === auth.userId) return fail(json, 400, "نمی‌توانید از کد دعوت خودتان استفاده کنید.", "club_referral_self");
+      const existing = await DB.prepare("SELECT status,points_awarded FROM club_referrals WHERE invitee_user_id=?").bind(auth.userId).first();
+      if (existing) return json({ success:true, duplicate:true, status:existing.status, points_awarded:0 });
+      const points = 10;
+      try {
+        await DB.batch([
+          DB.prepare("INSERT INTO club_referrals(inviter_user_id,invitee_user_id,invite_code_hash,status,points_awarded,qualified_at) VALUES(?,?,?,'qualified',?,CURRENT_TIMESTAMP)")
+            .bind(Number(inviter.user_id), auth.userId, inviter.code_hash, points),
+          DB.prepare("INSERT INTO club_point_ledger(user_id,delta,source_type,source_id,idempotency_key,status,metadata_json,created_by) VALUES(?,?,'referral',?,?,'posted',?,'system')")
+            .bind(Number(inviter.user_id), points, String(auth.userId), "club-referral:" + auth.userId + ":" + Number(inviter.user_id), JSON.stringify({ invitee_user_id:auth.userId })),
+          DB.prepare("INSERT OR IGNORE INTO club_notification_events(user_id,notification_key,notification_type,payload_json) VALUES(?,?,'referral',?)")
+            .bind(Number(inviter.user_id), "referral-invitee-" + auth.userId, JSON.stringify({ points_awarded:points, invitee_user_id:auth.userId }))
+        ]);
+      } catch (error) {
+        const prior = await DB.prepare("SELECT status,points_awarded FROM club_referrals WHERE invitee_user_id=?").bind(auth.userId).first();
+        if (prior) return json({ success:true, duplicate:true, status:prior.status, points_awarded:0 });
+        throw error;
+      }
+      return json({ success:true, duplicate:false, status:"qualified", points_awarded:points, recipient_user_id:Number(inviter.user_id) }, 201);
+    }
+
+    if (path === "/share-events" && method === "POST") {
+      const auth = await requireMember(checkAuth);
+      if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
+      const body = await request.json().catch(() => ({}));
+      const podcastId = safeInt(body.podcast_id, 1, 2147483647);
+      const channel = String(body.channel || "native");
+      if (!["native","sms","whatsapp","telegram","soroush","copy","other"].includes(channel)) return fail(json, 400, "کانال اشتراک‌گذاری معتبر نیست.", "club_share_channel_invalid");
+      if (podcastId !== null) {
+        const podcast = await DB.prepare("SELECT id FROM podcasts WHERE id=?").bind(podcastId).first();
+        if (!podcast) return fail(json, 404, "پادکست پیدا نشد.", "club_share_podcast_not_found");
+      }
+      await DB.prepare("INSERT INTO club_share_events(user_id,podcast_id,channel) VALUES(?,?,?)").bind(auth.userId, podcastId, channel).run();
+      return json({ success:true, recorded:true }, 201);
+    }
+
+    if (path === "/notifications" && method === "GET") {
+      const auth = await requireMember(checkAuth);
+      if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
+      const rows = await DB.prepare("SELECT id,notification_key,notification_type,payload_json,created_at FROM club_notification_events WHERE user_id=? AND read_at IS NULL ORDER BY created_at DESC LIMIT 20").bind(auth.userId).all();
+      const items = (rows.results || []).map(row => {
+        let payload = {};
+        try { payload = JSON.parse(String(row.payload_json || "{}")); } catch (_) {}
+        return { id:Number(row.id), key:String(row.notification_key), type:String(row.notification_type), payload, created_at:row.created_at };
+      });
+      return json({ success:true, notifications:items });
+    }
+
+    if (path === "/notifications/read" && method === "POST") {
+      const auth = await requireMember(checkAuth);
+      if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
+      const body = await request.json().catch(() => ({}));
+      const key = String(body.key || "");
+      if (!key || key.length > 180) return fail(json, 400, "شناسه اعلان معتبر نیست.", "club_notification_invalid_key");
+      await DB.prepare("UPDATE club_notification_events SET read_at=CURRENT_TIMESTAMP WHERE user_id=? AND notification_key=?").bind(auth.userId, key).run();
+      return json({ success:true });
+    }
+
     if (path === "/leaderboard" && method === "GET") {
       const auth = await requireMember(checkAuth);
       if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");

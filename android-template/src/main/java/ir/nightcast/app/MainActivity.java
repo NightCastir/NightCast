@@ -15,6 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.getcapacitor.BridgeActivity;
 
 public class MainActivity extends BridgeActivity {
+ public static volatile boolean activityAlive = false;
  public static final String ACTION_WIDGET_PLAY="ir.nightcast.app.WIDGET_PLAY", ACTION_WIDGET_PAUSE="ir.nightcast.app.WIDGET_PAUSE", ACTION_WIDGET_PREVIOUS="ir.nightcast.app.WIDGET_PREVIOUS", ACTION_WIDGET_NEXT="ir.nightcast.app.WIDGET_NEXT";
  private final Handler widgetHandler=new Handler(Looper.getMainLooper()); private String pendingWidgetAction; private int widgetAttempts;
 
@@ -29,6 +30,7 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(NightCastWidgetBridge.class);
 
         super.onCreate(savedInstanceState);
+        activityAlive = true;
         captureWidgetAction(getIntent());
 
         View contentView =
@@ -61,6 +63,7 @@ public class MainActivity extends BridgeActivity {
         }
     }
 
+ @Override protected void onDestroy(){activityAlive=false;widgetHandler.removeCallbacksAndMessages(null);super.onDestroy();}
  @Override protected void onNewIntent(Intent intent){super.onNewIntent(intent);setIntent(intent);captureWidgetAction(intent);}
  private void captureWidgetAction(Intent i){
   if(i==null)return;String a=i.getAction();

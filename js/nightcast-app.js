@@ -2193,7 +2193,15 @@ LOGOUT
                 const plugin=window.Capacitor?.Plugins?.NightCastWidgetBridge;
                 if(!plugin?.updatePlaybackState)return;
                 const current=state.current;
-                plugin.updatePlaybackState({title:current?.title||"NightCast Radio",artist:current?.author_name||"رادیوی فرهنگی NightCast",isPlaying:!!current&&!els.audio.paused&&!els.audio.ended,canSkip:state.all.length>1}).catch(()=>{});
+                const index=current?state.all.findIndex(item=>Number(item.id)===Number(current.id)):-1;
+                const previous=index>0?state.all[index-1]:null;
+                const next=index>=0&&index<state.all.length-1?state.all[index+1]:null;
+                plugin.updatePlaybackState({
+                    title:current?.title||"NightCast Radio",artist:current?.author_name||"رادیوی فرهنگی NightCast",
+                    currentUrl:current?.audio_url||"",previousUrl:previous?.audio_url||"",nextUrl:next?.audio_url||"",
+                    previousTitle:previous?.title||"",nextTitle:next?.title||"",
+                    isPlaying:!!current&&!els.audio.paused&&!els.audio.ended,canSkip:!!(previous||next)
+                }).catch(()=>{});
             }
             els.audio.addEventListener("play", () => {
                 if (ncAudioContext?.state === "suspended") ncAudioContext.resume().catch(() => {});

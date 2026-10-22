@@ -675,11 +675,13 @@ jobs:
           test -s "$SOURCE_DIR/NightCastGoogleAuth.java"
           test -s "$SOURCE_DIR/NightCastRadioWidgetProvider.java"
           test -s "$SOURCE_DIR/NightCastWidgetBridge.java"
+          test -s "$SOURCE_DIR/NightCastPlaybackService.java"
           mkdir -p "$TARGET_DIR"
           cp "$SOURCE_DIR/MainActivity.java" "$TARGET_DIR/MainActivity.java"
           cp "$SOURCE_DIR/NightCastGoogleAuth.java" "$TARGET_DIR/NightCastGoogleAuth.java"
           cp "$SOURCE_DIR/NightCastRadioWidgetProvider.java" "$TARGET_DIR/NightCastRadioWidgetProvider.java"
           cp "$SOURCE_DIR/NightCastWidgetBridge.java" "$TARGET_DIR/NightCastWidgetBridge.java"
+          cp "$SOURCE_DIR/NightCastPlaybackService.java" "$TARGET_DIR/NightCastPlaybackService.java"
           RES="android/app/src/main/res"
           mkdir -p "$RES/layout" "$RES/xml" "$RES/drawable" "$RES/values" "$RES/drawable-nodpi"
           cp assets/icons/icon-512.png "$RES/drawable-nodpi/nightcast_widget_logo.png"
@@ -725,13 +727,20 @@ jobs:
           from pathlib import Path
           manifest=Path("android/app/src/main/AndroidManifest.xml")
           text=manifest.read_text(encoding="utf-8")
-          receiver='''\n    <receiver android:name=".NightCastRadioWidgetProvider" android:label="NightCast Radio" android:exported="true"><intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter><meta-data android:name="android.appwidget.provider" android:resource="@xml/nightcast_radio_widget_info" /></receiver>\n'''
-          if "NightCastRadioWidgetProvider" not in text:
-              text=text.replace("</application>",receiver+"</application>",1)
-          if "NightCastRadioWidgetProvider" not in text or "@xml/nightcast_radio_widget_info" not in text:
-              raise SystemExit("Widget receiver manifest registration failed")
+          for permission in (
+              '<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />',
+              '<uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />',
+          ):
+              if permission not in text:
+                  text=text.replace("<application", permission+"\\n    <application", 1)
+          receiver='''\\n    <receiver android:name=".NightCastRadioWidgetProvider" android:label="NightCast Radio" android:exported="true"><intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter><meta-data android:name="android.appwidget.provider" android:resource="@xml/nightcast_radio_widget_info" /></receiver>\\n'''
+          service='''\\n    <service android:name=".NightCastPlaybackService" android:exported="false" android:foregroundServiceType="mediaPlayback" />\\n'''
+          if "NightCastRadioWidgetProvider" not in text: text=text.replace("</application>",receiver+"</application>",1)
+          if "NightCastPlaybackService" not in text: text=text.replace("</application>",service+"</application>",1)
+          if "NightCastRadioWidgetProvider" not in text or "NightCastPlaybackService" not in text or "FOREGROUND_SERVICE_MEDIA_PLAYBACK" not in text:
+              raise SystemExit("Widget receiver or playback foreground service manifest registration failed")
           manifest.write_text(text,encoding="utf-8")
-          print("PASS | AndroidManifest registers NightCast Radio widget")
+          print("PASS | AndroidManifest registers widget receiver and mediaPlayback foreground service")
           PY
 
           grep -q '^package ir\.nightcast\.app;' "$TARGET_DIR/MainActivity.java"

@@ -203,6 +203,10 @@
 
                 current: null,
 
+                nativePlayback: false,
+
+                nativePlaying: false,
+
                 query: "",
 
                 searchTimer: null,
@@ -216,6 +220,23 @@
             window.NightCastPodcastBridge = Object.freeze({
                 getPodcasts: () => state.all,
                 getCurrentPodcast: () => state.current,
+                handleWidgetAction: action => {
+                    if (state.nativePlayback) {
+                        const plugin=window.Capacitor?.Plugins?.NightCastWidgetBridge;
+                        if (!plugin?.controlNativePlayback) return false;
+                        const nativeAction=action==="play"?(state.nativePlaying?"pause":"play"):action;
+                        if (!["play","pause","next","previous"].includes(nativeAction)) return false;
+                        plugin.controlNativePlayback({action:nativeAction}).then(()=>window.setTimeout(syncNativePlaybackFromService,700)).catch(()=>{});
+                        return true;
+                    }
+                    if (!state.current && !state.all.length) return false;
+                    if (action === "play") { if (!state.current) playPodcast(state.all[0].id); else if (els.audio.paused) togglePlay(); }
+                    else if (action === "pause") { if (!els.audio.paused) els.audio.pause(); }
+                    else if (action === "next") { if (state.all.length > 1) nextPodcast(1); }
+                    else if (action === "previous") { if (state.all.length > 1) nextPodcast(-1); }
+                    else return false;
+                    return true;
+                },
                 apiBase: CONFIG.API_BASE,
                 loginPage: CONFIG.LOGIN_PAGE,
                 getToken: () => getToken(),
@@ -284,9 +305,15 @@
                 const raw = String(value || "");
                 try {
                     const url = new URL(raw, window.location.href);
-                    if (url.hostname === "raw.githubusercontent.com" && url.pathname.startsWith("/NightCastir/NightCast-Media/main/covers/")) {
-                        const filename = decodeURIComponent(url.pathname.split("/").pop());
-                        if (/^[A-Za-z0-9._-]+$/.test(filename)) return "/assets/podcasts/covers/" + filename;
+                    if (url.hostname === "raw.githubusercontent.com" && url.pathname.indexOf("/NightCastir/NightCast-Media/") >= 0) {
+                        const pathname = url.pathname;
+                        const isCoverPath = pathname.indexOf("/NightCast-Media/main/covers/") >= 0 ||
+                            pathname.indexOf("/NightCast-Media/refs/heads/main/covers/") >= 0;
+                        const filename = decodeURIComponent(pathname.split("/").pop() || "");
+                        if (isCoverPath && /^[A-Za-z0-9._-]+$/.test(filename)) {
+                            if (filename === "nct_14050729.png") return placeholder;
+                            return "/assets/podcasts/covers/" + filename;
+                        }
                     }
                 } catch (_) {}
                 return raw;
@@ -1631,7 +1658,7 @@ LOGOUT
 
             function updateCardPlaying() {
                 const currentId = state.current ? Number(state.current.id) : null;
-                const isPlaying = !!currentId && !els.audio.paused && !els.audio.ended;
+                const isPlaying = !!currentId && (state.nativePlayback ? state.nativePlaying : !els.audio.paused && !els.audio.ended);
 
                 $$(".podcast-card").forEach(card => {
                     const cardId = Number(card.dataset.id);
@@ -2180,17 +2207,73 @@ LOGOUT
                 render(performance.now());
             }
 
+            function syncNativeWidgetState() {
+                if (state.nativePlayback) return; // The native service owns widget state while it is the active audio engine.
+                const plugin=window.Capacitor?.Plugins?.NightCastWidgetBridge;
+                if(!plugin?.updatePlaybackState)return;
+                const current=state.current;
+                const queue=state.all.map(item=>({
+                    id:String(item.id??""),title:item.title||"NightCast Radio",artist:item.author_name||"رادیوی فرهنگی NightCast",
+                    url:item.audio_url||""
+                })).filter(item=>item.url);
+                const queueIndex=queue.findIndex(item=>item.id===String(current?.id??""));
+                const previous=queueIndex>0?queue[queueIndex-1]:null;
+                const next=queueIndex>=0&&queueIndex<queue.length-1?queue[queueIndex+1]:null;
+                plugin.updatePlaybackState({
+                    title:current?.title||"NightCast Radio",artist:current?.author_name||"رادیوی فرهنگی NightCast",
+                    currentUrl:current?.audio_url||"",currentId:current?.id==null?"":String(current.id),currentIndex:queueIndex,
+                    queue,previousUrl:previous?.audio_url||"",nextUrl:next?.audio_url||"",
+                    previousTitle:previous?.title||"",nextTitle:next?.title||"",
+                    isPlaying:!!current&&!els.audio.paused&&!els.audio.ended,canSkip:!!(previous||next)
+                }).catch(()=>{});
+            }
+            function syncNativePlaybackFromService() {
+                const plugin=window.Capacitor?.Plugins?.NightCastWidgetBridge;
+                if (!plugin?.getPlaybackState || !window.Capacitor?.isNativePlatform?.()) return;
+                plugin.getPlaybackState().then(nativeState => {
+                    if (!nativeState?.active) {
+                        if (state.nativePlayback) {
+                            state.nativePlayback=false;
+                            state.nativePlaying=false;
+                            updateCardPlaying();
+                            updateNowPlayingControls();
+                        }
+                        return;
+                    }
+                    const match=state.all.find(item=>item.audio_url===nativeState.currentUrl) ||
+                        state.all.find(item=>item.title===nativeState.title);
+                    if (!match) return;
+                    state.nativePlayback=true;
+                    state.nativePlaying=!!nativeState.isPlaying;
+                    state.current=match;
+                    els.audio.pause();
+                    els.player.classList.add("show");
+                    els.player.setAttribute("aria-hidden","false");
+                    document.body.classList.add("player-open");
+                    els.playerTitle.textContent=match.title||"NightCast Radio";
+                    els.playerAuthor.textContent=match.author_name||"NightCast Radio";
+                    els.playerCover.src=localizeCover(match.cover_url)||placeholder;
+                    els.playerCover.alt=match.title||"NightCast";
+                    syncNowPlayingDetails();
+                    updateCardPlaying();
+                    updateNowPlayingControls();
+                }).catch(()=>{});
+            }
+
             els.audio.addEventListener("play", () => {
                 if (ncAudioContext?.state === "suspended") ncAudioContext.resume().catch(() => {});
                 drawAudioVisualizer();
+                syncNativeWidgetState();
             });
             els.audio.addEventListener("pause", () => {
                 cancelAnimationFrame(ncVisualizerFrame);
                 drawAudioVisualizer();
+                syncNativeWidgetState();
             });
             els.audio.addEventListener("ended", () => {
                 cancelAnimationFrame(ncVisualizerFrame);
                 drawAudioVisualizer();
+                syncNativeWidgetState();
             });
             els.audio.addEventListener("error", () => {
                 /* If a cross-origin source rejects CORS mode, retry ordinary playback without breaking the player. */
@@ -2256,6 +2339,13 @@ LOGOUT
 
                 }
 
+
+                const nativePlugin=window.Capacitor?.Plugins?.NightCastWidgetBridge;
+                if (state.nativePlayback) {
+                    state.nativePlayback=false;
+                    state.nativePlaying=false;
+                    nativePlugin?.stopNativePlayback?.().catch(()=>{});
+                }
 
                 state.current =
                     p;
@@ -2379,7 +2469,7 @@ LOGOUT
             function updateNowPlayingControls() {
                 const button = document.getElementById("ncNowToggle");
                 const icon = button?.querySelector("i");
-                const playing = !!state.current && !els.audio.paused && !els.audio.ended;
+                const playing = !!state.current && (state.nativePlayback ? state.nativePlaying : !els.audio.paused && !els.audio.ended);
                 if (icon) icon.className = playing ? "fa-solid fa-pause" : "fa-solid fa-play";
                 if (button) button.setAttribute("aria-label", playing ? "توقف موقت" : "ادامه پخش");
                 const progress = document.getElementById("ncNowProgress");
@@ -2412,6 +2502,13 @@ LOGOUT
             }
 
             function togglePlay() {
+
+                if (state.nativePlayback) {
+                    const plugin=window.Capacitor?.Plugins?.NightCastWidgetBridge;
+                    const action=state.nativePlaying?"pause":"play";
+                    plugin?.controlNativePlayback?.({action}).then(()=>window.setTimeout(syncNativePlaybackFromService,500)).catch(()=>toast("کنترل پخش بومی در دسترس نیست."));
+                    return;
+                }
 
                 if (!state.current) {
 
@@ -2447,6 +2544,12 @@ LOGOUT
 
 
             function nextPodcast(dir = 1) {
+
+                if (state.nativePlayback) {
+                    const plugin=window.Capacitor?.Plugins?.NightCastWidgetBridge;
+                    plugin?.controlNativePlayback?.({action:dir>0?"next":"previous"}).then(()=>window.setTimeout(syncNativePlaybackFromService,700)).catch(()=>toast("امکان تغییر محتوای در حال پخش وجود ندارد."));
+                    return;
+                }
 
                 if (!state.current) {
                     return;
@@ -3828,7 +3931,11 @@ document.addEventListener(
                 // A failed or stalled third-party request must never trap a listener behind the loader.
                 window.setTimeout(dismissArchiveLoader, 25000);
                 Promise.all([archiveReady, fontsReady]).then(() => {
+                    syncNativePlaybackFromService();
                     requestAnimationFrame(() => requestAnimationFrame(dismissArchiveLoader));
+                });
+                document.addEventListener("visibilitychange", () => {
+                    if (!document.hidden) syncNativePlaybackFromService();
                 });
 }
 

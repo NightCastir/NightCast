@@ -75,9 +75,12 @@ async function getPublishedHome() {
       add('Clean route ' + route + ' resolves', false, e.message);
     }
   }
-  add('Full NightCast page is retained for TV', html.indexOf('/tv-lite.html') < 0 &&
-    html.indexOf('Keep the full NightCast experience') >= 0,
-    'Main page no longer redirects TV visitors to the reduced tv-lite experience');
+  const guardedLegacyTvFallback = html.indexOf('NC_LEGACY_TV_FALLBACK') >= 0 &&
+    html.indexOf('var legacyBrowser') >= 0 &&
+    html.indexOf('if (android && (tvAgent || (largeScreen && legacyBrowser)))') >= 0 &&
+    html.indexOf("window.location.replace('/tv-lite.html'") >= 0;
+  add('Legacy TV fallback is guarded by old-browser detection', guardedLegacyTvFallback,
+    'Older Android TV browser engines may use tv-lite; modern devices retain the full NightCast scripts');
   add('Full desktop feature scripts remain referenced', ['/js/nightcast-app.js', '/js/nightcast-player.js', '/js/nightcast-theme.js']
     .every(path => html.indexOf(path) >= 0),
     'Core app, player, and theme scripts remain part of the full homepage');

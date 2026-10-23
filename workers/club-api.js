@@ -430,6 +430,21 @@ export async function handleClubApi({ request, url, DB, json, checkAuth }) {
           AND ((m.event_type='listen' AND ?='accepted' AND ?>=60)
             OR (m.event_type='listen_minutes' AND ?='accepted' AND ?>=60)
             OR (m.event_type='podcast_play' AND ?='accepted' AND ?>=60 AND ?=2))
+          AND (m.event_type <> 'podcast_play' OR NOT EXISTS (
+            SELECT 1 FROM club_activity_events prior
+            WHERE prior.user_id=? AND prior.podcast_id=? AND prior.event_type='listen'
+              AND prior.status='accepted' AND prior.id<>?
+              AND (
+                (m.cadence='daily' AND date(prior.received_at)=date('now'))
+                OR (m.cadence='weekly'
+                  AND date(prior.received_at)>=date('now','-' || ((CAST(strftime('%w','now') AS INTEGER)+6)%7) || ' days')
+                  AND date(prior.received_at)<=date('now'))
+                OR m.cadence='once'
+                OR (m.cadence='event'
+                  AND (m.starts_at IS NULL OR prior.received_at>=m.starts_at)
+                  AND (m.ends_at IS NULL OR prior.received_at<m.ends_at))
+              )
+          ))
         ON CONFLICT(user_id,mission_id,period_key) DO UPDATE SET
           progress_value=MIN((SELECT target_value FROM club_missions WHERE id=club_user_missions.mission_id),
             club_user_missions.progress_value + excluded.progress_value),
@@ -443,7 +458,7 @@ export async function handleClubApi({ request, url, DB, json, checkAuth }) {
             (SELECT target_value FROM club_missions WHERE id=club_user_missions.mission_id)
             THEN COALESCE(club_user_missions.completed_at,CURRENT_TIMESTAMP) ELSE club_user_missions.completed_at END,
           updated_at=CURRENT_TIMESTAMP`)
-        .bind(auth.userId, acceptedSeconds, acceptedSeconds, acceptedSeconds, status, acceptedSeconds, status, acceptedSeconds, status, acceptedSeconds, sequence));
+        .bind(auth.userId, acceptedSeconds, acceptedSeconds, acceptedSeconds, status, acceptedSeconds, status, acceptedSeconds, status, acceptedSeconds, sequence, auth.userId, podcastId, id));
       try {
         await DB.batch(statements);
       } catch (error) {

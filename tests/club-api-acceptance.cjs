@@ -173,6 +173,19 @@ check('club API module is syntax-valid and uses existing auth resolver', functio
 });
 check('D1 trigger redemption is atomic, idempotent, balance-checked, and disabled by default', redemptionSqlTest);
 
+check('fresh-podcast missions reject replaying the same podcast within their cadence', function () {
+  const missionSql = source.slice(source.indexOf("INSERT INTO club_user_missions"));
+  assert.match(missionSql, /m\.event_type <> 'podcast_play' OR NOT EXISTS/);
+  assert.match(missionSql, /prior\.user_id=\? AND prior\.podcast_id=\?/);
+  assert.match(missionSql, /prior\.id<>\?/);
+  assert.match(missionSql, /m\.cadence='daily' AND date\(prior\.received_at\)=date\('now'\)/);
+  assert.match(missionSql, /m\.cadence='weekly'/);
+  assert.match(missionSql, /m\.cadence='once'/);
+  assert.match(missionSql, /m\.cadence='event'/);
+  assert.match(source, /sequence, auth\.userId, podcastId, id\)\);/);
+});
+
+
 apiTests().then(() => {
   console.log('PASS | API route auth, summary, sequence replay, disabled rewards, admin authorization');
 }).catch(error => {

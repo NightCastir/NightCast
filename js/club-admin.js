@@ -67,7 +67,7 @@
     rows.forEach(row => target.append(render(row)));
   }
 
-  const podcastFields = ["title","slug","book_name","author_name","category_name","tags","episode_number","summary","transcript","duration_seconds","audio_url","cover_url","status","publish_date","description"];
+  const podcastFields = ["title","slug","book_name","author_name","category_name","tags","episode_number","summary","transcript","duration_seconds","listen_count","audio_url","cover_url","status","publish_date","description"];
   function switchTab(name) {
     const podcastsTab = name === "podcasts";
     $("club-management-tab").hidden = podcastsTab;
@@ -116,7 +116,7 @@
     $("podcast-save").textContent = "ذخیره تغییرات";
     $("podcast-cancel").hidden = false;
     podcastFields.forEach(key => {
-      const field = $("podcast-" + ({book_name:"book",author_name:"author",category_name:"category",episode_number:"episode",duration_seconds:"duration",audio_url:"audio",cover_url:"cover",publish_date:"publish-date" ,summary:"summary",description:"description",transcript:"transcript",status:"status",tags:"tags",title:"title",slug:"slug"}[key]));
+      const field = $("podcast-" + ({book_name:"book",author_name:"author",category_name:"category",episode_number:"episode",duration_seconds:"duration",listen_count:"listen-count",audio_url:"audio",cover_url:"cover",publish_date:"publish-date" ,summary:"summary",description:"description",transcript:"transcript",status:"status",tags:"tags",title:"title",slug:"slug"}[key]));
       if (!field) return;
       let value = podcast[key];
       if (key === "publish_date" && value) value = String(value).replace(" ", "T").slice(0,16);
@@ -130,6 +130,7 @@
     $("podcast-id").value = "";
     $("podcast-episode").value = "1";
     $("podcast-duration").value = "0";
+    $("podcast-listen-count").value = "0";
     $("podcast-status").value = "active";
     $("podcast-form-title").textContent = "ثبت پادکست جدید";
     $("podcast-save").textContent = "ثبت پادکست";
@@ -146,7 +147,7 @@
     if (!form.reportValidity()) return;
     const data = Object.fromEntries(new FormData(form).entries());
     delete data.id;
-    ["episode_number","duration_seconds"].forEach(k => data[k] = Number(data[k] || 0));
+    ["episode_number","duration_seconds","listen_count"].forEach(k => data[k] = Number(data[k] || 0));
     if (data.publish_date) data.publish_date = data.publish_date.replace("T"," ");
     else data.publish_date = null;
     const buttonEl = $("podcast-save");

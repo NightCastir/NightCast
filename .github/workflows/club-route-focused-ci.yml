@@ -1,0 +1,53 @@
+name: NightCast Club Route Focused Syntax and Bundle CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  route-ci:
+    name: Route authorization, syntax, production smoke, and bundle
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Set up Python for SQLite contract tests
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Validate route authorization and atomic redemption
+        run: node tests/club-api-acceptance.cjs
+      - name: Check Worker and admin UI syntax
+        run: |
+          node --check workers/club-api.js
+          node --check js/club-admin.js
+      - name: Smoke test production authentication and CORS
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://club-api.nightcast.ir"
+          status=$(curl --retry 3 --retry-delay 2 --retry-all-errors -sS -o /tmp/club-summary.json -w '%{http_code}' "$base/api/v1/club/summary")
+          if [ "$status" != "401" ]; then
+            echo "Expected unauthenticated summary to return 401, got $status"
+            cat /tmp/club-summary.json
+            exit 1
+          fi
+          grep -q 'club_auth_required' /tmp/club-summary.json
+          preflight=$(curl --retry 3 --retry-delay 2 --retry-all-errors -sS -o /dev/null -w '%{http_code}' -X OPTIONS "$base/api/v1/club/summary" -H 'Origin: https://nightcast.ir' -H 'Access-Control-Request-Method: GET' -H 'Access-Control-Request-Headers: authorization')
+          if [ "$preflight" != "204" ]; then
+            echo "Expected CORS preflight 204, got $preflight"
+            exit 1
+          fi
+      - name: Bundle Worker without deploying
+        run: npx --yes wrangler@4 deploy --dry-run

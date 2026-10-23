@@ -17,7 +17,7 @@ check('create endpoint inserts into podcasts using bound parameters',/INSERT INT
 check('update endpoint uses bound values and updates updated_at',/UPDATE podcasts SET "[\s\S]*?updated_at = CURRENT_TIMESTAMP WHERE id = \?/.test(worker));
 check('slug format and duplicate slug are validated',/slug فقط باید شامل/.test(worker) && /UNIQUE constraint failed: podcasts\\.slug/.test(worker));
 check('admin page has separate podcast-management tab',/id="tab-podcasts"/.test(html) && /id="podcast-management-tab"/.test(html));
-check('create/edit form covers all editable podcast fields',["title","slug","book_name","author_name","category_name","tags","episode_number","summary","transcript","duration_seconds","audio_url","cover_url","status","publish_date","description"].every(k=>new RegExp('name="'+k+'"').test(html)));
+check('create/edit form covers all editable podcast fields',["title","slug","book_name","author_name","category_name","tags","episode_number","summary","transcript","duration_seconds","listen_count","audio_url","cover_url","status","publish_date","description"].every(k=>new RegExp('name="'+k+'"').test(html)));
 check('existing podcasts are shown in a selectable grid/table',/id="podcast-rows"/.test(html) && /ویرایش/.test(js));
 check('front end uses authenticated GET/POST/PUT API calls',/api\("\/admin\/podcasts"\)/.test(js) && /"PUT", data/.test(js) && /"POST", data/.test(js));
 check('admin navigation label is renamed',!home.includes('مدیریت باشگاه') && home.includes('کنترل پنل مدیریت'));

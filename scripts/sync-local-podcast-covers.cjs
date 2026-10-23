@@ -57,9 +57,9 @@ async function main() {
   fs.writeFileSync(catalogPath, JSON.stringify(catalog, null, 2) + '\n');
   const rssPath = path.join(process.cwd(), 'users/data/podcasts.xml');
   let rss = fs.readFileSync(rssPath, 'utf8');
-  rss = rss.replace(/https:\/\/raw\\.githubusercontent\\.com\/NightCastir\/NightCast-Media\/(?:refs\/heads\/)?main\/covers\/([A-Za-z0-9._-]+)/g,
+  rss = rss.replace(/https:\/\/raw\.githubusercontent\.com\/NightCastir\/NightCast-Media\/(?:refs\/heads\/)?main\/covers\/([A-Za-z0-9._-]+)/g,
     '/assets/podcasts/covers/$1');
-  if (/https:\/\/raw\\.githubusercontent\\.com\/NightCastir\/NightCast-Media\/(?:refs\/heads\/)?main\/covers\//i.test(rss)) {
+  if (/https:\/\/raw\.githubusercontent\.com\/NightCastir\/NightCast-Media\/(?:refs\/heads\/)?main\/covers\//i.test(rss)) {
     throw new Error('An external podcast cover URL remains in the RSS feed');
   }
   fs.writeFileSync(rssPath, rss);

@@ -1,0 +1,48 @@
+name: NightCast Club Visible Rewards Acceptance
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'workers/club-api.js'
+      - 'js/nightcast-club.js'
+      - 'js/nightcast-club-listener.js'
+      - 'js/nightcast-club-engagement.js'
+      - 'js/nightcast-sharing.js'
+      - 'index.html'
+      - 'club.html'
+      - 'tests/club-visible-feedback-acceptance.cjs'
+      - '.github/workflows/club-visible-feedback-acceptance.yml'
+  pull_request:
+    paths:
+      - 'workers/club-api.js'
+      - 'js/nightcast-club.js'
+      - 'js/nightcast-club-listener.js'
+      - 'js/nightcast-club-engagement.js'
+      - 'js/nightcast-sharing.js'
+      - 'index.html'
+      - 'club.html'
+      - 'tests/club-visible-feedback-acceptance.cjs'
+      - '.github/workflows/club-visible-feedback-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  visible-rewards:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Syntax-check changed JavaScript
+        run: |
+          node --check js/nightcast-club.js
+          node --check js/nightcast-club-listener.js
+          node --check js/nightcast-club-engagement.js
+          node --check workers/club-api.js
+      - name: Verify server-confirmed score and listening UI wiring
+        run: node tests/club-visible-feedback-acceptance.cjs

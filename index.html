@@ -150,6 +150,8 @@
     </script>
 
     <link rel="stylesheet" href="/css/nightcast-base.css?v=3">
+    <link rel="stylesheet" href="/css/nightcast-sharing.css?v=1">
+    <link rel="stylesheet" href="/css/nightcast-club-header.css?v=1">
 
 <link rel="stylesheet" href="/css/cosmic-experience.css?v=6">
     <link rel="stylesheet" href="/css/nightcast-cosmos.css?v=23">
@@ -287,6 +289,8 @@
                      USER BUTTON
                      ===================================================== -->
 
+                <a id="ncHeaderClubScore" class="nc-header-club-score" href="/club.html" hidden aria-label="امتیاز باشگاه شنوندگان"><i class="fa-solid fa-star" aria-hidden="true"></i><span><strong id="ncHeaderClubPoints">۰</strong> امتیاز</span></a>
+
                 <button class="icon-btn user-btn"
                         id="loginBtn"
                         aria-label="حساب کاربری"
@@ -333,6 +337,7 @@
             <a href="/about"><span class="nc-drawer-icon"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></span><span><strong>درباره ما</strong><small>داستان و مأموریت ما</small></span><i class="fa-solid fa-arrow-left nc-drawer-arrow" aria-hidden="true"></i></a>
             <a href="/contact"><span class="nc-drawer-icon"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i></span><span><strong>تماس با ما</strong><small>در ارتباط بمانیم</small></span><i class="fa-solid fa-arrow-left nc-drawer-arrow" aria-hidden="true"></i></a>
             <a href="/club"><span class="nc-drawer-icon"><i class="fa-solid fa-star" aria-hidden="true"></i></span><span><strong>باشگاه شنوندگان</strong><small>امتیاز، مأموریت و پاداش</small></span><i class="fa-solid fa-arrow-left nc-drawer-arrow" aria-hidden="true"></i></a>
+            <a href="/quiz"><span class="nc-drawer-icon"><i class="fa-solid fa-circle-question" aria-hidden="true"></i></span><span><strong>سؤال روز</strong><small>یک سؤال کوتاه، امتیاز بیشتر</small></span><i class="fa-solid fa-arrow-left nc-drawer-arrow" aria-hidden="true"></i></a>
             <a href="/club-admin.html" id="ncAdminDrawerLink" hidden style="display:none"><span class="nc-drawer-icon"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i></span><span><strong>کنترل پنل مدیریت</strong><small>پنل امن مدیر</small></span><i class="fa-solid fa-arrow-left nc-drawer-arrow" aria-hidden="true"></i></a>
             <button type="button" data-request-book-summary class="nc-drawer-action" aria-haspopup="dialog"><span class="nc-drawer-icon"><i class="fa-solid fa-headphones" aria-hidden="true"></i></span><span><strong>پیشنهاد پادکست دلخواه</strong><small>کتاب پیشنهادی خودت را معرفی کن</small></span><i class="fa-solid fa-arrow-left nc-drawer-arrow" aria-hidden="true"></i></button>
         </nav>
@@ -1199,6 +1204,9 @@
     <script src="/js/nightcast-theme.js?v=6" defer></script>
     <script src="/js/nightcast-shield.js?v=4" defer></script>
     <script src="/js/nightcast-app-v5.js?v=6" defer></script>
+    <script src="/js/nightcast-sharing.js?v=1" defer></script>
+    <script src="/js/nightcast-club-engagement.js?v=1" defer></script>
+    <script src="/js/nightcast-club-header.js?v=1" defer></script>
 <script src="/js/nightcast-club-listener.js?v=1" defer></script>
     <script src="/js/nightcast-spider-visualizer.js?v=1" defer></script>
     <script src="/js/nightcast-theme-experience.js?v=4" defer></script>

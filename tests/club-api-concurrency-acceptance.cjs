@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const { execFileSync } = require('node:child_process');
 
 const base = fs.readFileSync('tests/fixtures/club-d1-base.sql', 'utf8');
-const migrations = ['0001_club_foundation.sql','0002_listening_sequence_guard.sql','0003_atomic_reward_redemption.sql']
+const migrations = ['0001_club_foundation.sql','0002_listening_sequence_guard.sql','0003_atomic_reward_redemption.sql','0004_daily_engagement_quiz_referrals_notifications.sql']
   .map(name => fs.readFileSync('migrations/club/' + name, 'utf8')).join('\n');
 const py = String.raw`
 import sqlite3, sys, tempfile, os

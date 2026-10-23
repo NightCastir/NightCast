@@ -1,0 +1,32 @@
+name: NightCast Podcast Sharing Acceptance
+
+on:
+  push:
+    branches:
+      - feat/listener-club-quiz-notifications
+    paths:
+      - 'index.html'
+      - 'js/nightcast-app.js'
+      - 'js/nightcast-sharing.js'
+      - 'tests/club-podcast-sharing-acceptance.cjs'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate NightCast Podcast Sharing Acceptance
+        run: node tests/club-podcast-sharing-acceptance.cjs

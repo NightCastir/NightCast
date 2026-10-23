@@ -84,8 +84,8 @@ check('client never fabricates reward values and handles missing API honestly', 
   assert.match(client, /No client-side points, XP, missions or rewards are fabricated/);
   assert.doesNotMatch(client, /clubPoints\s*[:=]\s*[0-9]+/);
   assert.match(client, /club-api\.nightcast\.ir\/api\/v1/);
-  assert.match(page, /nightcast-club\.css\?v=3/);
-  assert.match(page, /nightcast-club\.js\?v=8/);
+  assert.match(page, /nightcast-club\.css\?v=\d+/);
+  assert.match(page, /nightcast-club\.js\?v=\d+/);
   assert.match(page, /clubRewards/);
   assert.match(listener, /club-api\.nightcast\.ir/);
   assert.match(listener, /nightcast:podcastchange/);

@@ -70,6 +70,36 @@ jobs:
           fi
           echo "Cloudflare deployment credential is present; value is not logged."
 
+      - name: Verify Club migration 0004 is applied before Worker deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          endpoint="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/21cb51d1-8484-4f3e-90b6-ada3228506d6/query"
+          cat > /tmp/club-migration-tables.json <<'JSON'
+          {"sql":"SELECT name FROM sqlite_master WHERE type = 'table' AND name IN ('club_daily_visits','club_quiz_sessions','club_referral_codes','club_referrals','club_notifications','club_notification_dispatch_log','club_push_subscriptions')"}
+          JSON
+          curl --retry 3 --retry-delay 2 --retry-all-errors -fsS -X POST "$endpoint" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            --data-binary @/tmp/club-migration-tables.json > /tmp/club-migration-tables-result.json
+          required_tables='["club_daily_visits","club_quiz_sessions","club_referral_codes","club_referrals","club_notifications","club_notification_dispatch_log","club_push_subscriptions"]'
+          if ! jq -e --argjson required "$required_tables" '.success == true and (($required - [.result[0].results[].name]) | length == 0)' /tmp/club-migration-tables-result.json >/dev/null; then
+            echo "::error::Club migration 0004 tables are missing. Apply migrations/club/0004_daily_engagement_quiz_referrals_notifications.sql exactly once before deploying this Worker."
+            exit 1
+          fi
+          cat > /tmp/club-migration-columns.json <<'JSON'
+          {"sql":"PRAGMA table_info(club_profiles)"}
+          JSON
+          curl --retry 3 --retry-delay 2 --retry-all-errors -fsS -X POST "$endpoint" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            --data-binary @/tmp/club-migration-columns.json > /tmp/club-migration-columns-result.json
+          required_columns='["timezone","last_seen_podcast_id"]'
+          if ! jq -e --argjson required "$required_columns" '.success == true and (($required - [.result[0].results[].name]) | length == 0)' /tmp/club-migration-columns-result.json >/dev/null; then
+            echo "::error::Club migration 0004 profile columns are missing. Refusing to deploy Worker code that depends on them."
+            exit 1
+          fi
+          echo "Club migration 0004 schema is present; deployment may proceed."
       - name: Deploy Club API to the existing Production Worker
         run: npx --yes wrangler@4 deploy --config wrangler.club.toml --message "NightCast Club deploy ${GITHUB_SHA}"
 

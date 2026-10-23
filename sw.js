@@ -2,7 +2,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'nightcast-pwa-shell-';
-const CACHE_NAME = CACHE_PREFIX + 'v1';
+const CACHE_NAME = CACHE_PREFIX + 'v2';
 const PRECACHE_URLS = [
   '/',
   '/assets/icons/icon-512.png',
@@ -87,4 +87,38 @@ self.addEventListener('fetch', (event) => {
     try { return await networkPromise; }
     catch (_) { return new Response('', { status: 504, statusText: 'Offline asset unavailable' }); }
   })());
+});
+
+
+// Push messages are sent by the configured Club notification dispatcher.
+self.addEventListener('push', (event) => {
+  let payload = {};
+  try { payload = event.data ? event.data.json() : {}; } catch (_) {
+    try { payload = { body: event.data.text() }; } catch (_) {}
+  }
+  const title = String(payload.title || 'NightCast · صدای تازه');
+  const options = {
+    body: String(payload.body || 'یک خبر تازه از رادیوی NightCast برایت داریم.'),
+    icon: '/assets/icons/icon-512.png',
+    badge: '/assets/icons/icon-512.png',
+    data: { url: String(payload.url || '/') },
+    tag: String(payload.tag || 'nightcast-update'),
+    renotify: false
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const target = new URL(String(event.notification.data && event.notification.data.url || '/'), self.location.origin);
+  if (target.origin !== self.location.origin) target.href = '/';
+  event.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+    for (const client of clients) {
+      if ('focus' in client) {
+        client.navigate(target.href);
+        return client.focus();
+      }
+    }
+    return self.clients.openWindow(target.href);
+  }));
 });

@@ -429,6 +429,59 @@
             }
 
 
+            function buildPodcastShareUrl(podcast) {
+                const value = String(podcast?.slug || podcast?.id || "").trim();
+                if (!value) return "";
+                const url = new URL("/", window.location.origin);
+                url.searchParams.set("podcast", value);
+                url.searchParams.set("autoplay", "1");
+                return url.href;
+            }
+
+            async function sharePodcast(id) {
+                const podcast = state.all.find(item =>
+                    String(item.id) === String(id) || String(item.slug || "") === String(id)
+                );
+                if (!podcast) {
+                    toast("پادکست موردنظر برای اشتراک‌گذاری پیدا نشد.");
+                    return;
+                }
+                const url = buildPodcastShareUrl(podcast);
+                const title = String(podcast.title || podcast.book_name || "پادکست NightCast");
+                const shareData = { title: title + " | NightCast", text: "این پادکست را در رادیو NightCast بشنو:", url };
+                try {
+                    if (typeof navigator.share === "function") {
+                        await navigator.share(shareData);
+                        toast("لینک پادکست آمادهٔ ارسال است.");
+                        return;
+                    }
+                } catch (error) {
+                    if (error?.name === "AbortError") return;
+                }
+                try {
+                    if (navigator.clipboard?.writeText && window.isSecureContext) {
+                        await navigator.clipboard.writeText(url);
+                    } else {
+                        const field = document.createElement("textarea");
+                        field.value = url;
+                        field.setAttribute("readonly", "");
+                        field.style.position = "fixed";
+                        field.style.opacity = "0";
+                        document.body.appendChild(field);
+                        field.select();
+                        const copied = document.execCommand("copy");
+                        field.remove();
+                        if (!copied) throw new Error("Clipboard copy was rejected");
+                    }
+                    toast("لینک اختصاصی پادکست کپی شد؛ برای دوستتان بفرستید.");
+                } catch (error) {
+                    console.warn("NightCast share link could not be copied automatically.", error);
+                    window.prompt("لینک اختصاصی این پادکست را کپی کنید:", url);
+                }
+            }
+
+            window.NightCastBuildPodcastShareUrl = buildPodcastShareUrl;
+
             /* =========================================================
                AUTH
             ========================================================= */
@@ -1421,6 +1474,14 @@ LOGOUT
                 const target = event.target;
                 if (!(target instanceof Element)) return;
 
+                const sharedAction = target.closest('[data-action="share-current"]');
+                if (sharedAction) {
+                    event.preventDefault();
+                    if (state.current) sharePodcast(state.current.id);
+                    else toast("ابتدا یک پادکست انتخاب کنید.");
+                    return;
+                }
+
                 const playButton = target.closest('#ncPodcastDetail [data-action="play"]');
                 if (playButton) {
                     event.preventDefault();
@@ -1490,6 +1551,7 @@ LOGOUT
                             '<button type="button" class="btn btn-secondary nc-card-details" data-action="details" data-id="' + id + '" aria-label="جزئیات ' + escapeHtml(title) + '"><i class="fa-regular fa-file-lines" aria-hidden="true"></i><span>جزئیات</span></button>' +
                             '<button type="button" class="btn btn-secondary nc-card-download" data-action="download" data-id="' + id + '" aria-label="دریافت ' + escapeHtml(title) + '"' + (audio ? "" : " disabled") + '><i class="fa-solid fa-download" aria-hidden="true"></i></button>' +
                             '<button type="button" class="favorite ' + (fav ? "active" : "") + '" data-action="favorite" data-id="' + id + '" aria-label="' + (fav ? "حذف از علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها") + '" aria-pressed="' + (fav ? "true" : "false") + '"><i class="' + (fav ? "fa-solid" : "fa-regular") + ' fa-heart" aria-hidden="true"></i></button>' +
+                            '<button type="button" class="favorite nc-share-button" data-action="share" data-id="' + id + '" aria-label="اشتراک‌گذاری پادکست ' + escapeHtml(title) + '" title="ارسال برای دوست"><i class="fa-solid fa-share-nodes" aria-hidden="true"></i></button>' +
                             '<button type="button" class="nc-comment-action" data-action="comments" data-id="' + id + '" aria-label="مشاهده و ثبت دیدگاه برای ' + escapeHtml(title) + '"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>دیدگاه‌ها</span><b class="nc-card-stat-count" data-comment-count="' + id + '" aria-label="تعداد دیدگاه‌ها">۰</b></button>' +
                         '</div>' +
                     '</div>' +
@@ -2225,6 +2287,25 @@ LOGOUT
                 }
             });
 
+            function openSharedPodcastFromUrl() {
+                const params = new URLSearchParams(window.location.search);
+                const sharedValue = params.get("podcast");
+                if (!sharedValue || params.get("autoplay") !== "1") return;
+                const podcast = state.all.find(item =>
+                    String(item.id) === sharedValue || String(item.slug || "") === sharedValue
+                );
+                if (!podcast) {
+                    toast("پادکست این لینک پیدا نشد؛ فهرست را تازه‌سازی کنید.");
+                    return;
+                }
+                if (els.search) els.search.value = "";
+                state.query = "";
+                state.page = Math.max(1, Math.floor(state.all.indexOf(podcast) / state.pageSize) + 1);
+                applyView();
+                openPodcastDetails(podcast.id);
+                playPodcast(podcast.id);
+            }
+
             function playPodcast(id) {
 
                 const p =
@@ -2260,6 +2341,7 @@ LOGOUT
                 state.current =
                     p;
 
+                document.getElementById("ncPlayerShare")?.removeAttribute("hidden");
 
                 els.player.classList.add(
                     "show"
@@ -2751,6 +2833,10 @@ LOGOUT
         
                     }
         
+                    else if (action === "share") {
+                        sharePodcast(id);
+                    }
+
                     else if (action === "comments") {
                         if (typeof window.NightCastOpenPodcastComments === "function") {
                             window.NightCastOpenPodcastComments(id);
@@ -3839,6 +3925,11 @@ document.addEventListener(
                 }
                 // A failed or stalled third-party request must never trap a listener behind the loader.
                 window.setTimeout(dismissArchiveLoader, 25000);
+                archiveReady.then(() => {
+                    // Shared links select the exact episode and attempt immediate playback.
+                    // Browsers may block autoplay; the selected player remains visible as fallback.
+                    openSharedPodcastFromUrl();
+                });
                 Promise.all([archiveReady, fontsReady]).then(() => {
                     requestAnimationFrame(() => requestAnimationFrame(dismissArchiveLoader));
                 });

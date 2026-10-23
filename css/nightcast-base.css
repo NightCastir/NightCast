@@ -3277,3 +3277,12 @@
   .nc-footer .nc-footer-download-button{transition:none}
   .nc-footer .nc-footer-download-button:hover{transform:none}
 }
+
+
+/* Podcast sharing actions: consistent with the heart control and usable on touch screens. */
+.card-footer .nc-share-button{flex:0 0 38px;display:inline-grid;place-items:center;padding:0;color:var(--nc-text-muted);background:rgba(255,255,255,.035);border:1px solid var(--nc-border);border-radius:11px;min-width:38px;min-height:38px}
+.card-footer .nc-share-button:hover,.card-footer .nc-share-button:focus-visible{color:#8bdcff;border-color:rgba(80,190,255,.42);background:rgba(80,190,255,.1)}
+.nc-player-share{width:36px;height:36px;flex:0 0 36px;border-radius:50%;margin-inline-start:8px}
+.nc-player-share:hover,.nc-now-share:hover{color:#8bdcff;border-color:rgba(80,190,255,.42);background:rgba(80,190,255,.1)}
+.nc-now-share{width:auto;min-width:142px;height:44px;padding:0 16px;display:flex;align-items:center;justify-content:center;gap:9px;border-radius:999px;font-size:.82rem}
+.nc-share-button:focus-visible,.nc-player-share:focus-visible,.nc-now-share:focus-visible{outline:2px solid #8bdcff;outline-offset:3px}

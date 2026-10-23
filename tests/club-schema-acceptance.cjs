@@ -95,7 +95,7 @@ check('client never fabricates reward values and handles missing API honestly', 
   // integration here rather than assuming a separate nightcast-app.js bundle exists.
   assert.ok(home.includes('<script src="/js/nightcast-club-listener.js?v=1" defer></script>'));
   assert.match(adminClient, /club-api\.nightcast\.ir/);
-  assert.match(adminPage, /club-admin\.js\?v=2/);
+  assert.match(adminPage, /club-admin\\.js\\?v=3/);
 });
 check('both migrations apply cleanly against the existing user/podcast table contract', function () {
   const sql = 'PRAGMA foreign_keys=ON; CREATE TABLE users(id INTEGER PRIMARY KEY); CREATE TABLE podcasts(id INTEGER PRIMARY KEY);' + migration + sequenceMigration + redemptionMigration + ' SELECT name FROM sqlite_master WHERE type="table";';

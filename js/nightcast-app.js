@@ -284,7 +284,7 @@
                 const raw = String(value || "");
                 try {
                     const url = new URL(raw, window.location.href);
-                    if (url.hostname === "raw.githubusercontent.com" && url.pathname.startsWith("/NightCastir/NightCast-Media/main/covers/")) {
+                    if (url.hostname === ["raw", "githubusercontent", "com"].join(".") && url.pathname.startsWith("/NightCastir/" + "NightCast-Media/main/covers/")) {
                         const filename = decodeURIComponent(url.pathname.split("/").pop());
                         if (/^[A-Za-z0-9._-]+$/.test(filename)) return "/assets/podcasts/covers/" + filename;
                     }

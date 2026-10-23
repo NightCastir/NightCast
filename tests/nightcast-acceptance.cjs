@@ -74,7 +74,8 @@ function silentWavDataUri() {
     for (const file of jsFiles) {
       try {
         const source = fs.readFileSync(file, 'utf8');
-        if (file.replace(/\\\\/g, '/').endsWith('/workers/nightcast-shield.js')) {
+        const isKnownModule = /^(?:\\s*(?:import\\s+(?:[^'"]+?\\s+from\\s+)?['"]|export\\s+(?:\\{|\\*|default|const|let|var|function|class|async\\s+function)))/m.test(source);
+        if (file.replace(/\\\\/g, '/').includes('/workers/') || isKnownModule) {
           const checked = spawnSync(process.execPath, ['--input-type=module', '--check'], { input: source, encoding: 'utf8' });
           if (checked.status !== 0) throw new Error(checked.stderr || 'ES module syntax check failed');
         } else {
@@ -181,6 +182,16 @@ report('0.5. Font Awesome uses self-hosted assets without CDN fallback', iconCdn
     const missingLocalAssets = [...new Set(requiredLocalAssets)].filter(asset => typeof asset !== 'string' || !asset.startsWith('/assets/') || !fs.existsSync('.' + asset));
     report('0.5.2. Theme, font, icon, map, avatar and podcast-cover files are self-hosted', missingLocalAssets.length === 0,
       missingLocalAssets.slice(0,12).join(', ') || 'All expected local asset files exist');
+
+    const rssSource = fs.readFileSync('users/data/podcasts.xml', 'utf8');
+    const remoteRssCovers = rssSource.includes('raw.githubusercontent.com/NightCastir/NightCast-Media/main/covers/') || rssSource.includes('raw.githubusercontent.com/NightCastir/NightCast-Media/refs/heads/main/covers/');
+    const rssCoverPaths = [...rssSource.matchAll(/\b(?:href|url)="([^"]+)"/gi)].map(match => match[1]).filter(value => value.startsWith('/assets/podcasts/covers/'));
+    const missingRssCovers = rssCoverPaths.filter(asset => !fs.existsSync('.' + asset));
+    report('0.5.3. RSS podcast covers are self-hosted and exist locally',
+      !remoteRssCovers && rssCoverPaths.length > 0 && missingRssCovers.length === 0,
+      remoteRssCovers ? 'RSS still references remote NightCast-Media covers' :
+        missingRssCovers.length ? missingRssCovers.slice(0, 8).join(', ') :
+          'Validated ' + rssCoverPaths.length + ' local RSS cover references');
 
     // Only the root document is indexable; legacy paths are small aliases into its sections.
     const routeMetadataExpectations = [

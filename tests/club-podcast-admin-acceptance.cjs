@@ -21,5 +21,5 @@ check('create/edit form covers all editable podcast fields',["title","slug","boo
 check('existing podcasts are shown in a selectable grid/table',/id="podcast-rows"/.test(html) && /ویرایش/.test(js));
 check('front end uses authenticated GET/POST/PUT API calls',/api\("\/admin\/podcasts"\)/.test(js) && /"PUT", data/.test(js) && /"POST", data/.test(js));
 check('admin navigation label is renamed',!home.includes('مدیریت باشگاه') && home.includes('کنترل پنل مدیریت'));
-check('client-side role alone is not used as authorization',/Authorization: "Bearer " \+ token/.test(js));
+check('client-side role alone is not used as authorization',/Authorization": "Bearer " \+ token/.test(js));
 console.log('SUMMARY | PASS | 14 admin podcast management security and UI checks');

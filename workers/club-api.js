@@ -599,6 +599,7 @@ export async function handleClubApi({ request, url, DB, json, checkAuth, env }) 
       }
       await DB.prepare("UPDATE club_profiles SET last_seen_podcast_id=?,updated_at=CURRENT_TIMESTAMP WHERE user_id=?").bind(latestId,auth.userId).run();
       return json({success:true,day,already_visited:!firstVisit,points_awarded:firstVisit?Number(credit?.delta||0):0,
+        daily_visit_reward_points:reward,reward_eligible:canEarn,
         new_podcasts:newPodcasts,tracking_initialized:trackingInitialized,
         earning_enabled:(await setting(DB,"club_enabled"))==="true" && (await setting(DB,"earning_enabled"))==="true"});
     }

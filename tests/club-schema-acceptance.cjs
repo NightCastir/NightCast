@@ -91,8 +91,10 @@ check('client never fabricates reward values and handles missing API honestly', 
   assert.match(listener, /nightcast:podcastchange/);
   assert.match(listener, /sequence_number/);
   assert.match(home, /nightcast-club-listener\.js\?v=1/);
-  assert.match(home, /nightcast-app\.js\?v=4/);
-  assert.ok(home.includes('<script src="/js/nightcast-app.js?v=4" defer></script>'));
+  // The application bundle cache version changes independently of the club feature.
+  // Assert the canonical script path, not a stale hard-coded cache-buster.
+  assert.match(home, /<script src="\/js\/nightcast-app\.js(?:\?v=[^"']+)?" defer><\/script>/);
+  assert.match(home, /nightcast-app\.js(?:\?v=[^"']+)?/);
   assert.ok(home.includes('<script src="/js/nightcast-club-listener.js?v=1" defer></script>'));
   assert.match(adminClient, /club-api\.nightcast\.ir/);
   assert.match(adminPage, /club-admin\.js\?v=2/);

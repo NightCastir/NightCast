@@ -183,6 +183,16 @@ report('0.5. Font Awesome uses self-hosted assets without CDN fallback', iconCdn
     report('0.5.2. Theme, font, icon, map, avatar and podcast-cover files are self-hosted', missingLocalAssets.length === 0,
       missingLocalAssets.slice(0,12).join(', ') || 'All expected local asset files exist');
 
+    const rssSource = fs.readFileSync('users/data/podcasts.xml', 'utf8');
+    const remoteRssCovers = /https?:\\/\\/raw\\.githubusercontent\\.com\\/NightCastir\\/NightCast-Media\\/(?:refs\\/heads\\/)?main\\/covers\\//i.test(rssSource);
+    const rssCoverPaths = [...rssSource.matchAll(/(?:href|url)="(\\/assets\\/podcasts\\/covers\\/[^"#?]+)"/gi)].map(match => match[1]);
+    const missingRssCovers = rssCoverPaths.filter(asset => !fs.existsSync('.' + asset));
+    report('0.5.3. RSS podcast covers are self-hosted and exist locally',
+      !remoteRssCovers && rssCoverPaths.length > 0 && missingRssCovers.length === 0,
+      remoteRssCovers ? 'RSS still references remote NightCast-Media covers' :
+        missingRssCovers.length ? missingRssCovers.slice(0, 8).join(', ') :
+          'Validated ' + rssCoverPaths.length + ' local RSS cover references');
+
     // Only the root document is indexable; legacy paths are small aliases into its sections.
     const routeMetadataExpectations = [
       { file: 'index.html', canonical: 'https://nightcast.ir/', title: 'NightCast | آرشیو پادکست‌های صوتی، خلاصه و تحلیل کتاب' }

@@ -133,15 +133,8 @@
     if (!summary || typeof summary !== 'object') throw new Error('پاسخ خلاصه باشگاه معتبر نیست.');
     setText('clubPoints', summary.points);
     setText('clubXp', summary.xp);
-    /* API currently exposes active mission count, not completed-podcast count. Do not invent a metric. */
-    setText('clubPodcasts', summary.active_missions);
-    var podcastLabel = byId('clubPodcasts');
-    if (podcastLabel && podcastLabel.parentNode) {
-      var small = podcastLabel.parentNode.querySelector('small');
-      var hint = podcastLabel.parentNode.querySelector('span');
-      if (small) small.textContent = 'مأموریت‌های فعال';
-      if (hint) hint.textContent = 'قابل انجام';
-    }
+    /* Count only distinct podcasts with at least one server-accepted 60-second listening interval. */
+    setText('clubPodcasts', summary.completed_podcasts);
     setText('clubBadges', summary.badges_earned);
     var level = summary.level && typeof summary.level === 'object' ? summary.level : null;
     var nextLevel = summary.next_level && typeof summary.next_level === 'object' ? summary.next_level : null;

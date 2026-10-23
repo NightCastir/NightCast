@@ -253,6 +253,7 @@ export async function handleClubApi({ request, url, DB, json, checkAuth, env }) 
       return fail(json, 404, "مسیر مدیریتی باشگاه پیدا نشد.", "club_admin_route_not_found");
     }
 
+    // Summary metrics are derived from server-accepted listening events, never client playback claims.
     if (path === "/summary" && method === "GET") {
       const auth = await requireMember(checkAuth);
       if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");

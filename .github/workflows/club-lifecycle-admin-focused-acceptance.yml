@@ -1,0 +1,38 @@
+name: NightCast Club Lifecycle and Admin Focused Acceptance
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lifecycle-admin:
+    name: Mission lifecycle, reward fulfillment, and admin console
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Set up Python for SQLite migration checks
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Validate mission lifecycle and admin authorization contract
+        run: node tests/club-lifecycle-admin-acceptance.cjs
+      - name: Validate API authorization and atomic redemption
+        run: node tests/club-api-acceptance.cjs
+      - name: Validate schema, triggers, and migration compatibility
+        run: node tests/club-schema-acceptance.cjs
+      - name: Check admin UI and Worker syntax
+        run: |
+          node --check js/club-admin.js
+          node --check workers/club-api.js

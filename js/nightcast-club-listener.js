@@ -11,6 +11,7 @@
   var sessionId = '';
   var sequence = 0;
   var pending = false;
+  var lastRewardToastSession = '';
 
   function token() {
     try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (_) { return ''; }
@@ -44,7 +45,38 @@
         disabledForSession = true;
         stopTimer();
       }
-      return response.json().catch(function () { return {}; });
+      return response.json().catch(function () { return {}; }).then(function (data) {
+        /* UI feedback is shown only when the API confirms an accepted event and a posted reward. */
+        if (response.ok && data && data.success && data.event && data.event.status === 'accepted') {
+          if (data.points_awarded || data.xp_awarded) {
+            if (data.points_awarded) {
+              try { window.dispatchEvent(new CustomEvent('nightcast:clubpointschange')); } catch (_) {}
+            }
+            if (lastRewardToastSession !== sessionId) {
+              lastRewardToastSession = sessionId;
+              var message = data.points_awarded
+                ? '🌟 شنیدن معتبر ثبت شد و امتیاز باشگاه به‌روزرسانی شد.'
+                : '🎧 شنیدن معتبر ثبت شد و تجربه شنیداری به‌روزرسانی شد.';
+              var bridge = window.NightCastPodcastBridge;
+              if (bridge && typeof bridge.toast === 'function') bridge.toast(message);
+              else {
+                var node = document.getElementById('nc-listen-reward-status');
+                if (!node) {
+                  node = document.createElement('div');
+                  node.id = 'nc-listen-reward-status';
+                  node.className = 'nc-engagement-status';
+                  node.setAttribute('role', 'status');
+                  node.setAttribute('aria-live', 'polite');
+                  document.body.appendChild(node);
+                }
+                node.textContent = message;
+                node.classList.add('is-visible');
+                window.setTimeout(function () { node.classList.remove('is-visible'); }, 4200);
+              }
+            }
+          }
+        }
+      });
     }).catch(function () {
       /* Network failures never award anything client-side; a later playback can retry. */
     }).then(function () { pending = false; });

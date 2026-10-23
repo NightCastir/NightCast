@@ -21,7 +21,8 @@ const syntax = spawnSync(process.execPath, ['--input-type=module', '--check'], {
 });
 check('club API Worker entry parses as an ES module', syntax.status === 0);
 
-check('admin session resolves the stored email column, not username', /SELECT admins\.id, admins\.username, admins\.full_name, admins\.email[\s\S]*?FROM admin_sessions[\s\S]*?INNER JOIN admins[\s\S]*?WHERE admin_sessions\.session_token/.test(worker));
+check('admin sessions prefer stored email and fall back to legacy username', /COALESCE\(NULLIF\(TRIM\(admins\.email\),''\), admins\.username\) AS email/.test(worker));
+check('Google listener sessions recover email from legacy username when email column is blank', /COALESCE\(NULLIF\(TRIM\(users\.email\),''\), users\.username\) AS email/.test(worker));
 check('allowlist is read only from Worker environment secrets', /env\.ADMIN_EMAIL\s*\|\|\s*env\.ADMIN/.test(worker));
 check('email comparison is case-insensitive and whitespace-trimmed', /String\(user\.email\s*\|\|\s*""\)\.trim\(\)\.toLowerCase\(\)\s*===\s*configuredAdminEmail/.test(worker));
 check('non-allowlisted users are explicitly downgraded to user role', /role:\s*isAllowlisted\s*\?\s*"admin"\s*:\s*"user"/.test(worker));

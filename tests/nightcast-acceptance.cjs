@@ -74,7 +74,8 @@ function silentWavDataUri() {
     for (const file of jsFiles) {
       try {
         const source = fs.readFileSync(file, 'utf8');
-        if (file.replace(/\\\\/g, '/').endsWith('/workers/nightcast-shield.js')) {
+        const isKnownModule = /^(?:\\s*(?:import\\s+(?:[^'"]+?\\s+from\\s+)?['"]|export\\s+(?:\\{|\\*|default|const|let|var|function|class|async\\s+function)))/m.test(source);
+        if (file.replace(/\\\\/g, '/').includes('/workers/') || isKnownModule) {
           const checked = spawnSync(process.execPath, ['--input-type=module', '--check'], { input: source, encoding: 'utf8' });
           if (checked.status !== 0) throw new Error(checked.stderr || 'ES module syntax check failed');
         } else {

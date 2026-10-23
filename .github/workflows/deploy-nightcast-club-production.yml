@@ -49,6 +49,9 @@ jobs:
       - name: Validate API authorization and transactional contracts
         run: node tests/club-api-acceptance.cjs
 
+      - name: Validate admin-only podcast management contract
+        run: node tests/club-podcast-admin-acceptance.cjs
+
       - name: Validate Worker JavaScript syntax
         run: |
           node --check workers/club-api.js

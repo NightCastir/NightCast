@@ -61,6 +61,94 @@ export default {
       return { ...user, role: isAllowlisted ? "admin" : "user" };
     }
 
+
+    // Strictly admin-only podcast CRUD. The browser UI is not a security boundary;
+    // every read/write is authorized here against the server-verified session + email allowlist.
+    if (url.pathname === "/api/v1/club/admin/podcasts" || /^\/api\/v1\/club\/admin\/podcasts\/\d+$/.test(url.pathname)) {
+      const actor = await checkAuth();
+      const configuredAdminEmail = String(env.ADMIN_EMAIL || env.ADMIN || "").trim().toLowerCase();
+      if (!actor || String(actor.role || "").toLowerCase() !== "admin" ||
+          !configuredAdminEmail || String(actor.email || "").trim().toLowerCase() !== configuredAdminEmail) {
+        return json({ success: false, message: "این عملیات فقط برای مدیر مجاز است.", code: "admin_required" }, actor ? 403 : 401);
+      }
+      if (!DB) return json({ success: false, message: "پایگاه داده در دسترس نیست.", code: "database_unavailable" }, 503);
+      const fields = ["title","slug","book_name","author_name","category_name","tags","episode_number","summary","transcript","duration_seconds","listen_count","audio_url","cover_url","status","publish_date","description"];
+      const nullableText = ["book_name","author_name","category_name","tags","summary","transcript","audio_url","cover_url","publish_date","description"];
+      const readBody = async () => {
+        try { return await request.json(); } catch (_) { return null; }
+      };
+      const cleanText = (value, max) => {
+        if (value === undefined || value === null) return null;
+        const s = String(value).trim();
+        if (s.length > max) throw new Error("یکی از فیلدهای متنی بیش از حد طولانی است.");
+        return s || null;
+      };
+      const normalizePodcast = (body, partial) => {
+        if (!body || typeof body !== "object" || Array.isArray(body)) throw new Error("بدنه درخواست معتبر نیست.");
+        const out = {};
+        for (const key of fields) {
+          if (partial && !Object.prototype.hasOwnProperty.call(body, key)) continue;
+          if (["episode_number","duration_seconds","listen_count"].includes(key)) {
+            const raw = body[key];
+            const n = raw === "" || raw === null || raw === undefined ? 0 : Number(raw);
+            if (!Number.isSafeInteger(n) || n < 0 || n > (key === "episode_number" ? 100000 : 10000000)) throw new Error("مقدار شماره قسمت یا مدت معتبر نیست.");
+            out[key] = n;
+          } else if (key === "status") {
+            const status = String(body[key] || (partial ? "" : "draft")).trim().toLowerCase();
+            if (!status && partial) continue;
+            if (!["active","draft","archived"].includes(status)) throw new Error("وضعیت پادکست معتبر نیست.");
+            out[key] = status;
+          } else {
+            const max = key === "transcript" ? 50000 : key === "description" ? 10000 : key === "summary" ? 5000 : ["audio_url","cover_url"].includes(key) ? 2000 : key === "tags" ? 1000 : 300;
+            const value = cleanText(body[key], max);
+            if (["title","slug"].includes(key) && !value) throw new Error("عنوان و slug الزامی هستند.");
+            if (key === "slug" && value && !/^[A-Za-z0-9._-]+$/.test(value)) throw new Error("slug فقط باید شامل حروف لاتین، عدد، نقطه، خط تیره یا زیرخط باشد.");
+            if (["audio_url","cover_url"].includes(key) && value) {
+              let parsed;
+              try { parsed = new URL(value); } catch (_) { throw new Error("نشانی صوت یا کاور باید URL معتبر باشد."); }
+              if (parsed.protocol !== "https:" && parsed.protocol !== "http:") throw new Error("پروتکل URL معتبر نیست.");
+            }
+            if (value !== null || !partial || nullableText.includes(key)) out[key] = value;
+          }
+        }
+        if (!partial && (!out.title || !out.slug || !out.audio_url)) throw new Error("عنوان، slug و نشانی فایل صوتی الزامی هستند.");
+        return out;
+      };
+      try {
+        const idMatch = url.pathname.match(/\/podcasts\/(\d+)$/);
+        const id = idMatch ? Number(idMatch[1]) : null;
+        if (request.method === "GET" && !id) {
+          const result = await DB.prepare("SELECT id,title,slug,book_name,author_name,category_name,tags,episode_number,summary,transcript,duration_seconds,listen_count,audio_url,cover_url,status,publish_date,listen_count,created_at,updated_at,description FROM podcasts ORDER BY id DESC LIMIT 1000").all();
+          return json({ success: true, podcasts: result.results || [] });
+        }
+        if (request.method === "POST" && !id) {
+          const body = await readBody();
+          const data = normalizePodcast(body, false);
+          const cols = Object.keys(data);
+          const placeholders = cols.map(() => "?").join(",");
+          const result = await DB.prepare("INSERT INTO podcasts (" + cols.join(",") + ",updated_at) VALUES (" + placeholders + ",CURRENT_TIMESTAMP)")
+            .bind(...cols.map(k => data[k])).run();
+          return json({ success: true, id: result.meta.last_row_id, message: "پادکست ثبت شد." }, 201);
+        }
+        if (request.method === "PUT" && id) {
+          if (!Number.isSafeInteger(id) || id < 1) return json({ success: false, message: "شناسه پادکست معتبر نیست." }, 400);
+          const body = await readBody();
+          const data = normalizePodcast(body, true);
+          const cols = Object.keys(data);
+          if (!cols.length) return json({ success: false, message: "هیچ فیلدی برای ویرایش ارسال نشده است." }, 400);
+          const result = await DB.prepare("UPDATE podcasts SET " + cols.map(k => k + " = ?").join(",") + ", updated_at = CURRENT_TIMESTAMP WHERE id = ?")
+            .bind(...cols.map(k => data[k]), id).run();
+          if (!result.meta.changes) return json({ success: false, message: "پادکست پیدا نشد.", code: "podcast_not_found" }, 404);
+          return json({ success: true, id, message: "تغییرات پادکست ذخیره شد." });
+        }
+        return json({ success: false, message: "روش یا مسیر درخواست مجاز نیست." }, 405);
+      } catch (error) {
+        const message = String(error && error.message || "");
+        const status = /UNIQUE constraint failed: podcasts\.slug/i.test(message) ? 409 : 400;
+        return json({ success: false, message: status === 409 ? "این slug قبلاً ثبت شده است." : (message || "اطلاعات پادکست معتبر نیست.") }, status);
+      }
+    }
+
     if (url.pathname === "/api/v1/club/admin/status" && request.method === "GET") {
       try {
         const configuredAdminEmail = String(env.ADMIN_EMAIL || env.ADMIN || "").trim().toLowerCase();

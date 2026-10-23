@@ -3,10 +3,12 @@ name: Sync Local Podcast Cover Assets
 on:
   push:
     branches:
-      - fix/archive-acceptance-assets
+      - main
     paths:
       - ".github/workflows/sync-local-podcast-covers.yml"
       - "scripts/sync-local-podcast-covers.cjs"
+      - "users/data/podcasts.json"
+      - "users/data/podcasts.xml"
   workflow_dispatch:
 
 permissions:

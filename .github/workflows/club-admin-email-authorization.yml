@@ -3,6 +3,7 @@ name: NightCast Admin Email Authorization
 on:
   push:
     branches:
+      - main
       - feat/admin-email-allowlist
   pull_request:
     branches:

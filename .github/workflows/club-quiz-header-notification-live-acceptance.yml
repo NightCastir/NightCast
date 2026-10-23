@@ -11,6 +11,10 @@ on:
       - 'js/nightcast-quiz.js'
       - 'css/nightcast-quiz-notification.css'
       - '.github/workflows/club-quiz-header-notification-live-acceptance.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/club-quiz-header-notification-live-acceptance.yml'
   workflow_dispatch:
 
 permissions:

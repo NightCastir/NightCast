@@ -1,0 +1,49 @@
+name: Sync Local Podcast Cover Assets
+
+on:
+  push:
+    branches:
+      - fix/archive-acceptance-assets
+    paths:
+      - ".github/workflows/sync-local-podcast-covers.yml"
+      - "scripts/sync-local-podcast-covers.cjs"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-local-podcast-covers
+  cancel-in-progress: false
+
+jobs:
+  localize-covers:
+    name: Download and commit local podcast covers
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          persist-credentials: true
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Download and validate cover images; rewrite fallback catalog
+        run: node scripts/sync-local-podcast-covers.cjs
+      - name: Verify no remote podcast covers remain in fallback catalog
+        run: |
+          node -e "const c=require('./users/data/podcasts.json'); const bad=(c.podcasts||[]).filter(p=>p.cover_url && !p.cover_url.startsWith('/assets/podcasts/covers/')); if(bad.length){console.error(bad.map(p=>p.slug+': '+p.cover_url).join('\\n')); process.exit(1)}; console.log('All fallback podcast covers use local paths')"
+      - name: Commit localized media assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add users/data/podcasts.json assets/podcasts/covers
+          if git diff --cached --quiet; then
+            echo "No asset changes were necessary."
+          else
+            git commit -m "assets(podcasts): self-host fallback podcast covers"
+            git push origin "HEAD:${{ github.ref_name }}"
+          fi

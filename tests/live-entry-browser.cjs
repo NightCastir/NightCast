@@ -35,16 +35,31 @@ async function main() {
           return !loader || loader.classList.contains('is-hidden');
         }, null, { timeout: 90000 });
 
-        const cardCount = await page.locator('#podcastGrid .podcast-card').count();
-        if (cardCount < 20) {
-          const error = new Error('Galaxy loader dismissed but only ' + cardCount + ' podcast cards rendered; expected at least 20 records in the full catalogue.');
-          error.fatal = true;
-          throw error;
-        }
+        const cards = page.locator('#podcastGrid .podcast-card');
+        const cardCount = await cards.count();
+        assert.equal(cardCount, 6,
+          'The first archive page must render exactly six podcast cards; got ' + cardCount);
+
+        const pagination = page.locator('#ncPodcastPagination');
+        await pagination.waitFor({ state: 'visible', timeout: 10000 });
+        const pageTwo = pagination.locator('button[data-page="2"]');
+        assert.equal(await pageTwo.count(), 1,
+          'A second page button must be available when the catalogue exceeds six records');
+
+        const firstPageIds = await cards.evaluateAll(items => items.map(card => card.dataset.id || card.querySelector('[data-podcast-id]')?.dataset.podcastId || card.textContent.trim()));
+        await pageTwo.click();
+        await page.waitForFunction(previous => {
+          const current = Array.from(document.querySelectorAll('#podcastGrid .podcast-card'))
+            .map(card => card.dataset.id || card.querySelector('[data-podcast-id]')?.dataset.podcastId || card.textContent.trim());
+          const active = document.querySelector('#ncPodcastPagination button[data-page="2"][aria-current="page"]');
+          return !!active && current.length === 6 && current.some((id, index) => id !== previous[index]);
+        }, firstPageIds, { timeout: 10000 });
+        const secondPageCount = await cards.count();
+        assert.equal(secondPageCount, 6, 'Page two must also render six aligned podcast cards');
 
         livePage = page;
         runtimeErrors = errors;
-        console.log('PASS | Live www entry and loader readiness | cards=' + cardCount + ', URL=' + page.url());
+        console.log('PASS | Live www entry, loader and six-card pagination | page1=' + cardCount + ', page2=' + secondPageCount + ', URL=' + page.url());
       } catch (error) {
         await page.close().catch(() => {});
         if (error.fatal) throw error;

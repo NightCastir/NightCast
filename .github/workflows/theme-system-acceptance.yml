@@ -6,6 +6,7 @@ on:
       - 'index.html'
       - 'users/login.html'
       - 'js/nightcast-app.js'
+      - 'js/nightcast-app-v5.js'
       - 'js/nightcast-theme.js'
       - 'css/nightcast-profile.css'
       - 'css/nightcast-themes.css'
@@ -70,7 +71,7 @@ jobs:
             ['all eight theme IDs are implemented', ['midnight-cosmos','aurora','studio-noir','deep-ocean','royal-gold','neon-city','persian-heritage','moonlight'].every(id => js.includes('"'+id+'"'))],
             ['theme picker exists globally and is absent from profile settings', (html.match(/data-theme-choice=/g) || []).length === 0 && test.includes('homepage exposes floating theme launcher')],
             ['theme CSS is loaded from the canonical stylesheet', /<link\b[^>]*href=["']\/css\/nightcast-themes\.css(?:\?[^"']*)?["'][^>]*>/i.test(html)],
-            ['theme controller is loaded before the app', (() => { const scripts = [...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi)].map(match => match[1]); const controller = scripts.findIndex(src => /^\/js\/nightcast-theme\.js(?:\?|$)/.test(src)); const app = scripts.findIndex(src => /^\/js\/nightcast-app\.js(?:\?|$)/.test(src)); return controller >= 0 && app >= 0 && controller < app; })()],
+            ['theme controller is loaded before the app', (() => { const scripts = [...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi)].map(match => match[1]); const controller = scripts.findIndex(src => /^\/js\/nightcast-theme\.js(?:\?|$)/.test(src)); const app = scripts.findIndex(src => /^\/js\/nightcast-app(?:-v\d+)?\.js(?:\?|$)/.test(src)); return controller >= 0 && app >= 0 && controller < app; })()],
             ['theme picker waits for transition completion', experience.includes('NightCastThemes.transition(id)') && experience.includes('closeRibbon();')],
             ['loader progress is determinate and accessible', /role="progressbar"[^>]*aria-valuemin="0"[^>]*aria-valuemax="100"/.test(html) && html.includes('nc-entry-progress-fill')],
             ['progress is connected to archive readiness', app.includes('nightcast:catalog-ready') && js.includes('nightcast:catalog-ready')],

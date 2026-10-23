@@ -82,6 +82,31 @@ async function main() {
   assert.equal(r.status, 200);
   assert.equal(r.data.duplicate, true, 'event replay must not duplicate event or ledger');
 
+  r = await call('/share-events', { method: 'POST', headers: member, body: { podcast_id: 501 } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.equal(r.data.points_awarded, 3, 'first successful share should award 3 points');
+  r = await call('/share-events', { method: 'POST', headers: member, body: { podcast_id: 501 } });
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.equal(r.data.points_awarded, 0, 'sharing the same podcast again must not award duplicate points');
+  assert.equal(r.data.duplicate, true);
+
+  // Let the server observe a full listening interval between two heartbeats.
+  await new Promise(resolve => setTimeout(resolve, 65000));
+  r = await call('/listen-events', { method: 'POST', headers: member, body: {
+    event_id: 'club-test-event-0002', session_id: 'club-test-session-0001',
+    sequence_number: 2, podcast_id: 501
+  }});
+  assert.equal(r.status, 200, JSON.stringify(r.data));
+  assert.equal(r.data.event.status, 'accepted');
+  assert.equal(r.data.event.accepted_seconds, 60);
+  assert.equal(r.data.points_awarded, true, 'first valid 60-second listen should award listening points');
+  r = await call('/listen-events', { method: 'POST', headers: member, body: {
+    event_id: 'club-test-event-0002', session_id: 'club-test-session-0001',
+    sequence_number: 2, podcast_id: 501
+  }});
+  assert.equal(r.status, 200);
+  assert.equal(r.data.duplicate, true, 'accepted listen replay must not award duplicate points');
+
   r = await call('/daily-visit', { method: 'POST', headers: member, body: {} });
   assert.equal(r.status, 200, JSON.stringify(r.data));
   assert.equal(r.data.points_awarded, 2, 'daily visit should award 2 points: ' + JSON.stringify(r.data));

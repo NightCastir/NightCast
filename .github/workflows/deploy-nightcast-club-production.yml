@@ -11,6 +11,17 @@ on:
       - "migrations/club/**"
       - "tests/club-*.cjs"
       - ".github/workflows/deploy-nightcast-club-production.yml"
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+    paths:
+      - "workers/club-api.js"
+      - "workers/club-api-entry.js"
+      - "wrangler.club.toml"
+      - "migrations/club/**"
+      - "tests/club-*.cjs"
+      - ".github/workflows/deploy-nightcast-club-production.yml"
   workflow_dispatch:
 
 permissions:
@@ -22,6 +33,7 @@ concurrency:
 
 jobs:
   validate-and-deploy:
+    if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
     name: Validate, deploy, and smoke-test Club API
     runs-on: ubuntu-latest
     timeout-minutes: 20

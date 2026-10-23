@@ -18,7 +18,7 @@ const assert = require('node:assert/strict');
     check('theme CSS is loaded from the canonical stylesheet', !!themeStylesheetHref && (await page.request.get(new URL(themeStylesheetHref, 'http://127.0.0.1:4173/').href)).ok());
     const scriptOrder = await page.locator('script[src]').evaluateAll(scripts => scripts.map(script => new URL(script.src, location.href).pathname));
     const themeControllerIndex = scriptOrder.indexOf('/js/nightcast-theme.js');
-    const appControllerIndex = scriptOrder.indexOf('/js/nightcast-app.js');
+    const appControllerIndex = scriptOrder.findIndex(path => /^\/js\/nightcast-app(?:-v\d+)?\.js$/.test(path));
     check('theme controller is loaded before the app', themeControllerIndex >= 0 && appControllerIndex >= 0 && themeControllerIndex < appControllerIndex);
     check('theme controller is requested', themeControllerIndex >= 0 && (await page.request.get('http://127.0.0.1:4173/js/nightcast-theme.js').then(response => response.ok())));
 

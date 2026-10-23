@@ -572,17 +572,18 @@ export async function handleClubApi({ request, url, DB, json, checkAuth, env }) 
       const auth = await requireMember(checkAuth);
       if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
       const day = utcDay();
-      const reward = safeInt(await setting(DB, "daily_visit_reward_points", "2"), 0, 1000) || 0;
+      const configuredReward = safeInt(await setting(DB, "daily_visit_reward_points", "2"), 0, 1000);
+      const reward = configuredReward === null ? 2 : configuredReward;
       const existingVisit = await DB.prepare("SELECT 1 AS visited FROM club_daily_visits WHERE user_id=? AND visit_day=?").bind(auth.userId, day).first();
       await DB.prepare("INSERT OR IGNORE INTO club_daily_visits(user_id,visit_day) VALUES(?,?)").bind(auth.userId, day).run();
-      // Determine first visit from persisted state, not driver-specific D1 meta.changes.
+      // Award only on the first persisted visit of the UTC day, after server-side flags are checked.
       const firstVisit = !existingVisit;
-      await DB.prepare(`INSERT OR IGNORE INTO club_point_ledger(user_id,delta,source_type,source_id,idempotency_key,status,metadata_json)
-        SELECT ?,?,'daily_visit',?,'club-daily-visit:' || ? || ':' || ?,'posted',?
-        WHERE ? > 0 AND (SELECT setting_value FROM club_settings WHERE setting_key='club_enabled')='true'
-          AND (SELECT setting_value FROM club_settings WHERE setting_key='earning_enabled')='true'
-          AND EXISTS(SELECT 1 FROM club_daily_visits WHERE user_id=? AND visit_day=?)`)
-        .bind(auth.userId,reward,day,auth.userId,day,JSON.stringify({day}),reward,auth.userId,day).run();
+      const canEarn = (await setting(DB, "club_enabled")) === "true" &&
+        (await setting(DB, "earning_enabled")) === "true";
+      if (firstVisit && reward > 0 && canEarn) {
+        await DB.prepare("INSERT OR IGNORE INTO club_point_ledger (user_id,delta,source_type,source_id,idempotency_key,status,metadata_json) VALUES (?,?,'daily_visit',?,'club-daily-visit:' || ? || ':' || ?,'posted',?)")
+          .bind(auth.userId,reward,day,auth.userId,day,JSON.stringify({day})).run();
+      }
       const credit = await DB.prepare("SELECT delta FROM club_point_ledger WHERE idempotency_key=?")
         .bind("club-daily-visit:"+auth.userId+":"+day).first();
       const latest = await DB.prepare("SELECT COALESCE(MAX(id),0) AS id FROM podcasts WHERE status='published'").first();

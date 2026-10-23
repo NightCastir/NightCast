@@ -27,6 +27,38 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Verify fallback podcast covers are self-hosted
+        run: |
+          node --input-type=commonjs <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const catalog = JSON.parse(fs.readFileSync('users/data/podcasts.json', 'utf8'));
+          const podcasts = Array.isArray(catalog.podcasts) ? catalog.podcasts : [];
+          const failures = [];
+          for (const podcast of podcasts) {
+            const cover = podcast.cover_url || '';
+            if (!cover.startsWith('/assets/podcasts/covers/')) {
+              failures.push(`catalog ${podcast.slug || podcast.id || '(unknown)'} has non-local cover: ${cover}`);
+              continue;
+            }
+            const localPath = path.join(process.cwd(), cover.replace(/^\//, ''));
+            if (!fs.existsSync(localPath)) failures.push(`missing cover file: ${cover}`);
+          }
+          const rss = fs.readFileSync('users/data/podcasts.xml', 'utf8');
+          if (/raw\.githubusercontent\.com\/NightCastir\/NightCast-Media\/.*\/covers\//i.test(rss)) {
+            failures.push('RSS still contains remote NightCast-Media cover URLs');
+          }
+          for (const match of rss.matchAll(/<[^>]*(?:url|image)[^>]*>([^<]*\/assets\/podcasts\/covers\/[^<]+)<\//gi)) {
+            const localPath = path.join(process.cwd(), match[1].replace(/^\//, ''));
+            if (!fs.existsSync(localPath)) failures.push(`RSS references missing cover file: ${match[1]}`);
+          }
+          if (failures.length) {
+            console.error(failures.join('\n'));
+            process.exit(1);
+          }
+          console.log(`PASS | ${podcasts.length} fallback podcast records use existing local cover files; RSS has no remote NightCast-Media covers`);
+          NODE
+
       - name: Install browser and static-analysis dependencies
         run: npm install --no-save playwright lightningcss yaml
 
@@ -55,6 +87,7 @@ jobs:
             echo "## NightCast acceptance results"
             echo ""
             echo "- Static and browser gates cover HTML, JavaScript syntax/runtime, CSS parsing, YAML parsing, local asset/anchor integrity, sticky header and CDN icons, live API, splash navigation, constellation details, player controls, responsive overflow, and mobile navigation."
+            echo "- Fallback podcast cover localization is checked independently: every catalog cover must exist locally and RSS must not retain remote NightCast-Media cover URLs."
             echo "- Android APK build status is reported separately by the Build NightCast Android APK workflow; this job does not claim that an APK was built."
             echo ""
             echo "The browser/API tests use mock podcast records for UI interaction tests; the live API check independently queries the real public API."

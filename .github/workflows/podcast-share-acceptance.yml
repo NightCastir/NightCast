@@ -1,0 +1,36 @@
+name: NightCast Podcast Sharing Acceptance
+
+on:
+  push:
+    branches:
+      - main
+      - feat/podcast-share-deep-link
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  podcast-sharing:
+    name: Podcast share controls and deep-link acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate JavaScript syntax
+        run: |
+          node --check js/nightcast-app.js
+          node --check js/nightcast-app-v5.js
+
+      - name: Test podcast sharing and deep links
+        run: node tests/podcast-share-acceptance.cjs

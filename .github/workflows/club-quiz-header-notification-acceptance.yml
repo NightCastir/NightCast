@@ -9,6 +9,7 @@ on:
       - 'club.html'
       - 'quiz/index.html'
       - 'js/nightcast-quiz-notification.js'
+      - 'js/nightcast-quiz.js'
       - 'css/nightcast-quiz-notification.css'
       - 'tests/club-quiz-header-notification-acceptance.cjs'
       - '.github/workflows/club-quiz-header-notification-acceptance.yml'

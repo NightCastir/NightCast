@@ -1,0 +1,41 @@
+name: NightCast New Podcast Notifications Acceptance
+
+on:
+  push:
+    branches:
+      - feat/listener-club-quiz-notifications
+    paths:
+      - 'sw.js'
+      - 'js/nightcast-club-engagement.js'
+      - 'workers/club-api.js'
+      - 'migrations/club/0004_daily_engagement_quiz_referrals_notifications.sql'
+      - 'workers/club-api-entry.js'
+      - 'workers/club-notification-dispatch.js'
+      - 'package.json'
+      - 'wrangler.club-notifications.toml'
+      - 'tests/club-new-podcast-notifications.cjs'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Worker push dependency
+        run: npm install --no-save @block65/webcrypto-web-push@2.0.0
+      - name: Validate NightCast New Podcast Notifications Acceptance
+        run: node tests/club-new-podcast-notifications.cjs
+      - name: Bundle scheduled Club Worker without deploying
+        run: npx --yes wrangler@4 deploy --dry-run --config wrangler.club-notifications.toml

@@ -10,10 +10,15 @@
   <link rel="stylesheet" href="/assets/vendor/fontawesome/css/all.min.css">
   <link rel="stylesheet" href="/css/nightcast-themes.css?v=21">
   <link rel="stylesheet" href="/css/nightcast-moonlight-contrast.css?v=3">
-  <link rel="stylesheet" href="/css/nightcast-club.css?v=3">
+  <link rel="stylesheet" href="/css/nightcast-club.css?v=5">
+  <link rel="stylesheet" href="/css/nightcast-club-header.css?v=1">
+  <link rel="stylesheet" href="/css/nightcast-quiz.css?v=2">
   <script src="/js/nightcast-theme.js?v=2" defer></script>
   <script src="/js/auth.js" defer></script>
-  <script src="/js/nightcast-club.js?v=8" defer></script>
+  <script src="/js/nightcast-club.js?v=10" defer></script>
+  <script src="/js/nightcast-club-header.js?v=1" defer></script>
+  <script src="/js/nightcast-club-community.js?v=1" defer></script>
+  <script src="/js/nightcast-club-engagement.js?v=1" defer></script>
 </head>
 <body class="nc-club-page">
   <header class="nc-club-header">
@@ -21,6 +26,7 @@
       <img src="/assets/icons/icon-512.png" alt="" width="42" height="42">
       <span><strong>NightCast</strong><small>CLUB · باشگاه شنوندگان</small></span>
     </a>
+    <a class="nc-header-club-score" id="ncHeaderClubScore" href="/club" aria-label="امتیاز باشگاه شنوندگان" hidden><i class="fa-solid fa-star" aria-hidden="true"></i><strong id="ncHeaderClubPoints">—</strong><span>امتیاز</span></a>
     <nav aria-label="ناوبری باشگاه">
       <a href="/podcasts">پادکست‌ها</a>
       <a href="/about">درباره ما</a>
@@ -35,9 +41,9 @@
     <section class="nc-club-hero" aria-labelledby="clubTitle">
       <div class="nc-club-hero-copy">
         <p class="nc-club-eyebrow">YOUR LISTENING JOURNEY</p>
-        <h1 id="clubTitle">هر شنیدن، یک قدم در کهکشان فرهنگ</h1>
-        <p>پیشرفت شنیداری‌ات را دنبال کن، مأموریت‌های فرهنگی را کشف کن و دستاوردهایت را بساز.</p>
-        <div class="nc-club-status" id="clubConnectionStatus" role="status" aria-live="polite">در حال بررسی حساب و اتصال امن باشگاه…</div>
+        <h1 id="clubTitle">بشنو، امتیاز بگیر ⭐</h1>
+        <p>با شنیدن پادکست، اشتراک‌گذاری و بازدید روزانه امتیاز جمع کن.</p>
+        <div class="nc-club-status" id="clubConnectionStatus" role="status" aria-live="polite">در حال اتصال…</div>
       </div>
       <div class="nc-club-orbit" aria-hidden="true"><span class="orbit orbit-a"></span><span class="orbit orbit-b"></span><span class="orbit-core"><img src="/assets/icons/icon-512.png" alt=""></span></div>
     </section>
@@ -69,15 +75,22 @@
       </section>
     </div>
 
-    <section class="nc-club-section nc-club-rewards" aria-labelledby="clubRewardsTitle">
-      <div class="nc-club-section-heading"><div><small>امتیازهایت را به تجربه تبدیل کن</small><h2 id="clubRewardsTitle">فروشگاه پاداش‌ها</h2></div><span class="nc-club-section-mark"><i class="fa-solid fa-gift" aria-hidden="true"></i></span></div>
-      <div class="nc-club-list" id="clubRewards"><p class="nc-club-empty">پاداش‌های قابل دریافت پس از اتصال امن به API نمایش داده می‌شوند.</p></div>
+    <section class="nc-club-section" aria-labelledby="clubCommunityTitle">
+      <div class="nc-club-section-heading"><div><small>رشد با همراهی دیگران</small><h2 id="clubCommunityTitle">دعوت دوستان و رتبه شنوندگان</h2></div><span class="nc-club-section-mark"><i class="fa-solid fa-people-group" aria-hidden="true"></i></span></div>
+      <div class="nc-club-list" id="ncReferralPanel"><p class="nc-club-empty">در حال آماده‌سازی کد دعوت…</p></div>
+      <div class="nc-club-list" id="ncLeaderboard"><p class="nc-club-empty">در حال بارگذاری جدول رتبه‌بندی…</p></div>
+      <div class="nc-club-community-actions"><a class="nc-club-action-button" href="/quiz">🎁 شرکت در سؤال روز</a><button type="button" class="nc-club-action-button" id="ncEnableNotifications">🔔 فعال‌سازی اعلان‌های موبایل</button></div>
     </section>
 
-    <section class="nc-club-section nc-club-history" aria-labelledby="clubHistoryTitle">
-      <div class="nc-club-section-heading"><div><small>شفاف و قابل‌پیگیری</small><h2 id="clubHistoryTitle">تاریخچه امتیازها</h2></div><span class="nc-club-section-mark"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i></span></div>
-      <div class="nc-club-list" id="clubLedger"><p class="nc-club-empty">تراکنش‌ها فقط از دفتر ثبت سمت سرور نمایش داده خواهند شد.</p></div>
-    </section>
+    <details class="nc-club-section nc-club-rewards nc-club-collapsible">
+      <summary><i class="fa-solid fa-gift" aria-hidden="true"></i><span>پاداش‌ها</span><small>امتیازهایت را خرج کن</small><i class="fa-solid fa-chevron-down nc-club-disclosure-arrow" aria-hidden="true"></i></summary>
+      <div class="nc-club-list" id="clubRewards"><p class="nc-club-empty">پاداش فعالی برای دریافت تعریف نشده است.</p></div>
+    </details>
+
+    <details class="nc-club-section nc-club-history nc-club-collapsible">
+      <summary><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i><span>تاریخچه امتیازها</span><small>جزئیات تراکنش‌ها</small><i class="fa-solid fa-chevron-down nc-club-disclosure-arrow" aria-hidden="true"></i></summary>
+      <div class="nc-club-list" id="clubLedger"><p class="nc-club-empty">تاریخچه پس از اتصال بارگذاری می‌شود.</p></div>
+    </details>
     <p class="nc-club-footnote">امتیازها و دستاوردها باید از فعالیت معتبر سمت سرور تأیید شوند؛ بازکردن صفحه یا فشردن یک دکمه به‌تنهایی امتیازی ایجاد نمی‌کند.</p>
   </main>
   <footer class="nc-club-footer"><a href="/podcasts">بازگشت به رادیوی NightCast</a><span>NightCast Club · فرهنگ در مدار صدا</span></footer>

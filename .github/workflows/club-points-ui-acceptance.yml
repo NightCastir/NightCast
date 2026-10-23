@@ -1,0 +1,34 @@
+name: NightCast Club Points and Compact UI Acceptance
+
+on:
+  push:
+    branches:
+      - feat/listener-club-quiz-notifications
+    paths:
+      - 'workers/club-api.js'
+      - 'js/nightcast-sharing.js'
+      - 'js/nightcast-club-header.js'
+      - 'index.html'
+      - 'club.html'
+      - 'css/nightcast-club.css'
+      - 'css/nightcast-club-header.css'
+      - 'tests/club-points-ui-acceptance.cjs'
+      - '.github/workflows/club-points-ui-acceptance.yml'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate Club points and compact UI
+        run: node tests/club-points-ui-acceptance.cjs

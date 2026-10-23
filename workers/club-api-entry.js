@@ -1,4 +1,5 @@
 import { handleClubApi } from "./club-api.js";
+import { dispatchClubNotifications } from "./club-notification-dispatch.js";
 
 /**
  * Dedicated production entry point for NightCast Club.
@@ -175,5 +176,8 @@ export default {
       console.error("NightCast Club API error", error);
       return json({ success: false, message: "Club API temporarily unavailable", code: "club_internal_error" }, 500);
     }
+  },
+  async scheduled(controller, env, ctx) {
+    ctx.waitUntil(dispatchClubNotifications(env));
   }
 };

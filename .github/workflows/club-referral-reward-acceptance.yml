@@ -1,0 +1,30 @@
+name: NightCast Club Referral Reward Acceptance
+
+on:
+  push:
+    branches:
+      - feat/listener-club-quiz-notifications
+    paths:
+      - 'workers/club-api.js'
+      - 'migrations/club/0004_daily_engagement_quiz_referrals_notifications.sql'
+      - 'js/nightcast-club-community.js'
+      - 'tests/club-referral-acceptance.cjs'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate referral reward idempotency and UI
+        run: node tests/club-referral-acceptance.cjs

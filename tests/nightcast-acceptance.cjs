@@ -184,7 +184,7 @@ report('0.5. Font Awesome uses self-hosted assets without CDN fallback', iconCdn
       missingLocalAssets.slice(0,12).join(', ') || 'All expected local asset files exist');
 
     const rssSource = fs.readFileSync('users/data/podcasts.xml', 'utf8');
-    const remoteRssCovers = rssSource.includes('raw.githubusercontent.com/NightCastir/NightCast-Media/') && rssSource.includes('/covers/');
+    const remoteRssCovers = rssSource.includes('raw.githubusercontent.com/NightCastir/NightCast-Media/main/covers/') || rssSource.includes('raw.githubusercontent.com/NightCastir/NightCast-Media/refs/heads/main/covers/');
     const rssCoverPaths = [...rssSource.matchAll(/\b(?:href|url)="([^"]+)"/gi)].map(match => match[1]).filter(value => value.startsWith('/assets/podcasts/covers/'));
     const missingRssCovers = rssCoverPaths.filter(asset => !fs.existsSync('.' + asset));
     report('0.5.3. RSS podcast covers are self-hosted and exist locally',

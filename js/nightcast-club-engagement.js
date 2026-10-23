@@ -87,7 +87,10 @@
     }
     if (!token()) return;
     request('/daily-visit','POST',{}).then(function (data) {
-      if (Number(data.points_awarded) > 0) toast('🌟 به خاطر بازدید امروز، ' + data.points_awarded + ' امتیاز گرفتی!');
+      if (Number(data.points_awarded) > 0) {
+        toast('🌟 به خاطر بازدید امروز، ' + data.points_awarded + ' امتیاز گرفتی!');
+        window.dispatchEvent(new CustomEvent('nightcast:clubpointschange'));
+      }
       var fresh = Array.isArray(data.new_podcasts) ? data.new_podcasts : [];
       if (fresh.length) {
         var newest = fresh[0];

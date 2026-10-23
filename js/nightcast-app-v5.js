@@ -1806,6 +1806,7 @@ LOGOUT
 
             function openSharedPodcastFromUrl() {
                 if (window.__NC_SHARED_PODCAST_OPENED) return;
+                if (typeof URLSearchParams !== "function") return;
                 const requested = new URLSearchParams(window.location.search).get("podcast");
                 if (!requested) return;
                 const podcast = state.all.find(item => String(item.id) === requested || String(item.slug || "") === requested);

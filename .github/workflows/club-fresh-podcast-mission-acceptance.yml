@@ -1,0 +1,41 @@
+name: Club Fresh Podcast Mission Acceptance
+
+on:
+  push:
+    branches:
+      - main
+      - fix/club-fresh-podcast-missions
+    paths:
+      - "workers/club-api.js"
+      - "tests/club-api-acceptance.cjs"
+      - ".github/workflows/club-fresh-podcast-mission-acceptance.yml"
+  pull_request:
+    paths:
+      - "workers/club-api.js"
+      - "tests/club-api-acceptance.cjs"
+      - ".github/workflows/club-fresh-podcast-mission-acceptance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: club-fresh-podcast-mission-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  acceptance:
+    name: Mission deduplication and Club API acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify Python SQLite is available
+        run: python3 -c "import sqlite3; print('SQLite', sqlite3.sqlite_version)"
+      - name: Run Club API acceptance tests
+        run: node tests/club-api-acceptance.cjs

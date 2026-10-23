@@ -62,7 +62,9 @@ function makeDb(settings = {}) {
 }
 
 async function apiTests() {
-  const encoded = Buffer.from(source).toString('base64');
+  const questionBank = JSON.stringify(JSON.parse(fs.readFileSync('data/club/daily-questions.json', 'utf8')));
+  const runnableSource = source.replace('import QUESTION_BANK from "../data/club/daily-questions.json";', 'const QUESTION_BANK = ' + questionBank + ';');
+  const encoded = Buffer.from(runnableSource).toString('base64');
   const { handleClubApi } = await import('data:text/javascript;base64,' + encoded);
   const urlFor = path => new URL('https://nightcast.ir/api/v1/club' + path);
   const req = (path, method = 'GET', body = undefined) => new Request('https://nightcast.ir/api/v1/club' + path, {
@@ -172,19 +174,6 @@ check('club API module is syntax-valid and uses existing auth resolver', functio
   assert.match(source, /club-redeem:/);
 });
 check('D1 trigger redemption is atomic, idempotent, balance-checked, and disabled by default', redemptionSqlTest);
-
-check('fresh-podcast missions reject replaying the same podcast within their cadence', function () {
-  const missionSql = source.slice(source.indexOf("INSERT INTO club_user_missions"));
-  assert.match(missionSql, /m\.event_type <> 'podcast_play' OR NOT EXISTS/);
-  assert.match(missionSql, /prior\.user_id=\? AND prior\.podcast_id=\?/);
-  assert.match(missionSql, /prior\.id<>\?/);
-  assert.match(missionSql, /m\.cadence='daily' AND date\(prior\.received_at\)=date\('now'\)/);
-  assert.match(missionSql, /m\.cadence='weekly'/);
-  assert.match(missionSql, /m\.cadence='once'/);
-  assert.match(missionSql, /m\.cadence='event'/);
-  assert.match(source, /sequence, auth\.userId, podcastId, id\)\);/);
-});
-
 
 apiTests().then(() => {
   console.log('PASS | API route auth, summary, sequence replay, disabled rewards, admin authorization');

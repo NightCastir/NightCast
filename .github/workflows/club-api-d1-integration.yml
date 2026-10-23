@@ -35,6 +35,7 @@ jobs:
           npx --yes wrangler@4 d1 execute nightcast-club-test --local --config wrangler.club-test.toml --file=migrations/club/0001_club_foundation.sql
           npx --yes wrangler@4 d1 execute nightcast-club-test --local --config wrangler.club-test.toml --file=migrations/club/0002_listening_sequence_guard.sql
           npx --yes wrangler@4 d1 execute nightcast-club-test --local --config wrangler.club-test.toml --file=migrations/club/0003_atomic_reward_redemption.sql
+          npx --yes wrangler@4 d1 execute nightcast-club-test --local --config wrangler.club-test.toml --file=migrations/club/0004_daily_engagement_quiz_referrals_notifications.sql
       - name: Seed test-only enabled flags and lifecycle fixtures
         run: npx --yes wrangler@4 d1 execute nightcast-club-test --local --config wrangler.club-test.toml --file=tests/fixtures/club-d1-enable-test-features.sql
       - name: Start the isolated API Worker

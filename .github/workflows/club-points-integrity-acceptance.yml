@@ -1,0 +1,31 @@
+name: NightCast Club Points Integrity Acceptance
+
+on:
+  push:
+    branches:
+      - feat/listener-club-quiz-notifications
+    paths:
+      - 'workers/club-api.js'
+      - 'migrations/club/0004_daily_engagement_quiz_referrals_notifications.sql'
+      - 'tests/club-points-integrity-acceptance.cjs'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate NightCast Club Points Integrity Acceptance
+        run: node tests/club-points-integrity-acceptance.cjs

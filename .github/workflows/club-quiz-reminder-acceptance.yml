@@ -1,0 +1,34 @@
+name: NightCast Quiz Reminder Acceptance
+
+on:
+  push:
+    branches:
+      - feat/listener-club-quiz-notifications
+    paths:
+      - 'js/nightcast-club-engagement.js'
+      - 'workers/club-api.js'
+      - 'workers/club-api-entry.js'
+      - 'workers/club-notification-dispatch.js'
+      - 'migrations/club/0004_daily_engagement_quiz_referrals_notifications.sql'
+      - 'tests/club-quiz-reminder-acceptance.cjs'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate NightCast Quiz Reminder Acceptance
+        run: node tests/club-quiz-reminder-acceptance.cjs

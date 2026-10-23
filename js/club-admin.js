@@ -6,6 +6,8 @@
   const notice = $("notice");
   const connection = $("connection");
   let snapshot = { missions: [], rewards: [], redemptions: [], settings: [] };
+  let podcasts = [];
+  let editingPodcastId = null;
 
   function message(text, type) {
     notice.textContent = text;
@@ -64,6 +66,103 @@
     }
     rows.forEach(row => target.append(render(row)));
   }
+
+  const podcastFields = ["title","slug","book_name","author_name","category_name","tags","episode_number","summary","transcript","duration_seconds","audio_url","cover_url","status","publish_date","description"];
+  function switchTab(name) {
+    const podcastsTab = name === "podcasts";
+    $("club-management-tab").hidden = podcastsTab;
+    $("podcast-management-tab").hidden = !podcastsTab;
+    $("tab-club").classList.toggle("active", !podcastsTab);
+    $("tab-podcasts").classList.toggle("active", podcastsTab);
+    $("tab-club").setAttribute("aria-selected", String(!podcastsTab));
+    $("tab-podcasts").setAttribute("aria-selected", String(podcastsTab));
+    if (podcastsTab && !podcasts.length) loadPodcasts();
+  }
+  function podcastValue(value) { return value === null || value === undefined ? "" : String(value); }
+  function renderPodcasts() {
+    const query = ($("podcast-search").value || "").trim().toLocaleLowerCase();
+    const rows = podcasts.filter(p => [p.title,p.slug,p.book_name,p.author_name,p.category_name].some(v => podcastValue(v).toLocaleLowerCase().includes(query)));
+    $("podcast-count").textContent = podcasts.length + " پادکست";
+    const body = $("podcast-rows");
+    body.replaceChildren();
+    if (!rows.length) {
+      const tr = document.createElement("tr"), td = node("td","empty",query ? "موردی با این جست‌وجو پیدا نشد." : "هنوز پادکستی ثبت نشده است.");
+      td.colSpan = 6; tr.append(td); body.append(tr); return;
+    }
+    rows.forEach(p => {
+      const tr = document.createElement("tr");
+      [p.id,p.title, [p.book_name,p.author_name].filter(Boolean).join(" / ") || "—", p.status === "active" ? "منتشرشده" : p.status === "archived" ? "بایگانی" : "پیش‌نویس", Math.floor(Number(p.duration_seconds || 0)/60) + " دقیقه"].forEach(value => tr.append(node("td","",value)));
+      const td = node("td");
+      const actions = node("div","actions");
+      actions.append(button("ویرایش","secondary",() => fillPodcastForm(p)));
+      td.append(actions); tr.append(td); body.append(tr);
+    });
+  }
+  async function loadPodcasts() {
+    $("podcast-rows").replaceChildren();
+    const tr = document.createElement("tr"), td = node("td","empty","در حال دریافت فهرست از پایگاه داده…"); td.colSpan = 6; tr.append(td); $("podcast-rows").append(tr);
+    try {
+      const data = await api("/admin/podcasts");
+      podcasts = Array.isArray(data.podcasts) ? data.podcasts : [];
+      renderPodcasts();
+    } catch (error) {
+      const row = document.createElement("tr"), cell = node("td","empty","دریافت پادکست‌ها ناموفق بود: " + error.message); cell.colSpan = 6; row.append(cell); $("podcast-rows").replaceChildren(row);
+      message(error.message || "دریافت پادکست‌ها ناموفق بود.", "error");
+    }
+  }
+  function fillPodcastForm(podcast) {
+    editingPodcastId = Number(podcast.id);
+    $("podcast-form-title").textContent = "ویرایش پادکست #" + podcast.id;
+    $("podcast-save").textContent = "ذخیره تغییرات";
+    $("podcast-cancel").hidden = false;
+    podcastFields.forEach(key => {
+      const field = $("podcast-" + ({book_name:"book",author_name:"author",category_name:"category",episode_number:"episode",duration_seconds:"duration",audio_url:"audio",cover_url:"cover",publish_date:"publish-date" ,summary:"summary",description:"description",transcript:"transcript",status:"status",tags:"tags",title:"title",slug:"slug"}[key]));
+      if (!field) return;
+      let value = podcast[key];
+      if (key === "publish_date" && value) value = String(value).replace(" ", "T").slice(0,16);
+      field.value = podcastValue(value);
+    });
+    $("podcast-form").scrollIntoView({behavior:"smooth",block:"start"});
+  }
+  function resetPodcastForm() {
+    editingPodcastId = null;
+    $("podcast-form").reset();
+    $("podcast-id").value = "";
+    $("podcast-episode").value = "1";
+    $("podcast-duration").value = "0";
+    $("podcast-status").value = "active";
+    $("podcast-form-title").textContent = "ثبت پادکست جدید";
+    $("podcast-save").textContent = "ثبت پادکست";
+    $("podcast-cancel").hidden = true;
+  }
+  $("tab-club").addEventListener("click", () => switchTab("club"));
+  $("tab-podcasts").addEventListener("click", () => switchTab("podcasts"));
+  $("podcast-search").addEventListener("input", renderPodcasts);
+  $("podcast-refresh").addEventListener("click", loadPodcasts);
+  $("podcast-cancel").addEventListener("click", resetPodcastForm);
+  $("podcast-form").addEventListener("submit", async event => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (!form.reportValidity()) return;
+    const data = Object.fromEntries(new FormData(form).entries());
+    delete data.id;
+    ["episode_number","duration_seconds"].forEach(k => data[k] = Number(data[k] || 0));
+    if (data.publish_date) data.publish_date = data.publish_date.replace("T"," ");
+    else data.publish_date = null;
+    const buttonEl = $("podcast-save");
+    buttonEl.disabled = true;
+    try {
+      const result = editingPodcastId
+        ? await api("/admin/podcasts/" + editingPodcastId, "PUT", data)
+        : await api("/admin/podcasts", "POST", data);
+      message(result.message || "پادکست با موفقیت ذخیره شد.", "ok");
+      resetPodcastForm();
+      await loadPodcasts();
+    } catch (error) {
+      message(error.message || "ذخیره پادکست ناموفق بود.", "error");
+    } finally { buttonEl.disabled = false; }
+  });
+
   function render() {
     const flags = Object.fromEntries((snapshot.settings || []).map(x => [x.setting_key, x.setting_value]));
     $("metrics").replaceChildren(
@@ -108,6 +207,7 @@
     $("dashboard").hidden = false;
     connection.textContent = "اتصال امن برقرار است · مدیر";
     message("اطلاعات از API و D1 دریافت شد. مأموریت و پاداش تازه به‌صورت پیش‌فرض غیرفعال ایجاد می‌شوند.", "ok");
+    if ($("podcast-management-tab") && !$("podcast-management-tab").hidden) loadPodcasts();
   }
   async function mutate(path, body) {
     try {

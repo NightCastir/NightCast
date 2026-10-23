@@ -1,0 +1,16 @@
+.nc-quiz-notification{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:7px;min-width:40px;min-height:40px;padding:8px 10px;border:1px solid rgba(237,190,89,.62);border-radius:999px;background:linear-gradient(145deg,rgba(246,202,104,.22),rgba(183,126,35,.12));color:#f5c967;text-decoration:none;box-shadow:0 0 18px rgba(237,190,89,.12);transition:color .2s ease,background .2s ease,border-color .2s ease,opacity .2s ease;white-space:nowrap}
+.nc-quiz-notification i{font-size:1.05rem;color:#f5c967}
+.nc-quiz-notification.is-active{animation:nc-quiz-bell-glow 3s ease-in-out infinite}
+.nc-quiz-notification.is-active:after{content:"";position:absolute;top:5px;inset-inline-start:5px;width:6px;height:6px;border-radius:50%;background:#ffe39a;box-shadow:0 0 8px rgba(255,227,154,.9)}
+.nc-quiz-notification.is-inactive,.nc-quiz-notification[aria-disabled="true"]{color:#9299a8;background:rgba(130,139,154,.09);border-color:rgba(150,158,173,.28);box-shadow:none;opacity:.78;cursor:default;animation:none}
+.nc-quiz-notification.is-inactive i,.nc-quiz-notification[aria-disabled="true"] i{color:#9299a8}
+.nc-quiz-notification.is-inactive:after,.nc-quiz-notification[aria-disabled="true"]:after{display:none}
+.nc-quiz-notification-label{font-size:.72rem;font-weight:800}
+.nc-quiz-notification:focus-visible{outline:2px solid #fff0c2;outline-offset:3px}
+.nc-club-header .nc-quiz-notification{margin-inline-start:auto}
+.nc-quiz-header .nc-quiz-notification{margin-inline-start:8px}
+@keyframes nc-quiz-bell-glow{0%,100%{box-shadow:0 0 12px rgba(237,190,89,.1)}50%{box-shadow:0 0 20px rgba(237,190,89,.28)}}
+@media(prefers-reduced-motion:reduce){.nc-quiz-notification{animation:none!important;transition:none!important}}
+@media(max-width:800px){.nc-quiz-notification{min-height:36px;padding:7px 9px}.nc-quiz-notification-label{font-size:.68rem}}
+
+.nc-quiz-header nav a.nc-quiz-notification{color:#f5c967}.nc-quiz-header nav a.nc-quiz-notification.is-inactive,.nc-quiz-header nav a.nc-quiz-notification[aria-disabled="true"]{color:#9299a8}

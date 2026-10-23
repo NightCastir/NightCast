@@ -1,0 +1,38 @@
+name: NightCast Daily Quiz Header Notification Acceptance
+
+on:
+  push:
+    branches:
+      - feat/header-daily-quiz-bell
+    paths:
+      - 'index.html'
+      - 'club.html'
+      - 'quiz/index.html'
+      - 'js/nightcast-quiz-notification.js'
+      - 'js/nightcast-quiz.js'
+      - 'css/nightcast-quiz-notification.css'
+      - 'tests/club-quiz-header-notification-acceptance.cjs'
+      - '.github/workflows/club-quiz-header-notification-acceptance.yml'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate daily quiz header notification
+        run: |
+          node --check js/nightcast-quiz-notification.js
+          node tests/club-quiz-header-notification-acceptance.cjs

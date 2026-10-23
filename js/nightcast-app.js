@@ -1488,7 +1488,6 @@ LOGOUT
                         '<div class="card-footer">' +
                             '<button type="button" class="btn btn-primary" data-action="play" data-id="' + id + '"' + (audio ? "" : " disabled") + '><i class="fa-solid fa-play" aria-hidden="true"></i> پخش</button>' +
                             '<button type="button" class="btn btn-secondary nc-card-details" data-action="details" data-id="' + id + '" aria-label="جزئیات ' + escapeHtml(title) + '"><i class="fa-regular fa-file-lines" aria-hidden="true"></i><span>جزئیات</span></button>' +
-                            '<button type="button" class="btn btn-secondary nc-share-button" data-action="share" data-id="' + id + '" aria-label="اشتراک‌گذاری ' + escapeHtml(title) + '" title="اشتراک‌گذاری"><i class="fa-solid fa-share-nodes" aria-hidden="true"></i><span>اشتراک</span></button>' +
                             '<button type="button" class="btn btn-secondary nc-card-download" data-action="download" data-id="' + id + '" aria-label="دریافت ' + escapeHtml(title) + '"' + (audio ? "" : " disabled") + '><i class="fa-solid fa-download" aria-hidden="true"></i></button>' +
                             '<button type="button" class="favorite ' + (fav ? "active" : "") + '" data-action="favorite" data-id="' + id + '" aria-label="' + (fav ? "حذف از علاقه‌مندی‌ها" : "افزودن به علاقه‌مندی‌ها") + '" aria-pressed="' + (fav ? "true" : "false") + '"><i class="' + (fav ? "fa-solid" : "fa-regular") + ' fa-heart" aria-hidden="true"></i></button>' +
                             '<button type="button" class="nc-comment-action" data-action="comments" data-id="' + id + '" aria-label="مشاهده و ثبت دیدگاه برای ' + escapeHtml(title) + '"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>دیدگاه‌ها</span><b class="nc-card-stat-count" data-comment-count="' + id + '" aria-label="تعداد دیدگاه‌ها">۰</b></button>' +
@@ -1804,16 +1803,6 @@ LOGOUT
                LOAD PODCASTS
             ========================================================= */
 
-            function openSharedPodcastFromUrl() {
-                if (window.__NC_SHARED_PODCAST_OPENED) return;
-                const requested = new URLSearchParams(window.location.search).get("podcast");
-                if (!requested) return;
-                const podcast = state.all.find(item => String(item.id) === requested || String(item.slug || "") === requested);
-                if (!podcast) return;
-                window.__NC_SHARED_PODCAST_OPENED = true;
-                window.setTimeout(() => openPodcastDetails(podcast.id), 80);
-            }
-
             async function loadPodcasts() {
 
                 const cacheKey = CONFIG.CACHE_KEY;
@@ -1832,7 +1821,6 @@ LOGOUT
                     updateLatest(cached);
                     updatePodcastCollectionSchema(cached);
                     applyView();
-                    openSharedPodcastFromUrl();
                     window.__NC_CACHED_CATALOG_RENDERED = true;
                 } else {
                     skeletons();
@@ -1942,7 +1930,6 @@ LOGOUT
                     // Keep already-rendered podcast cards stable when the API refresh completes.
                     // Replacing the entire grid here caused cards to disappear/reappear during scroll.
                     applyView({ preserveExisting: true });
-                    openSharedPodcastFromUrl();
 
                 } catch (err) {
                     console.error("NightCast Feed Error:", err);
@@ -1953,7 +1940,6 @@ LOGOUT
                         updateLatest(cached);
                         updatePodcastCollectionSchema(cached);
                         applyView();
-                        openSharedPodcastFromUrl();
                         return;
                     }
 

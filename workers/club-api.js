@@ -254,6 +254,7 @@ export async function handleClubApi({ request, url, DB, json, checkAuth, env }) 
     }
 
     // Summary metrics are derived from server-accepted listening events, never client playback claims.
+    // Keep the deployed Worker aligned with the dashboard contract in js/nightcast-club.js.
     if (path === "/summary" && method === "GET") {
       const auth = await requireMember(checkAuth);
       if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");

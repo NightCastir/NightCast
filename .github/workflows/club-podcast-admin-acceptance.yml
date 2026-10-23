@@ -1,0 +1,35 @@
+name: NightCast Admin Podcast Management Acceptance
+
+on:
+  push:
+    branches: [main, feat/admin-podcast-management]
+    paths:
+      - "workers/club-api-entry.js"
+      - "club-admin.html"
+      - "js/club-admin.js"
+      - "index.html"
+      - "tests/club-podcast-admin-acceptance.cjs"
+      - ".github/workflows/club-podcast-admin-acceptance.yml"
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  admin-podcast-management:
+    name: Admin-only podcast CRUD and UI acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify admin podcast API authorization and UI contract
+        run: node tests/club-podcast-admin-acceptance.cjs
+      - name: Verify front-end JavaScript syntax
+        run: node --check js/club-admin.js
+      - name: Verify Worker JavaScript syntax
+        run: node --input-type=module --check < workers/club-api-entry.js

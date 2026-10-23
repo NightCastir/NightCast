@@ -44,6 +44,7 @@
     });
     window.addEventListener('storage', function (event) { if (event.key === TOKEN_KEY) Array.prototype.forEach.call(document.querySelectorAll(selectors), refresh); });
     window.addEventListener('nightcast:authchange', function () { Array.prototype.forEach.call(document.querySelectorAll(selectors), refresh); });
+    window.addEventListener('nightcast:quizanswered', function () { Array.prototype.forEach.call(document.querySelectorAll(selectors), refresh); });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 }());

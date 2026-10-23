@@ -72,7 +72,7 @@ export default {
         return json({ success: false, message: "این عملیات فقط برای مدیر مجاز است.", code: "admin_required" }, actor ? 403 : 401);
       }
       if (!DB) return json({ success: false, message: "پایگاه داده در دسترس نیست.", code: "database_unavailable" }, 503);
-      const fields = ["title","slug","book_name","author_name","category_name","tags","episode_number","summary","transcript","duration_seconds","audio_url","cover_url","status","publish_date","description"];
+      const fields = ["title","slug","book_name","author_name","category_name","tags","episode_number","summary","transcript","duration_seconds","listen_count","audio_url","cover_url","status","publish_date","description"];
       const nullableText = ["book_name","author_name","category_name","tags","summary","transcript","audio_url","cover_url","publish_date","description"];
       const readBody = async () => {
         try { return await request.json(); } catch (_) { return null; }
@@ -88,7 +88,7 @@ export default {
         const out = {};
         for (const key of fields) {
           if (partial && !Object.prototype.hasOwnProperty.call(body, key)) continue;
-          if (["episode_number","duration_seconds"].includes(key)) {
+          if (["episode_number","duration_seconds","listen_count"].includes(key)) {
             const raw = body[key];
             const n = raw === "" || raw === null || raw === undefined ? 0 : Number(raw);
             if (!Number.isSafeInteger(n) || n < 0 || n > (key === "episode_number" ? 100000 : 10000000)) throw new Error("مقدار شماره قسمت یا مدت معتبر نیست.");
@@ -118,7 +118,7 @@ export default {
         const idMatch = url.pathname.match(/\/podcasts\/(\d+)$/);
         const id = idMatch ? Number(idMatch[1]) : null;
         if (request.method === "GET" && !id) {
-          const result = await DB.prepare("SELECT id,title,slug,book_name,author_name,category_name,tags,episode_number,summary,transcript,duration_seconds,audio_url,cover_url,status,publish_date,listen_count,created_at,updated_at,description FROM podcasts ORDER BY id DESC LIMIT 1000").all();
+          const result = await DB.prepare("SELECT id,title,slug,book_name,author_name,category_name,tags,episode_number,summary,transcript,duration_seconds,listen_count,audio_url,cover_url,status,publish_date,listen_count,created_at,updated_at,description FROM podcasts ORDER BY id DESC LIMIT 1000").all();
           return json({ success: true, podcasts: result.results || [] });
         }
         if (request.method === "POST" && !id) {

@@ -1,0 +1,10 @@
+name = "nightcast-club-api"
+main = "workers/club-api-entry.js"
+compatibility_date = "2026-10-22"
+workers_dev = false
+account_id = "86bf74bc8c59231d95c4a642a02343e7"
+
+[[d1_databases]]
+binding = "NightCastBinding"
+database_name = "nightcast-db"
+database_id = "21cb51d1-8484-4f3e-90b6-ada3228506d6"

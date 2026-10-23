@@ -258,13 +258,14 @@ export async function handleClubApi({ request, url, DB, json, checkAuth, env }) 
       if (auth.error) return fail(json, auth.error.status, auth.error.message, "club_auth_required");
       const userId = auth.userId;
       await DB.prepare("INSERT OR IGNORE INTO club_profiles(user_id) VALUES (?)").bind(userId).run();
-      const [profile, points, xp, levels, missionCount, badgeCount] = await Promise.all([
+      const [profile, points, xp, levels, missionCount, badgeCount, completedPodcastCount] = await Promise.all([
         DB.prepare("SELECT display_name, leaderboard_opt_out, notifications_enabled FROM club_profiles WHERE user_id=?").bind(userId).first(),
         DB.prepare("SELECT COALESCE(SUM(delta),0) AS total FROM club_point_ledger WHERE user_id=? AND status='posted'").bind(userId).first(),
         DB.prepare("SELECT COALESCE(SUM(delta),0) AS total FROM club_experience_ledger WHERE user_id=? AND status='posted'").bind(userId).first(),
         DB.prepare("SELECT level,slug,title_fa,min_xp FROM club_levels WHERE is_active=1 ORDER BY min_xp").all(),
         DB.prepare("SELECT COUNT(*) AS total FROM club_missions WHERE is_active=1 AND (starts_at IS NULL OR starts_at<=CURRENT_TIMESTAMP) AND (ends_at IS NULL OR ends_at>CURRENT_TIMESTAMP)").first(),
-        DB.prepare("SELECT COUNT(*) AS total FROM club_user_badges WHERE user_id=?").bind(userId).first()
+        DB.prepare("SELECT COUNT(*) AS total FROM club_user_badges WHERE user_id=?").bind(userId).first(),
+        DB.prepare("SELECT COUNT(DISTINCT podcast_id) AS total FROM club_activity_events WHERE user_id=? AND event_type='listen' AND status='accepted' AND accepted_seconds>=60 AND podcast_id IS NOT NULL").bind(userId).first()
       ]);
       const totalXp = Number(xp?.total || 0);
       const levelRows = levels?.results || [];
@@ -275,6 +276,7 @@ export async function handleClubApi({ request, url, DB, json, checkAuth, env }) 
         rewards_enabled: (await setting(DB, "rewards_enabled")) === "true",
         profile: profile || null, points: Number(points?.total || 0), xp: totalXp,
         level: currentLevel, next_level: nextLevel, active_missions: Number(missionCount?.total || 0),
+        completed_podcasts: Number(completedPodcastCount?.total || 0),
         badges_earned: Number(badgeCount?.total || 0) });
     }
 

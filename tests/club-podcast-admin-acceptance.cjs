@@ -1,0 +1,25 @@
+'use strict';
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const { spawnSync } = require('node:child_process');
+const worker = fs.readFileSync('workers/club-api-entry.js','utf8');
+const html = fs.readFileSync('club-admin.html','utf8');
+const js = fs.readFileSync('js/club-admin.js','utf8');
+const home = fs.readFileSync('index.html','utf8');
+function check(name, ok) { console.log((ok ? 'PASS' : 'FAIL') + ' | ' + name); assert.ok(ok,name); }
+const syntax = spawnSync(process.execPath,['--input-type=module','--check'],{input:worker,encoding:'utf8'});
+check('Worker entry parses as an ES module',syntax.status===0);
+check('podcast routes are scoped to the admin podcast endpoint',/url\.pathname === "\/api\/v1\/club\/admin\/podcasts" \|\| \/\^\\\/api\\\/v1\\\/club\\\/admin\\\/podcasts\\\/\\d\+\$\//.test(worker));
+check('podcast CRUD verifies server-side actor role and configured email',/actor\.role[\s\S]*?configuredAdminEmail[\s\S]*?actor\.email/.test(worker));
+check('unauthorized podcast CRUD is rejected before database access',/code: "admin_required"/.test(worker));
+check('list endpoint reads records from the real podcasts table',/FROM podcasts ORDER BY id DESC LIMIT 1000/.test(worker));
+check('create endpoint inserts into podcasts using bound parameters',/INSERT INTO podcasts \(" \+ cols\.join\(","\)/.test(worker) && /\.bind\(\.\.\.cols\.map\(k => data\[k\]\)\)/.test(worker));
+check('update endpoint uses bound values and updates updated_at',/UPDATE podcasts SET "[\s\S]*?updated_at = CURRENT_TIMESTAMP WHERE id = \?/.test(worker));
+check('slug format and duplicate slug are validated',/slug فقط باید شامل/.test(worker) && /UNIQUE constraint failed: podcasts\\.slug/.test(worker));
+check('admin page has separate podcast-management tab',/id="tab-podcasts"/.test(html) && /id="podcast-management-tab"/.test(html));
+check('create/edit form covers all editable podcast fields',["title","slug","book_name","author_name","category_name","tags","episode_number","summary","transcript","duration_seconds","audio_url","cover_url","status","publish_date","description"].every(k=>new RegExp('name="'+k+'"').test(html)));
+check('existing podcasts are shown in a selectable grid/table',/id="podcast-rows"/.test(html) && /ویرایش/.test(js));
+check('front end uses authenticated GET/POST/PUT API calls',/api\("\/admin\/podcasts"\)/.test(js) && /"PUT", data/.test(js) && /"POST", data/.test(js));
+check('admin navigation label is renamed',!home.includes('مدیریت باشگاه') && home.includes('کنترل پنل مدیریت'));
+check('client-side role alone is not used as authorization',/Authorization: "Bearer " \+ token/.test(js));
+console.log('SUMMARY | PASS | 14 admin podcast management security and UI checks');

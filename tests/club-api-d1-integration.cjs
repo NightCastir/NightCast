@@ -84,7 +84,7 @@ async function main() {
 
   r = await call('/daily-visit', { method: 'POST', headers: member, body: {} });
   assert.equal(r.status, 200, JSON.stringify(r.data));
-  assert.equal(r.data.points_awarded, 2);
+  assert.equal(r.data.points_awarded, 2, 'daily visit should award 2 points: ' + JSON.stringify(r.data));
   r = await call('/daily-visit', { method: 'POST', headers: member, body: {} });
   assert.equal(r.status, 200);
   assert.equal(r.data.points_awarded, 0, 'daily visit reward must not be repeated');

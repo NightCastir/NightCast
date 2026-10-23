@@ -7,6 +7,7 @@ on:
       - 'assets/**'
       - 'users/login.html'
       - 'js/nightcast-app.js'
+      - 'js/nightcast-app-v5.js'
       - 'js/nightcast-theme.js'
       - 'css/nightcast-profile.css'
       - 'css/nightcast-themes.css'
@@ -85,7 +86,7 @@ jobs:
           const test = fs.readFileSync('tests/theme-system-acceptance.cjs', 'utf8');
           const themeIds = ['midnight-cosmos','aurora','studio-noir','deep-ocean','royal-gold','neon-city','persian-heritage','moonlight'];
           const checks = [
-          ['homepage loads theme assets in correct order', /<link\b(?=[^>]*\brel=["']stylesheet["'])(?=[^>]*\bhref=["'][^"']*\/css\/nightcast-themes\.css(?:\?[^"']*)?["'])[^>]*>/i.test(html) && /<script\b[^>]*src=["']\/js\/nightcast-theme\.js(?:\?[^"']*)?["'][^>]*>/i.test(html) && /<script\b[^>]*src=["']\/js\/nightcast-app\.js(?:\?[^"']*)?["'][^>]*>/i.test(html) && html.indexOf('/js/nightcast-theme.js') < html.indexOf('/js/nightcast-app.js')],
+          ['homepage loads theme assets in correct order', /<link\b(?=[^>]*\brel=["']stylesheet["'])(?=[^>]*\bhref=["'][^"']*\/css\/nightcast-themes\.css(?:\?[^"']*)?["'])[^>]*>/i.test(html) && /<script\b[^>]*src=["']\/js\/nightcast-theme\.js(?:\?[^"']*)?["'][^>]*>/i.test(html) && /<script\b[^>]*src=["']\/js\/nightcast-app(?:-v\d+)?\.js(?:\?[^"']*)?["'][^>]*>/i.test(html) && html.indexOf('/js/nightcast-theme.js') < Math.min(...['/js/nightcast-app.js','/js/nightcast-app-v5.js'].map(path => { const index = html.indexOf(path); return index < 0 ? Infinity : index; }))],
           ['login page shares theme controller', login.includes('/js/nightcast-theme.js?v=2')],
           ['profile does not duplicate the global theme picker', !html.includes('profileThemeSettings') && !html.includes('profileSettingsBtn') && test.includes('homepage exposes floating theme launcher')],
           ['theme acceptance suite covers login page', test.includes('Google sign-in page loads successfully')]

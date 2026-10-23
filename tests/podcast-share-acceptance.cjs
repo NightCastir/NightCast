@@ -20,7 +20,7 @@ check('Card share action invokes the sharing handler', /action === "share"\)\s*\
 check('Bottom player includes a share button beside the favorite button', /id="ncPlayerLike"[\s\S]{0,500}id="ncPlayerShare"/.test(html));
 check('Expanded player includes a share action', /id="ncNowShare" data-action="share-current"/.test(html));
 check('Share action uses native share sheet when available', app.includes('typeof navigator.share === "function"') && app.includes('await navigator.share(shareData)'));
-check('Clipboard and manual-copy fallbacks are present', app.includes('navigator.clipboard.writeText(url)') && app.includes('window.prompt("لینک اختصاصی این پادکست را کپی کنید:", url)'));
+check('Clipboard and manual-copy fallbacks are present', app.includes('navigator.clipboard?.writeText(url)') && app.includes('window.prompt("لینک اختصاصی این پادکست را کپی کنید:", url)'));
 check('Deep link resolves both podcast ID and slug', /String\(item.id\) === sharedValue \|\| String\(item.slug \|\| ""\) === sharedValue/.test(app));
 check('Deep link opens details and attempts to play the selected podcast', /openPodcastDetails\(podcast.id\);\s*playPodcast\(podcast.id\);/.test(app));
 check('Deep-link processing waits for the catalogue to load', /archiveReady\.then\(\(\) => \{[\s\S]{0,250}openSharedPodcastFromUrl\(\);/.test(app));

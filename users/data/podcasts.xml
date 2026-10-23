@@ -20,7 +20,7 @@
 
     <copyright>NightCast</copyright>
 
-    <lastBuildDate>Fri, 23 Oct 2026 12:01:06 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 23 Oct 2026 15:20:12 GMT</lastBuildDate>
 
     <generator>NightCast RSS Generator</generator>
 
@@ -53,6 +53,97 @@
     <itunes:category
         text="Education"
     />
+
+
+
+    <item>
+
+        <title>
+            چطور در ۶۰ ثانیه اول تأثیرگذار باشیم؟
+        </title>
+
+        <description>
+            در این قسمت از رادیو فرهنگی NightCast، به سراغ کتاب «دقیقه اول» نوشته کریس فنینگ می‌رویم؛ کتابی کاربردی درباره بهتر صحبت کردن، شفاف‌تر منتقل کردن منظور و استفاده مؤثر از زمان مخاطب. در طول برنامه، چهار اصل مهم کتاب را مرور می‌کنیم: مشخص کردن زمینه گفت‌وگو، تعیین هدف و پیام اصلی، استفاده از روش GPS برای بیان هدف و مشکل و راه‌حل، و توجه به زمان و آمادگی مخاطب. همچنین می‌بینیم چطور می‌توانیم این مهارت‌ها را در جلسات کاری، ایمیل‌ها، ارائه‌ها و گفت‌وگوهای روزانه به کار بگیریم.
+        </description>
+
+        <content:encoded><![CDATA[
+            
+            <p>
+                در این قسمت از رادیو فرهنگی NightCast، به سراغ کتاب «دقیقه اول» نوشته کریس فنینگ می‌رویم؛ کتابی کاربردی درباره بهتر صحبت کردن، شفاف‌تر منتقل کردن منظور و استفاده مؤثر از زمان مخاطب. در طول برنامه، چهار اصل مهم کتاب را مرور می‌کنیم: مشخص کردن زمینه گفت‌وگو، تعیین هدف و پیام اصلی، استفاده از روش GPS برای بیان هدف و مشکل و راه‌حل، و توجه به زمان و آمادگی مخاطب. همچنین می‌بینیم چطور می‌توانیم این مهارت‌ها را در جلسات کاری، ایمیل‌ها، ارائه‌ها و گفت‌وگوهای روزانه به کار بگیریم.
+            </p>
+
+            <p>
+                <strong>کتاب:</strong>
+                دقیقه اول
+            </p>
+
+            <p>
+                <strong>نویسنده:</strong>
+                کریس فِنینگ (Chris Fenning)
+            </p>
+
+            <p>
+                <strong>دسته‌بندی:</strong>
+                رشد فردی
+            </p>
+
+            <p>
+                <strong>برچسب‌ها:</strong>
+                دقیقه اول، ارتباط مؤثر، مهارت گفت‌وگو، فن بیان، ارتباطات کاری، خلاصه کتاب، رشد فردی، مدیریت زمان
+            </p>
+        
+        ]]></content:encoded>
+
+        <itunes:summary>
+            چطور کاری کنیم که دیگران از همان لحظه اول به حرف‌هایمان توجه کنند؟ در این قسمت از رادیو NightCast، کتاب «دقیقه اول» را مرور می‌کنیم و با روش‌هایی کاربردی برای شروع مؤثر گفت‌وگو، بیان روشن هدف، توضیح مسئله و ارائه راه‌حل آشنا می‌شویم. یاد می‌گیریم چطور در جلسات، پیام‌ها، ایمیل‌ها و گفت‌وگوهای روزمره، منظورمان را کوتاه‌تر، روشن‌تر و تأثیرگذارتر بیان کنیم.
+        </itunes:summary>
+
+        <itunes:author>
+            کریس فِنینگ (Chris Fenning)
+        </itunes:author>
+
+        <itunes:episode>
+            1
+        </itunes:episode>
+
+        <itunes:episodeType>
+            full
+        </itunes:episodeType>
+
+        <itunes:duration>
+            09:58
+        </itunes:duration>
+
+        <itunes:explicit>
+            no
+        </itunes:explicit>
+
+        
+        <itunes:image
+            href="https://raw.githubusercontent.com/NightCastir/NightCast-Media/refs/heads/main/covers/firstminutes.jpg"
+        />
+        
+
+        <pubDate>
+            Fri, 23 Oct 2026 18:46:00 GMT
+        </pubDate>
+
+        <guid isPermaLink="false">
+            nightcast-episode-36
+        </guid>
+
+        <link>
+            https://nightcast.ir/podcast/first-minute
+        </link>
+
+        <enclosure
+            url="https://raw.githubusercontent.com/NightCastir/NightCast-Media/main/audio/firstminutes.mp3"
+            length="0"
+            type="audio/mpeg"
+        />
+
+    </item>
+
 
 
 

@@ -57,6 +57,9 @@ jobs:
           node --check workers/club-api.js
           node --check workers/club-api-entry.js
 
+      - name: Install Worker push dependency
+        run: npm install --no-save @block65/webcrypto-web-push@2.0.0
+
       - name: Validate Wrangler configuration and bundle
         run: npx --yes wrangler@4 deploy --dry-run --config wrangler.club.toml
 

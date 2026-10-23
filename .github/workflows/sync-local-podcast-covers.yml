@@ -40,7 +40,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add users/data/podcasts.json assets/podcasts/covers
+          git add users/data/podcasts.json users/data/podcasts.xml assets/podcasts/covers
           if git diff --cached --quiet; then
             echo "No asset changes were necessary."
           else

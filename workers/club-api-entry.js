@@ -32,7 +32,7 @@ export default {
       const configuredAdminEmail = String(env.ADMIN_EMAIL || env.ADMIN || "").trim().toLowerCase();
 
       const admin = await DB.prepare(`
-        SELECT admins.id, admins.username, admins.full_name, admins.username AS email
+        SELECT admins.id, admins.username, admins.full_name, admins.email
         FROM admin_sessions
         INNER JOIN admins ON admins.id = admin_sessions.admin_id
         WHERE admin_sessions.session_token = ?

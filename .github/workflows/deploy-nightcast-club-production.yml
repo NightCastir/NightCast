@@ -1,0 +1,107 @@
+name: Deploy NightCast Club to Cloudflare Production
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "workers/club-api.js"
+      - "workers/club-api-entry.js"
+      - "wrangler.club.toml"
+      - "migrations/club/**"
+      - "tests/club-*.cjs"
+      - ".github/workflows/deploy-nightcast-club-production.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightcast-club-production
+  cancel-in-progress: false
+
+jobs:
+  validate-and-deploy:
+    name: Validate, deploy, and smoke-test Club API
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: 86bf74bc8c59231d95c4a642a02343e7
+      CLUB_API_BASE: https://club-api.nightcast.ir
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Set up Python for SQLite contract tests
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Validate schema and migration contract
+        run: node tests/club-schema-acceptance.cjs
+
+      - name: Validate API authorization and transactional contracts
+        run: node tests/club-api-acceptance.cjs
+
+      - name: Validate Worker JavaScript syntax
+        run: |
+          node --check workers/club-api.js
+          node --check workers/club-api-entry.js
+
+      - name: Validate Wrangler configuration and bundle
+        run: npx --yes wrangler@4 deploy --dry-run --config wrangler.club.toml
+
+      - name: Check deployment credential is available
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${CLOUDFLARE_API_TOKEN:-}" ]; then
+            echo "::error::Missing CLOUDFLARE_API_TOKEN repository secret."
+            exit 1
+          fi
+          echo "Cloudflare deployment credential is present; value is not logged."
+
+      - name: Deploy Club API to the existing Production Worker
+        run: npx --yes wrangler@4 deploy --config wrangler.club.toml --message "NightCast Club deploy ${GITHUB_SHA}"
+
+      - name: Verify public Club API authorization and CORS
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          summary_status="$(curl --retry 3 --retry-delay 2 --retry-all-errors -sS \
+            -o /tmp/club-summary.json -w '%{http_code}' \
+            "$CLUB_API_BASE/api/v1/club/summary")"
+          if [ "$summary_status" != "401" ] || ! jq -e '.code == "club_auth_required"' /tmp/club-summary.json >/dev/null; then
+            echo "::error::Club summary endpoint failed its unauthenticated authorization check (HTTP $summary_status)."
+            jq -c '{success,code,message}' /tmp/club-summary.json || true
+            exit 1
+          fi
+
+          admin_status="$(curl --retry 3 --retry-delay 2 --retry-all-errors -sS \
+            -o /tmp/club-admin-status.json -w '%{http_code}' \
+            "$CLUB_API_BASE/api/v1/club/admin/status")"
+          if [ "$admin_status" != "401" ]; then
+            echo "::error::Admin status endpoint should return 401 without a session; got HTTP $admin_status. A 503 may indicate the ADMIN_EMAIL secret is not configured."
+            jq -c '{success,isAdmin,code,message}' /tmp/club-admin-status.json || true
+            exit 1
+          fi
+
+          preflight="$(curl --retry 3 --retry-delay 2 --retry-all-errors -sS \
+            -o /dev/null -w '%{http_code}' -X OPTIONS \
+            "$CLUB_API_BASE/api/v1/club/summary" \
+            -H 'Origin: https://nightcast.ir' \
+            -H 'Access-Control-Request-Method: GET' \
+            -H 'Access-Control-Request-Headers: authorization')"
+          if [ "$preflight" != "204" ]; then
+            echo "::error::Club API CORS preflight expected 204, got $preflight."
+            exit 1
+          fi
+
+          echo "Production smoke checks passed: summary auth gate, admin-status gate, and CORS."

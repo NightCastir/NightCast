@@ -22,7 +22,7 @@ async function main() {
       page.on('pageerror', error => errors.push(error.message));
 
       try {
-        const url = 'https://www.nightcast.ir/?nc_live_browser_check=' + Date.now();
+        const url = 'https://nightcast.ir/?nc_live_browser_check=' + Date.now();
         const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
         assert(response && response.ok(), 'Production root did not return a successful HTTP response');
         assert.equal(new URL(page.url()).pathname, '/', 'Production entry navigated away from the canonical root');

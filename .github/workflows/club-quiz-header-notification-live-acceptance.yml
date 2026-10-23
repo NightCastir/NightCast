@@ -1,0 +1,64 @@
+name: NightCast Daily Quiz Bell Live Deployment Acceptance
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'club.html'
+      - 'quiz/index.html'
+      - 'js/nightcast-quiz-notification.js'
+      - 'js/nightcast-quiz.js'
+      - 'css/nightcast-quiz-notification.css'
+      - '.github/workflows/club-quiz-header-notification-live-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-live-site:
+    name: Verify bell is visible on production NightCast
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Wait for GitHub Pages propagation and verify production markup
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="https://nightcast.ir/"
+          club="https://nightcast.ir/club.html"
+          quiz="https://nightcast.ir/quiz/"
+          assets="https://nightcast.ir"
+          ok=0
+          for attempt in $(seq 1 60); do
+            curl --silent --show-error --location --max-time 15 "$root?nc_deploy_check=$GITHUB_SHA" -o /tmp/nc-root.html || true
+            curl --silent --show-error --location --max-time 15 "$club?nc_deploy_check=$GITHUB_SHA" -o /tmp/nc-club.html || true
+            curl --silent --show-error --location --max-time 15 "$quiz?nc_deploy_check=$GITHUB_SHA" -o /tmp/nc-quiz.html || true
+            if grep -Fq 'nc-quiz-notification' /tmp/nc-root.html 2>/dev/null &&
+               grep -Fq 'nightcast-quiz-notification.js' /tmp/nc-root.html 2>/dev/null &&
+               grep -Fq 'nc-quiz-notification' /tmp/nc-club.html 2>/dev/null &&
+               grep -Fq 'nc-quiz-notification' /tmp/nc-quiz.html 2>/dev/null &&
+               grep -Fq 'nightcast-quiz-notification.js' /tmp/nc-quiz.html 2>/dev/null; then
+              ok=1
+              break
+            fi
+            echo "Waiting for production HTML propagation: attempt $attempt/60"
+            sleep 10
+          done
+          if [ "$ok" -ne 1 ]; then
+            echo "::error::Daily quiz bell markup did not appear on all production pages within 10 minutes."
+            echo "Homepage:"; grep -Eo 'nc-quiz-notification|nightcast-quiz-notification.js[^" ]*' /tmp/nc-root.html 2>/dev/null | head || true
+            echo "Club:"; grep -Eo 'nc-quiz-notification|nightcast-quiz-notification.js[^" ]*' /tmp/nc-club.html 2>/dev/null | head || true
+            echo "Quiz:"; grep -Eo 'nc-quiz-notification|nightcast-quiz-notification.js[^" ]*' /tmp/nc-quiz.html 2>/dev/null | head || true
+            exit 1
+          fi
+          echo "PASS | production homepage includes the daily quiz bell"
+          echo "PASS | production Listener Club page includes the daily quiz bell"
+          echo "PASS | production quiz page includes the daily quiz bell"
+          curl --fail --silent --show-error --location --max-time 20 "$assets/js/nightcast-quiz-notification.js?nc_deploy_check=$GITHUB_SHA" -o /tmp/nc-quiz-notification.js
+          curl --fail --silent --show-error --location --max-time 20 "$assets/css/nightcast-quiz-notification.css?nc_deploy_check=$GITHUB_SHA" -o /tmp/nc-quiz-notification.css
+          node --check /tmp/nc-quiz-notification.js
+          grep -Fq '.nc-quiz-notification.is-inactive' /tmp/nc-quiz-notification.css
+          grep -Fq 'nightcast:quizanswered' /tmp/nc-quiz-notification.js
+          echo "PASS | production JavaScript and CSS assets are published and valid"

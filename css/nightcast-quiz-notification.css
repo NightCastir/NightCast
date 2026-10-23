@@ -12,3 +12,5 @@
 @keyframes nc-quiz-bell-glow{0%,100%{box-shadow:0 0 12px rgba(237,190,89,.1)}50%{box-shadow:0 0 20px rgba(237,190,89,.28)}}
 @media(prefers-reduced-motion:reduce){.nc-quiz-notification{animation:none!important;transition:none!important}}
 @media(max-width:800px){.nc-quiz-notification{min-height:36px;padding:7px 9px}.nc-quiz-notification-label{font-size:.68rem}}
+
+.nc-quiz-header nav a.nc-quiz-notification{color:#f5c967}.nc-quiz-header nav a.nc-quiz-notification.is-inactive,.nc-quiz-header nav a.nc-quiz-notification[aria-disabled="true"]{color:#9299a8}

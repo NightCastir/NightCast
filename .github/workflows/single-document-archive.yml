@@ -53,7 +53,7 @@ jobs:
       - name: Run full NightCast browser and API regression checks
         run: node tests/nightcast-acceptance.cjs
       - name: Verify live www catalogue readiness in a real browser
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/fix/live-pagination-acceptance'
         run: node tests/live-entry-browser.cjs
       - name: Upload browser visual evidence
         if: always()

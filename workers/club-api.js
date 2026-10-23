@@ -581,8 +581,9 @@ export async function handleClubApi({ request, url, DB, json, checkAuth, env }) 
       const canEarn = (await setting(DB, "club_enabled")) === "true" &&
         (await setting(DB, "earning_enabled")) === "true";
       if (firstVisit && reward > 0 && canEarn) {
-        await DB.prepare("INSERT OR IGNORE INTO club_point_ledger (user_id,delta,source_type,source_id,idempotency_key,status,metadata_json) VALUES (?,?,'daily_visit',?,'club-daily-visit:' || ? || ':' || ?,'posted',?)")
-          .bind(auth.userId,reward,day,auth.userId,day,JSON.stringify({day})).run();
+        const idempotencyKey = "club-daily-visit:" + auth.userId + ":" + day;
+        await DB.prepare("INSERT INTO club_point_ledger (user_id,delta,source_type,source_id,idempotency_key,status,metadata_json) VALUES (?,?,'daily_visit',?,?,'posted',?) ON CONFLICT(idempotency_key) DO NOTHING")
+          .bind(auth.userId,reward,day,idempotencyKey,JSON.stringify({day})).run();
       }
       const credit = await DB.prepare("SELECT delta FROM club_point_ledger WHERE idempotency_key=?")
         .bind("club-daily-visit:"+auth.userId+":"+day).first();

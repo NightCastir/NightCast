@@ -73,7 +73,7 @@ jobs:
     steps:
       - name: Verify public root and legacy route after Pages propagation
         env:
-          SITE_URL: https://www.nightcast.ir
+          SITE_URL: https://nightcast.ir
         run: |
           set -euo pipefail
           deadline=$((SECONDS + 300))

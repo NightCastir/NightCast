@@ -149,7 +149,7 @@
     }
     </script>
 
-    <link rel="stylesheet" href="/css/nightcast-base.css?v=2">
+    <link rel="stylesheet" href="/css/nightcast-base.css?v=3">
 
 <link rel="stylesheet" href="/css/cosmic-experience.css?v=6">
     <link rel="stylesheet" href="/css/nightcast-cosmos.css?v=23">
@@ -1021,6 +1021,7 @@
 
                 <img class="track-cover nc-player-cover-clickable" id="playerCover" src="/logo.png" alt="مشاهده جزئیات پادکست" loading="lazy" role="button" tabindex="0" aria-haspopup="dialog" title="برای مشاهده جزئیات کلیک کنید">
                 <button type="button" class="nc-like-button nc-player-like" id="ncPlayerLike" data-like-surface="player" aria-label="افزودن به علاقه‌مندی‌ها" aria-pressed="false" hidden><i class="fa-regular fa-heart" aria-hidden="true"></i></button>
+                <button type="button" class="nc-like-button nc-player-share" id="ncPlayerShare" data-action="share-current" aria-label="اشتراک‌گذاری پادکست در حال پخش" title="ارسال پادکست برای دوست" hidden><i class="fa-solid fa-share-nodes" aria-hidden="true"></i></button>
 
                 <div class="track-text">
 
@@ -1171,7 +1172,7 @@
                         <div class="nc-now-book" id="ncNowBook" hidden></div>
                     </div>
                 </div>
-                <div class="nc-now-actions"><button type="button" class="nc-like-button nc-now-like" id="ncNowLike" data-like-surface="now-playing" aria-label="افزودن به علاقه‌مندی‌ها" aria-pressed="false" hidden><i class="fa-regular fa-heart" aria-hidden="true"></i><span>علاقه‌مندی</span></button><button type="button" class="nc-like-button nc-now-comments" id="ncNowComments" aria-label="دیدگاه‌های این پادکست"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>دیدگاه‌ها</span></button></div>
+                <div class="nc-now-actions"><button type="button" class="nc-like-button nc-now-like" id="ncNowLike" data-like-surface="now-playing" aria-label="افزودن به علاقه‌مندی‌ها" aria-pressed="false" hidden><i class="fa-regular fa-heart" aria-hidden="true"></i><span>علاقه‌مندی</span></button><button type="button" class="nc-like-button nc-now-share" id="ncNowShare" data-action="share-current" aria-label="اشتراک‌گذاری پادکست در حال پخش"><i class="fa-solid fa-share-nodes" aria-hidden="true"></i><span>اشتراک‌گذاری</span></button><button type="button" class="nc-like-button nc-now-comments" id="ncNowComments" aria-label="دیدگاه‌های این پادکست"><i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>دیدگاه‌ها</span></button></div>
                 <div class="nc-now-controls">
                     <button type="button" class="nc-now-control" id="ncNowPrev" aria-label="پادکست قبلی"><i class="fa-solid fa-backward-step"></i></button>
                     <button type="button" class="nc-now-control primary" id="ncNowToggle" aria-label="پخش یا توقف"><i class="fa-solid fa-play"></i></button>
@@ -1197,7 +1198,7 @@
 
     <script src="/js/nightcast-theme.js?v=6" defer></script>
     <script src="/js/nightcast-shield.js?v=4" defer></script>
-    <script src="/js/nightcast-app-v5.js" defer></script>
+    <script src="/js/nightcast-app-v5.js?v=6" defer></script>
 <script src="/js/nightcast-club-listener.js?v=1" defer></script>
     <script src="/js/nightcast-spider-visualizer.js?v=1" defer></script>
     <script src="/js/nightcast-theme-experience.js?v=4" defer></script>

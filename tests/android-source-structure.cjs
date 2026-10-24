@@ -7,6 +7,7 @@ const config = fs.readFileSync('capacitor.config.ts', 'utf8');
 const workflow = fs.readFileSync('.github/workflows/build-android.yml', 'utf8');
 const main = fs.readFileSync('android-template/src/main/java/ir/nightcast/app/MainActivity.java', 'utf8');
 const auth = fs.readFileSync('android-template/src/main/java/ir/nightcast/app/NightCastGoogleAuth.java', 'utf8');
+const share = fs.readFileSync('android-template/src/main/java/ir/nightcast/app/NightCastShare.java', 'utf8');
 const login = fs.readFileSync('users/js/login.js', 'utf8');
 
 assert.match(config, /url:\s*'https:\/\/nightcast\.ir'/, 'Capacitor must have one explicit remote entry URL');
@@ -25,6 +26,11 @@ assert.match(workflow, /cp "\$SOURCE_DIR\/NightCastGoogleAuth\.java" "\$TARGET_D
 assert.match(main, /^package ir\.nightcast\.app;/m);
 assert.match(main, /extends BridgeActivity/);
 assert.match(main, /registerPlugin\(NightCastGoogleAuth\.class\)/);
+assert.match(main, /registerPlugin\(NightCastShare\.class\)/, 'Android activity must register the native share chooser');
+assert.match(share, /@CapacitorPlugin\(name = "NightCastShare"\)/);
+assert.match(share, /Intent\.ACTION_SEND/);
+assert.match(share, /Intent\.createChooser/);
+assert.match(workflow, /cp "\$SOURCE_DIR\/NightCastShare\.java" "\$TARGET_DIR\/NightCastShare\.java"/, 'Android build must package the native share chooser source');
 assert.match(auth, /^package ir\.nightcast\.app;/m);
 assert.match(auth, /@CapacitorPlugin\(name = "NightCastGoogleAuth"\)/);
 assert.match(auth, /public void signIn\(PluginCall call\)/);

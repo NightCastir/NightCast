@@ -20,6 +20,7 @@ public class MainActivity extends BridgeActivity {
         );
 
         registerPlugin(NightCastGoogleAuth.class);
+        registerPlugin(NightCastShare.class);
         registerPlugin(NightCastNotifications.class);
 
         super.onCreate(savedInstanceState);

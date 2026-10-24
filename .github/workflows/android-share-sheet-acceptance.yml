@@ -1,0 +1,50 @@
+name: Android Podcast Share Sheet Acceptance
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'js/nightcast-app.js'
+      - 'js/nightcast-app-v5.js'
+      - 'css/nightcast-base.css'
+      - 'android-template/src/main/java/ir/nightcast/app/MainActivity.java'
+      - 'android-template/src/main/java/ir/nightcast/app/NightCastShare.java'
+      - 'tests/android-source-structure.cjs'
+      - 'tests/podcast-share-acceptance.cjs'
+      - '.github/workflows/android-share-sheet-acceptance.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'js/nightcast-app.js'
+      - 'js/nightcast-app-v5.js'
+      - 'css/nightcast-base.css'
+      - 'android-template/src/main/java/ir/nightcast/app/MainActivity.java'
+      - 'android-template/src/main/java/ir/nightcast/app/NightCastShare.java'
+      - 'tests/android-source-structure.cjs'
+      - 'tests/podcast-share-acceptance.cjs'
+      - '.github/workflows/android-share-sheet-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance:
+    name: Play button + Android share chooser
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check JavaScript syntax
+        run: |
+          node --check js/nightcast-app.js
+          node --check js/nightcast-app-v5.js
+      - name: Verify native Android share wiring
+        run: node tests/android-source-structure.cjs
+      - name: Verify podcast share behavior and mobile play label
+        run: node tests/podcast-share-acceptance.cjs

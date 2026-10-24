@@ -19,8 +19,10 @@ check('Podcast cards render a share icon beside the other actions', app.includes
 check('Card share action invokes the sharing handler', /action === "share"\)\s*\{\s*sharePodcast\(id\);/.test(app));
 check('Bottom player includes a share button beside the favorite button', /id="ncPlayerLike"[\s\S]{0,500}id="ncPlayerShare"/.test(html));
 check('Expanded player includes a share action', /id="ncNowShare" data-action="share-current"/.test(html));
-check('Share action uses native share sheet when available', app.includes('typeof navigator.share === "function"') && app.includes('await navigator.share(shareData)'));
-check('Clipboard and manual-copy fallbacks are present', app.includes('navigator.clipboard?.writeText && window.isSecureContext') && app.includes('window.prompt("لینک اختصاصی این پادکست را کپی کنید:", url)'));
+check('Android uses the native system share chooser before browser sharing', app.includes('window.Capacitor?.Plugins?.NightCastShare') && app.includes('await nativeShare.share(shareData)'));
+check('Browser share sheet remains available outside native Android', app.includes('typeof navigator.share === "function"') && app.includes('await navigator.share(shareData)'));
+check('Card play button is protected from wrapping on narrow Android screens', css.includes('.card-footer [data-action="play"]') && css.includes('white-space:nowrap') && css.includes('word-break:keep-all'));
+check('Clipboard and manual-copy fallbacks are present', app.includes('navigator.clipboard?.writeText && window.isSecureContext') && app.includes('window.prompt("متن و لینک آماده ارسال را کپی کنید:", shareData.text + "\\n" + url)'));
 check('Deep link resolves both podcast ID and slug', /String\(item.id\) === sharedValue \|\| String\(item.slug \|\| ""\) === sharedValue/.test(app));
 check('Deep link opens details and attempts to play the selected podcast', /openPodcastDetails\(podcast.id\);\s*playPodcast\(podcast.id\);/.test(app));
 check('Deep-link processing waits for the catalogue to load', /archiveReady\.then\(\(\) => \{[\s\S]{0,250}openSharedPodcastFromUrl\(\);/.test(app));
@@ -39,4 +41,4 @@ check('Share URL requests playback on arrival', slugUrl.searchParams.get('autopl
 const idUrl = new URL(builder({ id: 91002 }));
 check('Share URL falls back to the podcast ID if no slug exists', idUrl.searchParams.get('podcast') === '91002');
 
-console.log('SUMMARY | 15/15 podcast sharing assertions passed');
+console.log('SUMMARY | 17/17 podcast sharing assertions passed');

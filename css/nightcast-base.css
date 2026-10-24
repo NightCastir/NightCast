@@ -3286,3 +3286,22 @@
 .nc-player-share:hover,.nc-now-share:hover{color:#8bdcff;border-color:rgba(80,190,255,.42);background:rgba(80,190,255,.1)}
 .nc-now-share{width:auto;min-width:142px;height:44px;padding:0 16px;display:flex;align-items:center;justify-content:center;gap:9px;border-radius:999px;font-size:.82rem}
 .nc-share-button:focus-visible,.nc-player-share:focus-visible,.nc-now-share:focus-visible{outline:2px solid #8bdcff;outline-offset:3px}
+
+
+/* Android: keep the short Play label on one line in narrow podcast cards. */
+.card-footer [data-action="play"]{
+  flex:0 0 auto;
+  min-width:max-content;
+  white-space:nowrap;
+  word-break:keep-all;
+  overflow-wrap:normal;
+  padding-inline:12px;
+}
+@media(max-width:520px){
+  .card-footer [data-action="play"]{
+    min-width:64px;
+    padding-inline:10px;
+    font-size:.82rem;
+    line-height:1.25;
+  }
+}

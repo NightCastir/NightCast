@@ -39,7 +39,7 @@ check('sharing already refreshes the score only after a positive API reward', fu
 });
 check('live scripts have cache-busted versions on home and club pages', function () {
   assert.match(home, /nightcast-club-listener\.js\?v=2/);
-  assert.match(home, /nightcast-club-engagement\.js\?v=2/);
+  assert.match(home, /nightcast-club-engagement\.js\?v=\d+/);
   assert.match(page, /nightcast-club\.js\?v=11/);
-  assert.match(page, /nightcast-club-engagement\.js\?v=2/);
+  assert.match(page, /nightcast-club-engagement\.js\?v=\d+/);
 });

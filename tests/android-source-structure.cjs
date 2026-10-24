@@ -15,6 +15,9 @@ assert.match(config, /allowNavigation:\s*\[[^\]]*'www\.nightcast\.ir'[^\]]*'nigh
 assert.ok(login.includes('const fallback = "/podcasts";'), 'Google login must return to the canonical podcast route');
 assert.ok(login.includes("target.origin !== window.location.origin"), 'Post-login navigation must remain on the active origin to preserve the session');
 assert.ok(login.includes("this.getPostLoginDestination()"), 'Successful login must use the validated post-login destination');
+assert.ok(login.includes('const isAndroidWebView ='), 'Android WebView must be detected even if the remote Capacitor bridge is unavailable');
+assert.ok(login.includes('return isAndroidWebView;'), 'Android WebView must fail closed to native sign-in rather than browser GIS');
+assert.ok(login.includes('this.setupNativeGoogle();'), 'Android app must use the native Google Credential Manager flow');
 assert.doesNotMatch(workflow, /cat > android\/app\/src\/main\/java\/ir\/nightcast\/app\/(?:MainActivity|NightCastGoogleAuth)\.java/, 'Java source must not be embedded in workflow YAML');
 assert.match(workflow, /cp "\$SOURCE_DIR\/MainActivity\.java" "\$TARGET_DIR\/MainActivity\.java"/, 'Workflow must copy tracked MainActivity source');
 assert.match(workflow, /cp "\$SOURCE_DIR\/NightCastGoogleAuth\.java" "\$TARGET_DIR\/NightCastGoogleAuth\.java"/, 'Workflow must copy tracked Google auth source');

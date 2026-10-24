@@ -8,7 +8,7 @@ const workflow = fs.readFileSync('.github/workflows/build-android.yml', 'utf8');
 const main = fs.readFileSync('android-template/src/main/java/ir/nightcast/app/MainActivity.java', 'utf8');
 const auth = fs.readFileSync('android-template/src/main/java/ir/nightcast/app/NightCastGoogleAuth.java', 'utf8');
 
-assert.match(config, /url:\s*'https:\/\/www\.nightcast\.ir'/, 'Capacitor must have one explicit remote entry URL');
+assert.match(config, /url:\s*'https:\/\/nightcast\.ir'/, 'Capacitor must have one explicit remote entry URL');
 assert.match(config, /androidScheme:\s*'https'/, 'Android WebView must use HTTPS');
 assert.match(config, /allowNavigation:\s*\[[^\]]*'www\.nightcast\.ir'[^\]]*'nightcast\.ir'/s, 'Both canonical NightCast hosts must be allowed');
 assert.doesNotMatch(workflow, /cat > android\/app\/src\/main\/java\/ir\/nightcast\/app\/(?:MainActivity|NightCastGoogleAuth)\.java/, 'Java source must not be embedded in workflow YAML');

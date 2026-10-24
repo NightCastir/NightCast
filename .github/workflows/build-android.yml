@@ -857,8 +857,8 @@ jobs:
           const config = JSON.parse(fs.readFileSync(file, 'utf8'));
           const server = config.server || {};
           const allowed = server.allowNavigation || [];
-          if (server.url !== 'https://www.nightcast.ir') {
-            throw new Error('Generated Android config does not load https://www.nightcast.ir');
+          if (server.url !== 'https://nightcast.ir') {
+            throw new Error('Generated Android config does not load https://nightcast.ir');
           }
           if (server.androidScheme !== 'https') {
             throw new Error('Generated Android config must use the HTTPS scheme');

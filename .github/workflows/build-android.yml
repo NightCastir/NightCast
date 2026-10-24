@@ -239,7 +239,7 @@ jobs:
           const required = [
             ["appId", /appId:\s*'ir\.nightcast\.app'/],
             ["appName", /appName:\s*'NightCast'/],
-            ["remote entry URL", /url:\s*'https:\/\/www\.nightcast\.ir'/],
+            ["remote entry URL", /url:\s*'https:\/\/nightcast\.ir'/],
             ["HTTPS scheme", /androidScheme:\s*'https'/],
             ["www hostname allowlist", /allowNavigation:\s*\[[^\]]*'www\.nightcast\.ir'/s],
             ["apex hostname allowlist", /allowNavigation:\s*\[[^\]]*'nightcast\.ir'/s]

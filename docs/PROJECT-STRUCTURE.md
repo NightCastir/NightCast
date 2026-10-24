@@ -3,7 +3,7 @@
 ## Canonical entry points
 
 - **Website:** root `index.html` is the canonical public entry and begins with the podcast archive. It must not route through a separate welcome document.
-- **Android:** `MainActivity` launches Capacitor's WebView. The remote entry URL is defined once in `capacitor.config.ts` as `https://www.nightcast.ir`.
+- **Android:** `MainActivity` launches Capacitor's WebView. The remote entry URL is defined once in `capacitor.config.ts` as `https://nightcast.ir`.
 - **Native Google sign-in:** `NightCastGoogleAuth.java` is a separate Capacitor plugin registered by `MainActivity`. Keep this separate from app startup; it has a different responsibility.
 
 ## Public routes and single-document navigation

@@ -86,6 +86,13 @@
     } catch (_) {}
   }
   function start() {
+    try {
+      var nativePlugins = window.Capacitor && window.Capacitor.Plugins;
+      var nativeNotifications = nativePlugins && nativePlugins.NightCastNotifications;
+      if (nativeNotifications && nativeNotifications.requestNotificationsPermission) {
+        nativeNotifications.requestNotificationsPermission().catch(function () {});
+      }
+    } catch (_) {}
     var params = new URLSearchParams(window.location.search);
     var ref = params.get('ref');
     if (ref) {

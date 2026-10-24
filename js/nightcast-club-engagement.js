@@ -76,6 +76,15 @@
     for (var i = 0; i < raw.length; ++i) output[i] = raw.charCodeAt(i);
     return output;
   }
+  function setNativeQuizCountdown(enabled) {
+    try {
+      var plugins = window.Capacitor && window.Capacitor.Plugins;
+      var nativeNotifications = plugins && plugins.NightCastNotifications;
+      if (nativeNotifications && nativeNotifications.setQuizCountdown) {
+        nativeNotifications.setQuizCountdown({ enabled: !!enabled }).catch(function () {});
+      }
+    } catch (_) {}
+  }
   function start() {
     var params = new URLSearchParams(window.location.search);
     var ref = params.get('ref');
@@ -124,7 +133,9 @@
     pollNotifications();
     window.setInterval(pollNotifications, 20000);
     request('/quiz/status').then(function (data) {
-      if (data && data.needs_quiz && !window.location.pathname.startsWith('/quiz')) midnightCountdown();
+      var needsQuiz = !!(data && data.needs_quiz);
+      setNativeQuizCountdown(needsQuiz);
+      if (needsQuiz && !window.location.pathname.startsWith('/quiz')) midnightCountdown();
     }).catch(function () {});
     var button = document.getElementById('ncEnableNotifications');
     if (button) button.addEventListener('click', async function () {

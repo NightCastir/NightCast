@@ -1,6 +1,20 @@
 name: NightCast — Cafe Bazaar Release APK
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'version.json'
+      - 'package.json'
+      - 'index.html'
+      - 'users/login.html'
+      - 'users/js/login.js'
+      - 'login/index.html'
+      - 'android-template/src/main/java/ir/nightcast/app/**'
+      - 'capacitor.config.ts'
+      - 'tests/android-release-readiness.cjs'
+      - '.github/workflows/cafebazaar-release-apk.yml'
   workflow_dispatch:
     inputs:
       confirm_release_build:

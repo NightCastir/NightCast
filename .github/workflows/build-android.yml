@@ -643,6 +643,15 @@ jobs:
               )
 
           text = manifest.read_text(encoding="utf-8")
+          permission = 'android.permission.POST_NOTIFICATIONS'
+          if permission not in text:
+              text = text.replace('<manifest', '<manifest', 1)
+              end = text.find('>')
+              text = text[:end + 1] + '\n    <uses-permission android:name="' + permission + '" />' + text[end + 1:]
+          receiver = '<receiver android:name="ir.nightcast.app.NightCastQuizCountdownReceiver" android:enabled="true" android:exported="false" />'
+          if 'NightCastQuizCountdownReceiver' not in text:
+              text = text.replace('</application>', receiver + '\n    </application>')
+          manifest.write_text(text, encoding="utf-8")
 
           if '@mipmap/ic_launcher' not in text:
               raise SystemExit(

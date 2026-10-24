@@ -1,0 +1,67 @@
+name: NightCast Android Google Login In-App Acceptance
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'users/js/login.js'
+      - 'android-template/src/main/java/ir/nightcast/app/NightCastGoogleAuth.java'
+      - 'android-template/src/main/java/ir/nightcast/app/MainActivity.java'
+      - 'capacitor.config.ts'
+      - 'tests/android-source-structure.cjs'
+      - '.github/workflows/android-google-login.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: nightcast-google-login-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  source-regression:
+    name: Verify native Google login routing
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check Android login routing and native plugin
+        run: |
+          set -euo pipefail
+          node tests/android-source-structure.cjs
+          node <<'NODE'
+          const fs = require('node:fs');
+          const login = fs.readFileSync('users/js/login.js', 'utf8');
+          const native = fs.readFileSync('android-template/src/main/java/ir/nightcast/app/NightCastGoogleAuth.java', 'utf8');
+          const activity = fs.readFileSync('android-template/src/main/java/ir/nightcast/app/MainActivity.java', 'utf8');
+          const checks = [
+            [login.includes('const isAndroidWebView ='), 'Android WebView fallback detection'],
+            [login.includes('this.setupNativeGoogle();'), 'Native login selected in Android'],
+            [login.includes('await plugin.signIn()'), 'JavaScript calls native sign-in'],
+            [login.includes('loginWithGoogleToken('), 'ID token exchanged with NightCast API'],
+            [native.includes('CredentialManager.create(getContext())'), 'Credential Manager initialized'],
+            [native.includes('GetSignInWithGoogleOption'), 'Native Google sign-in option'],
+            [native.includes('GoogleIdTokenCredential.createFrom'), 'Google ID token extraction'],
+            [activity.includes('registerPlugin(NightCastGoogleAuth.class)'), 'Native plugin registered']
+          ];
+          for (const [ok, label] of checks) { console.log((ok ? 'PASS' : 'FAIL') + ' | ' + label); if (!ok) process.exitCode = 1; }
+          NODE
+  request-apk-build:
+    name: Trigger Android APK build
+    needs: source-regression
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch APK build workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh workflow run build-android.yml --ref "${GITHUB_REF_NAME}"
+          echo 'Dispatched the full Debug + Release APK build. Check the Build NightCast Android APK workflow for its final result.'

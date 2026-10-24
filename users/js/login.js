@@ -145,67 +145,56 @@ const Login = {
 
     isAndroidApp(){
 
-        try{
+        /*
+         * Remote Capacitor builds load the production website in Android
+         * WebView. Some older/cached WebView bridge bundles do not expose
+         * the expected Capacitor platform methods early enough. Detect the
+         * Android WebView as a fail-closed fallback so GIS web sign-in never
+         * redirects the APK into Chrome and returns to gsi/transform blank.
+         *
+         * Google authentication itself remains native Credential Manager;
+         * Google OAuth must not be embedded in a WebView.
+         */
+        const userAgent =
+            (window.navigator && window.navigator.userAgent) || "";
 
-            if(
-                !window.Capacitor
-            ){
+        const isAndroidWebView =
+            /Android/i.test(userAgent) &&
+            (/\\bwv\\b/i.test(userAgent) ||
+             /Version\\/[\\d.]+ Chrome\\/[\\d.]+ Mobile Safari/i.test(userAgent));
 
-                return false;
+        try {
 
+            if (!window.Capacitor) {
+                return isAndroidWebView;
             }
 
-
-            /*
-            Capacitor 7
-            */
-
-            if(
-                typeof window.Capacitor.isNativePlatform ===
-                "function"
-            ){
-
-                if(
-                    !window.Capacitor.isNativePlatform()
-                ){
-
-                    return false;
-
+            if (typeof window.Capacitor.getPlatform === "function") {
+                if (window.Capacitor.getPlatform() === "android") {
+                    return true;
                 }
 
+                // Never let a WebView fallback use browser GIS.
+                return isAndroidWebView;
             }
 
-
-            if(
-                typeof window.Capacitor.getPlatform ===
-                "function"
-            ){
-
-                return (
-                    window.Capacitor.getPlatform() ===
-                    "android"
-                );
-
+            if (typeof window.Capacitor.isNativePlatform === "function" &&
+                window.Capacitor.isNativePlatform()) {
+                return isAndroidWebView ||
+                    (typeof window.Capacitor.getPlatform === "function" &&
+                     window.Capacitor.getPlatform() === "android");
             }
 
+            return isAndroidWebView;
 
-            /*
-            Fallback
-            */
-
-            return false;
-
-        }
-
-        catch(error){
+        } catch (error) {
 
             console.error(
                 "Android platform detection failed:",
                 error
             );
 
-
-            return false;
+            return isAndroidWebView;
 
         }
 

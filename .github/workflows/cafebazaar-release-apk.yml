@@ -50,6 +50,11 @@ jobs:
         with:
           node-version: "22"
 
+      - name: Run Android release readiness acceptance
+        run: |
+          set -euo pipefail
+          node tests/android-release-readiness.cjs
+
       - name: Setup Java
         uses: actions/setup-java@v5
         with:

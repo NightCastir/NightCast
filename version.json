@@ -1,7 +1,7 @@
 {
-  "version": "5.2.8",
+  "version": "5.2.9",
   "title": "به‌روزرسانی NightCast",
-  "message": "نسخه ۵.۲.۸ نایت‌کست؛ به‌روزرسانی برنامه و بهبود قابلیت‌های اعلان.",
+  "message": "نسخه ۵.۲.۹ نایت‌کست؛ اصلاح ورود اندروید، تازه‌سازی منابع و بهبود پایداری.",
   "marketUrl": "https://cafebazaar.ir/app/ir.nightcast.app",
   "githubUrl": "https://github.com/NightCastir/NightCast/raw/refs/heads/main/downloadrelease/NightCast.apk",
   "downloadUrl": "https://www.nightcast.ir/downloadrelease/NightCast.apk"

@@ -474,10 +474,10 @@
                 }
                 try {
                     if (navigator.clipboard?.writeText && window.isSecureContext) {
-                        await navigator.clipboard.writeText(shareData.text + "\\n" + url);
+                        await navigator.clipboard.writeText(shareData.text + "\n" + url);
                     } else {
                         const field = document.createElement("textarea");
-                        field.value = shareData.text + "\\n" + url;
+                        field.value = shareData.text + "\n" + url;
                         field.setAttribute("readonly", "");
                         field.style.position = "fixed";
                         field.style.opacity = "0";
@@ -490,7 +490,7 @@
                     toast("متن و لینک پادکست کپی شد؛ می‌توانید آن را برای دوستانتان بفرستید.");
                 } catch (error) {
                     console.warn("NightCast share link could not be copied automatically.", error);
-                    window.prompt("متن و لینک آماده ارسال را کپی کنید:", shareData.text + "\\n" + url);
+                    window.prompt("متن و لینک آماده ارسال را کپی کنید:", shareData.text + "\n" + url);
                 }
             }
 

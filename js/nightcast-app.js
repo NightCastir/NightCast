@@ -449,6 +449,20 @@
                 const url = buildPodcastShareUrl(podcast);
                 const title = String(podcast.title || podcast.book_name || "پادکست NightCast");
                 const shareData = { title: title + " | NightCast", text: "این پادکست را در رادیو NightCast بشنو:", url };
+
+                // Prefer Android's native share chooser so installed SMS, Telegram, Soroush,
+                // and other compatible apps are offered even when WebView lacks navigator.share.
+                const nativeShare = window.Capacitor?.Plugins?.NightCastShare;
+                if (window.Capacitor?.getPlatform?.() === "android" && nativeShare?.share) {
+                    try {
+                        await nativeShare.share(shareData);
+                        toast("یک برنامه برای ارسال پادکست انتخاب کنید.");
+                        return;
+                    } catch (error) {
+                        if (error?.message && /cancel|dismiss/i.test(error.message)) return;
+                        console.warn("NightCast native share chooser failed; trying web sharing.", error);
+                    }
+                }
                 try {
                     if (typeof navigator.share === "function") {
                         await navigator.share(shareData);
@@ -460,10 +474,10 @@
                 }
                 try {
                     if (navigator.clipboard?.writeText && window.isSecureContext) {
-                        await navigator.clipboard.writeText(url);
+                        await navigator.clipboard.writeText(shareData.text + "\\n" + url);
                     } else {
                         const field = document.createElement("textarea");
-                        field.value = url;
+                        field.value = shareData.text + "\\n" + url;
                         field.setAttribute("readonly", "");
                         field.style.position = "fixed";
                         field.style.opacity = "0";
@@ -473,10 +487,10 @@
                         field.remove();
                         if (!copied) throw new Error("Clipboard copy was rejected");
                     }
-                    toast("لینک اختصاصی پادکست کپی شد؛ برای دوستتان بفرستید.");
+                    toast("متن و لینک پادکست کپی شد؛ می‌توانید آن را برای دوستانتان بفرستید.");
                 } catch (error) {
                     console.warn("NightCast share link could not be copied automatically.", error);
-                    window.prompt("لینک اختصاصی این پادکست را کپی کنید:", url);
+                    window.prompt("متن و لینک آماده ارسال را کپی کنید:", shareData.text + "\\n" + url);
                 }
             }
 

@@ -3,6 +3,7 @@ name: NightCast Daily Quiz Header Notification Acceptance
 on:
   push:
     branches:
+      - main
       - feat/header-daily-quiz-bell
     paths:
       - 'index.html'

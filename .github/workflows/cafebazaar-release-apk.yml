@@ -238,7 +238,7 @@ jobs:
           const fs = require('node:fs');
           const c = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
           if (c.appId !== 'ir.nightcast.app') throw new Error('Unexpected appId');
-          if (!c.server || c.server.url !== 'https://nightcast.ir') throw new Error('APK must load the official HTTPS NightCast website');
+          if (!c.server || c.server.url !== 'https://nightcast.ir') throw new Error('APK must load the canonical HTTPS NightCast website');
           if (c.server.androidScheme !== 'https') throw new Error('HTTPS scheme missing');
           const a = c.server.allowNavigation || [];
           if (!a.includes('www.nightcast.ir') || !a.includes('nightcast.ir')) throw new Error('NightCast navigation allowlist is incomplete');

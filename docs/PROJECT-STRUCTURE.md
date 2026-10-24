@@ -34,7 +34,7 @@ Capacitor's generated runtime configuration at `android/app/src/main/assets/capa
 Android launcher
   -> MainActivity (BridgeActivity)
   -> Capacitor WebView
-  -> https://www.nightcast.ir
+  -> https://nightcast.ir
   -> root index.html
   -> podcast archive / podcastGrid
 ```

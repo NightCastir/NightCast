@@ -12,7 +12,7 @@ assert.match(js, /is-inactive/);
 assert.match(js, /aria-disabled/);
 assert.match(js, /5 \* 60 \* 1000/);
 assert.match(css, /\.nc-quiz-notification\.is-inactive/);
-assert.match(css, /\.nc-quiz-notification-label\\{display:none!important\\}/, 'bell label must not consume header space');
+assert.match(css, /\.nc-quiz-notification-label\{display:none!important\}/, 'bell label must not consume header space');
 assert.match(css, /min-width:36px;min-height:36px;padding:7px/, 'mobile bell must remain compact');
 assert.match(css, /prefers-reduced-motion/);
 assert.match(js, /nightcast:quizanswered/);

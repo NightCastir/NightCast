@@ -19,6 +19,7 @@ import com.getcapacitor.PluginMethod;
 import com.getcapacitor.PermissionState;
 import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.annotation.Permission;
+import com.getcapacitor.annotation.PermissionCallback;
 import java.util.concurrent.TimeUnit;
 
 @CapacitorPlugin(name = "NightCastNotifications", permissions = {
@@ -42,7 +43,7 @@ public class NightCastNotifications extends Plugin {
         call.resolve();
     }
 
-    @com.getcapacitor.PermissionCallback private void notificationPermissionOnlyCallback(PluginCall call) {
+    @PermissionCallback private void notificationPermissionOnlyCallback(PluginCall call) {
         if (Build.VERSION.SDK_INT < 33 || getPermissionState("notifications") == PermissionState.GRANTED) call.resolve();
         else call.reject("Notification permission was not granted.");
     }
@@ -56,7 +57,7 @@ public class NightCastNotifications extends Plugin {
         call.resolve();
     }
 
-    @com.getcapacitor.PermissionCallback private void notificationPermissionCallback(PluginCall call) {
+    @PermissionCallback private void notificationPermissionCallback(PluginCall call) {
         if (getPermissionState("notifications") == PermissionState.GRANTED) {
             updateCountdown(call.getBoolean("enabled", false));
             call.resolve();

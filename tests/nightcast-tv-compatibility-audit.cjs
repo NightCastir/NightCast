@@ -83,10 +83,10 @@ async function getPublishedHome() {
       ? 'ES5 detector redirects identified TV browsers and large-screen legacy Android browsers to /tv-lite.html'
       : 'Expected early ES5 TV detector and tv-lite redirect were not found');
   add('Full NightCast feature scripts remain referenced for non-TV devices',
-    ['/js/nightcast-app.js', '/js/nightcast-player.js', '/js/nightcast-theme.js']
+    ['/js/nightcast-app-v5.js', '/js/nightcast-player.js', '/js/nightcast-theme.js']
       .every(path => html.indexOf(path) >= 0),
     'Core app, player, and theme scripts remain part of the full homepage for supported non-TV browsers');
-  add('Full desktop feature scripts remain referenced', ['/js/nightcast-app.js', '/js/nightcast-player.js', '/js/nightcast-theme.js']
+  add('Full desktop feature scripts remain referenced', ['/js/nightcast-app-v5.js', '/js/nightcast-player.js', '/js/nightcast-theme.js']
     .every(path => html.indexOf(path) >= 0),
     'Core app, player, and theme scripts remain part of the full homepage');
   try {

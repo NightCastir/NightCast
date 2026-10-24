@@ -34,6 +34,19 @@ public class NightCastNotifications extends Plugin {
             "nightcast-new-podcast-notifications", ExistingPeriodicWorkPolicy.KEEP, work);
     }
 
+    @PluginMethod public void requestNotificationsPermission(PluginCall call) {
+        if (Build.VERSION.SDK_INT >= 33 && getPermissionState("notifications") != PermissionState.GRANTED) {
+            requestPermissionForAlias("notifications", call, "notificationPermissionOnlyCallback");
+            return;
+        }
+        call.resolve();
+    }
+
+    @com.getcapacitor.PermissionCallback private void notificationPermissionOnlyCallback(PluginCall call) {
+        if (Build.VERSION.SDK_INT < 33 || getPermissionState("notifications") == PermissionState.GRANTED) call.resolve();
+        else call.reject("Notification permission was not granted.");
+    }
+
     @PluginMethod public void setQuizCountdown(PluginCall call) {
         if (Build.VERSION.SDK_INT >= 33 && getPermissionState("notifications") != PermissionState.GRANTED) {
             requestPermissionForAlias("notifications", call, "notificationPermissionCallback");

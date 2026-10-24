@@ -160,8 +160,8 @@ const Login = {
 
         const isAndroidWebView =
             /Android/i.test(userAgent) &&
-            (/\\bwv\\b/i.test(userAgent) ||
-             /Version\\/[\\d.]+ Chrome\\/[\\d.]+ Mobile Safari/i.test(userAgent));
+            (/\bwv\b/i.test(userAgent) ||
+             /Version\/[\d.]+ Chrome\/[\d.]+ Mobile Safari/i.test(userAgent));
 
         try {
 

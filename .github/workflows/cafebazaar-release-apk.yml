@@ -242,7 +242,7 @@ jobs:
           if (c.server.androidScheme !== 'https') throw new Error('HTTPS scheme missing');
           const a = c.server.allowNavigation || [];
           if (!a.includes('www.nightcast.ir') || !a.includes('nightcast.ir')) throw new Error('NightCast navigation allowlist is incomplete');
-          console.log('TRUE | Packaged app loads https://www.nightcast.ir over HTTPS');
+          console.log('TRUE | Packaged app loads https://nightcast.ir over HTTPS');
           NODE
 
       - name: Decode release signing key

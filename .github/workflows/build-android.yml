@@ -646,7 +646,8 @@ jobs:
           permission = 'android.permission.POST_NOTIFICATIONS'
           if permission not in text:
               text = text.replace('<manifest', '<manifest', 1)
-              end = text.find('>')
+              manifest_start = text.find('<manifest')
+              end = text.find('>', manifest_start)
               text = text[:end + 1] + '\n    <uses-permission android:name="' + permission + '" />' + text[end + 1:]
           receiver = '<receiver android:name="ir.nightcast.app.NightCastQuizCountdownReceiver" android:enabled="true" android:exported="false" />'
           if 'NightCastQuizCountdownReceiver' not in text:
@@ -726,7 +727,7 @@ jobs:
               'implementation "androidx.credentials:credentials:1.6.0"',
               'implementation "androidx.credentials:credentials-play-services-auth:1.6.0"',
               'implementation "com.google.android.libraries.identity.googleid:googleid:1.2.0"',
-              'implementation "androidx.work:work-runtime:2.10.1"',
+              'implementation "androidx.work:work-runtime:2.9.1"',
           ]
 
           marker = "dependencies {"

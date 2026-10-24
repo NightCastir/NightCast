@@ -75,7 +75,7 @@ jobs:
           const c = fs.readFileSync('capacitor.config.ts', 'utf8');
           for (const [label, pattern] of [
             ['application ID', /appId:\s*'ir\.nightcast\.app'/],
-            ['official website URL', /url:\s*'https:\/\/www\.nightcast\.ir'/],
+            ['official website URL', /url:\s*'https:\/\/nightcast\.ir'/]
             ['HTTPS scheme', /androidScheme:\s*'https'/]
           ]) if (!pattern.test(c)) throw new Error('Invalid Capacitor setting: ' + label);
           const [a,b,d] = v.split('.').map(Number);
@@ -327,7 +327,7 @@ jobs:
             echo ""
             echo "- Build status: **$JOB_STATUS**"
             echo "- App ID: \`ir.nightcast.app\`"
-            echo "- Website: \`https://www.nightcast.ir\`"
+            echo "- Website: \`https://nightcast.ir\`"
             echo "- Version: \`$VERSION\`"
             echo "- Android versionCode: \`$VERSION_CODE\`"
             echo "- Output: signed Release APK (not Debug)"

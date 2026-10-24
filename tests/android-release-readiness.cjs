@@ -58,4 +58,6 @@ assert.ok(bazaarWorkflow.includes('"$APKSIGNER" verify --verbose "$APK"'));
 assert.ok(bazaarWorkflow.includes('"$ZIPALIGN" -c -v 4 "$APK"'));
 assert.ok(bazaarWorkflow.includes('NightCast-Bazaar-Release-APK-v'));
 assert.ok(buildWorkflow.includes('node tests/android-release-readiness.cjs'), 'Main APK build must run this release gate');
+assert.ok(buildWorkflow.includes('"$APKSIGNER" verify --verbose "$APK"'), 'Main APK build must verify the release APK signature');
+assert.ok(buildWorkflow.includes('"$ZIPALIGN" -c -v 4 "$APK"'), 'Main APK build must verify release APK alignment');
 console.log('PASS | Cafe Bazaar APK signature/alignment checks and build gate');

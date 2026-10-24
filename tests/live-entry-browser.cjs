@@ -40,11 +40,21 @@ async function main() {
         assert.equal(cardCount, 6,
           'The first archive page must render exactly six podcast cards; got ' + cardCount);
 
+        // Wait for the asynchronous D1 catalogue refresh, not just the initial six-card paint.
+        // The live bridge exposes the full catalogue independently of the currently rendered page.
+        await page.waitForFunction(() => {
+          const bridge = window.NightCastPodcastBridge;
+          return !!bridge && typeof bridge.getPodcasts === 'function' && bridge.getPodcasts().length > 6;
+        }, null, { timeout: 30000 });
+        const catalogueCount = await page.evaluate(() => window.NightCastPodcastBridge.getPodcasts().length);
+        assert(catalogueCount > 6, 'Live catalogue must contain more than six podcasts; got ' + catalogueCount);
+
         const pagination = page.locator('#ncPodcastPagination');
-        await pagination.waitFor({ state: 'visible', timeout: 10000 });
+        await pagination.waitFor({ state: 'visible', timeout: 15000 });
         const pageTwo = pagination.locator('button[data-page="2"]');
+        await pageTwo.waitFor({ state: 'visible', timeout: 15000 });
         assert.equal(await pageTwo.count(), 1,
-          'A second page button must be available when the catalogue exceeds six records');
+          'A second page button must be available for the live catalogue of ' + catalogueCount + ' records');
 
         const firstPageIds = await cards.evaluateAll(items => items.map(card => card.dataset.id || card.querySelector('[data-podcast-id]')?.dataset.podcastId || card.textContent.trim()));
         await pageTwo.click();

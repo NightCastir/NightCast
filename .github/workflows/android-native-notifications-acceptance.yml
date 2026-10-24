@@ -1,0 +1,31 @@
+name: NightCast Android Native Notifications Acceptance
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'android-template/src/main/java/ir/nightcast/app/**'
+      - 'js/nightcast-club-engagement.js'
+      - '.github/workflows/build-android.yml'
+      - 'tests/android-native-notifications-acceptance.cjs'
+      - 'version.json'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-notifications:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify native notification wiring
+        run: node tests/android-native-notifications-acceptance.cjs
+      - name: Verify Android source structure
+        run: node tests/android-source-structure.cjs

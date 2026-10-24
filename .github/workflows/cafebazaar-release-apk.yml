@@ -65,6 +65,9 @@ jobs:
           test -s index.html
           test -s android-template/src/main/java/ir/nightcast/app/MainActivity.java
           test -s android-template/src/main/java/ir/nightcast/app/NightCastGoogleAuth.java
+          test -s android-template/src/main/java/ir/nightcast/app/NightCastNotifications.java
+          test -s android-template/src/main/java/ir/nightcast/app/NightCastQuizCountdownReceiver.java
+          test -s android-template/src/main/java/ir/nightcast/app/NightCastPodcastWorker.java
           node <<'NODE'
           const fs = require('node:fs');
           const v = JSON.parse(fs.readFileSync('version.json', 'utf8')).version;
@@ -176,8 +179,13 @@ jobs:
           mkdir -p "$dst"
           cp "$src/MainActivity.java" "$dst/MainActivity.java"
           cp "$src/NightCastGoogleAuth.java" "$dst/NightCastGoogleAuth.java"
+          cp "$src/NightCastNotifications.java" "$dst/NightCastNotifications.java"
+          cp "$src/NightCastQuizCountdownReceiver.java" "$dst/NightCastQuizCountdownReceiver.java"
+          cp "$src/NightCastPodcastWorker.java" "$dst/NightCastPodcastWorker.java"
           grep -q 'registerPlugin(NightCastGoogleAuth.class)' "$dst/MainActivity.java"
+          grep -q 'registerPlugin(NightCastNotifications.class)' "$dst/MainActivity.java"
           grep -q '@CapacitorPlugin(name = "NightCastGoogleAuth")' "$dst/NightCastGoogleAuth.java"
+          grep -q '@CapacitorPlugin(name = "NightCastNotifications"' "$dst/NightCastNotifications.java"
 
       - name: Configure Google Credential Manager dependencies
         run: |
@@ -192,10 +200,32 @@ jobs:
             'implementation "androidx.credentials:credentials:1.6.0"',
             'implementation "androidx.credentials:credentials-play-services-auth:1.6.0"',
             'implementation "com.google.android.libraries.identity.googleid:googleid:1.2.0"',
+            'implementation "androidx.work:work-runtime:2.9.1"',
           ]
           missing = [d for d in deps if d not in s]
           if missing: s = s.replace(marker, marker + '\n' + '\n'.join('    ' + d for d in missing), 1)
           p.write_text(s)
+          PY
+
+      - name: Register native notification permission and receiver
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          p = Path('android/app/src/main/AndroidManifest.xml')
+          s = p.read_text(encoding='utf-8')
+          permission = 'android.permission.POST_NOTIFICATIONS'
+          if permission not in s:
+              start = s.find('<manifest')
+              end = s.find('>', start)
+              s = s[:end + 1] + '\\n    <uses-permission android:name="' + permission + '" />' + s[end + 1:]
+          receiver = '<receiver android:name="ir.nightcast.app.NightCastQuizCountdownReceiver" android:enabled="true" android:exported="false" />'
+          if 'NightCastQuizCountdownReceiver' not in s:
+              s = s.replace('</application>', receiver + '\\n    </application>')
+          p.write_text(s, encoding='utf-8')
+          if permission not in s or 'NightCastQuizCountdownReceiver' not in s:
+              raise SystemExit('Native notification manifest wiring failed')
+          print('TRUE | Native notification permission and countdown receiver registered')
           PY
 
       - name: Sync Capacitor and verify remote website configuration

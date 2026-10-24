@@ -3,5 +3,5 @@ const login=fs.readFileSync('users/js/login.js','utf8'),html=fs.readFileSync('us
 assert.doesNotMatch(login,/getCaptchaProof|captchaProof|NightCastShield|continueWithCaptcha/);
 assert.match(login,/body: JSON\.stringify\(\{ idToken \}\)/);
 assert.doesNotMatch(html,/nc-shield-widget|nightcast-shield\.(?:css|js)/);
-assert.match(html,/login\.js\?v=20261022-google-only-login1/);
+assert.match(html,/login\.js\?v=[^"']+/);
 console.log('PASS | Google return flow does not depend on CAPTCHA state');

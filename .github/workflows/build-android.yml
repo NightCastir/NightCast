@@ -1029,29 +1029,32 @@ jobs:
       - name: Verify APKs
         id: verify_apks
         run: |
-          set -e
+          set -euo pipefail
 
-          echo "=== Debug APKs ==="
+          APK="android/app/build/outputs/apk/release/app-release.apk"
+          DEBUG_APK="android/app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK"
+          test -s "$DEBUG_APK"
 
-          find \
-            android/app/build/outputs/apk/debug \
-            -type f \
-            -name "*.apk" \
-            -exec ls -lh {} \;
+          AAPT="$ANDROID_HOME/build-tools/34.0.0/aapt"
+          APKSIGNER="$ANDROID_HOME/build-tools/34.0.0/apksigner"
+          ZIPALIGN="$ANDROID_HOME/build-tools/34.0.0/zipalign"
+          test -x "$AAPT" && test -x "$APKSIGNER" && test -x "$ZIPALIGN"
 
+          EXPECTED_VERSION="$(node -p "require('./version.json').version")"
+          EXPECTED_CODE="$(node -e 'const [a,b,c]=require("./version.json").version.split(".").map(Number); console.log(a*10000+b*100+c)')"
+          BADGING="$("$AAPT" dump badging "$APK")"
+          printf '%s\n' "$BADGING" | grep -F "name='ir.nightcast.app'" >/dev/null
+          printf '%s\n' "$BADGING" | grep -F "versionCode='$EXPECTED_CODE' versionName='$EXPECTED_VERSION'" >/dev/null
 
-          echo ""
-          echo "=== Release APKs ==="
+          "$APKSIGNER" verify --verbose "$APK"
+          "$ZIPALIGN" -c -v 4 "$APK"
 
-          find \
-            android/app/build/outputs/apk/release \
-            -type f \
-            -name "*.apk" \
-            -exec ls -lh {} \;
-
-
-          echo ""
-          echo "APK verification complete."
+          echo "TRUE | package=ir.nightcast.app"
+          echo "TRUE | versionName=$EXPECTED_VERSION versionCode=$EXPECTED_CODE"
+          echo "TRUE | Release APK signature verified"
+          echo "TRUE | Release APK zip alignment verified"
+          echo "TRUE | Debug and Release APK files are present"
 
 
       # ============================================================

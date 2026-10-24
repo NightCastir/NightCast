@@ -6,7 +6,7 @@ const config: CapacitorConfig = {
   webDir: 'www',
   server: {
     // Single source of truth for the Android WebView entry point.
-    url: 'https://www.nightcast.ir',
+    url: 'https://nightcast.ir',
     cleartext: false,
     androidScheme: 'https',
     allowNavigation: ['www.nightcast.ir', 'nightcast.ir']

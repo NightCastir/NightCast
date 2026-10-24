@@ -46,6 +46,7 @@ jobs:
         run: |
           set -euo pipefail
           node tests/android-source-structure.cjs
+          node tests/android-release-readiness.cjs
 
 
       # ============================================================

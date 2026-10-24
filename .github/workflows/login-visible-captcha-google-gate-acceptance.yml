@@ -51,20 +51,19 @@ jobs:
           node-version: '22'
       - name: Wait for the live site to publish the new login UI
         env:
-          EXPECTED_SCRIPT: '20261022-visible-captcha-gated-google2'
+          EXPECTED_SCRIPT: '20261024-native-google-fix1'
         run: |
           set -eu
           for attempt in $(seq 1 60); do
             html="$(curl --silent --show-error --location --max-time 15 "https://nightcast.ir/users/login.html?nc_deploy_check=$GITHUB_SHA" || true)"
-            if printf '%s' "$html" | grep -Fq "$EXPECTED_SCRIPT" &&
-               printf '%s' "$html" | grep -Fq 'nightcast-shield.js?v=4'; then
-              echo "PASS | live login page references visible CAPTCHA + gated Google fix | attempt=$attempt"
+            if printf '%s' "$html" | grep -Fq "$EXPECTED_SCRIPT"; then
+              echo "PASS | live login page references current Google-only login fix | attempt=$attempt"
               exit 0
             fi
-            echo "WAIT | waiting for live login deployment | attempt=$attempt"
+            echo "WAIT | waiting for current Google-only login deployment | attempt=$attempt"
             sleep 10
           done
-          echo "FAIL | live login HTML did not publish the expected cache keys"
+          echo "FAIL | live login HTML did not publish the expected Google-only login cache key"
           exit 1
       - name: Install Playwright and Chromium
         run: |

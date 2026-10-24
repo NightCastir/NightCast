@@ -58,6 +58,8 @@ jobs:
     needs: source-regression
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
       - name: Dispatch APK build workflow
         env:
           GH_TOKEN: ${{ github.token }}

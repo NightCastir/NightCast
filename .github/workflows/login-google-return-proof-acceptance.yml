@@ -39,7 +39,7 @@ jobs:
       - name: Wait for the live site to publish Google-only login
         if: github.event_name != 'pull_request'
         env:
-          EXPECTED_SCRIPT: '20261022-google-only-login1'
+          EXPECTED_SCRIPT: '20261024-native-google-fix1'
         run: |
           set -eu
           for attempt in $(seq 1 60); do

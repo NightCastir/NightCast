@@ -723,10 +723,7 @@ const Login = {
                 await plugin.signIn();
 
 
-            console.log(
-                "Native Google Sign-In Result:",
-                result
-            );
+            console.log("Native Google Sign-In completed; token payload withheld.");
 
 
             /*

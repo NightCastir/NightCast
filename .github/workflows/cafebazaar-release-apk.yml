@@ -1,6 +1,20 @@
 name: NightCast — Cafe Bazaar Release APK
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'version.json'
+      - 'package.json'
+      - 'index.html'
+      - 'users/login.html'
+      - 'users/js/login.js'
+      - 'login/index.html'
+      - 'android-template/src/main/java/ir/nightcast/app/**'
+      - 'capacitor.config.ts'
+      - 'tests/android-release-readiness.cjs'
+      - '.github/workflows/cafebazaar-release-apk.yml'
   workflow_dispatch:
     inputs:
       confirm_release_build:
@@ -50,6 +64,11 @@ jobs:
         with:
           node-version: "22"
 
+      - name: Run Android release readiness acceptance
+        run: |
+          set -euo pipefail
+          node tests/android-release-readiness.cjs
+
       - name: Setup Java
         uses: actions/setup-java@v5
         with:
@@ -75,7 +94,7 @@ jobs:
           const c = fs.readFileSync('capacitor.config.ts', 'utf8');
           for (const [label, pattern] of [
             ['application ID', /appId:\s*'ir\.nightcast\.app'/],
-            ['official website URL', /url:\s*'https:\/\/nightcast\.ir'/]
+            ['official website URL', /url:\s*'https:\/\/nightcast\.ir'/],
             ['HTTPS scheme', /androidScheme:\s*'https'/]
           ]) if (!pattern.test(c)) throw new Error('Invalid Capacitor setting: ' + label);
           const [a,b,d] = v.split('.').map(Number);
@@ -218,10 +237,10 @@ jobs:
           if permission not in s:
               start = s.find('<manifest')
               end = s.find('>', start)
-              s = s[:end + 1] + '\\n    <uses-permission android:name="' + permission + '" />' + s[end + 1:]
+              s = s[:end + 1] + '\n    <uses-permission android:name="' + permission + '" />' + s[end + 1:]
           receiver = '<receiver android:name="ir.nightcast.app.NightCastQuizCountdownReceiver" android:enabled="true" android:exported="false" />'
           if 'NightCastQuizCountdownReceiver' not in s:
-              s = s.replace('</application>', receiver + '\\n    </application>')
+              s = s.replace('</application>', receiver + '\n    </application>')
           p.write_text(s, encoding='utf-8')
           if permission not in s or 'NightCastQuizCountdownReceiver' not in s:
               raise SystemExit('Native notification manifest wiring failed')

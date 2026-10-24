@@ -672,14 +672,22 @@ jobs:
 
           test -s "$SOURCE_DIR/MainActivity.java"
           test -s "$SOURCE_DIR/NightCastGoogleAuth.java"
+          test -s "$SOURCE_DIR/NightCastNotifications.java"
+          test -s "$SOURCE_DIR/NightCastQuizCountdownReceiver.java"
+          test -s "$SOURCE_DIR/NightCastPodcastWorker.java"
           mkdir -p "$TARGET_DIR"
           cp "$SOURCE_DIR/MainActivity.java" "$TARGET_DIR/MainActivity.java"
           cp "$SOURCE_DIR/NightCastGoogleAuth.java" "$TARGET_DIR/NightCastGoogleAuth.java"
+          cp "$SOURCE_DIR/NightCastNotifications.java" "$TARGET_DIR/NightCastNotifications.java"
+          cp "$SOURCE_DIR/NightCastQuizCountdownReceiver.java" "$TARGET_DIR/NightCastQuizCountdownReceiver.java"
+          cp "$SOURCE_DIR/NightCastPodcastWorker.java" "$TARGET_DIR/NightCastPodcastWorker.java"
 
           grep -q '^package ir\.nightcast\.app;' "$TARGET_DIR/MainActivity.java"
           grep -q '^package ir\.nightcast\.app;' "$TARGET_DIR/NightCastGoogleAuth.java"
           grep -q 'registerPlugin(NightCastGoogleAuth.class)' "$TARGET_DIR/MainActivity.java"
           grep -q '@CapacitorPlugin(name = "NightCastGoogleAuth")' "$TARGET_DIR/NightCastGoogleAuth.java"
+          grep -q 'registerPlugin(NightCastNotifications.class)' "$TARGET_DIR/MainActivity.java"
+          grep -q '@CapacitorPlugin(name = "NightCastNotifications"' "$TARGET_DIR/NightCastNotifications.java"
 
           echo "TRUE | Native Android source files copied from tracked templates."
           echo "TRUE | MainActivity registers NightCastGoogleAuth."
@@ -709,6 +717,7 @@ jobs:
               'implementation "androidx.credentials:credentials:1.6.0"',
               'implementation "androidx.credentials:credentials-play-services-auth:1.6.0"',
               'implementation "com.google.android.libraries.identity.googleid:googleid:1.2.0"',
+              'implementation "androidx.work:work-runtime:2.10.1"',
           ]
 
           marker = "dependencies {"

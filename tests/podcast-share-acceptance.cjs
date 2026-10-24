@@ -41,4 +41,4 @@ check('Share URL requests playback on arrival', slugUrl.searchParams.get('autopl
 const idUrl = new URL(builder({ id: 91002 }));
 check('Share URL falls back to the podcast ID if no slug exists', idUrl.searchParams.get('podcast') === '91002');
 
-console.log('SUMMARY | 15/15 podcast sharing assertions passed');
+console.log('SUMMARY | 17/17 podcast sharing assertions passed');

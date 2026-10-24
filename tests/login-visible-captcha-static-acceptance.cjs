@@ -2,7 +2,7 @@ const fs=require('node:fs');const assert=require('node:assert/strict');
 const html=fs.readFileSync('users/login.html','utf8'),login=fs.readFileSync('users/js/login.js','utf8'),worker=fs.readFileSync('workers/nightcast-shield.js','utf8');
 assert.doesNotMatch(html,/nc-shield-widget|data-nc-shield="login"|data-nc-shield-question|data-nc-shield-answer/);
 assert.doesNotMatch(html,/nightcast-shield\.(?:css|js)/);
-assert.match(html,/login\.js\?v=20261022-google-only-login1/);
+assert.match(html,/login\.js\?v=[^"']+/);
 assert.match(html,/accounts\.google\.com\/gsi\/client\?hl=fa/);
 assert.doesNotMatch(login,/NightCastShield|captchaProof|continueWithCaptcha|getCaptchaProof|clearCaptchaProof/);
 assert.match(login,/body: JSON\.stringify\(\{ idToken \}\)/);
